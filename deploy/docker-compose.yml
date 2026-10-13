@@ -1,0 +1,21 @@
+# Production deployment: copy this file and a filled-in `.env` (from `.env.example`)
+# to the server. The image is built on your own machine with scripts/build-image.sh,
+# so the server needs neither the source code nor Node.js/Go. See DEPLOY-DOCKER.md.
+services:
+  roster-tracker:
+    image: ${ROSTER_IMAGE:?Set ROSTER_IMAGE in .env}
+    container_name: roster-tracker
+    restart: unless-stopped
+    # Every ROSTER_* setting in .env reaches the app (see the configuration reference).
+    env_file: .env
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ${ROSTER_DATA_DIR:-./data}:/var/opt/roster-tracker
+    ports:
+      - "${ROSTER_HOST_PORT:-5230}:5230"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:5230/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

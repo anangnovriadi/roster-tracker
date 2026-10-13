@@ -1,79 +1,164 @@
 # Deploying with Docker
 
-This guide runs Roster Tracker as a single Docker container. The image contains one Go binary with the web UI embedded, and stores its SQLite database and uploaded files in one data directory that you mount from the host.
+You build the Docker image on your own machine. The server only needs **two files**, `docker-compose.yml` and `.env`. It does not need the source code, Node.js or Go.
+
+```
+Your machine                                   Server
+────────────                                   ──────
+source code ── scripts/build-image.sh ──▶ image ──▶ docker-compose.yml + .env
+                                         (registry or file)    └─ data/ (database + uploads)
+```
+
+The image contains one Go binary with the web UI embedded. The SQLite database and uploaded files live in a `data/` folder on the server.
 
 ## What you need
 
-- A server with Docker Engine 20.10+ and the Docker Compose plugin (`docker compose version`).
-- To **build** the image (on the server or on your own machine): Git, [Node.js](https://nodejs.org/) 24 and [pnpm](https://pnpm.io/) 11. The image does not build the web UI itself; you build it first and the Docker build embeds it.
-- About 1 GB of free disk to build, plus room for the data directory (database and uploads).
+**On your machine (to build):**
 
-## 1. Get the code
+- Git and a clone of this repository
+- [Node.js](https://nodejs.org/) 24 and [pnpm](https://pnpm.io/) 11
+- Docker with Buildx (`docker buildx version`)
+
+**On the server (to run):**
+
+- Docker Engine 20.10+ and the Compose plugin (`docker compose version`)
+
+## 1. Find the server's CPU type
+
+The image must match the server's CPU. On the server, run:
 
 ```bash
-git clone https://github.com/anangnovriadi/roster-tracker.git
-cd roster-tracker
+uname -m
 ```
 
-## 2. Build the web UI
+| Output | Platform to build |
+| --- | --- |
+| `x86_64` | `linux/amd64` (the default) |
+| `aarch64` / `arm64` | `linux/arm64` |
 
-The Go binary embeds the files in `server/frontend/dist`, so build them before every image build:
+## 2. Build the image on your machine
+
+From the repository root:
 
 ```bash
-cd web
-pnpm install
-pnpm release
-cd ..
+scripts/build-image.sh                 # x86_64 server
+PLATFORM=linux/arm64 scripts/build-image.sh   # ARM server
 ```
 
-`pnpm release` writes the production bundle to `server/frontend/dist`. Run it again whenever the UI changes.
+The script builds the web UI, then the image, tagged with a version (e.g. `roster-tracker:26.10`) and `latest`. The same script also gets the image to the server, in one of two ways (step 3).
 
-## 3. Configure
+## 3. Get the image to the server
 
-Create a `.env` file next to `scripts/compose.yaml` (`scripts/.env`). Every value is optional:
+Pick **one**.
+
+### Option A: through a container registry (recommended)
+
+Use any registry; these examples use GitHub Container Registry (`ghcr.io`), which is free for your GitHub account.
+
+1. Create a GitHub personal access token (classic) with the `write:packages` scope, then log in **on your machine**:
+
+   ```bash
+   echo <token> | docker login ghcr.io -u <github-user> --password-stdin
+   ```
+
+2. Build and push:
+
+   ```bash
+   scripts/build-image.sh --push ghcr.io/<github-user>/roster-tracker
+   ```
+
+3. The package is private by default. Either make it public (GitHub → your profile → Packages → roster-tracker → Package settings → Change visibility), or log in **on the server** with a token that has `read:packages`:
+
+   ```bash
+   echo <token> | docker login ghcr.io -u <github-user> --password-stdin
+   ```
+
+In `.env` on the server, use `ROSTER_IMAGE=ghcr.io/<github-user>/roster-tracker:<version>`.
+
+### Option B: copy the image file (no registry)
 
 ```bash
-# Version label shown in the app
-ROSTER_VERSION=26.10
+# On your machine
+scripts/build-image.sh --save roster-tracker.tar.gz
+scp roster-tracker.tar.gz user@<server-ip>:/tmp/
 
-# Time zone for logs, e.g. Asia/Jakarta
-TZ=Asia/Jakarta
+# On the server
+gunzip -c /tmp/roster-tracker.tar.gz | docker load
+```
 
-# Public URL of the app, without a trailing path. Leave empty for a local test.
-ROSTER_INSTANCE_URL=https://roster.example.com
+In `.env` on the server, use `ROSTER_IMAGE=roster-tracker:<version>`.
 
-# Where the database and uploads live on the host
-ROSTER_DATA_DIR=/opt/roster-tracker/data
+## 4. Set up the server
 
-# Host port to expose (the container always listens on 5230)
+On the server, create a folder with the two files:
+
+```bash
+mkdir -p ~/roster-tracker && cd ~/roster-tracker
+```
+
+Copy `deploy/docker-compose.yml` and `deploy/.env.example` from your machine:
+
+```bash
+# On your machine, from the repository root
+scp deploy/docker-compose.yml user@<server-ip>:~/roster-tracker/
+scp deploy/.env.example user@<server-ip>:~/roster-tracker/.env
+```
+
+Or download them on the server straight from GitHub:
+
+```bash
+curl -fsSLo docker-compose.yml https://raw.githubusercontent.com/anangnovriadi/roster-tracker/main/deploy/docker-compose.yml
+curl -fsSLo .env https://raw.githubusercontent.com/anangnovriadi/roster-tracker/main/deploy/.env.example
+```
+
+Edit `.env`:
+
+```bash
+# Image from step 3
+ROSTER_IMAGE=ghcr.io/<github-user>/roster-tracker:26.10
+
+# Public address of the app. Without a domain, use the server IP and port.
+# 203.0.113.10 is an example address; replace it with your server's IP.
+ROSTER_INSTANCE_URL=http://203.0.113.10:5230
+
+# Port on the server (the container always listens on 5230)
 ROSTER_HOST_PORT=5230
+
+# Database and uploads, relative to this folder
+ROSTER_DATA_DIR=./data
+
+# Time zone for logs
+TZ=Asia/Jakarta
 ```
 
-Create the data directory once:
+The folder now holds only:
 
-```bash
-sudo mkdir -p /opt/roster-tracker/data
+```
+~/roster-tracker/
+├── docker-compose.yml
+├── .env
+└── data/            (created on first start: database + uploads)
 ```
 
-The container starts as root only long enough to give that directory to its unprivileged user (UID/GID 10001), then drops privileges.
-
-## 4. Build and start
+## 5. Start
 
 ```bash
-docker compose -f scripts/compose.yaml up -d --build
+docker compose up -d
+docker compose ps
+docker compose logs -f
 ```
 
-Check that it is running and healthy:
+Check it answers:
 
 ```bash
-docker compose -f scripts/compose.yaml ps
-docker compose -f scripts/compose.yaml logs -f roster-tracker
 curl http://localhost:5230/healthz
 ```
 
-Open `http://203.0.113.10:5230` (replace with your server's IP).
+Then open `http://203.0.113.10:5230`, replacing the example address with your server's IP.
 
-## 5. First sign-in
+The container starts as root only long enough to give the data folder to its unprivileged user (UID/GID 10001), then drops privileges.
+
+## 6. First sign-in
 
 On the first start, with an empty database, the server creates one admin account:
 
@@ -89,103 +174,38 @@ On the first start, with an empty database, the server creates one admin account
 
 The admin manages members and the duty roster and can read every note; only members write notes, comments and reactions. Visitors who are not signed in can see the roster and PUBLIC notes, read-only.
 
-## Running without Compose
+## Updating
 
-If you prefer plain `docker` commands:
-
-```bash
-# Build (after `pnpm release`)
-docker build -f scripts/Dockerfile \
-  --build-arg VERSION=26.10 \
-  --build-arg COMMIT="$(git rev-parse --short HEAD)" \
-  -t roster-tracker:local .
-
-# Run
-docker run -d --name roster-tracker \
-  --restart unless-stopped \
-  -p 5230:5230 \
-  -e TZ=Asia/Jakarta \
-  -e ROSTER_INSTANCE_URL=https://roster.example.com \
-  -v /opt/roster-tracker/data:/var/opt/roster-tracker \
-  roster-tracker:local
-```
-
-## Building on another machine
-
-If the server should not have Node.js installed, build the image on your own machine and copy it over:
+On your machine, build and ship a new image:
 
 ```bash
-# On your machine (after `pnpm release` and `docker build ... -t roster-tracker:local .`)
-docker save roster-tracker:local | gzip > roster-tracker.tar.gz
-scp roster-tracker.tar.gz user@server:/tmp/
-
-# On the server
-gunzip -c /tmp/roster-tracker.tar.gz | docker load
-docker run ...   # same command as above
+git pull
+scripts/build-image.sh --push ghcr.io/<github-user>/roster-tracker   # Option A
+scripts/build-image.sh --save roster-tracker.tar.gz                  # Option B (then scp + docker load)
 ```
 
-When the build machine and the server have different CPU architectures (for example an Apple Silicon Mac and an x86 server), build for the server's platform:
+On the server, set the new version in `ROSTER_IMAGE` (or keep `:latest`) and restart:
 
 ```bash
-docker buildx build --platform linux/amd64 -f scripts/Dockerfile \
-  --build-arg VERSION=26.10 -t roster-tracker:local --load .
+docker compose pull      # Option A only
+docker compose up -d
 ```
 
-## Configuration reference
-
-Every server flag can be set as an environment variable with the `ROSTER_` prefix (dashes become underscores):
-
-| Variable | Description | Default in the image |
-| --- | --- | --- |
-| `ROSTER_PORT` | Port inside the container | `5230` |
-| `ROSTER_INSTANCE_URL` | Public URL of the app (http or https, no query string) | empty |
-| `ROSTER_DRIVER` | `sqlite`, `mysql` or `postgres` | `sqlite` |
-| `ROSTER_DSN` | Database connection string (required for MySQL/PostgreSQL) | `roster_prod.db` in the data directory |
-| `ROSTER_DSN_FILE` | Read the DSN from a file instead (Docker secrets) | — |
-| `ROSTER_LOG_LEVEL` | `debug`, `info`, `warn` or `error` | `info` |
-| `ROSTER_TRUSTED_PROXIES` | Proxies whose forwarding headers are trusted | `private` |
-| `ROSTER_UID` / `ROSTER_GID` | User the server runs as inside the container | `10001` |
-| `TZ` | Container time zone | `UTC` |
-
-### Using MySQL or PostgreSQL
-
-SQLite is the default and is enough for a small team. To use a database server instead:
-
-```bash
-ROSTER_DRIVER=postgres
-ROSTER_DSN=postgresql://user:password@db-host:5432/roster_tracker?sslmode=disable
-```
-
-Uploaded files still go to the data directory (or to S3 if you configure it), so keep the volume mounted.
+Database migrations run automatically on start. Take a backup first (see below).
 
 ## Access by IP address (no domain)
 
-A domain is not required. The examples below use `203.0.113.10`, an address reserved for documentation; replace it with your server's public IP. To reach the app at `http://203.0.113.10:5230`:
+A domain is not required. The examples use `203.0.113.10`, an address reserved for documentation; replace it with your server's public IP.
 
-1. In `scripts/.env`, set the instance URL to that address (or leave it empty):
+1. In `.env`: `ROSTER_INSTANCE_URL=http://203.0.113.10:5230` (or leave it empty).
+2. Open the port in the server firewall, e.g. `sudo ufw allow 5230/tcp`. On a cloud server, also allow inbound TCP 5230 in the provider's firewall or security group.
+3. Open `http://203.0.113.10:5230`.
 
-   ```bash
-   ROSTER_INSTANCE_URL=http://203.0.113.10:5230
-   ROSTER_HOST_PORT=5230
-   ```
-
-2. Open the port in the server firewall, e.g. with `ufw`:
-
-   ```bash
-   sudo ufw allow 5230/tcp
-   ```
-
-   On a cloud server, also allow inbound TCP 5230 in the provider's security group or firewall.
-
-3. Start the app as in step 4 and open `http://203.0.113.10:5230`.
-
-Signing in works over plain HTTP: the session cookie is only marked `Secure` when the request arrives over HTTPS.
-
-Over plain HTTP, passwords and notes travel unencrypted. That is fine on a private network or VPN, but on the public internet prefer a domain with HTTPS (next section). If the server's IP changes, update `ROSTER_INSTANCE_URL`; it is only used for links in emails and the sitemap.
+Signing in works over plain HTTP: the session cookie is only marked `Secure` when the request arrives over HTTPS. Over plain HTTP, passwords and notes travel unencrypted. That is fine on a private network or VPN, but on the public internet prefer a domain with HTTPS. If the server's IP changes, update `ROSTER_INSTANCE_URL`; it is only used for links in emails and the sitemap.
 
 ## HTTPS with a reverse proxy
 
-Put the container behind a reverse proxy that terminates TLS and set `ROSTER_INSTANCE_URL` to the public `https://` address. Bind the container port to localhost only so it is reachable only through the proxy, e.g. `ROSTER_HOST_PORT=127.0.0.1:5230`.
+Put the container behind a reverse proxy that terminates TLS, and set `ROSTER_INSTANCE_URL` to the public `https://` address. Bind the container port to localhost so it is reachable only through the proxy: `ROSTER_HOST_PORT=127.0.0.1:5230`.
 
 [Caddy](https://caddyserver.com/) gets certificates automatically:
 
@@ -218,9 +238,37 @@ server {
 }
 ```
 
+## Configuration reference
+
+Every setting can go in `.env`; the compose file passes the whole file to the container. Server flags use the `ROSTER_` prefix (dashes become underscores):
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `ROSTER_IMAGE` | Image to run (used by Compose) | — (required) |
+| `ROSTER_HOST_PORT` | Port on the server (used by Compose) | `5230` |
+| `ROSTER_DATA_DIR` | Data folder on the server (used by Compose) | `./data` |
+| `ROSTER_INSTANCE_URL` | Public URL of the app (http or https, no query string) | empty |
+| `ROSTER_DRIVER` | `sqlite`, `mysql` or `postgres` | `sqlite` |
+| `ROSTER_DSN` | Database connection string (required for MySQL/PostgreSQL) | `roster_prod.db` in the data folder |
+| `ROSTER_LOG_LEVEL` | `debug`, `info`, `warn` or `error` | `info` |
+| `ROSTER_TRUSTED_PROXIES` | Proxies whose forwarding headers are trusted | `private` |
+| `ROSTER_UID` / `ROSTER_GID` | User the server runs as inside the container | `10001` |
+| `TZ` | Container time zone | `UTC` |
+
+### Using MySQL or PostgreSQL
+
+SQLite is the default and is enough for a small team. To use a database server, add to `.env`:
+
+```bash
+ROSTER_DRIVER=postgres
+ROSTER_DSN=postgresql://user:password@db-host:5432/roster_tracker?sslmode=disable
+```
+
+Uploaded files still go to the data folder (or to S3 if you configure it), so keep the volume.
+
 ## Data and backups
 
-Everything that matters is in the data directory (`ROSTER_DATA_DIR`):
+Everything that matters is in the data folder (`ROSTER_DATA_DIR`):
 
 | Path | Contents |
 | --- | --- |
@@ -230,44 +278,46 @@ Everything that matters is in the data directory (`ROSTER_DATA_DIR`):
 Back up **both**. For a consistent SQLite copy, stop the container first:
 
 ```bash
-docker compose -f scripts/compose.yaml stop
-tar czf roster-backup-$(date +%F).tar.gz -C /opt/roster-tracker data
-docker compose -f scripts/compose.yaml start
+cd ~/roster-tracker
+docker compose stop
+tar czf roster-backup-$(date +%F).tar.gz data
+docker compose start
 ```
 
-Restore by stopping the container, replacing the data directory with the backup, and starting it again.
+Restore by stopping the container, replacing `data/` with the backup, and starting it again.
 
-Uploads have no size limit by default. To cap them, add a usage-limit deployment file to the data directory (`roster-tracker-instance-setting-usage-limits.json`).
-
-## Updating
-
-```bash
-cd roster-tracker
-git pull
-cd web && pnpm install && pnpm release && cd ..
-docker compose -f scripts/compose.yaml up -d --build
-```
-
-Database migrations run automatically on start. Take a backup before updating.
+Uploads have no size limit by default. To cap them, add a usage-limit deployment file to the data folder (`roster-tracker-instance-setting-usage-limits.json`).
 
 ## Starting over
 
 To wipe all data and get a fresh admin account:
 
 ```bash
-docker compose -f scripts/compose.yaml down
-sudo rm -rf /opt/roster-tracker/data/*
-docker compose -f scripts/compose.yaml up -d
+cd ~/roster-tracker
+docker compose down
+sudo rm -rf data
+docker compose up -d
 ```
 
 This deletes every member, note, roster day and upload.
+
+## Building on the server instead
+
+If you would rather build on the server, clone the repository there (with Node.js and pnpm installed) and use the build-from-source compose file:
+
+```bash
+cd web && pnpm install && pnpm release && cd ..
+docker compose -f scripts/compose.yaml up -d --build
+```
 
 ## Troubleshooting
 
 | Problem | Fix |
 | --- | --- |
-| Build fails with `pattern dist/*: no matching files found` | The web UI was not built. Run `cd web && pnpm release` before building the image. |
-| Build fails with `Pass VERSION ...` | Add `--build-arg VERSION=26.10` (Compose sets it from `ROSTER_VERSION`). |
-| `permission denied` on the data directory | Make sure the host directory exists; the entrypoint gives it to UID 10001. Under rootless Docker set `ROSTER_UID=0` and `ROSTER_GID=0`. |
+| `exec format error` when the container starts | The image was built for a different CPU. Rebuild with the right `PLATFORM` (step 1). |
+| `Set ROSTER_IMAGE in .env` | `.env` is missing or has no `ROSTER_IMAGE`; it must sit next to `docker-compose.yml`. |
+| `pull access denied` / `unauthorized` | The registry package is private: log in on the server (Option A, step 3) or make the package public. |
+| Build fails with `pattern dist/*: no matching files found` | The web UI was not built. `scripts/build-image.sh` does this; if you build by hand, run `cd web && pnpm release` first. |
+| `permission denied` on the data folder | Make sure it exists; the entrypoint gives it to UID 10001. Under rootless Docker set `ROSTER_UID=0` and `ROSTER_GID=0` in `.env`. |
 | Page loads but live updates stall behind a proxy | Disable proxy buffering for the app (see the Nginx example). |
 | Visitors who are not signed in see a sign-in page | The instance access mode was changed to private; the seeded instance is public. |
