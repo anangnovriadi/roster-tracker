@@ -1,0 +1,503 @@
+{
+  "auth": {
+    "admin-sign-in": "Log masuk pentadbir",
+    "admin-sign-in-tip": "Log masuk dengan kata laluan kekal tersedia untuk pentadbir.",
+    "back-to-sign-in": "Kembali ke log masuk",
+    "continue-with": "Teruskan dengan {{provider}}",
+    "explore-public-memos": "Terokai nota awam pada instans ini",
+    "new-password": "Kata laluan baharu",
+    "redirecting-to-provider": "Mengalihkan ke {{provider}}…",
+    "repeat-new-password": "Ulang kata laluan baharu",
+    "signin-unavailable-description": "Log masuk dengan kata laluan dimatikan dan tiada penyedia identiti dikonfigurasikan. Minta pentadbir anda mendayakan kaedah log masuk.",
+    "signin-unavailable-title": "Log masuk tidak tersedia",
+    "welcome-back": "Selamat kembali."
+  },
+  "calendar": {
+    "new-memo-on-day": "Nota atau laporan baharu pada hari ini",
+    "next-year": "Tahun depan",
+    "no-memos-on-day": "Tiada nota atau laporan pada hari ini",
+    "previous-year": "Tahun sebelumnya",
+    "select-month": "Pilih bulan",
+    "note-count_one": "{{count}} nota",
+    "note-count_other": "{{count}} nota"
+  },
+  "demo": {
+    "banner-description": "Silakan meneroka! Demo ini diset semula secara berkala.",
+    "banner-title": "Demo Roster Tracker",
+    "deploy-link": "Pasang Roster Tracker anda sendiri"
+  },
+  "attachment-details": {
+    "actions": {
+      "copied": "Koordinat disalin",
+      "copy-coordinates": "Salin koordinat",
+      "hide": "Sembunyikan butiran lampiran",
+      "hide-map": "Sembunyikan peta",
+      "show": "Tunjukkan butiran lampiran",
+      "show-map": "Tunjukkan peta"
+    },
+    "empty": "Tiada metadata tangkapan disimpan.",
+    "fields": {
+      "altitude": "Altitud",
+      "camera": "Kamera",
+      "captured": "Ditangkap",
+      "dimensions": "Dimensi",
+      "duration": "Tempoh",
+      "exposure": "Dedahan",
+      "file": "Fail",
+      "lens": "Kanta",
+      "location": "Koordinat",
+      "source-orientation": "Orientasi EXIF sumber",
+      "uploaded": "Dimuat naik"
+    },
+    "sections": {
+      "camera": "Kamera",
+      "capture": "Tangkapan",
+      "file": "Fail",
+      "location": "Lokasi",
+      "technical": "Butiran teknikal"
+    },
+    "timezone-unknown": "Zon waktu tidak diketahui",
+    "title": "Butiran"
+  },
+  "attachment-library": {
+    "actions": {
+      "open": "Buka",
+      "retry": "Cuba semula"
+    },
+    "empty": {
+      "all": "Belum ada lampiran.",
+      "documents": "Belum ada lampiran dokumen.",
+      "media": "Belum ada lampiran media."
+    },
+    "errors": {
+      "load": "Gagal memuatkan lampiran."
+    },
+    "labels": {
+      "live": "Live",
+      "live-photo": "Live Photo",
+      "memo": "Nota",
+      "not-linked": "Tidak dipautkan",
+      "unknown-date": "Tarikh tidak diketahui",
+      "unused": "Tidak digunakan"
+    },
+    "tabs": {
+      "documents": "Dokumen",
+      "media": "Media"
+    },
+    "unused": {
+      "confirm-description": "Ini akan membuang setiap fail yang dimuat naik yang tidak dipautkan kepada nota.",
+      "description": "Muat naik ini tidak pernah dilampirkan pada nota. Semak atau buangnya di sini.",
+      "title": "Muat naik tidak berpaut"
+    }
+  },
+  "common": {
+    "actions": "Tindakan",
+    "add": "Tambah",
+    "admin": "Pentadbir",
+    "all": "Semua",
+    "attachments": "Lampiran",
+    "avatar": "Avatar",
+    "basic": "Asas",
+    "calendar": "Kalendar",
+    "cancel": "Batal",
+    "close": "Tutup",
+    "collapse": "Runtuhkan",
+    "collapse-panel": "Runtuhkan panel",
+    "confirm": "Sahkan",
+    "copy": "Salin",
+    "create": "Cipta",
+    "created-at": "Dicipta pada",
+    "days": {
+      "fri": "Jum",
+      "mon": "Isn",
+      "sat": "Sab",
+      "sun": "Ahd",
+      "thu": "Kha",
+      "tue": "Sel",
+      "wed": "Rab"
+    },
+    "delete": "Padam",
+    "edit": "Sunting",
+    "email": "E-mel",
+    "expand": "Kembangkan",
+    "expand-panel": "Kembangkan panel",
+    "language": "Bahasa",
+    "last-updated-at": "Kali terakhir dikemas kini pada",
+    "learn-more": "Ketahui lebih lanjut",
+    "memo": "Nota",
+    "memos": "Nota",
+    "month-navigation": "Navigasi bulan",
+    "more": "Lagi",
+    "name": "Nama",
+    "next-month": "Bulan depan",
+    "or": "atau",
+    "password": "Kata laluan",
+    "previous-month": "Bulan sebelumnya",
+    "referenced-by": "Dirujuk oleh",
+    "referencing": "Merujuk",
+    "relations": "Hubungan",
+    "resize-panel": "Ubah saiz panel",
+    "resize-sidebar": "Ubah saiz bar sisi",
+    "restore": "Pulihkan",
+    "save": "Simpan",
+    "settings": "Tetapan",
+    "sign-in": "Log masuk",
+    "sign-in-to-memos": "Log masuk ke Roster Tracker",
+    "sign-out": "Log keluar",
+    "statistics": "Statistik",
+    "tags": "Tag",
+    "today": "Hari ini",
+    "tree-mode": "Tunjukkan sebagai pepohon",
+    "type": "Jenis",
+    "update": "Kemas kini",
+    "user": "Pengguna",
+    "username": "Nama pengguna",
+    "visibility": "Keterlihatan",
+    "view-all": "Lihat semua",
+    "yourself": "Diri anda",
+    "collapse-sidebar": "Tutup bar sisi",
+    "expand-sidebar": "Buka bar sisi",
+    "about": "Perihal"
+  },
+  "editor": {
+    "suggestions": "Cadangan",
+    "add-your-comment-here": "Tambah ulasan anda di sini...",
+    "any-thoughts": "Ada fikiran...",
+    "exit-focus-mode": "Keluar Mod Fokus",
+    "focus-mode": "Mod Fokus",
+    "comment": "Ulasan",
+    "formatting-toolbar": "Bar alat pemformatan",
+    "format": {
+      "heading": "Tajuk",
+      "paragraph": "Perenggan",
+      "heading-1": "Tajuk 1",
+      "heading-2": "Tajuk 2",
+      "heading-3": "Tajuk 3",
+      "bold": "Tebal",
+      "italic": "Condong",
+      "strikethrough": "Garis lorek",
+      "code-block": "Blok kod",
+      "bullet-list": "Senarai berbutir",
+      "ordered-list": "Senarai bernombor",
+      "task-list": "Senarai tugasan",
+      "link": "Pautan",
+      "more": "Lagi pemformatan"
+    },
+    "insert-menu": {
+      "add-attachment": "Tambah lampiran",
+      "image-upload-failed": "Sesetengah imej tidak dapat dimuat naik. Cuba semula atau simpan fail yang dimuat naik sebagai lampiran.",
+      "image-upload-stopped": "Muat naik imej berhenti {{completed}}/{{total}}",
+      "insert-image": "Sisipkan imej",
+      "keep-as-attachments": "Simpan sebagai lampiran",
+      "retry-image-upload": "Cuba semula",
+      "uploading-inline-image": "Memuat naik ke kandungan",
+      "uploading-images": "Memuat naik imej {{completed}}/{{total}}"
+    },
+    "new-memo": "Nota baharu",
+    "no-changes-detected": "Tiada perubahan dikesan",
+    "save": "Simpan",
+    "saved": "Disimpan",
+    "validation": {
+      "cannot-save": "Tidak dapat disimpan",
+      "content-required": "Kandungan, lampiran atau fail diperlukan",
+      "loading-content": "Memuatkan kandungan nota",
+      "resolve-image-uploads": "Selesaikan muat naik imej sebelum menyimpan",
+      "save-in-progress": "Sedang menyimpan",
+      "unsupported-attachment-image-url": "URL imej lampiran tidak disokong: {{url}}",
+      "wait-for-upload": "Tunggu sehingga muat naik selesai"
+    },
+    "audio-recorder": {
+      "attachment-label": "Rakaman audio",
+      "attachment-label-with-time": "Rakaman audio {{time}}",
+      "pause-recording": "Jeda rakaman audio",
+      "play-recording": "Main rakaman audio",
+      "transcribe": "Transkripsi",
+      "transcribe-empty": "Tiada pertuturan dikesan",
+      "transcribe-error": "Gagal mentranskripsi audio",
+      "transcribe-success": "Transkripsi ditambah",
+      "transcribing": "Mentranskripsi..."
+    }
+  },
+  "memo": {
+    "pinned": "Disematkan",
+    "parent-loading": "Memuatkan nota asal…",
+    "parent-load-error": "Tidak dapat memuatkan nota asal.",
+    "parent-unavailable": "Nota asal tidak tersedia",
+    "parent-unavailable-description": "Ia mungkin telah dipadam atau anda mungkin tidak lagi mempunyai akses.",
+    "moved": "Nota dialihkan",
+    "click-to-show-sensitive-content": "Klik untuk menunjukkan kandungan sensitif",
+    "comment": {
+      "self": "Ulasan",
+      "write-a-comment": "Tulis ulasan"
+    },
+    "count-memos-in-date": "{{count}} {{memos}} pada {{date}}",
+    "count-memos-updated-in-date": "{{count}} {{memos}} dikemas kini pada {{date}}",
+    "delete-confirm": "Adakah anda pasti mahu memadam nota ini?",
+    "delete-confirm-description": "Tindakan ini tidak boleh dibatalkan. Lampiran, pautan dan rujukan juga akan dibuang.",
+    "filters": {
+      "has-code": "hasCode",
+      "has-link": "hasLink",
+      "has-location": "hasLocation",
+      "has-task-list": "hasTaskList"
+    },
+    "connections": "Sambungan",
+    "load-more": "Muatkan lagi",
+    "new-badge": "Baharu",
+    "on-this-memo": "Pada nota ini",
+    "parent-memo": "Nota induk",
+    "show-less": "Tunjukkan kurang",
+    "show-more": "Tunjukkan lagi",
+    "task-actions": {
+      "check-all": "Tandakan semua tugasan",
+      "uncheck-all": "Nyahtanda semua tugasan",
+      "updated": "Tugasan dikemas kini"
+    },
+    "visibility": {
+      "private": "Peribadi",
+      "private-description": "Hanya anda",
+      "protected": "Dilindungi",
+      "protected-description": "Sesiapa yang log masuk",
+      "public": "Awam",
+      "public-description": "Sesiapa sahaja, walaupun tidak log masuk",
+      "space": "Ahli",
+      "space-description": "Semua orang dalam {{space}}"
+    }
+  },
+  "message": {
+    "archived-successfully": "Berjaya diarkibkan",
+    "copied": "Disalin",
+    "deleted-successfully": "Nota berjaya dipadam",
+    "description-is-required": "Penerangan diperlukan",
+    "fill-all": "Sila isi semua medan.",
+    "fill-all-required-fields": "Sila isi semua medan yang diperlukan",
+    "new-password-not-match": "Kata laluan baharu tidak sepadan.",
+    "no-data": "Tiada data ditemui.",
+    "password-changed": "Kata Laluan Ditukar",
+    "restored-successfully": "Berjaya dipulihkan",
+    "succeed-copy-content": "Kandungan berjaya disalin.",
+    "succeed-copy-link": "Pautan berjaya disalin.",
+    "update-succeed": "Kemas kini berjaya"
+  },
+  "resource": {
+    "delete-all-unused": "Padam semua yang tidak digunakan",
+    "delete-all-unused-confirm": "Adakah anda pasti mahu memadam semua sumber yang tidak digunakan? TINDAKAN INI TIDAK BOLEH DIBATALKAN",
+    "delete-all-unused-error": "Gagal memadam sumber yang tidak digunakan",
+    "delete-all-unused-success": "Sumber berjaya dipadam",
+    "fetching-data": "Mengambil data…"
+  },
+  "router": {
+    "back-to-top": "Kembali ke Atas"
+  },
+  "search": {
+    "clear-query": "Kosongkan pertanyaan",
+    "edit-query": "Sunting pertanyaan",
+    "invalid-expression": "Ungkapan carian tidak dapat digunakan",
+    "load-error": "Tidak dapat memuatkan nota",
+    "retry": "Cuba semula"
+  },
+  "setting": {
+    "access-token": {
+      "create-dialog": {
+        "create-access-token": "Cipta Token Akses",
+        "description": "Penerangan",
+        "duration-1m": "1 Bulan",
+        "duration-90d": "90 Hari",
+        "duration-never": "Tidak pernah",
+        "expiration": "Tamat tempoh",
+        "some-description": "Sedikit penerangan..."
+      },
+      "token": "Token"
+    },
+    "account": {
+      "attachment-storage": "Storan lampiran",
+      "usage-description": "Had yang ditetapkan oleh pentadbir instans ini. Ulasan dan nota yang diarkibkan dikira sebagai nota.",
+      "usage-file-size": "Fail terbesar",
+      "usage-memos": "Nota",
+      "usage-of": "{{usage}} daripada {{limit}}",
+      "usage-storage": "Storan",
+      "usage-title": "Had penggunaan",
+      "storage-usage-error": "Storan lampiran anda tidak tersedia.",
+      "change-password": "Tukar kata laluan",
+      "danger-area": "Zon bahaya",
+      "danger-area-description": "Tindakan akaun yang tidak boleh dibatalkan terdapat di sini. Semak dengan teliti sebelum meneruskan.",
+      "delete-account": "Padam akaun",
+      "delete-account-description": "Buang akaun ini dan semua akses berkaitan daripada instans ini secara kekal. Tindakan ini tidak boleh dibatalkan.",
+      "email-in-use": "E-mel ini sudah digunakan oleh akaun lain.",
+      "title": "Maklumat Akaun",
+      "update-information": "Kemas Kini Maklumat",
+      "username-required": "Nama pengguna diperlukan."
+    },
+    "member": {
+      "active": "Aktif",
+      "admin": "Pentadbir",
+      "archive-member": "Arkibkan ahli",
+      "archived": "Diarkibkan",
+      "archive-success": "{{username}} berjaya diarkibkan",
+      "archive-warning": "Adakah anda pasti mahu mengarkibkan {{username}}?",
+      "archive-warning-description": "Pengarkiban menyahdayakan akaun. Anda boleh memulihkan atau memadamnya kemudian.",
+      "delete-member": "Padam Ahli",
+      "delete-success": "{{username}} berjaya dipadam",
+      "delete-warning": "Adakah anda pasti mahu memadam {{username}}?",
+      "delete-warning-description": "TINDAKAN INI TIDAK BOLEH DIBATALKAN",
+      "label": "Ahli",
+      "list-title": "Senarai ahli",
+      "member-column": "Ahli",
+      "restore-success": "{{username}} berjaya dipulihkan",
+      "summary-column": "Ringkasan",
+      "user": "Pengguna",
+      "no-members-found": "Tiada ahli ditemui",
+      "full-name": "Nama Penuh",
+      "full-name-required": "Nama penuh diperlukan.",
+      "email-required": "E-mel diperlukan.",
+      "email-invalid": "Masukkan alamat e-mel yang sah.",
+      "email-taken": "E-mel ini sudah digunakan oleh ahli lain.",
+      "password-required": "Kata laluan diperlukan.",
+      "password-keep": "Biarkan kosong untuk mengekalkan kata laluan semasa",
+      "username-generated": "Dijana daripada nama penuh. Ahli log masuk dengan nama pengguna ini.",
+      "username-fixed": "Nama pengguna tidak boleh ditukar.",
+      "create-success": "{{name}} telah ditambah",
+      "update-success": "{{name}} telah dikemas kini"
+    },
+    "memo": {
+      "add-reaction": "Tambah reaksi"
+    },
+    "my-account": {
+      "label": "Akaun Saya"
+    },
+    "preference": {
+      "appearance-description": "Pilih rupa aplikasi dan bahasa yang digunakan untuk akaun anda.",
+      "appearance-title": "Penampilan",
+      "label": "Keutamaan",
+      "language-description": "Mengemas kini bahasa antara muka dengan serta-merta dan menyimpannya ke akaun anda.",
+      "save-media-metadata": "Simpan metadata media",
+      "save-media-metadata-description": "Untuk muat naik akan datang, simpan maklumat kamera, masa tangkapan, lokasi, dimensi imej dan butiran asas video yang tersedia. Sesiapa yang boleh melihat lampiran boleh menerima metadata ini. Lampiran sedia ada tidak berubah.",
+      "theme-description": "Menggunakan tema yang dipilih dengan serta-merta pada peranti ini.",
+      "theme": "Tema",
+      "uploads-privacy-description": "Kawal maklumat sensitif privasi yang dihantar bersama media yang dimuat naik.",
+      "uploads-privacy-title": "Muat naik & privasi"
+    },
+    "sso": {
+      "account": "Akaun",
+      "authorization-endpoint": "Titik akhir kebenaran",
+      "avatar-url": "URL avatar",
+      "basic-settings": "Tetapan asas",
+      "basic-settings-description": "Tetapkan identiti penyedia, nama paparan dan peraturan pengecam pilihan sebelum mengisi butiran OAuth.",
+      "client-id": "ID klien",
+      "client-secret": "Rahsia klien",
+      "client-secret-optional-description": "Biarkan kosong untuk mengekalkan rahsia klien sedia ada.",
+      "create-sso": "Cipta SSO",
+      "create-sso-description": "Cipta penyedia identiti baharu untuk log masuk tunggal yang diurus oleh pentadbir.",
+      "display-name": "Nama Paparan",
+      "identifier": "Pengecam",
+      "identifier-filter": "Penapis Pengecam",
+      "identifier-filter-description": "Regex pilihan untuk membenarkan atau menyekat pengecam luaran yang boleh log masuk.",
+      "field-mapping": "Pemetaan tuntutan",
+      "field-mapping-description": "Petakan medan profil hulu yang digunakan untuk mengenal pasti pengguna dan mengisi data profil terlebih dahulu.",
+      "field-mapping-identifier-description": "Digunakan sebagai pengecam luaran yang stabil semasa log masuk atau memautkan akaun.",
+      "oauth-configuration": "Konfigurasi OAuth",
+      "oauth-configuration-description": "Isi kelayakan klien OAuth dan titik akhir penyedia yang digunakan semasa log masuk.",
+      "provider-id": "ID Penyedia",
+      "provider-id-description": "Huruf kecil, nombor dan tanda sempang sahaja. Nilai ini menjadi sebahagian daripada nama sumber penyedia.",
+      "redirect-url": "URL Ubah Hala",
+      "redirect-url-description": "Daftarkan URL panggil balik ini dengan penyedia identiti anda supaya aliran kod kebenaran dapat diselesaikan.",
+      "scopes": "Skop",
+      "scopes-description": "Pisahkan skop dengan ruang. Kebanyakan penyedia hanya memerlukan set kecil seperti akses profil atau e-mel.",
+      "sso-created": "SSO {{name}} dicipta",
+      "sso-updated": "SSO {{name}} dikemas kini",
+      "template": "Templat",
+      "template-description": "Mulakan daripada pratetap penyedia, kemudian laraskan kelayakan dan titik akhir untuk penyewa anda.",
+      "token-endpoint": "Titik akhir token",
+      "update-sso": "Kemas Kini SSO",
+      "update-sso-description": "Semak konfigurasi penyedia, kemudian simpan medan yang perlu diubah.",
+      "user-endpoint": "Titik akhir pengguna"
+    },
+    "system": {
+      "customize-server": {
+        "description": "Penerangan",
+        "icon-url": "URL Ikon",
+        "title": "Sesuaikan Pelayan"
+      },
+      "server-name": "Nama Pelayan"
+    },
+    "webhook": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Nama yang mudah diingati",
+        "copy-secret": "Salin rahsia tandatangan",
+        "create-webhook": "Cipta webhook",
+        "edit-webhook": "Sunting webhook",
+        "generate-secret": "Jana",
+        "payload-url": "URL Payload",
+        "reveal-secret": "Dedahkan",
+        "signing-secret": "Rahsia Tandatangan",
+        "signing-secret-auto-note": "Rahsia tandatangan dijana secara automatik. Anda boleh mendedahkannya selepas mencipta.",
+        "signing-secret-configured": "Dikonfigurasikan",
+        "signing-secret-created-note": "Webhook dicipta. Salin rahsia tandatangan sekarang — anda juga boleh mendedahkannya kemudian melalui Sunting.",
+        "signing-secret-not-configured": "Tidak dikonfigurasikan",
+        "title": "Tajuk",
+        "url-example-post-receive": "https://example.com/postreceive"
+      }
+    },
+    "tags": {
+      "used-count": "{{count}} nota"
+    },
+    "resource-stats": {
+      "label": "Sumber",
+      "title": "Statistik Sumber",
+      "description": "Penggunaan sumber untuk instans ini.",
+      "database": {
+        "title": "Pangkalan data",
+        "driver": "Pemacu",
+        "size": "Saiz"
+      },
+      "local-storage": {
+        "title": "Storan Setempat",
+        "size": "Saiz direktori data"
+      },
+      "unknown": "Tidak diketahui",
+      "last-updated": "Kali terakhir dikemas kini {{ago}}",
+      "refresh": "Muat semula",
+      "load-error": "Gagal memuatkan statistik"
+    }
+  },
+  "space": {
+    "icon": {
+      "kind": "Jenis ikon",
+      "icons": "Ikon",
+      "emoji": "Emoji",
+      "search-icons": "Cari ikon…",
+      "search-emoji": "Cari atau tampal emoji…",
+      "no-results": "Tiada padanan",
+      "emoji-help": "Pilih emoji biasa atau tampal emoji anda sendiri.",
+      "reset": "Set semula kepada lalai",
+      "use-emoji": "Gunakan {{emoji}}"
+    }
+  },
+  "roster": {
+    "on-duty-today": "Bertugas hari ini",
+    "nobody-today": "Tiada yang bertugas hari ini",
+    "on-duty": "Bertugas",
+    "select-member": "Pilih ahli",
+    "add": "Tambah",
+    "already-assigned": "Sudah ada petugas pada hari itu. Buang petugas itu dahulu.",
+    "remove": "Buang {{name}} daripada roster",
+    "nobody-on-day": "Tiada yang bertugas pada hari ini",
+    "loading": "Memuatkan roster…",
+    "assign-mode": "Tetapkan untuk",
+    "per-day": "Setiap hari",
+    "per-week": "Setiap minggu",
+    "week-range": "Menggantikan seluruh minggu: {{range}}",
+    "add-week": "Tetapkan seminggu",
+    "this-week": "Roster minggu ini",
+    "week-replaced": "{{name}} bertugas sepanjang minggu",
+    "day-taken": "Hari ini sudah ada petugas. Buang dahulu, atau tetapkan untuk seminggu.",
+    "search": "Cari roster",
+    "search-placeholder": "Cari roster mengikut nama ahli…",
+    "search-hint": "Taip nama atau nama pengguna ahli untuk melihat hari tugasnya.",
+    "search-results": "Hasil roster",
+    "not-found": "Roster tidak ditemui",
+    "not-found-description": "Tiada ahli \"{{query}}\" dalam roster."
+  },
+  "about": {
+    "copyright": "© {{year}} {{company}}. Hak cipta terpelihara."
+  }
+}

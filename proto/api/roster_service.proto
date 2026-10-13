@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package memos.api;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api";
+
+// RosterService manages which member is on duty on which day.
+service RosterService {
+  // ListRosterAssignments lists the assignments between two dates, inclusive.
+  // Public, so signed-out visitors can see who is on duty.
+  rpc ListRosterAssignments(ListRosterAssignmentsRequest) returns (ListRosterAssignmentsResponse) {
+    option (google.api.http) = {get: "/api/roster-assignments"};
+  }
+
+  // CreateRosterAssignment puts a member on duty for a day.
+  // Requires the admin role. One member is on duty per day: fails with ALREADY_EXISTS when someone already is.
+  rpc CreateRosterAssignment(CreateRosterAssignmentRequest) returns (RosterAssignment) {
+    option (google.api.http) = {
+      post: "/api/roster-assignments"
+      body: "roster_assignment"
+    };
+    option (google.api.method_signature) = "roster_assignment";
+  }
+
+  // DeleteRosterAssignment removes a member from a day's roster.
+  // Requires the admin role.
+  rpc DeleteRosterAssignment(DeleteRosterAssignmentRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/{name=roster-assignments/*}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+// RosterAssignment puts one member on duty for one day.
+message RosterAssignment {
+  option (google.api.resource) = {
+    type: "memos.api/RosterAssignment"
+    pattern: "roster-assignments/{roster_assignment}"
+    singular: "rosterAssignment"
+    plural: "rosterAssignments"
+  };
+
+  // Identifier. The resource name of the assignment.
+  // Format: roster-assignments/{roster_assignment}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Required. The day on duty.
+  // Format: YYYY-MM-DD
+  string date = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The member on duty.
+  // Format: users/{user}
+  string user = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/User"}
+  ];
+
+  // Output only. The creation timestamp.
+  google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Request message for RosterService.ListRosterAssignments.
+message ListRosterAssignmentsRequest {
+  // Required. The first day to list.
+  // Format: YYYY-MM-DD
+  string start_date = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The last day to list. At most 366 days after start_date.
+  // Format: YYYY-MM-DD
+  string end_date = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for RosterService.ListRosterAssignments.
+message ListRosterAssignmentsResponse {
+  // The assignments, ordered by date.
+  repeated RosterAssignment roster_assignments = 1;
+}
+
+// Request message for RosterService.CreateRosterAssignment.
+message CreateRosterAssignmentRequest {
+  // Required. The assignment to create.
+  RosterAssignment roster_assignment = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for RosterService.DeleteRosterAssignment.
+message DeleteRosterAssignmentRequest {
+  // Required. The resource name of the assignment to delete.
+  // Format: roster-assignments/{roster_assignment}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/RosterAssignment"}
+  ];
+}

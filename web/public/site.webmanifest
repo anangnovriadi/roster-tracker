@@ -1,0 +1,14 @@
+{
+  "name": "Roster Tracker",
+  "short_name": "Roster Tracker",
+  "description": "Your own timeline for quick notes, private by default.",
+  "icons": [
+    { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "theme_color": "#fafafa",
+  "background_color": "#fafafa"
+}

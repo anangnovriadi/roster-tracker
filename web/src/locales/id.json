@@ -1,0 +1,503 @@
+{
+  "auth": {
+    "new-password": "Kata sandi baru",
+    "redirecting-to-provider": "Mengalihkan ke {{provider}}…",
+    "repeat-new-password": "Ulangi kata sandi baru",
+    "admin-sign-in": "Masuk administrator",
+    "admin-sign-in-tip": "Masuk dengan kata sandi tetap tersedia untuk administrator.",
+    "back-to-sign-in": "Kembali ke halaman masuk",
+    "continue-with": "Lanjutkan dengan {{provider}}",
+    "explore-public-memos": "Jelajahi catatan publik pada instance ini",
+    "signin-unavailable-description": "Masuk dengan kata sandi dimatikan dan tidak ada penyedia identitas yang dikonfigurasi. Minta administrator Anda untuk mengaktifkan metode masuk.",
+    "signin-unavailable-title": "Masuk tidak tersedia",
+    "welcome-back": "Selamat datang kembali."
+  },
+  "common": {
+    "add": "Tambah",
+    "admin": "Admin",
+    "all": "Semua",
+    "attachments": "Lampiran",
+    "avatar": "Avatar",
+    "basic": "Dasar",
+    "calendar": "Kalender",
+    "cancel": "Batal",
+    "close": "Tutup",
+    "collapse": "Kempiskan",
+    "confirm": "Konfirmasi",
+    "copy": "Salin",
+    "create": "Buat",
+    "created-at": "Dibuat pada",
+    "days": {
+      "fri": "Jum",
+      "mon": "Sen",
+      "sat": "Sab",
+      "sun": "Min",
+      "thu": "Kam",
+      "tue": "Sel",
+      "wed": "Rab"
+    },
+    "delete": "Hapus",
+    "edit": "Edit",
+    "email": "Email",
+    "expand": "Perluas",
+    "language": "Bahasa",
+    "last-updated-at": "Terakhir diperbarui pada",
+    "learn-more": "Pelajari lebih lanjut",
+    "memo": "Catatan",
+    "memos": "Catatan",
+    "more": "Lainnya",
+    "name": "Nama",
+    "or": "atau",
+    "password": "Kata sandi",
+    "referenced-by": "Dirujuk oleh",
+    "referencing": "Merujuk",
+    "relations": "Relasi",
+    "restore": "Pulihkan",
+    "save": "Simpan",
+    "settings": "Pengaturan",
+    "sign-in": "Masuk",
+    "sign-out": "Keluar",
+    "statistics": "Statistik",
+    "tags": "Tag",
+    "today": "Hari ini",
+    "tree-mode": "Mode pohon",
+    "type": "Tipe",
+    "update": "Perbarui",
+    "user": "Pengguna",
+    "username": "Nama pengguna",
+    "visibility": "Visibilitas",
+    "yourself": "Anda sendiri",
+    "actions": "Tindakan",
+    "collapse-panel": "Ciutkan panel",
+    "expand-panel": "Perluas panel",
+    "month-navigation": "Navigasi bulan",
+    "next-month": "Bulan berikutnya",
+    "previous-month": "Bulan sebelumnya",
+    "resize-panel": "Ubah ukuran panel",
+    "resize-sidebar": "Ubah ukuran sidebar",
+    "sign-in-to-memos": "Masuk ke Roster Tracker",
+    "view-all": "Lihat semua",
+    "collapse-sidebar": "Tutup sidebar",
+    "expand-sidebar": "Buka sidebar",
+    "about": "Tentang"
+  },
+  "editor": {
+    "suggestions": "Saran",
+    "add-your-comment-here": "Tambahkan komentar Anda di sini...",
+    "any-thoughts": "Punya pemikiran...",
+    "exit-focus-mode": "Keluar dari Mode Fokus",
+    "focus-mode": "Mode Fokus",
+    "no-changes-detected": "Tidak ada perubahan yang terdeteksi",
+    "save": "Simpan",
+    "insert-menu": {
+      "add-attachment": "Tambahkan lampiran",
+      "image-upload-failed": "Beberapa gambar tidak dapat diunggah. Coba lagi atau simpan file yang diunggah sebagai lampiran.",
+      "image-upload-stopped": "Unggahan gambar dihentikan {{completed}}/{{total}}",
+      "insert-image": "Sisipkan gambar",
+      "keep-as-attachments": "Simpan sebagai lampiran",
+      "retry-image-upload": "Coba lagi",
+      "uploading-inline-image": "Mengunggah ke konten",
+      "uploading-images": "Mengunggah gambar {{completed}}/{{total}}"
+    },
+    "audio-recorder": {
+      "attachment-label": "Rekaman audio",
+      "attachment-label-with-time": "Rekaman audio {{time}}",
+      "pause-recording": "Jeda rekaman audio",
+      "play-recording": "Putar rekaman audio",
+      "transcribe": "Transkripsi",
+      "transcribe-empty": "Tidak ada suara yang terdeteksi",
+      "transcribe-error": "Gagal mentranskripsikan audio",
+      "transcribe-success": "Transkripsi ditambahkan",
+      "transcribing": "Sedang mentranskripsikan..."
+    },
+    "format": {
+      "code-block": "Blok Kode",
+      "link": "Tautan",
+      "heading": "Judul",
+      "paragraph": "Paragraf",
+      "heading-1": "Judul 1",
+      "heading-2": "Judul 2",
+      "heading-3": "Judul 3",
+      "bold": "Tebal",
+      "italic": "Miring",
+      "strikethrough": "Garis tengah",
+      "bullet-list": "Daftar poin",
+      "ordered-list": "Daftar bernomor",
+      "task-list": "Daftar tugas",
+      "more": "Pemformatan lainnya"
+    },
+    "comment": "Komentar",
+    "formatting-toolbar": "Toolbar pemformatan",
+    "new-memo": "Catatan baru",
+    "saved": "Tersimpan",
+    "validation": {
+      "cannot-save": "Tidak dapat menyimpan",
+      "content-required": "Konten, lampiran, atau file diperlukan",
+      "loading-content": "Memuat konten catatan",
+      "resolve-image-uploads": "Selesaikan unggahan gambar sebelum menyimpan",
+      "save-in-progress": "Penyimpanan sedang berlangsung",
+      "unsupported-attachment-image-url": "URL gambar lampiran tidak didukung: {{url}}",
+      "wait-for-upload": "Tunggu hingga unggahan selesai"
+    }
+  },
+  "memo": {
+    "pinned": "Disematkan",
+    "click-to-show-sensitive-content": "Klik untuk menampilkan konten NSFW",
+    "comment": {
+      "self": "Komentar",
+      "write-a-comment": "Tulis komentar"
+    },
+    "count-memos-in-date": "{{count}} {{memos}} di {{date}}",
+    "delete-confirm": "Apakah Anda yakin ingin menghapus catatan ini? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
+    "delete-confirm-description": "Tindakan ini tidak dapat dibatalkan. Lampiran, tautan, dan referensi juga akan dihapus.",
+    "filters": {
+      "has-code": "Memiliki kode",
+      "has-link": "Memiliki tautan",
+      "has-location": "Memiliki lokasi",
+      "has-task-list": "Memiliki daftar tugas"
+    },
+    "load-more": "Muat lebih banyak",
+    "show-less": "Tampilkan lebih sedikit",
+    "show-more": "Tampilkan lebih banyak",
+    "visibility": {
+      "private": "Pribadi",
+      "protected": "Terlindungi",
+      "public": "Publik",
+      "private-description": "Hanya terlihat oleh Anda",
+      "protected-description": "Terlihat oleh pengguna yang masuk",
+      "public-description": "Terlihat oleh semua orang",
+      "space": "Anggota",
+      "space-description": "Semua di {{space}}"
+    },
+    "new-badge": "Baru",
+    "parent-loading": "Memuat catatan asli…",
+    "parent-load-error": "Tidak dapat memuat catatan asli.",
+    "parent-unavailable": "Catatan asli tidak tersedia",
+    "parent-unavailable-description": "Catatan tersebut mungkin telah dihapus atau Anda mungkin tidak lagi memiliki akses.",
+    "moved": "Catatan dipindahkan",
+    "count-memos-updated-in-date": "{{count}} {{memos}} diperbarui pada {{date}}",
+    "connections": "Koneksi",
+    "on-this-memo": "Pada catatan ini",
+    "parent-memo": "Catatan induk",
+    "task-actions": {
+      "check-all": "Centang semua tugas",
+      "uncheck-all": "Hapus centang semua tugas",
+      "updated": "Tugas diperbarui"
+    }
+  },
+  "message": {
+    "archived-successfully": "Berhasil diarsipkan",
+    "copied": "Disalin",
+    "deleted-successfully": "Berhasil dihapus",
+    "description-is-required": "Deskripsi wajib diisi",
+    "fill-all": "Harap isi semua kolom.",
+    "fill-all-required-fields": "Harap isi semua kolom wajib",
+    "new-password-not-match": "Kata sandi baru tidak cocok.",
+    "no-data": "Data tidak ditemukan.",
+    "password-changed": "Kata sandi diubah",
+    "restored-successfully": "Berhasil dipulihkan",
+    "succeed-copy-content": "Konten berhasil disalin.",
+    "succeed-copy-link": "Tautan berhasil disalin.",
+    "update-succeed": "Pembaruan berhasil"
+  },
+  "resource": {
+    "delete-all-unused": "Hapus semua yang tidak terpakai",
+    "delete-all-unused-confirm": "Apakah Anda yakin ingin menghapus semua sumber daya yang tidak terpakai? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
+    "delete-all-unused-error": "Gagal menghapus sumber daya yang tidak terpakai",
+    "delete-all-unused-success": "Sumber daya berhasil dihapus",
+    "fetching-data": "Mengambil data…"
+  },
+  "router": {
+    "back-to-top": "Kembali ke Atas"
+  },
+  "setting": {
+    "member": {
+      "admin": "Admin",
+      "archive-member": "Arsip anggota",
+      "archive-success": "{{username}} berhasil diarsipkan",
+      "archive-warning": "Apakah Anda yakin untuk mengarsipkan {{username}}?",
+      "archive-warning-description": "Mengarsipkan menonaktifkan akun. Anda dapat memulihkan atau menghapusnya nanti.",
+      "delete-member": "Hapus Anggota",
+      "delete-success": "{{username}} berhasil dihapus",
+      "delete-warning": "Apakah Anda yakin untuk menghapus {{username}}? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
+      "delete-warning-description": "TINDAKAN INI TIDAK DAPAT DIBATALKAN",
+      "restore-success": "{{username}} berhasil dipulihkan",
+      "user": "Pengguna",
+      "label": "Anggota",
+      "list-title": "Daftar Anggota",
+      "no-members-found": "Tidak ada anggota yang ditemukan",
+      "archived": "Diarsipkan",
+      "member-column": "Anggota",
+      "active": "Aktif",
+      "summary-column": "Ringkasan",
+      "full-name": "Nama Lengkap",
+      "full-name-required": "Nama lengkap wajib diisi.",
+      "email-required": "Email wajib diisi.",
+      "email-invalid": "Masukkan alamat email yang valid.",
+      "email-taken": "Email ini sudah dipakai member lain.",
+      "password-required": "Password wajib diisi.",
+      "password-keep": "Kosongkan jika tidak ingin mengganti password",
+      "username-generated": "Dibuat otomatis dari nama lengkap. Member login dengan username ini.",
+      "username-fixed": "Username tidak bisa diubah.",
+      "create-success": "{{name}} berhasil ditambahkan",
+      "update-success": "{{name}} berhasil diperbarui"
+    },
+    "my-account": {
+      "label": "Akun Saya"
+    },
+    "preference": {
+      "theme": "Tema",
+      "label": "Preferensi",
+      "appearance-description": "Pilih tampilan aplikasi dan bahasa yang digunakan untuk akun Anda.",
+      "appearance-title": "Tampilan",
+      "language-description": "Memperbarui bahasa antarmuka secara instan dan menyimpannya ke akun Anda.",
+      "save-media-metadata": "Menyimpan metadata media",
+      "save-media-metadata-description": "Untuk unggahan di masa mendatang, simpan kamera yang tersedia, waktu pengambilan gambar, lokasi, dimensi gambar, dan detail video dasar. Siapa pun yang dapat melihat lampiran dapat menerima metadata ini. Lampiran yang sudah ada tidak berubah.",
+      "theme-description": "Menerapkan tema yang dipilih secara instan pada perangkat ini.",
+      "uploads-privacy-description": "Mengontrol informasi sensitif privasi yang dikirimkan dengan media yang diunggah.",
+      "uploads-privacy-title": "Unggahan & privasi"
+    },
+    "sso": {
+      "authorization-endpoint": "Akhir Otorisasi",
+      "client-id": "ID Klien",
+      "client-secret": "Kunci Rahasia Klien",
+      "create-sso": "Buat SSO",
+      "display-name": "Nama Tampilan",
+      "identifier": "Pengenal",
+      "identifier-filter": "Filter Pengenal",
+      "redirect-url": "URL Pengalihan",
+      "scopes": "Lingkup",
+      "sso-created": "SSO {{name}} dibuat",
+      "sso-updated": "SSO {{name}} diperbarui",
+      "template": "Templat",
+      "token-endpoint": "Akhir Token",
+      "update-sso": "Perbarui SSO",
+      "user-endpoint": "Akhir Pengguna",
+      "account": "Akun",
+      "avatar-url": "URL Avatar",
+      "basic-settings": "Pengaturan dasar",
+      "basic-settings-description": "Tetapkan identitas penyedia, nama tampilan, dan aturan pengidentifikasi opsional sebelum mengisi detail OAuth.",
+      "client-secret-optional-description": "Biarkan kosong untuk menjaga agar rahasia klien yang ada tetap tidak berubah.",
+      "create-sso-description": "Buat penyedia identitas baru untuk single sign-on yang dikelola administrator.",
+      "identifier-filter-description": "Regex opsional yang digunakan untuk mengizinkan atau membatasi identitas eksternal mana yang dapat masuk.",
+      "field-mapping": "Pemetaan klaim",
+      "field-mapping-description": "Memetakan bidang profil hulu yang digunakan untuk mengidentifikasi pengguna dan mengisi data profil terlebih dahulu.",
+      "field-mapping-identifier-description": "Digunakan sebagai identitas eksternal tetap saat masuk atau menautkan akun.",
+      "oauth-configuration": "Konfigurasi OAuth",
+      "oauth-configuration-description": "Isi kredensial klien OAuth dan titik akhir penyedia yang digunakan selama masuk.",
+      "provider-id": "ID Penyedia",
+      "provider-id-description": "Hanya huruf kecil, angka, dan tanda hubung. Nilai ini menjadi bagian dari nama sumber daya penyedia.",
+      "redirect-url-description": "Daftarkan URL callback ini dengan penyedia identitas Anda agar alur kode otorisasi dapat diselesaikan.",
+      "scopes-description": "Pisahkan cakupan dengan spasi. Sebagian besar penyedia hanya membutuhkan sejumlah kecil cakupan seperti profil atau akses email.",
+      "template-description": "Mulai dari preset penyedia, lalu sesuaikan kredensial dan titik akhir untuk penyewa Anda.",
+      "update-sso-description": "Tinjau konfigurasi penyedia, lalu simpan bidang yang perlu diubah."
+    },
+    "system": {
+      "customize-server": {
+        "description": "Deskripsi",
+        "icon-url": "URL Ikon",
+        "title": "Sesuaikan Server"
+      },
+      "server-name": "Nama Server"
+    },
+    "access-token": {
+      "create-dialog": {
+        "create-access-token": "Buat Token Akses",
+        "description": "Deskripsi",
+        "duration-1m": "1 bulan",
+        "duration-never": "Tidak Pernah",
+        "expiration": "Kedaluwarsa",
+        "some-description": "Beberapa deskripsi...",
+        "duration-90d": "90 Hari"
+      },
+      "token": "Token"
+    },
+    "account": {
+      "change-password": "Ubah kata sandi",
+      "title": "Informasi Akun",
+      "update-information": "Perbarui Informasi",
+      "attachment-storage": "Penyimpanan objek saat ini",
+      "usage-description": "Batas yang ditetapkan admin instance ini. Komentar dan catatan yang diarsipkan ikut dihitung sebagai catatan.",
+      "usage-file-size": "Largest file",
+      "usage-memos": "Catatan",
+      "usage-of": "{{usage}} of {{limit}}",
+      "usage-storage": "Storage",
+      "usage-title": "Usage limits",
+      "storage-usage-error": "Penyimpanan lampiran Anda tidak tersedia.",
+      "danger-area": "Area berbahaya",
+      "danger-area-description": "Tindakan akun yang tidak dapat dibatalkan ada di sini. Tinjau dengan saksama sebelum melanjutkan.",
+      "delete-account": "Hapus akun",
+      "delete-account-description": "Hapus akun ini dan semua akses terkait dari instance ini secara permanen. Tindakan ini tidak dapat dibatalkan.",
+      "email-in-use": "Email ini sudah digunakan oleh akun lain.",
+      "username-required": "Username wajib diisi."
+    },
+    "memo": {
+      "add-reaction": "Tambahkan reaksi"
+    },
+    "webhook": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Nama yang mudah diingat",
+        "create-webhook": "Buat webhook",
+        "edit-webhook": "Edit webhook",
+        "payload-url": "URL Payload",
+        "title": "Judul",
+        "url-example-post-receive": "https://example.com/postreceive",
+        "copy-secret": "Salin rahasia penandatanganan",
+        "generate-secret": "Hasilkan",
+        "reveal-secret": "Ungkapkan",
+        "signing-secret": "Rahasia Penandatanganan",
+        "signing-secret-auto-note": "Rahasia penandatanganan dihasilkan secara otomatis. Anda dapat mengungkapkannya setelah membuatnya.",
+        "signing-secret-configured": "Terkonfigurasi",
+        "signing-secret-created-note": "Webhook dibuat. Salin rahasia penandatanganan sekarang — Anda juga dapat mengungkapkannya nanti dari Edit.",
+        "signing-secret-not-configured": "Tidak dikonfigurasi"
+      }
+    },
+    "tags": {
+      "used-count": "{{count}} catatan"
+    },
+    "resource-stats": {
+      "label": "Sumber Daya",
+      "database": {
+        "title": "Basis Data",
+        "driver": "Driver",
+        "size": "Ukuran"
+      },
+      "title": "Statistik Sumber Daya",
+      "description": "Penggunaan sumber daya untuk instance ini.",
+      "local-storage": {
+        "title": "Penyimpanan Lokal",
+        "size": "Ukuran direktori data"
+      },
+      "unknown": "Tidak diketahui",
+      "last-updated": "Terakhir diperbarui {{ago}}",
+      "refresh": "Segarkan",
+      "load-error": "Gagal memuat statistik"
+    }
+  },
+  "attachment-details": {
+    "fields": {
+      "file": "Berkas",
+      "altitude": "Ketinggian",
+      "camera": "Kamera",
+      "captured": "Ditangkap",
+      "dimensions": "Dimensi",
+      "duration": "Durasi",
+      "exposure": "Eksposur",
+      "lens": "Lensa",
+      "location": "Koordinat",
+      "source-orientation": "Orientasi Sumber EXIF",
+      "uploaded": "Diunggah"
+    },
+    "sections": {
+      "file": "Berkas",
+      "location": "Pilih Lokasi",
+      "camera": "Kamera",
+      "capture": "Tangkap",
+      "technical": "Detail Teknis"
+    },
+    "actions": {
+      "copied": "Koordinat disalin",
+      "copy-coordinates": "Salin koordinat",
+      "hide": "Sembunyikan detail lampiran",
+      "hide-map": "Sembunyikan peta",
+      "show": "Tampilkan detail lampiran",
+      "show-map": "Tampilkan peta"
+    },
+    "empty": "Tidak ada metadata tangkapan yang tersimpan.",
+    "timezone-unknown": "Zona waktu tidak diketahui",
+    "title": "Detail"
+  },
+  "attachment-library": {
+    "labels": {
+      "memo": "Catatan",
+      "live": "Langsung",
+      "live-photo": "Foto Langsung",
+      "not-linked": "Tidak terhubung",
+      "unknown-date": "Tanggal tidak diketahui",
+      "unused": "Tidak digunakan"
+    },
+    "tabs": {
+      "documents": "Dokumen",
+      "media": "Media"
+    },
+    "actions": {
+      "open": "Buka",
+      "retry": "Coba Lagi"
+    },
+    "empty": {
+      "all": "Belum ada lampiran.",
+      "documents": "Belum ada lampiran dokumen.",
+      "media": "Belum ada lampiran media."
+    },
+    "errors": {
+      "load": "Gagal memuat lampiran."
+    },
+    "unused": {
+      "confirm-description": "Ini menghapus semua file yang diunggah yang tidak terhubung ke catatan.",
+      "description": "Unggahan ini tidak pernah dilampirkan ke catatan. Tinjau atau hapus di sini.",
+      "title": "Unggahan yang tidak tertaut"
+    }
+  },
+  "calendar": {
+    "new-memo-on-day": "Catatan atau laporan baru pada hari ini",
+    "next-year": "Tahun depan",
+    "no-memos-on-day": "Tidak ada catatan atau laporan pada hari ini",
+    "previous-year": "Tahun sebelumnya",
+    "select-month": "Pilih bulan",
+    "note-count_one": "{{count}} catatan",
+    "note-count_other": "{{count}} catatan"
+  },
+  "demo": {
+    "banner-description": "Silakan jelajahi! Demo ini direset secara berkala.",
+    "banner-title": "Demo Roster Tracker",
+    "deploy-link": "Sebarkan Roster Tracker Anda sendiri"
+  },
+  "search": {
+    "clear-query": "Hapus kueri",
+    "edit-query": "Edit kueri",
+    "invalid-expression": "Ekspresi pencarian tidak dapat diterapkan",
+    "load-error": "Catatan tidak dapat dimuat",
+    "retry": "Coba lagi"
+  },
+  "space": {
+    "icon": {
+      "kind": "Jenis ikon",
+      "icons": "Ikon",
+      "emoji": "Emoji",
+      "search-icons": "Cari ikon…",
+      "search-emoji": "Cari atau tempel emoji…",
+      "no-results": "Tidak ada kecocokan",
+      "emoji-help": "Pilih emoji umum atau tempel emoji Anda sendiri.",
+      "reset": "Atur ulang ke default",
+      "use-emoji": "Gunakan {{emoji}}"
+    }
+  },
+  "roster": {
+    "on-duty-today": "Bertugas hari ini",
+    "nobody-today": "Tidak ada yang bertugas hari ini",
+    "on-duty": "Bertugas",
+    "select-member": "Pilih member",
+    "add": "Tambah",
+    "already-assigned": "Sudah ada petugas di hari itu. Hapus dulu petugasnya.",
+    "remove": "Hapus {{name}} dari roster",
+    "nobody-on-day": "Tidak ada yang bertugas di tanggal ini",
+    "loading": "Memuat roster…",
+    "assign-mode": "Atur untuk",
+    "per-day": "Per hari",
+    "per-week": "Per minggu",
+    "week-range": "Mengganti seluruh minggu: {{range}}",
+    "add-week": "Atur seminggu",
+    "this-week": "Roster minggu ini",
+    "week-replaced": "{{name}} bertugas sepanjang minggu",
+    "day-taken": "Hari ini sudah ada petugasnya. Hapus dulu, atau atur untuk seminggu.",
+    "search": "Cari roster",
+    "search-placeholder": "Cari roster berdasarkan nama member…",
+    "search-hint": "Ketik nama atau username member untuk melihat hari tugasnya.",
+    "search-results": "Hasil roster",
+    "not-found": "Roster tidak ditemukan",
+    "not-found-description": "Tidak ada member \"{{query}}\" di roster."
+  },
+  "about": {
+    "copyright": "© {{year}} {{company}}. Hak cipta dilindungi."
+  }
+}
