@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { User, User_Role } from "@/types/proto/api/user_service_pb";
-import { canManageNote } from "@/utils/user";
+import { canManageNote, canWriteNotes } from "@/utils/user";
 
 const user = (name: string, role: User_Role) => ({ name, role }) as User;
 
@@ -11,8 +11,11 @@ describe("canManageNote", () => {
     expect(canManageNote(note, user("users/alice", User_Role.USER))).toBe(true);
   });
 
-  it("allows an instance admin as superuser", () => {
-    expect(canManageNote(note, user("users/root", User_Role.ADMIN))).toBe(true);
+  it("denies an instance admin, who only reads notes", () => {
+    expect(canManageNote(note, user("users/root", User_Role.ADMIN))).toBe(false);
+    expect(canWriteNotes(user("users/root", User_Role.ADMIN))).toBe(false);
+    expect(canWriteNotes(user("users/bob", User_Role.USER))).toBe(true);
+    expect(canWriteNotes(undefined)).toBe(false);
   });
 
   it("denies other users and anonymous viewers", () => {

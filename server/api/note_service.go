@@ -30,9 +30,8 @@ func (s *APIService) CreateNote(ctx context.Context, request *apipb.CreateNoteRe
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	// Notes and reports are written by members; admins manage the instance and roster.
-	if user.Role == store.RoleAdmin {
-		return nil, status.Errorf(codes.PermissionDenied, "admins cannot create notes")
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
 	}
 	if err := s.throttleAndCharge(ratelimit.ScopeWriteUser, userKey(user.ID), 1); err != nil {
 		return nil, err
@@ -315,6 +314,9 @@ func (s *APIService) UpdateNote(ctx context.Context, request *apipb.UpdateNoteRe
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
+	}
 	if !access.CanManageNote(user, note) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
@@ -516,6 +518,9 @@ func (s *APIService) DeleteNote(ctx context.Context, request *apipb.DeleteNoteRe
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
+	}
 	if !access.CanManageNote(user, note) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
@@ -576,3 +581,12 @@ func (s *APIService) getContentLengthLimit(ctx context.Context) (int, error) {
 }
 
 // DispatchNoteCreatedWebhook dispatches webhook when note is created.
+
+// requireNoteWriter refuses every note, comment, reaction and attachment change from an
+// admin. Admins run the instance and the roster and only read notes; members write them.
+func requireNoteWriter(user *store.User) error {
+	if user != nil && user.Role == store.RoleAdmin {
+		return status.Error(codes.PermissionDenied, "admins have read-only access to notes")
+	}
+	return nil
+}

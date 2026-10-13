@@ -66,7 +66,7 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 		resp, err := next(ctx, req)
 
 		// Prevent browser caching of API responses to avoid stale data issues
-		// See: https://github.com/anangnovriadi/roster-tracker/issues/5470
+		// See: upstream issue #5470
 		if !isNilAnyResponse(resp) && resp.Header() != nil {
 			setAPIResponseNoStoreHeaders(resp.Header())
 		}

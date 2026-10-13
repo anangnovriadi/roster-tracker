@@ -37,6 +37,9 @@ func (s *APIService) CreateNoteComment(ctx context.Context, request *apipb.Creat
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
+	}
 	if err := s.throttleAndCharge(ratelimit.ScopeWriteUser, userKey(user.ID), 1); err != nil {
 		return nil, err
 	}

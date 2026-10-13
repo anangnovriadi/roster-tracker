@@ -51,7 +51,7 @@ func TestAnonymousNoteAccessFollowsInstanceAccessSetting(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestInstanceAdminIsSuperuserForNamedNoteOperations(t *testing.T) {
+func TestInstanceAdminReadsButCannotChangeNotes(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -100,46 +100,32 @@ func TestInstanceAdminIsSuperuserForNamedNoteOperations(t *testing.T) {
 	_, err = ts.Service.ListNotes(adminCtx, &apipb.ListNotesRequest{Filter: `space == "spaces/` + space.UID + `"`})
 	require.Equal(t, codes.NotFound, status.Code(err), "the Space feed stays membership-only")
 
-	// Named mutations: content, audience, placement, comments, and deletion.
+	// Admins only read notes: every named mutation is refused, even on notes they can read.
 	_, err = ts.Service.UpdateNote(otherCtx, &apipb.UpdateNoteRequest{
 		Note:       &apipb.Note{Name: private.Name, Content: "hijacked"},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
 	})
 	require.Equal(t, codes.PermissionDenied, status.Code(err))
-	updated, err := ts.Service.UpdateNote(adminCtx, &apipb.UpdateNoteRequest{
+	_, err = ts.Service.UpdateNote(adminCtx, &apipb.UpdateNoteRequest{
 		Note:       &apipb.Note{Name: private.Name, Content: "edited by admin"},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
 	})
-	require.NoError(t, err)
-	require.Equal(t, "edited by admin", updated.Content)
-	require.Equal(t, "users/"+owner.Username, updated.Creator, "authorship is unchanged")
-	_, err = ts.Service.UpdateNote(adminCtx, &apipb.UpdateNoteRequest{
-		Note:       &apipb.Note{Name: spaceNote.Name, Content: "edited without membership"},
-		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
-	})
-	require.NoError(t, err)
-	_, err = ts.Service.UpdateNote(adminCtx, &apipb.UpdateNoteRequest{
-		Note:       &apipb.Note{Name: private.Name, Visibility: apipb.Visibility_SPACE, Space: new("spaces/" + space.UID)},
-		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility", "space"}},
-	})
-	require.NoError(t, err, "an administrator places notes in a Space they are not a member of")
-	_, err = ts.Service.UpdateNote(adminCtx, &apipb.UpdateNoteRequest{
-		Note:       &apipb.Note{Name: private.Name, Space: new("spaces/does-not-exist")},
-		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"space"}},
-	})
-	require.Equal(t, codes.NotFound, status.Code(err), "structural validity still applies")
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
 	_, err = ts.Service.CreateNoteComment(adminCtx, &apipb.CreateNoteCommentRequest{
 		Parent:  spaceNote.Name,
 		Comment: &apipb.Note{Content: "admin comment"},
 	})
-	require.NoError(t, err, "participation does not require membership")
-
-	_, err = ts.Service.DeleteNote(otherCtx, &apipb.DeleteNoteRequest{Name: private.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	_, err = ts.Service.UpsertNoteReaction(adminCtx, &apipb.UpsertNoteReactionRequest{
+		Parent:   spaceNote.Name,
+		Reaction: &apipb.Reaction{ReactionType: "👍"},
+	})
 	require.Equal(t, codes.PermissionDenied, status.Code(err))
 	_, err = ts.Service.DeleteNote(adminCtx, &apipb.DeleteNoteRequest{Name: private.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	got, err = ts.Service.GetNote(ownerCtx, &apipb.GetNoteRequest{Name: private.Name})
 	require.NoError(t, err)
-	_, err = ts.Service.GetNote(ownerCtx, &apipb.GetNoteRequest{Name: private.Name})
-	require.Equal(t, codes.NotFound, status.Code(err))
+	require.Equal(t, "private note", got.Content, "the note is unchanged")
 
 	// An archived administrator holds no privilege. Another administrator
 	// must remain for the instance to allow the archive.
@@ -1299,7 +1285,7 @@ func TestGlobalFeedExcludesCommentsAndDeletesThemWithContext(t *testing.T) {
 }
 
 // TestCreateNoteWithCustomTimestamps tests that custom timestamps can be set when creating notes and comments.
-// This addresses issue #5483: https://github.com/anangnovriadi/roster-tracker/issues/5483
+// This addresses upstream issue #5483
 func TestCreateNoteWithCustomTimestamps(t *testing.T) {
 	ctx := context.Background()
 

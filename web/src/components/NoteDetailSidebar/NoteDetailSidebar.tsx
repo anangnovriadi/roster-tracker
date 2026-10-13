@@ -16,7 +16,7 @@ import { buildNotePath } from "@/router/routes";
 import { State } from "@/types/proto/api/common_pb";
 import { Note, type NoteRelation } from "@/types/proto/api/note_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { canManageNote } from "@/utils/user";
+import { canManageNote, canWriteNotes } from "@/utils/user";
 import NoteOutline from "./NoteOutline";
 
 interface Props {
@@ -88,7 +88,7 @@ const NoteDetailSidebar = ({
 
   const readonly = forceReadonly || !canManageNote(note, currentUser);
   const canEdit = !!onEdit && !readonly && note.state === State.NORMAL;
-  const canComment = !!onCommentCreate && !forceReadonly && !!currentUser && note.state === State.NORMAL;
+  const canComment = !!onCommentCreate && !forceReadonly && canWriteNotes(currentUser) && note.state === State.NORMAL;
 
   const headings = useMemo(() => extractHeadings(note.content), [note.content]);
   const { referenced } = useMemo(() => getRelationBuckets(note.relations, note.name), [note.relations, note.name]);

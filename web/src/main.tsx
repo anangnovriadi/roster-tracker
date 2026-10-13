@@ -8,6 +8,7 @@ import { RouterProvider } from "react-router-dom";
 import "./i18n";
 import "./index.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import PageLoader from "@/components/PageLoader";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { refreshAccessToken } from "@/connect";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
@@ -42,7 +43,6 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
 
   // Proactively refresh token on window focus to prevent 401 errors
   // Only enabled when user is authenticated
-  // Related: https://github.com/anangnovriadi/roster-tracker/issues/5589
   useTokenRefreshOnFocus(refreshAccessToken, !!currentUser);
 
   // Live refresh: listen for note changes via SSE and invalidate caches.
@@ -51,8 +51,9 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
   // Route loading and feed requests only need the verified identity and the
   // instance profile. Display-sensitive settings continue in the background;
   // PagedNoteList keeps note content hidden until privacy settings have settled.
+  // Signing in re-checks the identity too; show a spinner rather than a blank page while it does.
   if (!isIdentityInitialized || !isProfileInitialized) {
-    return null;
+    return <PageLoader className="min-h-dvh" />;
   }
 
   return <>{children}</>;

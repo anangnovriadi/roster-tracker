@@ -1,19 +1,13 @@
-import { create } from "@bufbuild/protobuf";
-import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
-import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
-import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
-import { rosterKeys } from "@/hooks/useRosterQueries";
 import { useDeleteUser, useListUsers } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
-import { State } from "@/types/proto/api/common_pb";
 import { User, User_Role } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateUserDialog from "../CreateUserDialog";
@@ -23,7 +17,6 @@ import SettingTable from "./SettingTable";
 
 const MemberSection = () => {
   const t = useTranslate();
-  const queryClient = useQueryClient();
   const currentUser = useCurrentUser();
   const { data: users = [], refetch: refetchUsers } = useListUsers();
   const deleteUserMutation = useDeleteUser();
@@ -32,7 +25,6 @@ const MemberSection = () => {
   const [editingUser, setEditingUser] = useState<User | undefined>();
   // The one admin account leads the list; members follow in the order they joined.
   const sortedUsers = useMemo(() => sortBy(users, [(user) => (user.role === User_Role.ADMIN ? 0 : 1), "id"]), [users]);
-  const [archiveTarget, setArchiveTarget] = useState<User | undefined>(undefined);
   const [deleteTarget, setDeleteTarget] = useState<User | undefined>(undefined);
 
   const stringifyUserRole = (role: User_Role) => (role === User_Role.ADMIN ? t("setting.member.admin") : t("setting.member.user"));
@@ -45,48 +37,6 @@ const MemberSection = () => {
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     editDialog.open();
-  };
-
-  const handleArchiveUserClick = (user: User) => {
-    setArchiveTarget(user);
-  };
-
-  const confirmArchiveUser = async () => {
-    if (!archiveTarget) return;
-    const username = archiveTarget.username;
-    try {
-      await userServiceClient.updateUser({
-        user: {
-          name: archiveTarget.name,
-          state: State.ARCHIVED,
-        },
-        updateMask: create(FieldMaskSchema, { paths: ["state"] }),
-      });
-      toast.success(t("setting.member.archive-success", { username }));
-      // The server takes an archived member off the roster from today on.
-      void queryClient.invalidateQueries({ queryKey: rosterKeys.all });
-      await refetchUsers();
-    } catch (error: unknown) {
-      handleError(error, toast.error, { context: "Archive user" });
-    }
-    setArchiveTarget(undefined);
-  };
-
-  const handleRestoreUserClick = async (user: User) => {
-    const { username } = user;
-    try {
-      await userServiceClient.updateUser({
-        user: {
-          name: user.name,
-          state: State.NORMAL,
-        },
-        updateMask: create(FieldMaskSchema, { paths: ["state"] }),
-      });
-      toast.success(t("setting.member.restore-success", { username }));
-      await refetchUsers();
-    } catch (error: unknown) {
-      handleError(error, toast.error, { context: "Restore user" });
-    }
   };
 
   const handleDeleteUserClick = (user: User) => {
@@ -154,11 +104,6 @@ const MemberSection = () => {
             render: (_, user: User) => stringifyUserRole(user.role),
           },
           {
-            key: "status",
-            header: t("setting.member.status-column"),
-            render: (_, user: User) => (user.state === State.ARCHIVED ? t("setting.member.archived") : t("setting.member.active")),
-          },
-          {
             key: "actions",
             header: "",
             className: "w-px text-right",
@@ -170,16 +115,9 @@ const MemberSection = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" sideOffset={2}>
                     <DropdownMenuItem onClick={() => handleEditUser(user)}>{t("common.update")}</DropdownMenuItem>
-                    {user.state === State.NORMAL ? (
-                      <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>{t("setting.member.archive-member")}</DropdownMenuItem>
-                    ) : (
-                      <>
-                        <DropdownMenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDeleteUserClick(user)} className="text-destructive focus:text-destructive">
-                          {t("setting.member.delete-member")}
-                        </DropdownMenuItem>
-                      </>
-                    )}
+                    <DropdownMenuItem onClick={() => handleDeleteUserClick(user)} className="text-destructive focus:text-destructive">
+                      {t("setting.member.delete-member")}
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ),
@@ -195,17 +133,6 @@ const MemberSection = () => {
 
       {/* Edit User Dialog */}
       <CreateUserDialog open={editDialog.isOpen} onOpenChange={editDialog.setOpen} user={editingUser} onSuccess={refetchUsers} />
-
-      <ConfirmDialog
-        open={!!archiveTarget}
-        onOpenChange={(open) => !open && setArchiveTarget(undefined)}
-        title={archiveTarget ? t("setting.member.archive-warning", { username: archiveTarget.username }) : ""}
-        description={archiveTarget ? t("setting.member.archive-warning-description") : ""}
-        confirmLabel={t("common.confirm")}
-        cancelLabel={t("common.cancel")}
-        onConfirm={confirmArchiveUser}
-        confirmVariant="default"
-      />
 
       <ConfirmDialog
         open={!!deleteTarget}

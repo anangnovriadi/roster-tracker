@@ -78,6 +78,9 @@ func (s *APIService) prepareAttachment(ctx context.Context, request *apipb.Creat
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
+	}
 
 	// Validate required fields
 	if request.Attachment == nil {
@@ -371,6 +374,9 @@ func (s *APIService) UpdateAttachment(ctx context.Context, request *apipb.Update
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
+	}
 	attachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get attachment: %v", err)
@@ -429,6 +435,9 @@ func (s *APIService) DeleteAttachment(ctx context.Context, request *apipb.Delete
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
+	}
 	attachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{
 		UID:       &attachmentUID,
 		CreatorID: &user.ID,
@@ -453,6 +462,9 @@ func (s *APIService) BatchDeleteAttachments(ctx context.Context, request *apipb.
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
 	}
 	if len(request.Names) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "attachment names are required")

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/common_pb";
 import type { Note } from "@/types/proto/api/note_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
+import { canWriteNotes } from "@/utils/user";
 import { formatReactionTooltip, hasReactedToNote, useReactionActions } from "./hooks";
 
 /**
@@ -40,7 +41,7 @@ const ReactionView = (props: Props) => {
   const { handleReactionClick } = useReactionActions({ note });
 
   // A member with a reaction can only take theirs back; one reaction per member per note.
-  const isClickable = Boolean(currentUser) && !readonly && (hasReaction || !hasReactedToNote(note, currentUser?.name));
+  const isClickable = canWriteNotes(currentUser) && !readonly && (hasReaction || !hasReactedToNote(note, currentUser?.name));
   const label = (
     <>
       <span className="text-sm leading-none">{reactionType}</span>

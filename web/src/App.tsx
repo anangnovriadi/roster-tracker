@@ -1,6 +1,7 @@
 import { DirectionProvider } from "@base-ui/react/direction-provider";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { Outlet, ScrollRestoration } from "react-router-dom";
+import PageLoader from "./components/PageLoader";
 import { useInstance } from "./contexts/InstanceContext";
 import { TimelineViewProvider } from "./contexts/ViewContext";
 import { useUserLocale } from "./hooks/useUserLocale";
@@ -52,7 +53,9 @@ const App = () => {
   return (
     <DirectionProvider direction={direction}>
       <TimelineViewProvider>
-        <Outlet />
+        <Suspense fallback={<PageLoader className="min-h-dvh" />}>
+          <Outlet />
+        </Suspense>
       </TimelineViewProvider>
       <ScrollRestoration />
     </DirectionProvider>

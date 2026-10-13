@@ -30,6 +30,9 @@ func (s *APIService) CreateNoteShare(ctx context.Context, request *apipb.CreateN
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
+	}
 	if err := s.throttleAndCharge(ratelimit.ScopeWriteUser, userKey(user.ID), 1); err != nil {
 		return nil, err
 	}
@@ -130,6 +133,9 @@ func (s *APIService) DeleteNoteShare(ctx context.Context, request *apipb.DeleteN
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
 	}
 
 	// name format: notes/{noteUID}/shares/{shareToken}

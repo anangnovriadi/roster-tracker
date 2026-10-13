@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { buildNotePath } from "@/router/routes";
 import type { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { canWriteNotes } from "@/utils/user";
 import NoteActionMenu from "../../NoteActionMenu";
 import { ReactionSelector } from "../../NoteReactionListView";
 import { hasReactedToNote } from "../../NoteReactionListView/hooks";
@@ -74,7 +75,7 @@ const NoteHeader: React.FC<NoteHeaderProps> = ({ timeDisplay = "relative", showC
 
       <div data-slot="note-header-actions" className="flex shrink-0 select-none flex-row items-center justify-end gap-1">
         {/* Comment straight from the card instead of opening the note through its time first. */}
-        {currentUser && !isArchived && !note.parent && !isNoteDetailPath(location.pathname, note.name) && (
+        {canWriteNotes(currentUser) && !isArchived && !note.parent && !isNoteDetailPath(location.pathname, note.name) && (
           <Tooltip>
             <TooltipTrigger
               render={
@@ -91,7 +92,7 @@ const NoteHeader: React.FC<NoteHeaderProps> = ({ timeDisplay = "relative", showC
             <TooltipContent>{t("note.comment.write-a-comment")}</TooltipContent>
           </Tooltip>
         )}
-        {currentUser && !isArchived && !hasReactedToNote(note, currentUser.name) && (
+        {canWriteNotes(currentUser) && !isArchived && !hasReactedToNote(note, currentUser.name) && (
           <ReactionSelector note={note} trigger={<Button variant="quiet" size="icon-sm" />} />
         )}
 

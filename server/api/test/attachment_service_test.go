@@ -325,7 +325,7 @@ func TestCreateAttachmentNotePermission(t *testing.T) {
 		require.Equal(t, noteIDFromName(ctx, t, ts, note.Name), *stored.NoteID)
 	})
 
-	t.Run("admin creates an admin-owned attachment linked to another user's note", func(t *testing.T) {
+	t.Run("admin cannot attach files to another user's note", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -343,7 +343,8 @@ func TestCreateAttachmentNotePermission(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		created, err := ts.Service.CreateAttachment(adminCtx, &apipb.CreateAttachmentRequest{
+		// Admins only read notes.
+		_, err = ts.Service.CreateAttachment(adminCtx, &apipb.CreateAttachmentRequest{
 			Attachment: &apipb.Attachment{
 				Filename: "admin.txt",
 				Type:     "text/plain",
@@ -351,27 +352,10 @@ func TestCreateAttachmentNotePermission(t *testing.T) {
 				Note:     &note.Name,
 			},
 		})
-		require.NoError(t, err, "an instance administrator is the superuser for named note operations")
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
 		attachments, err := ts.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &admin.ID})
 		require.NoError(t, err)
-		require.Len(t, attachments, 1, "the attachment stays owned by the administrator")
-		require.NotNil(t, attachments[0].NoteID)
-
-		// Removal deletes the attachment, so the note author cannot remove a
-		// file the administrator owns; the administrator can.
-		_, err = ts.Service.SetNoteAttachments(ownerCtx, &apipb.SetNoteAttachmentsRequest{
-			Name:        note.Name,
-			Attachments: []*apipb.Attachment{},
-		})
-		require.Equal(t, codes.PermissionDenied, status.Code(err))
-		_, err = ts.Service.SetNoteAttachments(adminCtx, &apipb.SetNoteAttachmentsRequest{
-			Name:        note.Name,
-			Attachments: []*apipb.Attachment{},
-		})
-		require.NoError(t, err)
-		attachments, err = ts.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &admin.ID})
-		require.NoError(t, err)
-		require.Empty(t, attachments, "removal deletes the bound attachment: %s", created.Name)
+		require.Empty(t, attachments)
 	})
 
 	t.Run("non-owner cannot create attachment directly linked to note", func(t *testing.T) {

@@ -58,6 +58,9 @@ func (s *APIService) UpsertNoteReaction(ctx context.Context, request *apipb.Upse
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
+	}
 	if err := s.throttleAndCharge(ratelimit.ScopeWriteUser, userKey(user.ID), 1); err != nil {
 		return nil, err
 	}
@@ -117,6 +120,9 @@ func (s *APIService) DeleteNoteReaction(ctx context.Context, request *apipb.Dele
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
 	}
 
 	noteUID, reactionID, err := ExtractNoteReactionIDFromName(request.Name)

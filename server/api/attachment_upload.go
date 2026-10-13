@@ -42,6 +42,9 @@ func (s *APIService) UploadAttachment(ctx context.Context, request *apipb.Upload
 	if err != nil {
 		return nil, err
 	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
+	}
 	if len(request.Data) > uploadChunkSize {
 		return nil, status.Errorf(codes.ResourceExhausted, "upload chunk exceeds the limit")
 	}

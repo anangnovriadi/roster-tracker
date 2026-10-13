@@ -71,9 +71,8 @@ func (s *APIService) ImportNotes(ctx context.Context, request *apipb.ImportNotes
 	if err != nil {
 		return nil, err
 	}
-	// Importing creates notes, which only members may do.
-	if user.Role == store.RoleAdmin {
-		return nil, status.Errorf(codes.PermissionDenied, "admins cannot create notes")
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
 	}
 	if len(request.Data) > uploadChunkSize {
 		return nil, status.Errorf(codes.ResourceExhausted, "upload chunk exceeds the limit")

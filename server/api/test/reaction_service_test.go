@@ -140,14 +140,12 @@ func TestUpsertNoteReactionRevalidatesSpaceParticipation(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// An application ADMIN is the superuser and participates without membership.
-	adminReaction, err := ts.Service.UpsertNoteReaction(adminCtx, &apipb.UpsertNoteReactionRequest{
+	// Admins only read notes and cannot react.
+	_, err = ts.Service.UpsertNoteReaction(adminCtx, &apipb.UpsertNoteReactionRequest{
 		Parent:   noteName,
 		Reaction: &apipb.Reaction{ReactionType: "🔥"},
 	})
-	require.NoError(t, err)
-	_, err = ts.Service.DeleteNoteReaction(adminCtx, &apipb.DeleteNoteReactionRequest{Name: adminReaction.Name})
-	require.NoError(t, err)
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
 
 	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: member.ID}, owner.ID))
 	_, err = ts.Service.DeleteNoteReaction(memberCtx, &apipb.DeleteNoteReactionRequest{Name: memberReaction.Name})
@@ -357,15 +355,15 @@ func TestDeleteNoteReaction(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, reaction)
 
-		// Application ADMIN is the superuser and may withdraw any reaction.
+		// Admins only read notes and cannot remove a member's reaction.
 		_, err = ts.Service.DeleteNoteReaction(hostCtx, &apipb.DeleteNoteReactionRequest{
 			Name: reaction.Name,
 		})
-		require.NoError(t, err)
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
 		noteID := parseNoteIDFromNameForTest(t, ts, note.Name)
 		remainingReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{NoteID: &noteID, CreatorID: &regularUser.ID})
 		require.NoError(t, err)
-		require.Nil(t, remainingReaction)
+		require.NotNil(t, remainingReaction)
 	})
 
 	t.Run("DeleteNoteReaction permission denied for non-owner", func(t *testing.T) {

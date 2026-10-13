@@ -21,6 +21,7 @@ import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { State } from "@/types/proto/api/common_pb";
 import type { Note } from "@/types/proto/api/note_service_pb";
 import { findNoteAnchorTarget } from "@/utils/markdown-manipulation";
+import { canWriteNotes } from "@/utils/user";
 
 const NoteSidebarRegistration = ({
   note,
@@ -160,7 +161,7 @@ const NoteDetail = () => {
 
   // A card's comment button lands here asking for the comment box; open it once per visit.
   const composedForRef = useRef("");
-  const shouldCompose = wantsCommentComposer(locationState) && !!currentUser && !isShareMode && note?.state === State.NORMAL;
+  const shouldCompose = wantsCommentComposer(locationState) && canWriteNotes(currentUser) && !isShareMode && note?.state === State.NORMAL;
   useEffect(() => {
     if (!shouldCompose || !note || composedForRef.current === location.key) return;
     if (!commentSectionRef.current) return;

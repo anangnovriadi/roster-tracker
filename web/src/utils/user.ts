@@ -5,9 +5,12 @@ export const isSuperUser = (user: User | undefined) => {
 };
 
 /**
- * Whether the user holds author-level authority over a note: its creator, or an
- * instance admin, who is the superuser for named note operations on the server.
+ * Whether the user may write notes at all: add notes, comment, react, and edit. Admins run
+ * the instance and the roster and only read notes; the server refuses their note writes.
  */
+export const canWriteNotes = (user: User | undefined): user is User => !!user && !isSuperUser(user);
+
+/** Whether the user holds author-level authority over a note: only its creator, and never an admin. */
 export const canManageNote = (note: { creator: string }, user: User | undefined): boolean => {
-  return !!user && (note.creator === user.name || !!isSuperUser(user));
+  return canWriteNotes(user) && note.creator === user.name;
 };

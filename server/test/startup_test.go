@@ -511,7 +511,8 @@ func TestStartupGatewayOmitsNullMessageFields(t *testing.T) {
 	inst := bootInstance(ctx, t, instanceOptions{instanceURL: "http://localhost"})
 
 	inst.createAdmin(t)
-	token := inst.signIn(t)
+	inst.createMember(t, inst.signIn(t))
+	token := inst.signInMember(t)
 
 	// A 1x1 GIF: small enough to inline, real enough for the type sniffing the
 	// attachment service runs on upload.

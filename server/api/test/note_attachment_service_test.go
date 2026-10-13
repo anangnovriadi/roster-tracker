@@ -81,12 +81,12 @@ func TestSetNoteAttachments(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, note)
 
-		// Application ADMIN is the superuser and manages any note's attachments.
+		// Admins only read notes, so they cannot change a note's attachments.
 		_, err = ts.Service.SetNoteAttachments(hostCtx, &apipb.SetNoteAttachmentsRequest{
 			Name:        note.Name,
 			Attachments: []*apipb.Attachment{},
 		})
-		require.NoError(t, err)
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
 	})
 
 	t.Run("SetNoteAttachments permission denied for non-owner", func(t *testing.T) {

@@ -83,12 +83,12 @@ func TestSetNoteRelations(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, note)
 
-		// Application ADMIN is the superuser and manages any note's relations.
+		// Admins only read notes, so they cannot change a note's relations.
 		_, err = ts.Service.SetNoteRelations(hostCtx, &apipb.SetNoteRelationsRequest{
 			Name:      note.Name,
 			Relations: []*apipb.NoteRelation{},
 		})
-		require.NoError(t, err)
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
 	})
 
 	t.Run("SetNoteRelations permission denied for non-owner", func(t *testing.T) {

@@ -21,6 +21,9 @@ func (s *APIService) SetNoteRelations(ctx context.Context, request *apipb.SetNot
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+	if err := requireNoteWriter(user); err != nil {
+		return nil, err
+	}
 	noteUID, err := ExtractNoteUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid note name: %v", err)

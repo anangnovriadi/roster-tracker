@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import AppSidebar, {
   MobileAppHeader,
@@ -10,6 +10,7 @@ import AppSidebar, {
   useSidebarWidth,
 } from "@/components/AppSidebar";
 import SidebarToggleButton from "@/components/AppSidebar/SidebarToggleButton";
+import PageLoader from "@/components/PageLoader";
 import { AppSidebarProvider, useAppSidebar } from "@/contexts/AppSidebarContext";
 import { GlobalNoteEditorProvider } from "@/contexts/GlobalNoteEditorContext";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -92,7 +93,12 @@ const RootLayoutContent = () => {
       >
         <MobileAppHeader />
         {profile.demo && <DemoBanner />}
-        <Outlet />
+        {/* Pages load on demand; keep the frame and show a spinner instead of an empty page.
+            Keyed by the top-level page so each page switch gets a fresh boundary: inside a router
+            transition React would otherwise keep showing the previous (possibly empty) content. */}
+        <Suspense key={location.pathname.split("/")[1] ?? ""} fallback={<PageLoader className="min-h-[60vh]" />}>
+          <Outlet />
+        </Suspense>
       </main>
       <QuickFindDialog />
     </div>
