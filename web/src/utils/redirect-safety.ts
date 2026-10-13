@@ -69,7 +69,6 @@ const PUBLIC_ROUTE_PREFIXES = [
   `${ROUTES.SHARED_NOTE}/`, // Shared note pages (share-link viewer)
   "/u/", // Legacy author links redirect to Home with a creator filter
   `${ROUTES.NOTE}/`, // Individual note pages (dynamic)
-  "/notes/", // Old note links, redirected to /notes/
 ] as const;
 
 /**

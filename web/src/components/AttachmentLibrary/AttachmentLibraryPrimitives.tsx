@@ -17,7 +17,6 @@ interface AttachmentMetadataLineProps {
 
 interface AttachmentSourceChipProps {
   noteName?: string;
-  unlinkedLabelKey?: "attachment-library.labels.not-linked" | "attachment-library.labels.unused";
 }
 
 interface AttachmentOpenButtonProps {
@@ -68,17 +67,14 @@ export const AttachmentMetadataLine = ({ className, items }: AttachmentMetadataL
   );
 };
 
-export const AttachmentSourceChip = ({
-  noteName,
-  unlinkedLabelKey = "attachment-library.labels.not-linked",
-}: AttachmentSourceChipProps) => {
+export const AttachmentSourceChip = ({ noteName }: AttachmentSourceChipProps) => {
   const location = useLocation();
   const t = useTranslate();
 
   if (!noteName) {
     return (
       <Badge variant="warning" shape="pill" className="px-1.5 py-0.5 text-[11px]">
-        {t(unlinkedLabelKey)}
+        {t("attachment-library.labels.not-linked")}
       </Badge>
     );
   }

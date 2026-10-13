@@ -9,7 +9,6 @@ import {
   MenuIcon,
   PaperclipIcon,
   SearchIcon,
-  Trash2Icon,
   UserRoundIcon,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -92,8 +91,7 @@ const CollectionSidebarContent = ({
 
 const AttachmentsSidebarContent = () => {
   const t = useTranslate();
-  const currentUser = useCurrentUser();
-  const { noteFilter, creatorUsername } = useSpaceContext();
+  const { noteFilter } = useSpaceContext();
   const { attachmentSection, setAttachmentSection, setMobileOpen } = useAppSidebar();
   const { isComplete, stats } = useAttachmentLibraryStats(noteFilter);
   const total = stats.media + stats.documents;
@@ -107,15 +105,6 @@ const AttachmentsSidebarContent = () => {
       count: isComplete ? stats.documents : undefined,
     },
   ];
-  // Unlinked uploads belong to their uploader, so "Unused" only shows on your own collection.
-  if (!creatorUsername || creatorUsername === currentUser?.username) {
-    rows.push({
-      value: "unused",
-      icon: Trash2Icon,
-      label: t("attachment-library.labels.unused"),
-      count: isComplete ? stats.unused : undefined,
-    });
-  }
   return (
     <SidebarSection label={t("common.attachments")}>
       {rows.map((row) => (
@@ -142,8 +131,8 @@ const SettingsSidebarContent = () => {
   const { setMobileOpen } = useAppSidebar();
   const isHost = user?.role === User_Role.ADMIN;
   const currentSection = location.hash.slice(1) || DEFAULT_SETTING_SECTION;
-  const basic = SETTINGS_SECTIONS.filter((section) => section.scope === "basic");
-  const admin = SETTINGS_SECTIONS.filter((section) => section.scope === "admin");
+  // One menu for every section; admin-only sections join it for admins.
+  const sections = SETTINGS_SECTIONS.filter((section) => section.scope === "basic" || isHost);
   const renderSections = (sections: typeof SETTINGS_SECTIONS) =>
     sections.map((section) => (
       <Link
@@ -158,8 +147,7 @@ const SettingsSidebarContent = () => {
     ));
   return (
     <div className={SIDEBAR_SECTION_STACK_CLASSES}>
-      <SidebarSection label={t("common.basic")}>{renderSections(basic)}</SidebarSection>
-      {isHost && <SidebarSection label={t("common.admin")}>{renderSections(admin)}</SidebarSection>}
+      <SidebarSection label={t("common.menu")}>{renderSections(sections)}</SidebarSection>
     </div>
   );
 };

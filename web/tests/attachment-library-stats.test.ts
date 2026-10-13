@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { createElement, type PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { buildAttachmentLibraryStats, useAttachmentLibraryStats, useUnusedAttachmentLibrary } from "@/hooks/useAttachmentLibrary";
+import { buildAttachmentLibraryStats, useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
 import {
   type Attachment,
   AttachmentSchema,
@@ -24,7 +24,7 @@ const attachment = (name: string, type: string, note?: string): Attachment =>
 describe("buildAttachmentLibraryStats", () => {
   beforeEach(() => clients.listAttachments.mockReset());
 
-  it("counts linked attachment types without expanding live-photo pairs", () => {
+  it("counts linked attachment types without expanding live-photo pairs or unlinked uploads", () => {
     const still = attachment("live.jpg", "image/jpeg", "notes/one");
     still.motionMedia = create(MotionMediaSchema, {
       family: MotionMediaFamily.APPLE_LIVE_PHOTO,
@@ -48,7 +48,6 @@ describe("buildAttachmentLibraryStats", () => {
         attachment("unused.png", "image/png"),
       ]),
     ).toEqual({
-      unused: 1,
       media: 2,
       // Audio has no section of its own, so it counts as a document.
       documents: 2,
@@ -71,37 +70,8 @@ describe("buildAttachmentLibraryStats", () => {
     const { result } = renderHook(() => useAttachmentLibraryStats(filter), { wrapper });
 
     await waitFor(() => expect(result.current.isComplete).toBe(true));
-    expect(result.current.stats).toEqual({ media: 1, documents: 0, unused: 1 });
+    expect(result.current.stats).toEqual({ media: 1, documents: 0 });
     expect(clients.listAttachments).toHaveBeenCalledTimes(2);
     expect(clients.listAttachments.mock.calls.map(([request]) => request.filter)).toEqual([filter, filter]);
-  });
-
-  it("uses only the unused predicate in the All collection", async () => {
-    clients.listAttachments.mockResolvedValue({ attachments: [], nextPageToken: "" });
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    const wrapper = ({ children }: PropsWithChildren) => createElement(QueryClientProvider, { client: queryClient }, children);
-    const { result } = renderHook(() => useUnusedAttachmentLibrary("en", undefined), { wrapper });
-
-    await waitFor(() => expect(result.current.isComplete).toBe(true));
-    expect(clients.listAttachments).toHaveBeenCalledWith(
-      expect.objectContaining({
-        filter: "(note_id == null)",
-      }),
-    );
-  });
-
-  it("combines an explicit unassigned filter with the unused attachment predicate", async () => {
-    clients.listAttachments.mockResolvedValue({ attachments: [], nextPageToken: "" });
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    const wrapper = ({ children }: PropsWithChildren) => createElement(QueryClientProvider, { client: queryClient }, children);
-    const filter = "space == null";
-    const { result } = renderHook(() => useUnusedAttachmentLibrary("en", filter), { wrapper });
-
-    await waitFor(() => expect(result.current.isComplete).toBe(true));
-    expect(clients.listAttachments).toHaveBeenCalledWith(
-      expect.objectContaining({
-        filter: "(note_id == null) && (space == null)",
-      }),
-    );
   });
 });

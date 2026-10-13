@@ -154,7 +154,7 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
             today={today}
             counts={statistics.activityStats}
             model={model}
-            pending={isLoading}
+            pending={isLoading || !isUserSettingsInitialized}
             selectedDate={activeDate}
             showRows={md}
             showAuthors={showAuthors}

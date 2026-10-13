@@ -18,7 +18,6 @@
     "all": "Semua",
     "attachments": "Lampiran",
     "avatar": "Avatar",
-    "basic": "Dasar",
     "calendar": "Kalender",
     "cancel": "Batal",
     "close": "Tutup",
@@ -43,12 +42,15 @@
     "language": "Bahasa",
     "last-updated-at": "Terakhir diperbarui pada",
     "learn-more": "Pelajari lebih lanjut",
+    "menu": "Menu",
     "note": "Catatan",
     "notes": "Catatan",
     "more": "Lainnya",
     "name": "Nama",
     "or": "atau",
     "password": "Kata sandi",
+    "hide-password": "Sembunyikan kata sandi",
+    "show-password": "Tampilkan kata sandi",
     "referenced-by": "Dirujuk oleh",
     "referencing": "Merujuk",
     "relations": "Relasi",
@@ -65,7 +67,7 @@
     "update": "Perbarui",
     "user": "Pengguna",
     "username": "Nama pengguna",
-    "username-or-email": "Nama pengguna atau email",
+    "username-or-email": "Nama pengguna atau Email",
     "visibility": "Visibilitas",
     "yourself": "Anda sendiri",
     "actions": "Tindakan",
@@ -202,10 +204,6 @@
     "update-succeed": "Pembaruan berhasil"
   },
   "resource": {
-    "delete-all-unused": "Hapus semua yang tidak terpakai",
-    "delete-all-unused-confirm": "Apakah Anda yakin ingin menghapus semua sumber daya yang tidak terpakai? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
-    "delete-all-unused-error": "Gagal menghapus sumber daya yang tidak terpakai",
-    "delete-all-unused-success": "Sumber daya berhasil dihapus",
     "fetching-data": "Mengambil data…"
   },
   "router": {
@@ -414,8 +412,7 @@
       "live": "Langsung",
       "live-photo": "Foto Langsung",
       "not-linked": "Tidak terhubung",
-      "unknown-date": "Tanggal tidak diketahui",
-      "unused": "Tidak digunakan"
+      "unknown-date": "Tanggal tidak diketahui"
     },
     "tabs": {
       "documents": "Dokumen",
@@ -432,14 +429,10 @@
     },
     "errors": {
       "load": "Gagal memuat lampiran."
-    },
-    "unused": {
-      "confirm-description": "Ini menghapus semua file yang diunggah yang tidak terhubung ke catatan.",
-      "description": "Unggahan ini tidak pernah dilampirkan ke catatan. Tinjau atau hapus di sini.",
-      "title": "Unggahan yang tidak tertaut"
     }
   },
   "calendar": {
+    "loading": "Memuat kalender…",
     "new-note-on-day": "Catatan atau laporan baru pada hari ini",
     "next-year": "Tahun depan",
     "no-notes-on-day": "Tidak ada catatan atau laporan pada hari ini",

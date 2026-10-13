@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import { useEffect, useMemo } from "react";
 import { getAttachmentMetadata, isImageAttachment, isVideoAttachment } from "@/components/NoteMetadata/Attachment/attachmentHelpers";
 import { useInfiniteAttachments } from "@/hooks/useAttachmentQueries";
-import { combineCELFilters } from "@/lib/cel-filter";
 import type { Attachment, ListAttachmentsRequest } from "@/types/proto/api/attachment_service_pb";
 import { isMotionAttachment } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
@@ -12,7 +11,6 @@ import { type AttachmentVisualItem, buildAttachmentVisualItems, countLogicalAtta
 export type AttachmentLibraryTab = "media" | "documents";
 
 export interface AttachmentLibraryStats {
-  unused: number;
   media: number;
   documents: number;
 }
@@ -50,11 +48,6 @@ const COMPLETE_ATTACHMENT_LIBRARY_REQUEST = {
   pageSize: 1000,
   orderBy: "create_time desc",
 };
-const UNUSED_ATTACHMENT_LIBRARY_REQUEST = {
-  filter: "note_id == null",
-  pageSize: 1000,
-  orderBy: "create_time desc",
-};
 
 const useCompleteAttachments = (request: Partial<ListAttachmentsRequest>, enabled = true) => {
   const query = useInfiniteAttachments(request, { enabled });
@@ -83,7 +76,6 @@ export const buildAttachmentLibraryStats = (attachments: Attachment[]): Attachme
   const visualAttachments = linkedAttachments.filter(isVisualAttachment);
 
   return {
-    unused: attachments.length - linkedAttachments.length,
     media: countLogicalAttachmentItems(visualAttachments),
     // Audio files have no section of their own, so they are listed with documents.
     documents: linkedAttachments.filter((attachment) => !isVisualAttachment(attachment)).length,
@@ -176,11 +168,6 @@ export function useAttachmentLibrary(locale: string, filter?: string) {
     [attachments],
   );
 
-  const unusedAttachments = useMemo(
-    () => attachments.filter((attachment) => !isLinkedAttachment(attachment)).sort((a, b) => sortByNewest(toCreatedAt(a), toCreatedAt(b))),
-    [attachments],
-  );
-
   const mediaItems = useMemo(
     () =>
       buildAttachmentVisualItems(linkedAttachments.filter(isVisualAttachment))
@@ -195,11 +182,6 @@ export function useAttachmentLibrary(locale: string, filter?: string) {
     [linkedAttachments, locale],
   );
 
-  const unusedItems = useMemo(
-    () => unusedAttachments.map((attachment) => toLibraryListItem(attachment, locale)),
-    [unusedAttachments, locale],
-  );
-
   const mediaGroups = useMemo(
     () => groupMediaByMonth(mediaItems, locale, t("attachment-library.labels.unknown-date")),
     [locale, mediaItems, t],
@@ -208,11 +190,10 @@ export function useAttachmentLibrary(locale: string, filter?: string) {
 
   const stats = useMemo<AttachmentLibraryStats>(
     () => ({
-      unused: unusedAttachments.length,
       media: mediaItems.length,
       documents: documentItems.length,
     }),
-    [documentItems.length, mediaItems.length, unusedAttachments.length],
+    [documentItems.length, mediaItems.length],
   );
 
   return {
@@ -222,7 +203,6 @@ export function useAttachmentLibrary(locale: string, filter?: string) {
     mediaItems,
     mediaPreviewItems,
     documentItems,
-    unusedItems,
     stats,
   };
 }
@@ -233,21 +213,4 @@ export function useAttachmentLibraryStats(filter?: string) {
   const stats = useMemo(() => buildAttachmentLibraryStats(attachments), [attachments]);
 
   return { ...query, stats };
-}
-
-export function useUnusedAttachmentLibrary(locale: string, filter?: string, enabled = true) {
-  const query = useCompleteAttachments(
-    { ...UNUSED_ATTACHMENT_LIBRARY_REQUEST, filter: combineCELFilters(UNUSED_ATTACHMENT_LIBRARY_REQUEST.filter, filter) },
-    enabled,
-  );
-  const attachments = useMemo(() => (query.data?.pages ?? []).flatMap((page) => page.attachments), [query.data?.pages]);
-  const unusedItems = useMemo(
-    () => attachments.map((attachment) => toLibraryListItem(attachment, locale)).sort((a, b) => sortByNewest(a.createdAt, b.createdAt)),
-    [attachments, locale],
-  );
-
-  return {
-    ...query,
-    unusedItems,
-  };
 }

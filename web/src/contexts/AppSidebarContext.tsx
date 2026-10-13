@@ -4,7 +4,7 @@ import type { NoteParentStatus } from "@/components/NoteParentPlaceholder";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import type { Note } from "@/types/proto/api/note_service_pb";
 
-export type AttachmentSection = "all" | "media" | "documents" | "unused";
+export type AttachmentSection = "all" | "media" | "documents";
 export type InboxFilter = "all" | "unread" | "archived";
 
 export interface NoteDetailSidebarDescriptor {

@@ -1,74 +1,26 @@
-import { create } from "@bufbuild/protobuf";
-import { LoaderCircleIcon, Trash2Icon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
+import { LoaderCircleIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 import {
   AttachmentDocumentRows,
   AttachmentLibraryEmptyState,
   AttachmentLibraryErrorState,
   AttachmentLibrarySkeletonGrid,
   AttachmentMediaGrid,
-  AttachmentUnusedRows,
 } from "@/components/AttachmentLibrary";
-import ConfirmDialog from "@/components/ConfirmDialog";
 import PreviewImageDialog from "@/components/PreviewImageDialog";
 import { Button } from "@/components/ui/button";
-import { attachmentServiceClient } from "@/connect";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
-import { useAttachmentLibrary, useUnusedAttachmentLibrary } from "@/hooks/useAttachmentLibrary";
-import { useBatchDeleteAttachments } from "@/hooks/useAttachmentQueries";
-import useCurrentUser from "@/hooks/useCurrentUser";
-import useDialog from "@/hooks/useDialog";
+import { useAttachmentLibrary } from "@/hooks/useAttachmentLibrary";
 import { useUsersByNames } from "@/hooks/useUserQueries";
 import i18n from "@/i18n";
-import { combineCELFilters } from "@/lib/cel-filter";
-import { handleError } from "@/lib/error";
-import { ListAttachmentsRequestSchema } from "@/types/proto/api/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
-
-const UNUSED_PAGE_SIZE = 1000;
-const BATCH_DELETE_SIZE = 100;
-
-const chunkNames = (names: string[], size: number) => {
-  const chunks: string[][] = [];
-
-  for (let index = 0; index < names.length; index += size) {
-    chunks.push(names.slice(index, index + size));
-  }
-
-  return chunks;
-};
-
-const listUnusedAttachmentNames = async (filter: string | undefined) => {
-  const names: string[] = [];
-  let pageToken = "";
-
-  do {
-    const response = await attachmentServiceClient.listAttachments(
-      create(ListAttachmentsRequestSchema, {
-        filter: combineCELFilters("note_id == null", filter),
-        pageSize: UNUSED_PAGE_SIZE,
-        pageToken,
-      }),
-    );
-
-    names.push(...response.attachments.map((attachment) => attachment.name));
-    pageToken = response.nextPageToken;
-  } while (pageToken);
-
-  return names;
-};
 
 const Attachments = () => {
   const t = useTranslate();
-  const currentUser = useCurrentUser();
-  const deleteUnusedAttachmentsDialog = useDialog();
-  const { attachmentSection, setAttachmentSection } = useAppSidebar();
-  const { noteFilter, creatorUsername } = useSpaceContext();
-  const canShowUnused = !creatorUsername || creatorUsername === currentUser?.username;
+  const { attachmentSection } = useAppSidebar();
+  const { noteFilter } = useSpaceContext();
   const [previewState, setPreviewState] = useState({ open: false, initialIndex: 0 });
-  const { mutateAsync: batchDeleteAttachments, isPending: isDeletingUnused } = useBatchDeleteAttachments();
   const {
     documentItems,
     error,
@@ -83,14 +35,6 @@ const Attachments = () => {
     refetch,
     stats,
   } = useAttachmentLibrary(i18n.language, noteFilter);
-  const {
-    error: unusedError,
-    isComplete: unusedIsComplete,
-    isError: unusedIsError,
-    isLoading: unusedIsLoading,
-    refetch: refetchUnused,
-    unusedItems: completeUnusedItems,
-  } = useUnusedAttachmentLibrary(i18n.language, noteFilter, attachmentSection === "unused" && canShowUnused);
   const creatorNames = useMemo(
     () =>
       Array.from(
@@ -98,84 +42,19 @@ const Attachments = () => {
           [
             ...mediaGroups.flatMap((group) => group.items.map((item) => item.primaryAttachment.creator)),
             ...documentItems.map((item) => item.attachment.creator),
-            ...completeUnusedItems.map((item) => item.attachment.creator),
           ].filter(Boolean),
         ),
       ),
-    [mediaGroups, documentItems, completeUnusedItems],
+    [mediaGroups, documentItems],
   );
   const { data: creators } = useUsersByNames(creatorNames);
-
-  useEffect(() => {
-    if (!canShowUnused && attachmentSection === "unused") {
-      setAttachmentSection("all");
-    }
-  }, [attachmentSection, canShowUnused, setAttachmentSection]);
 
   const handlePreview = (itemId: string) => {
     const initialIndex = mediaPreviewItems.findIndex((item) => item.id === itemId);
     setPreviewState({ open: true, initialIndex: initialIndex >= 0 ? initialIndex : 0 });
   };
 
-  const handleDeleteUnusedAttachments = async () => {
-    try {
-      const names = await listUnusedAttachmentNames(noteFilter);
-
-      if (names.length === 0) {
-        await Promise.all([refetch(), refetchUnused()]);
-        return;
-      }
-
-      for (const chunk of chunkNames(names, BATCH_DELETE_SIZE)) {
-        await batchDeleteAttachments(chunk);
-      }
-
-      toast.success(t("resource.delete-all-unused-success"));
-      await Promise.all([refetch(), refetchUnused()]);
-    } catch (deleteError) {
-      handleError(deleteError, toast.error, {
-        context: "Failed to delete unused attachments",
-        fallbackMessage: t("resource.delete-all-unused-error"),
-      });
-    }
-  };
-
   const renderContent = () => {
-    if (attachmentSection === "unused") {
-      if (unusedIsError) {
-        return (
-          <AttachmentLibraryErrorState error={unusedError instanceof Error ? unusedError : undefined} onRetry={() => refetchUnused()} />
-        );
-      }
-
-      if (unusedIsLoading || !unusedIsComplete) {
-        return <AttachmentLibrarySkeletonGrid />;
-      }
-
-      return completeUnusedItems.length === 0 ? (
-        <div className="py-12 text-center text-sm text-muted-foreground">{t("message.no-data")}</div>
-      ) : (
-        <div className="space-y-4">
-          <div className="flex flex-col gap-3 rounded-xl border border-warning/30 bg-warning/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-sm font-medium text-foreground">{t("attachment-library.unused.title")}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t("attachment-library.unused.description")}</p>
-            </div>
-            <Button
-              variant="destructive"
-              className="shrink-0"
-              onClick={() => deleteUnusedAttachmentsDialog.open()}
-              disabled={isDeletingUnused}
-            >
-              {isDeletingUnused ? <LoaderCircleIcon className="size-4 animate-spin" /> : <Trash2Icon className="size-4" />}
-              {t("resource.delete-all-unused")}
-            </Button>
-          </div>
-          <AttachmentUnusedRows items={completeUnusedItems} creators={creators} />
-        </div>
-      );
-    }
-
     if (isLoading) {
       return <AttachmentLibrarySkeletonGrid />;
     }
@@ -224,7 +103,7 @@ const Attachments = () => {
         <div className="min-h-[16rem] pt-1">
           {renderContent()}
 
-          {attachmentSection !== "unused" && hasNextPage && (
+          {hasNextPage && (
             <div className="mt-6 flex justify-center">
               <Button variant="outline" className="rounded-full px-4" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
                 {isFetchingNextPage ? <LoaderCircleIcon className="h-4 w-4 animate-spin" /> : null}
@@ -238,17 +117,6 @@ const Attachments = () => {
           )}
         </div>
       </div>
-
-      <ConfirmDialog
-        open={deleteUnusedAttachmentsDialog.isOpen}
-        onOpenChange={deleteUnusedAttachmentsDialog.setOpen}
-        title={t("resource.delete-all-unused-confirm")}
-        description={t("attachment-library.unused.confirm-description")}
-        confirmLabel={t("common.delete")}
-        cancelLabel={t("common.cancel")}
-        onConfirm={handleDeleteUnusedAttachments}
-        confirmVariant="destructive"
-      />
 
       <PreviewImageDialog
         open={previewState.open}

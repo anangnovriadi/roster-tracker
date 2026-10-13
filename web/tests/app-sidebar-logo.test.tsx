@@ -106,7 +106,7 @@ vi.mock("@/hooks/useFilteredNoteStats", () => ({
 }));
 
 vi.mock("@/hooks/useAttachmentLibrary", () => ({
-  useAttachmentLibraryStats: () => ({ stats: { media: 0, documents: 0, audio: 0, unused: 0 } }),
+  useAttachmentLibraryStats: () => ({ stats: { media: 0, documents: 0, audio: 0 } }),
 }));
 
 vi.mock("@/hooks/useMediaQuery", () => ({
@@ -434,7 +434,7 @@ describe("App sidebar logo", () => {
 
   it.each([
     ["/attachments", "common.attachments"],
-    ["/setting", "common.basic"],
+    ["/setting", "common.menu"],
   ])("labels the sidebar content section on %s", (path, label) => {
     render(
       <MemoryRouter initialEntries={[path]}>

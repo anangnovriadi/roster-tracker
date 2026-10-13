@@ -1,13 +1,17 @@
 import { useDirection } from "@base-ui/react/direction-provider";
 import dayjs from "dayjs";
+import { LoaderCircleIcon } from "lucide-react";
 import { type KeyboardEvent, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { type CalendarData, useMonthDays, useWeekdayLabels, WEEKDAY_LABEL_CLASSES } from "@/components/ActivityCalendar";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useView } from "@/contexts/ViewContext";
+import { useDelayedFlag } from "@/hooks/useDelayedFlag";
 import { formatRosterMember, groupRosterByDate, useRosterAssignments } from "@/hooks/useRosterQueries";
 import { useUsersByNames } from "@/hooks/useUserQueries";
 import { ISO_DATE_FORMAT } from "@/lib/calendar-utils";
+import { LOADING_INDICATOR_DELAY_MS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { useTranslate } from "@/utils/i18n";
 import { CalendarDayCell, layoutForCellSize } from "./CalendarDayCell";
 import type { CalendarMonthModel } from "./dayModel";
 import { getDefaultDate } from "./paths";
@@ -53,6 +57,7 @@ export const CalendarGrid = ({
   showRows,
   showAuthors,
 }: CalendarGridProps) => {
+  const t = useTranslate();
   const direction = useDirection();
   const { generalSetting } = useInstance();
   const { timeBasis } = useView();
@@ -67,7 +72,13 @@ export const CalendarGrid = ({
   const focusDate = selectedDate ?? getDefaultDate(month, today);
   const rowCount = Math.ceil(days.length / DAYS_IN_WEEK);
   // The roster for every visible day, including the neighbouring months' edge days.
-  const { assignments: rosterAssignments } = useRosterAssignments(days[0]?.date ?? "", days.at(-1)?.date ?? "", days.length > 0);
+  const { assignments: rosterAssignments, isLoading: rosterLoading } = useRosterAssignments(
+    days[0]?.date ?? "",
+    days.at(-1)?.date ?? "",
+    days.length > 0,
+  );
+  // A spinner over the grid while the month loads, so an empty grid never reads as "nothing here".
+  const showLoader = useDelayedFlag(pending || rosterLoading, LOADING_INDICATOR_DELAY_MS);
   const rosterUserNames = useMemo(() => rosterAssignments.map((assignment) => assignment.user), [rosterAssignments]);
   const { data: rosterUsers } = useUsersByNames(rosterUserNames);
   const onDutyByDate = useMemo(() => {
@@ -142,7 +153,8 @@ export const CalendarGrid = ({
           floor that keeps the date and a short excerpt visible on short windows. */}
       <div
         ref={cellsRef}
-        className="grid auto-rows-fr grid-cols-7 overflow-hidden rounded-lg border border-border/70 bg-card md:[grid-auto-rows:9rem] xl:min-h-0 xl:flex-1 xl:[grid-auto-rows:minmax(5.5rem,1fr)]"
+        aria-busy={showLoader}
+        className="relative grid auto-rows-fr grid-cols-7 overflow-hidden rounded-lg border border-border/70 bg-card md:[grid-auto-rows:9rem] xl:min-h-0 xl:flex-1 xl:[grid-auto-rows:minmax(5.5rem,1fr)]"
       >
         {days.map((day, index) => (
           <CalendarDayCell
@@ -160,6 +172,12 @@ export const CalendarGrid = ({
             corner={cornerOf(index, days.length)}
           />
         ))}
+        {showLoader && (
+          <div role="status" className="absolute inset-0 flex items-center justify-center bg-card/60">
+            <LoaderCircleIcon aria-hidden="true" className="size-8 animate-spin text-muted-foreground" />
+            <span className="sr-only">{t("calendar.loading")}</span>
+          </div>
+        )}
       </div>
     </div>
   );

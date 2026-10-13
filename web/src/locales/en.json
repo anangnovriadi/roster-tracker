@@ -13,6 +13,7 @@
     "welcome-back": "Welcome back."
   },
   "calendar": {
+    "loading": "Loading calendar…",
     "new-note-on-day": "New note or report on this day",
     "next-year": "Next year",
     "no-notes-on-day": "No notes or reports on this day",
@@ -77,17 +78,11 @@
       "live-photo": "Live Photo",
       "note": "Note",
       "not-linked": "Not linked",
-      "unknown-date": "Unknown date",
-      "unused": "Unused"
+      "unknown-date": "Unknown date"
     },
     "tabs": {
       "documents": "Documents",
       "media": "Media"
-    },
-    "unused": {
-      "confirm-description": "This removes every uploaded file that is not linked to a note.",
-      "description": "These uploads were never attached to a note. Review or remove them here.",
-      "title": "Unlinked uploads"
     }
   },
   "common": {
@@ -97,7 +92,6 @@
     "all": "All",
     "attachments": "Attachments",
     "avatar": "Avatar",
-    "basic": "Basic",
     "calendar": "Calendar",
     "cancel": "Cancel",
     "close": "Close",
@@ -124,6 +118,7 @@
     "language": "Language",
     "last-updated-at": "Last updated at",
     "learn-more": "Learn more",
+    "menu": "Menu",
     "note": "Note",
     "notes": "Notes",
     "month-navigation": "Month navigation",
@@ -132,6 +127,8 @@
     "next-month": "Next month",
     "or": "or",
     "password": "Password",
+    "hide-password": "Hide password",
+    "show-password": "Show password",
     "previous-month": "Previous month",
     "referenced-by": "Referenced by",
     "referencing": "Referencing",
@@ -152,7 +149,7 @@
     "update": "Update",
     "user": "User",
     "username": "Username",
-    "username-or-email": "Username or email",
+    "username-or-email": "Username or Email",
     "visibility": "Visibility",
     "view-all": "View all",
     "yourself": "Yourself",
@@ -280,10 +277,6 @@
     "update-succeed": "Update succeeded"
   },
   "resource": {
-    "delete-all-unused": "Delete all unused",
-    "delete-all-unused-confirm": "Are you sure you want to delete all unused resources? THIS ACTION IS IRREVERSIBLE",
-    "delete-all-unused-error": "Failed to delete unused resources",
-    "delete-all-unused-success": "Resources deleted successfully",
     "fetching-data": "Fetching data…"
   },
   "router": {

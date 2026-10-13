@@ -13,6 +13,7 @@
     "welcome-back": "Selamat kembali."
   },
   "calendar": {
+    "loading": "Memuatkan kalendar…",
     "new-note-on-day": "Nota atau laporan baharu pada hari ini",
     "next-year": "Tahun depan",
     "no-notes-on-day": "Tiada nota atau laporan pada hari ini",
@@ -77,17 +78,11 @@
       "live-photo": "Live Photo",
       "note": "Nota",
       "not-linked": "Tidak dipautkan",
-      "unknown-date": "Tarikh tidak diketahui",
-      "unused": "Tidak digunakan"
+      "unknown-date": "Tarikh tidak diketahui"
     },
     "tabs": {
       "documents": "Dokumen",
       "media": "Media"
-    },
-    "unused": {
-      "confirm-description": "Ini akan membuang setiap fail yang dimuat naik yang tidak dipautkan kepada nota.",
-      "description": "Muat naik ini tidak pernah dilampirkan pada nota. Semak atau buangnya di sini.",
-      "title": "Muat naik tidak berpaut"
     }
   },
   "common": {
@@ -97,7 +92,6 @@
     "all": "Semua",
     "attachments": "Lampiran",
     "avatar": "Avatar",
-    "basic": "Asas",
     "calendar": "Kalendar",
     "cancel": "Batal",
     "close": "Tutup",
@@ -124,6 +118,7 @@
     "language": "Bahasa",
     "last-updated-at": "Kali terakhir dikemas kini pada",
     "learn-more": "Ketahui lebih lanjut",
+    "menu": "Menu",
     "note": "Nota",
     "notes": "Nota",
     "month-navigation": "Navigasi bulan",
@@ -132,6 +127,8 @@
     "next-month": "Bulan depan",
     "or": "atau",
     "password": "Kata laluan",
+    "hide-password": "Sembunyikan kata laluan",
+    "show-password": "Tunjukkan kata laluan",
     "previous-month": "Bulan sebelumnya",
     "referenced-by": "Dirujuk oleh",
     "referencing": "Merujuk",
@@ -152,7 +149,7 @@
     "update": "Kemas kini",
     "user": "Pengguna",
     "username": "Nama pengguna",
-    "username-or-email": "Nama pengguna atau e-mel",
+    "username-or-email": "Nama pengguna atau E-mel",
     "visibility": "Keterlihatan",
     "view-all": "Lihat semua",
     "yourself": "Diri anda",
@@ -280,10 +277,6 @@
     "update-succeed": "Kemas kini berjaya"
   },
   "resource": {
-    "delete-all-unused": "Padam semua yang tidak digunakan",
-    "delete-all-unused-confirm": "Adakah anda pasti mahu memadam semua sumber yang tidak digunakan? TINDAKAN INI TIDAK BOLEH DIBATALKAN",
-    "delete-all-unused-error": "Gagal memadam sumber yang tidak digunakan",
-    "delete-all-unused-success": "Sumber berjaya dipadam",
     "fetching-data": "Mengambil data…"
   },
   "router": {

@@ -1,4 +1,3 @@
-import { LoaderCircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslate } from "@/utils/i18n";
 
@@ -9,14 +8,6 @@ interface AttachmentLibraryErrorStateProps {
 
 interface AttachmentLibrarySkeletonGridProps {
   count?: number;
-}
-
-interface AttachmentLibraryUnusedPanelProps {
-  count: number;
-  isDeleting: boolean;
-  isExpanded: boolean;
-  onDelete: () => void;
-  onToggle: () => void;
 }
 
 export const AttachmentLibrarySkeletonGrid = ({ count = 8 }: AttachmentLibrarySkeletonGridProps) => {
@@ -45,33 +36,6 @@ export const AttachmentLibraryErrorState = ({ error, onRetry }: AttachmentLibrar
       <Button className="mt-4 rounded-full" onClick={onRetry}>
         {t("attachment-library.actions.retry")}
       </Button>
-    </div>
-  );
-};
-
-export const AttachmentLibraryUnusedPanel = ({ count, isDeleting, isExpanded, onDelete, onToggle }: AttachmentLibraryUnusedPanelProps) => {
-  const t = useTranslate();
-
-  return (
-    <div className="rounded-2xl border border-warning/30 bg-warning/5 p-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="min-w-0">
-          <div className="text-sm font-medium text-foreground">
-            {t("attachment-library.unused.title")} ({count})
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground">{t("attachment-library.unused.description")}</p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" variant="outline" className="rounded-full border-warning/40 bg-background/80 px-3" onClick={onToggle}>
-            {isExpanded ? t("common.close") : t("attachment-library.labels.unused")}
-          </Button>
-          <Button variant="destructive" className="rounded-full" onClick={onDelete} disabled={isDeleting}>
-            {isDeleting ? <LoaderCircleIcon className="h-4 w-4 animate-spin" /> : null}
-            {t("resource.delete-all-unused")}
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };
