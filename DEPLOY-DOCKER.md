@@ -71,7 +71,7 @@ docker compose -f scripts/compose.yaml logs -f roster-tracker
 curl http://localhost:5230/healthz
 ```
 
-Open `http://<server-ip>:5230`.
+Open `http://203.0.113.10:5230` (replace with your server's IP).
 
 ## 5. First sign-in
 
@@ -160,7 +160,7 @@ Uploaded files still go to the data directory (or to S3 if you configure it), so
 
 ## Access by IP address (no domain)
 
-A domain is not required. To reach the app at `http://<server-ip>:5230`:
+A domain is not required. The examples below use `203.0.113.10`, an address reserved for documentation; replace it with your server's public IP. To reach the app at `http://203.0.113.10:5230`:
 
 1. In `scripts/.env`, set the instance URL to that address (or leave it empty):
 
