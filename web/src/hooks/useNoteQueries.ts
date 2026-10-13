@@ -197,7 +197,7 @@ export function useInfiniteNotes(request: Partial<ListNotesRequest> = {}, option
   });
 }
 
-export function useMemo(name: string, options?: { enabled?: boolean }) {
+export function useNote(name: string, options?: { enabled?: boolean }) {
   const query = useQuery({
     ...noteDetailQueryOptions(name),
     enabled: options?.enabled ?? true,

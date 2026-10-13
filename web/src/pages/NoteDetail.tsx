@@ -1,18 +1,18 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo as useReactNote, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import NoteCommentSection, { type NoteCommentSectionHandle } from "@/components/NoteCommentSection";
 import { MentionResolutionProvider } from "@/components/NoteContent/MentionResolutionContext";
 import NoteParentPlaceholder, { type NoteParentStatus } from "@/components/NoteParentPlaceholder";
 import NoteView, { type NoteViewHandle } from "@/components/NoteView";
 import { computeCommentAmount } from "@/components/NoteView/NoteViewContext";
-import { createNoteNavigationState, resolveNoteDetailOrigin } from "@/components/NoteView/navigation";
+import { createNoteNavigationState, resolveNoteDetailOrigin, wantsCommentComposer } from "@/components/NoteView/navigation";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useNoteDetailError from "@/hooks/useNoteDetailError";
-import { useInfiniteNoteComments, useMemo } from "@/hooks/useNoteQueries";
+import { useInfiniteNoteComments, useNote } from "@/hooks/useNoteQueries";
 import { useSharedNote, withShareAttachmentLinks } from "@/hooks/useNoteShareQueries";
 import { LEGACY_NOTE_COMMENTS_ANCHOR_ID, NOTE_COMMENTS_ANCHOR_ID } from "@/lib/note-comments";
 import { noteNamePrefix } from "@/lib/resource-names";
@@ -89,7 +89,7 @@ const NoteDetail = () => {
     isLoading: directLoading,
     isUnavailable: directUnavailable,
     fetchStatus: directFetchStatus,
-  } = useMemo(noteNameFromParams, { enabled: !isShareMode && !!noteNameFromParams });
+  } = useNote(noteNameFromParams, { enabled: !isShareMode && !!noteNameFromParams });
   const { data: noteFromShare, error: shareError, isLoading: shareLoading } = useSharedNote(shareToken ?? "", { enabled: isShareMode });
 
   const note = isShareMode ? noteFromShare : noteFromDirect;
@@ -100,7 +100,7 @@ const NoteDetail = () => {
   const resolvedOrigin = resolveNoteDetailOrigin(locationState, { noteArchived: note?.state === State.ARCHIVED });
   const parentPage = !hasExplicitOrigin && !currentUser && note?.state !== State.ARCHIVED ? ROUTES.EXPLORE : resolvedOrigin;
   const noteName = note?.name ?? noteNameFromParams;
-  const displayNote = useReactNote(() => {
+  const displayNote = useMemo(() => {
     if (!note) return undefined;
     if (!isShareMode) return note;
     return { ...note, attachments: withShareAttachmentLinks(note.attachments as Attachment[], shareToken!) };
@@ -115,7 +115,7 @@ const NoteDetail = () => {
     error: parentError,
     isUnavailable: parentUnavailable,
     refetch: refetchParent,
-  } = useMemo(note?.parent || "", {
+  } = useNote(note?.parent || "", {
     enabled: !isShareMode && !!note?.parent,
   });
 
@@ -157,6 +157,17 @@ const NoteDetail = () => {
     handleCommentsOpen();
     void commentSectionRef.current?.openEditor();
   }, [handleCommentsOpen]);
+
+  // A card's comment button lands here asking for the comment box; open it once per visit.
+  const composedForRef = useRef("");
+  const shouldCompose = wantsCommentComposer(locationState) && !!currentUser && !isShareMode && note?.state === State.NORMAL;
+  useEffect(() => {
+    if (!shouldCompose || !note || composedForRef.current === location.key) return;
+    if (!commentSectionRef.current) return;
+    composedForRef.current = location.key;
+    handleCommentCreate();
+    // The comment section mounts after the note and its settings load, so re-check as they arrive.
+  }, [shouldCompose, note, location.key, handleCommentCreate, comments, authInitialized, instanceInitialized]);
 
   // Scroll to the hash target once it's in the DOM. The effect re-runs as the note loads (footnote
   // anchors) and as comments arrive (comment anchors), since the target may render in either; the

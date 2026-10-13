@@ -1,9 +1,11 @@
+import { MessageCircleIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNewNote } from "@/contexts/NewNoteContext";
 import i18n from "@/i18n";
+import { NOTE_COMMENTS_ANCHOR_ID } from "@/lib/note-comments";
 import { cn } from "@/lib/utils";
 import { buildNotePath } from "@/router/routes";
 import type { User } from "@/types/proto/api/user_service_pb";
@@ -71,11 +73,26 @@ const NoteHeader: React.FC<NoteHeaderProps> = ({ timeDisplay = "relative", showC
       </div>
 
       <div data-slot="note-header-actions" className="flex shrink-0 select-none flex-row items-center justify-end gap-1">
+        {/* Comment straight from the card instead of opening the note through its time first. */}
+        {currentUser && !isArchived && !note.parent && !isNoteDetailPath(location.pathname, note.name) && (
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Link
+                  to={`${buildNotePath(note.name)}#${NOTE_COMMENTS_ANCHOR_ID}`}
+                  state={createNoteNavigationState(parentPage, { composeComment: true })}
+                  aria-label={t("note.comment.write-a-comment")}
+                  className={buttonVariants({ variant: "quiet", size: "icon-sm" })}
+                />
+              }
+            >
+              <MessageCircleIcon className="size-4" aria-hidden />
+            </TooltipTrigger>
+            <TooltipContent>{t("note.comment.write-a-comment")}</TooltipContent>
+          </Tooltip>
+        )}
         {currentUser && !isArchived && !hasReactedToNote(note, currentUser.name) && (
-          // On desktop the picker's trigger shows only while the card is engaged or the picker is open.
-          <span className="flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex sm:has-[[data-popup-open]]:flex">
-            <ReactionSelector note={note} trigger={<Button variant="quiet" size="icon-sm" />} />
-          </span>
+          <ReactionSelector note={note} trigger={<Button variant="quiet" size="icon-sm" />} />
         )}
 
         <NoteActionMenu note={note} parentPage={parentPage} readonly={readonly} onEdit={openEditor} />

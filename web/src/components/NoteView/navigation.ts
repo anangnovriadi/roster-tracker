@@ -2,6 +2,8 @@ import { buildNotePath, ROUTES } from "@/router/routes";
 
 export interface NoteNavigationState {
   from: string;
+  /** Opens the comment box when the detail page loads. */
+  composeComment?: boolean;
 }
 
 interface ResolveNoteDetailOriginOptions {
@@ -35,7 +37,14 @@ export const isNoteResourcePath = (pathname: string): boolean => {
   return noteID.length > 0 && !noteID.includes("/");
 };
 
-export const createNoteNavigationState = (from: string): NoteNavigationState => ({ from });
+export const createNoteNavigationState = (from: string, options: { composeComment?: boolean } = {}): NoteNavigationState => ({
+  from,
+  ...(options.composeComment ? { composeComment: true } : {}),
+});
+
+/** Whether router state asks the detail page to open its comment box. */
+export const wantsCommentComposer = (state: unknown): boolean =>
+  !!state && typeof state === "object" && (state as { composeComment?: unknown }).composeComment === true;
 
 /** Reads the origin page out of router state; without one, a detail returns to its collection. */
 export const resolveNoteDetailOrigin = (state: unknown, options: ResolveNoteDetailOriginOptions = {}): string => {

@@ -5,7 +5,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useResolvedRelationNotes } from "@/components/NoteMetadata/Relation/useResolvedRelationNotes";
-import { findNoteInCollectionQueries, noteKeys, useMemo, useUpdateNote } from "@/hooks/useNoteQueries";
+import { findNoteInCollectionQueries, noteKeys, useNote, useUpdateNote } from "@/hooks/useNoteQueries";
 import { ListNotesResponseSchema, NoteRelation_Type, NoteRelationSchema, NoteSchema } from "@/types/proto/api/note_service_pb";
 
 const api = vi.hoisted(() => ({ getNote: vi.fn(), updateNote: vi.fn() }));
@@ -41,7 +41,7 @@ describe("note access transitions", () => {
     client.setQueryData(noteKeys.detail(comment.name), comment);
     client.setQueryData(noteKeys.list({}), create(ListNotesResponseSchema, { notes: [parent, comment] }));
     api.getNote.mockRejectedValue(new ConnectError("denied", code));
-    const { result } = renderHook(() => useMemo(parent.name), { wrapper });
+    const { result } = renderHook(() => useNote(parent.name), { wrapper });
     await waitFor(() => expect(result.current.isUnavailable).toBe(true));
     expect(result.current.data).toBeUndefined();
     expect(client.getQueryData(noteKeys.detail(parent.name))).toBeNull();
@@ -73,7 +73,7 @@ describe("note access transitions", () => {
   it("retains transient errors as retryable errors instead of marking a note unavailable", async () => {
     const { client, wrapper } = setup();
     api.getNote.mockRejectedValue(new ConnectError("offline", Code.Unavailable));
-    const { result } = renderHook(() => useMemo("notes/parent"), { wrapper });
+    const { result } = renderHook(() => useNote("notes/parent"), { wrapper });
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.isUnavailable).toBe(false);
     expect(api.getNote).toHaveBeenCalledTimes(2);
