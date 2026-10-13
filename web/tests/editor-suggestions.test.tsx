@@ -1,21 +1,21 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useRef } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { EditorContent } from "@/components/MemoEditor/components/EditorContent";
-import { EditorSuggestions, SuggestionsBar } from "@/components/MemoEditor/components/EditorSuggestions";
-import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
-import type { EditorController } from "@/components/MemoEditor/types/editorController";
-import { getMemoSuggestions, type MemoSuggestion } from "@/lib/memo-suggestions";
-import { Visibility } from "@/types/proto/api/memo_service_pb";
+import { EditorContent } from "@/components/NoteEditor/components/EditorContent";
+import { EditorSuggestions, SuggestionsBar } from "@/components/NoteEditor/components/EditorSuggestions";
+import { createInitialState, EditorProvider, useEditorContext } from "@/components/NoteEditor/state";
+import type { EditorController } from "@/components/NoteEditor/types/editorController";
+import { getNoteSuggestions, type NoteSuggestion } from "@/lib/note-suggestions";
+import { Visibility } from "@/types/proto/api/note_service_pb";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }) }));
 
 let editor: ReturnType<typeof useEditorContext>;
 let controller: React.RefObject<EditorController | null>;
-const candidates = getMemoSuggestions(["work", "release", "planning", "later"].map((value) => ({ factor: "tagSearch", value })));
+const candidates = getNoteSuggestions(["work", "release", "planning", "later"].map((value) => ({ factor: "tagSearch", value })));
 
-function Harness({ suggestions, space }: { suggestions: MemoSuggestion[]; space?: string }) {
+function Harness({ suggestions, space }: { suggestions: NoteSuggestion[]; space?: string }) {
   editor = useEditorContext();
   controller = useRef<EditorController>(null);
   return (
@@ -114,8 +114,8 @@ describe("editor suggestions", () => {
   });
 });
 
-const checklist: MemoSuggestion = { id: "checklist", kind: "checklist", source: "view" };
-const publicAudience: MemoSuggestion = { id: "visibility:PUBLIC", kind: "visibility", visibility: Visibility.PUBLIC, source: "view" };
+const checklist: NoteSuggestion = { id: "checklist", kind: "checklist", source: "view" };
+const publicAudience: NoteSuggestion = { id: "visibility:PUBLIC", kind: "visibility", visibility: Visibility.PUBLIC, source: "view" };
 
 describe("checklist and visibility acceptance", () => {
   it("formats the remembered cursor line and retains acceptance after removal", () => {
@@ -155,12 +155,12 @@ describe("checklist and visibility acceptance", () => {
     expect(screen.queryByRole("group")).not.toBeInTheDocument();
   });
 
-  it("never offers an audience, since every memo is public", () => {
+  it("never offers an audience, since every note is public", () => {
     render(composer([...candidates.slice(0, 2), checklist, publicAudience], "#work A note"));
     expect(screen.getAllByRole("button")).toHaveLength(2);
     expect(screen.getByRole("button", { name: "common.add #release" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "editor.format.task-list" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "memo.visibility.public" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "note.visibility.public" })).not.toBeInTheDocument();
   });
 
   it("hides all kinds in an empty draft and prevents acceptance while saving", () => {

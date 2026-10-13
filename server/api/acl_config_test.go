@@ -9,38 +9,38 @@ import (
 	"google.golang.org/protobuf/reflect/protoregistry"
 
 	// Registers the API service descriptors looked up below.
-	_ "github.com/usememos/memos/proto/gen/api"
+	_ "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 )
 
 // TestPublicMethodsArePublic verifies that methods in PublicMethods are recognized as public.
 func TestPublicMethodsArePublic(t *testing.T) {
 	publicMethods := []string{
 		// Auth Service
-		"/memos.api.AuthService/SignIn",
-		"/memos.api.AuthService/RefreshToken",
+		"/roster.api.AuthService/SignIn",
+		"/roster.api.AuthService/RefreshToken",
 		// Instance Service
-		"/memos.api.InstanceService/GetInstanceProfile",
-		"/memos.api.InstanceService/GetInstanceSetting",
-		"/memos.api.InstanceService/BatchGetInstanceSettings",
+		"/roster.api.InstanceService/GetInstanceProfile",
+		"/roster.api.InstanceService/GetInstanceSetting",
+		"/roster.api.InstanceService/BatchGetInstanceSettings",
 		// User Service
-		"/memos.api.UserService/CreateUser",
-		"/memos.api.UserService/GetUser",
-		"/memos.api.UserService/BatchGetUsers",
-		"/memos.api.UserService/GetUserStats",
-		"/memos.api.UserService/ListUserStats",
+		"/roster.api.UserService/CreateUser",
+		"/roster.api.UserService/GetUser",
+		"/roster.api.UserService/BatchGetUsers",
+		"/roster.api.UserService/GetUserStats",
+		"/roster.api.UserService/ListUserStats",
 		// Identity Provider Service
-		"/memos.api.IdentityProviderService/ListIdentityProviders",
-		// Memo Service
-		"/memos.api.MemoService/GetMemo",
-		"/memos.api.MemoService/ListMemos",
-		"/memos.api.MemoService/ListMemoComments",
-		"/memos.api.MemoService/ListMemoAttachments",
-		"/memos.api.MemoService/ListMemoReactions",
-		"/memos.api.MemoService/ListMemoRelations",
-		"/memos.api.MemoService/GetLinkMetadata",
-		"/memos.api.MemoService/BatchGetLinkMetadata",
-		// Attachment Service metadata follows linked memo visibility.
-		"/memos.api.AttachmentService/GetAttachment",
+		"/roster.api.IdentityProviderService/ListIdentityProviders",
+		// Note Service
+		"/roster.api.NoteService/GetNote",
+		"/roster.api.NoteService/ListNotes",
+		"/roster.api.NoteService/ListNoteComments",
+		"/roster.api.NoteService/ListNoteAttachments",
+		"/roster.api.NoteService/ListNoteReactions",
+		"/roster.api.NoteService/ListNoteRelations",
+		"/roster.api.NoteService/GetLinkMetadata",
+		"/roster.api.NoteService/BatchGetLinkMetadata",
+		// Attachment Service metadata follows linked note visibility.
+		"/roster.api.AttachmentService/GetAttachment",
 	}
 
 	for _, method := range publicMethods {
@@ -53,47 +53,47 @@ func TestPublicMethodsArePublic(t *testing.T) {
 // TestProtectedMethodsRequireAuth verifies that non-public methods are recognized as protected.
 func TestProtectedMethodsRequireAuth(t *testing.T) {
 	protectedMethods := []string{
-		"/memos.api.AttachmentService/UploadAttachment",
+		"/roster.api.AttachmentService/UploadAttachment",
 		// Auth Service - logout and get current user require auth
-		"/memos.api.AuthService/SignOut",
-		"/memos.api.AuthService/GetCurrentUser",
+		"/roster.api.AuthService/SignOut",
+		"/roster.api.AuthService/GetCurrentUser",
 		// Instance Service - admin operations
-		"/memos.api.InstanceService/UpdateInstanceSetting",
-		"/memos.api.InstanceService/TestInstanceEmailSetting",
+		"/roster.api.InstanceService/UpdateInstanceSetting",
+		"/roster.api.InstanceService/TestInstanceEmailSetting",
 		// User Service - modification operations
-		"/memos.api.UserService/ListUsers",
-		"/memos.api.UserService/UpdateUser",
-		"/memos.api.UserService/DeleteUser",
-		// Memo Service - write operations
-		"/memos.api.MemoService/CreateMemo",
-		"/memos.api.MemoService/UpdateMemo",
-		"/memos.api.MemoService/DeleteMemo",
+		"/roster.api.UserService/ListUsers",
+		"/roster.api.UserService/UpdateUser",
+		"/roster.api.UserService/DeleteUser",
+		// Note Service - write operations
+		"/roster.api.NoteService/CreateNote",
+		"/roster.api.NoteService/UpdateNote",
+		"/roster.api.NoteService/DeleteNote",
 		// Space Service - every operation requires an authenticated member.
-		"/memos.api.SpaceService/CreateSpace",
-		"/memos.api.SpaceService/ListSpaces",
-		"/memos.api.SpaceService/GetSpace",
-		"/memos.api.SpaceService/UpdateSpace",
-		"/memos.api.SpaceService/DeleteSpace",
-		"/memos.api.SpaceService/CreateSpaceInvitation",
-		"/memos.api.SpaceService/ListSpaceInvitations",
-		"/memos.api.SpaceService/ListUserSpaceInvitations",
-		"/memos.api.SpaceService/GetSpaceInvitation",
-		"/memos.api.SpaceService/DeleteSpaceInvitation",
-		"/memos.api.SpaceService/AcceptSpaceInvitation",
-		"/memos.api.SpaceService/DeclineSpaceInvitation",
-		"/memos.api.SpaceService/ListSpaceMembers",
-		"/memos.api.SpaceService/GetSpaceMember",
-		"/memos.api.SpaceService/UpdateSpaceMember",
-		"/memos.api.SpaceService/DeleteSpaceMember",
+		"/roster.api.SpaceService/CreateSpace",
+		"/roster.api.SpaceService/ListSpaces",
+		"/roster.api.SpaceService/GetSpace",
+		"/roster.api.SpaceService/UpdateSpace",
+		"/roster.api.SpaceService/DeleteSpace",
+		"/roster.api.SpaceService/CreateSpaceInvitation",
+		"/roster.api.SpaceService/ListSpaceInvitations",
+		"/roster.api.SpaceService/ListUserSpaceInvitations",
+		"/roster.api.SpaceService/GetSpaceInvitation",
+		"/roster.api.SpaceService/DeleteSpaceInvitation",
+		"/roster.api.SpaceService/AcceptSpaceInvitation",
+		"/roster.api.SpaceService/DeclineSpaceInvitation",
+		"/roster.api.SpaceService/ListSpaceMembers",
+		"/roster.api.SpaceService/GetSpaceMember",
+		"/roster.api.SpaceService/UpdateSpaceMember",
+		"/roster.api.SpaceService/DeleteSpaceMember",
 		// Attachment Service - write operations
-		"/memos.api.AttachmentService/CreateAttachment",
-		"/memos.api.AttachmentService/DeleteAttachment",
-		// User Service - saved memo views
-		"/memos.api.UserService/CreateMemoView",
-		"/memos.api.UserService/GetMemoView",
-		"/memos.api.UserService/ListMemoViews",
-		"/memos.api.UserService/UpdateMemoView",
-		"/memos.api.UserService/DeleteMemoView",
+		"/roster.api.AttachmentService/CreateAttachment",
+		"/roster.api.AttachmentService/DeleteAttachment",
+		// User Service - saved note views
+		"/roster.api.UserService/CreateNoteView",
+		"/roster.api.UserService/GetNoteView",
+		"/roster.api.UserService/ListNoteViews",
+		"/roster.api.UserService/UpdateNoteView",
+		"/roster.api.UserService/DeleteNoteView",
 	}
 
 	for _, method := range protectedMethods {
@@ -107,7 +107,7 @@ func TestProtectedMethodsRequireAuth(t *testing.T) {
 func TestUnknownMethodsRequireAuth(t *testing.T) {
 	unknownMethods := []string{
 		"/unknown.Service/Method",
-		"/memos.api.UnknownService/Method",
+		"/roster.api.UnknownService/Method",
 		"",
 		"invalid",
 	}
@@ -135,14 +135,14 @@ func TestAuthBootstrapMethodsAreSubsetOfPublic(t *testing.T) {
 func TestAuthBootstrapClassification(t *testing.T) {
 	// Reachable while private: sign-in flow, registration, instance metadata, SSO, share links.
 	bootstrap := []string{
-		"/memos.api.AuthService/SignIn",
-		"/memos.api.AuthService/RefreshToken",
-		"/memos.api.UserService/CreateUser",
-		"/memos.api.InstanceService/GetInstanceProfile",
-		"/memos.api.InstanceService/GetInstanceSetting",
-		"/memos.api.InstanceService/BatchGetInstanceSettings",
-		"/memos.api.IdentityProviderService/ListIdentityProviders",
-		"/memos.api.MemoService/GetSharedMemo",
+		"/roster.api.AuthService/SignIn",
+		"/roster.api.AuthService/RefreshToken",
+		"/roster.api.UserService/CreateUser",
+		"/roster.api.InstanceService/GetInstanceProfile",
+		"/roster.api.InstanceService/GetInstanceSetting",
+		"/roster.api.InstanceService/BatchGetInstanceSettings",
+		"/roster.api.IdentityProviderService/ListIdentityProviders",
+		"/roster.api.NoteService/GetSharedNote",
 	}
 	for _, method := range bootstrap {
 		t.Run("bootstrap/"+method, func(t *testing.T) {
@@ -152,15 +152,15 @@ func TestAuthBootstrapClassification(t *testing.T) {
 
 	// Public in PUBLIC mode, but gated in PRIVATE mode: browsing and profiles.
 	gatedWhilePrivate := []string{
-		"/memos.api.MemoService/ListMemos",
-		"/memos.api.MemoService/GetMemo",
-		"/memos.api.MemoService/ListMemoComments",
-		"/memos.api.MemoService/ListMemoAttachments",
-		"/memos.api.MemoService/ListMemoReactions",
-		"/memos.api.MemoService/ListMemoRelations",
-		"/memos.api.AttachmentService/GetAttachment",
-		"/memos.api.UserService/GetUser",
-		"/memos.api.UserService/ListUserStats",
+		"/roster.api.NoteService/ListNotes",
+		"/roster.api.NoteService/GetNote",
+		"/roster.api.NoteService/ListNoteComments",
+		"/roster.api.NoteService/ListNoteAttachments",
+		"/roster.api.NoteService/ListNoteReactions",
+		"/roster.api.NoteService/ListNoteRelations",
+		"/roster.api.AttachmentService/GetAttachment",
+		"/roster.api.UserService/GetUser",
+		"/roster.api.UserService/ListUserStats",
 	}
 	for _, method := range gatedWhilePrivate {
 		t.Run("gated/"+method, func(t *testing.T) {

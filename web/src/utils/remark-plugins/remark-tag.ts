@@ -10,8 +10,8 @@ import { findMarkdownGFMEmailRanges, type GFMEmailSourceRange, type MarkdownSour
 import { findMarkdownGFMURLRanges } from "@/utils/gfm-url";
 import { hasExactMarkdownRange, resolvedMarkdownLinkRanges } from "@/utils/markdown-link";
 import { decodedMarkdownCharacterReferenceAt, findDecodedMarkdownSourceBoundaries } from "@/utils/markdown-source-boundaries";
-import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
 import { findMentionMatches } from "@/utils/mention-grammar";
+import { noteMarkdownExtensions } from "@/utils/note-markdown-extension";
 import { findTagMatches } from "@/utils/tag-grammar";
 import { isUsernameCharacter } from "@/utils/username";
 
@@ -45,7 +45,7 @@ interface SourceSpan {
   to: number;
 }
 
-const sourceParser = markdownParser.configure(memoMarkdownExtensions);
+const sourceParser = markdownParser.configure(noteMarkdownExtensions);
 const TRANSPARENT_PARENT_TYPES = new Set([
   "blockquote",
   "delete",
@@ -716,7 +716,7 @@ function reconcileTextNodes(
   reconcileUnderscoreEmailEmphasis(parent, source, context, recoveredSpans);
 }
 
-function transformMemoTextNodes(
+function transformNoteTextNodes(
   parent: ParentNode,
   source: string,
   context: MarkdownSourceContext,
@@ -741,25 +741,25 @@ function transformMemoTextNodes(
     }
 
     if (isParentNode(child) && TRANSPARENT_PARENT_TYPES.has(child.type)) {
-      transformMemoTextNodes(child, source, context, recoveredSpans);
+      transformNoteTextNodes(child, source, context, recoveredSpans);
     }
   }
 }
 
 type VFileLike = { value?: string | Uint8Array };
 
-function transformMemoSyntax(tree: Root, rawSource: string): void {
+function transformNoteSyntax(tree: Root, rawSource: string): void {
   const source = rawSource.startsWith("\uFEFF") ? rawSource.slice(1) : rawSource;
   const context = markdownSourceContext(source);
   const recoveredSpans = new WeakMap<UnistNode, SourceSpan>();
   reconcileTextNodes(tree as ParentNode, source, context, recoveredSpans);
-  transformMemoTextNodes(tree as ParentNode, source, context, recoveredSpans);
+  transformNoteTextNodes(tree as ParentNode, source, context, recoveredSpans);
 }
 
-/** Transform Memos inline source syntaxes after GFM and math parsing. */
-export const remarkMemoSyntax = () => {
+/** Transform Notes inline source syntaxes after GFM and math parsing. */
+export const remarkNoteSyntax = () => {
   return (tree: Root, file: VFileLike) => {
-    transformMemoSyntax(tree, typeof file.value === "string" ? file.value : "");
+    transformNoteSyntax(tree, typeof file.value === "string" ? file.value : "");
   };
 };
 
@@ -769,7 +769,7 @@ export function extractMentionUsernames(source: string): string[] {
     extensions: [gfm()],
     mdastExtensions: [gfmFromMarkdown()],
   });
-  transformMemoSyntax(tree, source);
+  transformNoteSyntax(tree, source);
 
   const usernames: string[] = [];
   const collect = (node: UnistNode): void => {

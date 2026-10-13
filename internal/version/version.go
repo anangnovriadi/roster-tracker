@@ -45,7 +45,7 @@ func resolveBuild(version, commit string, settings []debug.BuildSetting) (string
 // Validate checks that the build has a calendar version before it is exposed.
 func Validate() error {
 	if Version == "" {
-		return errors.New("missing build version: use go run -buildvcs=true ./cmd/memos or inject internal/version.Version with -ldflags")
+		return errors.New("missing build version: use go run -buildvcs=true ./cmd/roster-tracker or inject internal/version.Version with -ldflags")
 	}
 	if !calendarVersion.MatchString(Version) {
 		return errors.Errorf("invalid build version %q: expected YY.MM[.N][-rc.N]", Version)

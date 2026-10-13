@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { replaceFiltersByFactor, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { replaceFiltersByFactor, stringifyFilters, useNoteFilterContext } from "@/contexts/NoteFilterContext";
 
 export const useDateFilterNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { filters, setFilters } = useMemoFilterContext();
+  const { filters, setFilters } = useNoteFilterContext();
 
   const navigateToDateFilter = useCallback(
     (date: string) => {

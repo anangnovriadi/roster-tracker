@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/usememos/memos/server/auth"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
 )
 
 type stubAnonymousAccessStore struct {
@@ -43,13 +43,13 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 	unavailableInstance := &Authorizer{accessStore: stubAnonymousAccessStore{err: accessStoreError}}
 
 	const (
-		protectedMethod = "/memos.api.MemoService/CreateMemo"
-		publicMethod    = "/memos.api.MemoService/ListMemos"
-		listReactions   = "/memos.api.MemoService/ListMemoReactions"
-		listRelations   = "/memos.api.MemoService/ListMemoRelations"
-		bootstrapMethod = "/memos.api.AuthService/SignIn"
-		createUser      = "/memos.api.UserService/CreateUser"
-		shareMethod     = "/memos.api.MemoService/GetSharedMemo"
+		protectedMethod = "/roster.api.NoteService/CreateNote"
+		publicMethod    = "/roster.api.NoteService/ListNotes"
+		listReactions   = "/roster.api.NoteService/ListNoteReactions"
+		listRelations   = "/roster.api.NoteService/ListNoteRelations"
+		bootstrapMethod = "/roster.api.AuthService/SignIn"
+		createUser      = "/roster.api.UserService/CreateUser"
+		shareMethod     = "/roster.api.NoteService/GetSharedNote"
 	)
 
 	cases := []struct {
@@ -63,11 +63,11 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 		{"authenticated reaches public method on private instance", privateInstance, publicMethod, authenticated, nil},
 		{"anonymous denied on protected method", publicInstance, protectedMethod, nil, ErrUnauthenticated},
 		{"anonymous allowed on public method, public instance", publicInstance, publicMethod, nil, nil},
-		{"anonymous allowed to list public memo reactions", publicInstance, listReactions, nil, nil},
-		{"anonymous allowed to list public memo relations", publicInstance, listRelations, nil, nil},
+		{"anonymous allowed to list public note reactions", publicInstance, listReactions, nil, nil},
+		{"anonymous allowed to list public note relations", publicInstance, listRelations, nil, nil},
 		{"anonymous denied on public method, private instance", privateInstance, publicMethod, nil, ErrUnauthenticated},
-		{"anonymous denied memo reactions on private instance", privateInstance, listReactions, nil, ErrUnauthenticated},
-		{"anonymous denied memo relations on private instance", privateInstance, listRelations, nil, ErrUnauthenticated},
+		{"anonymous denied note reactions on private instance", privateInstance, listReactions, nil, ErrUnauthenticated},
+		{"anonymous denied note relations on private instance", privateInstance, listRelations, nil, ErrUnauthenticated},
 		{"anonymous allowed on bootstrap method, private instance", privateInstance, bootstrapMethod, nil, nil},
 		{"anonymous allowed to register on private instance", privateInstance, createUser, nil, nil},
 		{"anonymous allowed on share access, private instance", privateInstance, shareMethod, nil, nil},

@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestUserSettingStore(t *testing.T) {
@@ -60,7 +60,7 @@ func TestUserSettingGetByUserID(t *testing.T) {
 	// Get non-existent key
 	nonExistentSetting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Key:    storepb.UserSetting_NOTE_VIEWS,
 	})
 	require.NoError(t, err)
 	require.Nil(t, nonExistentSetting)
@@ -323,36 +323,36 @@ func TestUserSettingWebhooks(t *testing.T) {
 	ts.Close()
 }
 
-func TestUserSettingMemoViews(t *testing.T) {
+func TestUserSettingNoteViews(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 
-	// Create memoViews setting
-	memoViews := &storepb.MemoViewsUserSetting{
-		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
-			{Id: "memoView-1", Title: "Work Notes", Filter: "tag:work"},
-			{Id: "memoView-2", Title: "Personal", Filter: "tag:personal"},
+	// Create noteViews setting
+	noteViews := &storepb.NoteViewsUserSetting{
+		NoteViews: []*storepb.NoteViewsUserSetting_NoteView{
+			{Id: "noteView-1", Title: "Work Notes", Filter: "tag:work"},
+			{Id: "noteView-2", Title: "Personal", Filter: "tag:personal"},
 		},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
-		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
+		Key:    storepb.UserSetting_NOTE_VIEWS,
+		Value:  &storepb.UserSetting_NoteViews{NoteViews: noteViews},
 	})
 	require.NoError(t, err)
 
 	// Retrieve and verify
 	setting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Key:    storepb.UserSetting_NOTE_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.Len(t, setting.GetMemoViews().MemoViews, 2)
-	require.Equal(t, "Work Notes", setting.GetMemoViews().MemoViews[0].Title)
+	require.Len(t, setting.GetNoteViews().NoteViews, 2)
+	require.Equal(t, "Work Notes", setting.GetNoteViews().NoteViews[0].Title)
 
 	ts.Close()
 }
@@ -782,13 +782,13 @@ func TestUserSettingMultipleSettingTypes(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// Create MEMO_VIEWS setting
+	// Create NOTE_VIEWS setting
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
-		Value: &storepb.UserSetting_MemoViews{MemoViews: &storepb.MemoViewsUserSetting{
-			MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
-				{Id: "s1", Title: "MemoView 1"},
+		Key:    storepb.UserSetting_NOTE_VIEWS,
+		Value: &storepb.UserSetting_NoteViews{NoteViews: &storepb.NoteViewsUserSetting{
+			NoteViews: []*storepb.NoteViewsUserSetting_NoteView{
+				{Id: "s1", Title: "NoteView 1"},
 			},
 		}},
 	})
@@ -811,9 +811,9 @@ func TestUserSettingMultipleSettingTypes(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "ja", generalSetting.GetGeneral().Locale)
 
-	memoViewsSetting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_MEMO_VIEWS})
+	noteViewsSetting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_NOTE_VIEWS})
 	require.NoError(t, err)
-	require.Len(t, memoViewsSetting.GetMemoViews().MemoViews, 1)
+	require.Len(t, noteViewsSetting.GetNoteViews().NoteViews, 1)
 
 	patsSetting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_PERSONAL_ACCESS_TOKENS})
 	require.NoError(t, err)
@@ -822,7 +822,7 @@ func TestUserSettingMultipleSettingTypes(t *testing.T) {
 	ts.Close()
 }
 
-func TestUserSettingMemoViewsEdgeCases(t *testing.T) {
+func TestUserSettingNoteViewsEdgeCases(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
@@ -833,101 +833,101 @@ func TestUserSettingMemoViewsEdgeCases(t *testing.T) {
 	// Includes quotes, backslashes, newlines, and other JSON-sensitive characters
 	specialCharsFilter := `tag in ["work", "project"] && content.contains("urgent")`
 	specialCharsTitle := `Work "Urgent" \ Notes`
-	memoViews := &storepb.MemoViewsUserSetting{
-		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
+	noteViews := &storepb.NoteViewsUserSetting{
+		NoteViews: []*storepb.NoteViewsUserSetting_NoteView{
 			{Id: "s1", Title: specialCharsTitle, Filter: specialCharsFilter},
 		},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
-		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
+		Key:    storepb.UserSetting_NOTE_VIEWS,
+		Value:  &storepb.UserSetting_NoteViews{NoteViews: noteViews},
 	})
 	require.NoError(t, err)
 
 	setting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Key:    storepb.UserSetting_NOTE_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.Len(t, setting.GetMemoViews().MemoViews, 1)
-	require.Equal(t, specialCharsTitle, setting.GetMemoViews().MemoViews[0].Title)
-	require.Equal(t, specialCharsFilter, setting.GetMemoViews().MemoViews[0].Filter)
+	require.Len(t, setting.GetNoteViews().NoteViews, 1)
+	require.Equal(t, specialCharsTitle, setting.GetNoteViews().NoteViews[0].Title)
+	require.Equal(t, specialCharsFilter, setting.GetNoteViews().NoteViews[0].Filter)
 
 	// Case 2: Unicode characters
 	unicodeFilter := `tag in ["你好", "世界"]`
-	unicodeTitle := `My 🚀 MemoViews`
-	memoViews = &storepb.MemoViewsUserSetting{
-		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
+	unicodeTitle := `My 🚀 NoteViews`
+	noteViews = &storepb.NoteViewsUserSetting{
+		NoteViews: []*storepb.NoteViewsUserSetting_NoteView{
 			{Id: "s2", Title: unicodeTitle, Filter: unicodeFilter},
 		},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
-		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
+		Key:    storepb.UserSetting_NOTE_VIEWS,
+		Value:  &storepb.UserSetting_NoteViews{NoteViews: noteViews},
 	})
 	require.NoError(t, err)
 
 	setting, err = ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Key:    storepb.UserSetting_NOTE_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.Len(t, setting.GetMemoViews().MemoViews, 1)
-	require.Equal(t, unicodeTitle, setting.GetMemoViews().MemoViews[0].Title)
-	require.Equal(t, unicodeFilter, setting.GetMemoViews().MemoViews[0].Filter)
+	require.Len(t, setting.GetNoteViews().NoteViews, 1)
+	require.Equal(t, unicodeTitle, setting.GetNoteViews().NoteViews[0].Title)
+	require.Equal(t, unicodeFilter, setting.GetNoteViews().NoteViews[0].Filter)
 
-	// Case 3: Empty memoViews list
-	// Should allow saving an empty list (clearing memoViews)
-	memoViews = &storepb.MemoViewsUserSetting{
-		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{},
+	// Case 3: Empty noteViews list
+	// Should allow saving an empty list (clearing noteViews)
+	noteViews = &storepb.NoteViewsUserSetting{
+		NoteViews: []*storepb.NoteViewsUserSetting_NoteView{},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
-		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
+		Key:    storepb.UserSetting_NOTE_VIEWS,
+		Value:  &storepb.UserSetting_NoteViews{NoteViews: noteViews},
 	})
 	require.NoError(t, err)
 
 	setting, err = ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Key:    storepb.UserSetting_NOTE_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.NotNil(t, setting.GetMemoViews())
-	require.Len(t, setting.GetMemoViews().MemoViews, 0)
+	require.NotNil(t, setting.GetNoteViews())
+	require.Len(t, setting.GetNoteViews().NoteViews, 0)
 
 	// Case 4: Large filter string
 	// Test reasonable large string handling (e.g. 4KB)
 	largeFilter := strings.Repeat("tag:long_tag_name ", 200)
-	memoViews = &storepb.MemoViewsUserSetting{
-		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
+	noteViews = &storepb.NoteViewsUserSetting{
+		NoteViews: []*storepb.NoteViewsUserSetting_NoteView{
 			{Id: "s3", Title: "Large Filter", Filter: largeFilter},
 		},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
-		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
+		Key:    storepb.UserSetting_NOTE_VIEWS,
+		Value:  &storepb.UserSetting_NoteViews{NoteViews: noteViews},
 	})
 	require.NoError(t, err)
 
 	setting, err = ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Key:    storepb.UserSetting_NOTE_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.Equal(t, largeFilter, setting.GetMemoViews().MemoViews[0].Filter)
+	require.Equal(t, largeFilter, setting.GetNoteViews().NoteViews[0].Filter)
 
 	ts.Close()
 }
 
-func TestUserMemoViewConcurrentPartialUpdates(t *testing.T) {
+func TestUserNoteViewConcurrentPartialUpdates(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
@@ -935,11 +935,11 @@ func TestUserMemoViewConcurrentPartialUpdates(t *testing.T) {
 
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	require.NoError(t, ts.AddUserMemoView(ctx, user.ID, &storepb.MemoViewsUserSetting_MemoView{
+	require.NoError(t, ts.AddUserNoteView(ctx, user.ID, &storepb.NoteViewsUserSetting_NoteView{
 		Id:     "work",
 		Title:  "Original title",
 		Filter: `tag in ["original"]`,
-		Icon:   &storepb.MemoViewsUserSetting_MemoView_Icon{Value: &storepb.MemoViewsUserSetting_MemoView_Icon_Emoji{Emoji: "🌱"}},
+		Icon:   &storepb.NoteViewsUserSetting_NoteView_Icon{Value: &storepb.NoteViewsUserSetting_NoteView_Icon_Emoji{Emoji: "🌱"}},
 	}))
 
 	updatedTitle := "Updated title"
@@ -950,16 +950,16 @@ func TestUserMemoViewConcurrentPartialUpdates(t *testing.T) {
 
 	wg.Go(func() {
 		<-start
-		_, errs[0] = ts.UpdateUserMemoView(ctx, user.ID, "work", &updatedTitle, nil, nil)
+		_, errs[0] = ts.UpdateUserNoteView(ctx, user.ID, "work", &updatedTitle, nil, nil)
 	})
 	wg.Go(func() {
 		<-start
-		_, errs[1] = ts.UpdateUserMemoView(ctx, user.ID, "work", nil, &updatedFilter, nil)
+		_, errs[1] = ts.UpdateUserNoteView(ctx, user.ID, "work", nil, &updatedFilter, nil)
 	})
 	wg.Go(func() {
 		<-start
-		icon := &storepb.MemoViewsUserSetting_MemoView_Icon{Value: &storepb.MemoViewsUserSetting_MemoView_Icon_Lucide{Lucide: "leaf"}}
-		_, errs[2] = ts.UpdateUserMemoView(ctx, user.ID, "work", nil, nil, &icon)
+		icon := &storepb.NoteViewsUserSetting_NoteView_Icon{Value: &storepb.NoteViewsUserSetting_NoteView_Icon_Lucide{Lucide: "leaf"}}
+		_, errs[2] = ts.UpdateUserNoteView(ctx, user.ID, "work", nil, nil, &icon)
 	})
 	close(start)
 	wg.Wait()
@@ -967,17 +967,17 @@ func TestUserMemoViewConcurrentPartialUpdates(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	_, err = ts.ListUserSettings(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_MEMO_VIEWS})
+	_, err = ts.ListUserSettings(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_NOTE_VIEWS})
 	require.NoError(t, err)
-	memoViews, err := ts.GetUserMemoViews(ctx, user.ID)
+	noteViews, err := ts.GetUserNoteViews(ctx, user.ID)
 	require.NoError(t, err)
-	require.Len(t, memoViews, 1)
-	require.Equal(t, updatedTitle, memoViews[0].GetTitle())
-	require.Equal(t, updatedFilter, memoViews[0].GetFilter())
-	require.Equal(t, "leaf", memoViews[0].GetIcon().GetLucide())
+	require.Len(t, noteViews, 1)
+	require.Equal(t, updatedTitle, noteViews[0].GetTitle())
+	require.Equal(t, updatedFilter, noteViews[0].GetFilter())
+	require.Equal(t, "leaf", noteViews[0].GetIcon().GetLucide())
 }
 
-func TestGetUserMemoViewsReturnsCopies(t *testing.T) {
+func TestGetUserNoteViewsReturnsCopies(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
@@ -985,27 +985,27 @@ func TestGetUserMemoViewsReturnsCopies(t *testing.T) {
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 
-	require.NoError(t, ts.AddUserMemoView(ctx, user.ID, &storepb.MemoViewsUserSetting_MemoView{
+	require.NoError(t, ts.AddUserNoteView(ctx, user.ID, &storepb.NoteViewsUserSetting_NoteView{
 		Id:     "work",
 		Title:  "Original title",
 		Filter: `tag in ["original"]`,
-		Icon:   &storepb.MemoViewsUserSetting_MemoView_Icon{Value: &storepb.MemoViewsUserSetting_MemoView_Icon_Emoji{Emoji: "🌱"}},
+		Icon:   &storepb.NoteViewsUserSetting_NoteView_Icon{Value: &storepb.NoteViewsUserSetting_NoteView_Icon_Emoji{Emoji: "🌱"}},
 	}))
 
-	firstRead, err := ts.GetUserMemoViews(ctx, user.ID)
+	firstRead, err := ts.GetUserNoteViews(ctx, user.ID)
 	require.NoError(t, err)
 	require.Len(t, firstRead, 1)
 	firstRead[0].Title = "Mutated title"
-	firstRead[0].Icon.Value = &storepb.MemoViewsUserSetting_MemoView_Icon_Lucide{Lucide: "leaf"}
+	firstRead[0].Icon.Value = &storepb.NoteViewsUserSetting_NoteView_Icon_Lucide{Lucide: "leaf"}
 
-	secondRead, err := ts.GetUserMemoViews(ctx, user.ID)
+	secondRead, err := ts.GetUserNoteViews(ctx, user.ID)
 	require.NoError(t, err)
 	require.Len(t, secondRead, 1)
 	require.Equal(t, "Original title", secondRead[0].GetTitle())
 	require.Equal(t, "🌱", secondRead[0].GetIcon().GetEmoji())
 }
 
-func TestUserSettingMemoViewsPartialUpdate(t *testing.T) {
+func TestUserSettingNoteViewsPartialUpdate(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
@@ -1013,23 +1013,23 @@ func TestUserSettingMemoViewsPartialUpdate(t *testing.T) {
 	require.NoError(t, err)
 
 	// Initial set
-	memoViews := &storepb.MemoViewsUserSetting{
-		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
+	noteViews := &storepb.NoteViewsUserSetting{
+		NoteViews: []*storepb.NoteViewsUserSetting_NoteView{
 			{Id: "s1", Title: "Note 1", Filter: "tag:1"},
 			{Id: "s2", Title: "Note 2", Filter: "tag:2"},
 		},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
-		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
+		Key:    storepb.UserSetting_NOTE_VIEWS,
+		Value:  &storepb.UserSetting_NoteViews{NoteViews: noteViews},
 	})
 	require.NoError(t, err)
 
 	// Update by replacing the whole list (Store Upsert replaces the value for the key)
 	// We want to verify that we can "update" a single item by sending the modified list
-	updatedMemoViews := &storepb.MemoViewsUserSetting{
-		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
+	updatedNoteViews := &storepb.NoteViewsUserSetting{
+		NoteViews: []*storepb.NoteViewsUserSetting_NoteView{
 			{Id: "s1", Title: "Note 1 Updated", Filter: "tag:1_updated"},
 			{Id: "s2", Title: "Note 2", Filter: "tag:2"},
 			{Id: "s3", Title: "Note 3", Filter: "tag:3"}, // Add new one
@@ -1037,21 +1037,21 @@ func TestUserSettingMemoViewsPartialUpdate(t *testing.T) {
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
-		Value:  &storepb.UserSetting_MemoViews{MemoViews: updatedMemoViews},
+		Key:    storepb.UserSetting_NOTE_VIEWS,
+		Value:  &storepb.UserSetting_NoteViews{NoteViews: updatedNoteViews},
 	})
 	require.NoError(t, err)
 
 	setting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Key:    storepb.UserSetting_NOTE_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.Len(t, setting.GetMemoViews().MemoViews, 3)
+	require.Len(t, setting.GetNoteViews().NoteViews, 3)
 
 	// Verify updates
-	for _, s := range setting.GetMemoViews().MemoViews {
+	for _, s := range setting.GetNoteViews().NoteViews {
 		if s.Id == "s1" {
 			require.Equal(t, "Note 1 Updated", s.Title)
 			require.Equal(t, "tag:1_updated", s.Filter)

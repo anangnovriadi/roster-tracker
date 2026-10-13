@@ -15,7 +15,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 // Migration System Overview:
@@ -462,7 +462,7 @@ func (s *Store) checkMinimumUpgradeVersion(ctx context.Context) error {
 		}
 	}
 
-	upgradePath := "First upgrade to v0.31.0: https://github.com/usememos/memos/releases/tag/v0.31.0"
+	upgradePath := "First upgrade to v0.31.0: https://github.com/anangnovriadi/roster-tracker/releases/tag/v0.31.0"
 	legacyOrder := -1
 	if !isVersionEmpty(schemaVersion) {
 		legacyOrder, err = compareSchemaVersions(schemaVersion, "0.22.0")
@@ -471,8 +471,8 @@ func (s *Store) checkMinimumUpgradeVersion(ctx context.Context) error {
 		}
 	}
 	if legacyOrder < 0 {
-		upgradePath = "First upgrade to v0.25.3: https://github.com/usememos/memos/releases/tag/v0.25.3\n" +
-			"Start the server and verify it works, then upgrade to v0.31.0: https://github.com/usememos/memos/releases/tag/v0.31.0"
+		upgradePath = "First upgrade to v0.25.3: https://github.com/anangnovriadi/roster-tracker/releases/tag/v0.25.3\n" +
+			"Start the server and verify it works, then upgrade to v0.31.0: https://github.com/anangnovriadi/roster-tracker/releases/tag/v0.31.0"
 	}
 	return errors.Errorf(
 		"database schema %q is too old to upgrade directly; minimum supported schema is %s.\n"+

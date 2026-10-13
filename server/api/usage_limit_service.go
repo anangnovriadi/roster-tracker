@@ -13,10 +13,10 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/core/usagelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/core/usagelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // ListUsageLimits lists the usage limits. Admin only.
@@ -123,7 +123,7 @@ func (s *APIService) CreateUsageLimit(ctx context.Context, request *apipb.Create
 	}
 	metric := storepb.InstanceUsageLimitsSetting_Metric(request.UsageLimit.Metric)
 	if !store.IsValidUsageLimitMetric(metric) {
-		return nil, status.Errorf(codes.InvalidArgument, "metric must be MEMOS, STORAGE_BYTES, or UPLOAD_BYTES")
+		return nil, status.Errorf(codes.InvalidArgument, "metric must be NOTES, STORAGE_BYTES, or UPLOAD_BYTES")
 	}
 	if request.UsageLimit.Value < 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "value must not be negative")
@@ -301,9 +301,9 @@ func validateAndGenerateUsageLimitID(provided string) (string, error) {
 	return provided, nil
 }
 
-// checkMemoQuota refuses a new memo when the user has reached the memo limit.
-func (s *APIService) checkMemoQuota(ctx context.Context, user *store.User) error {
-	return usageLimitCheckError(user.Username, usagelimit.CheckMemoCreate(ctx, s.Store, user.ID))
+// checkNoteQuota refuses a new note when the user has reached the note limit.
+func (s *APIService) checkNoteQuota(ctx context.Context, user *store.User) error {
+	return usageLimitCheckError(user.Username, usagelimit.CheckNoteCreate(ctx, s.Store, user.ID))
 }
 
 // checkUploadQuota refuses an upload of size bytes that would break the

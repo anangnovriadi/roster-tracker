@@ -1,7 +1,7 @@
 import { ChevronsUpDownIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import AboutDialog from "@/components/AboutDialog";
-import MemosLogo from "@/components/MemosLogo";
+import NotesLogo from "@/components/NotesLogo";
 import UserMenu from "@/components/UserMenu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -15,7 +15,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
   const [menuWidth, setMenuWidth] = useState<number>();
   const triggerRef = useRef<HTMLButtonElement>(null);
   // The header always names the app; the signed-in member is shown at the foot of the sidebar.
-  const triggerLabel = t("common.memos");
+  const triggerLabel = t("common.notes");
 
   const handleOpenChange = (next: boolean) => {
     setOpen(next);
@@ -43,7 +43,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
             className,
           )}
         >
-          <MemosLogo compact size={size === "header" ? "header" : "md"} />
+          <NotesLogo compact size={size === "header" ? "header" : "md"} />
           <ChevronsUpDownIcon
             aria-hidden="true"
             className={cn("shrink-0 text-muted-foreground/70", size === "header" ? "size-3" : "size-3.5")}

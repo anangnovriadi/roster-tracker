@@ -29,7 +29,7 @@ if (typeof document !== "undefined") {
 // implementation throws SecurityError on every access. Install a Map-backed shim
 // so any test that touches localStorage directly can call getItem/setItem/removeItem/clear
 // without additional per-file setup. Tests that need special behavior (hooks.test.tsx,
-// memo-editor-cache.test.ts) override this via Object.defineProperty / vi.stubGlobal.
+// note-editor-cache.test.ts) override this via Object.defineProperty / vi.stubGlobal.
 if (typeof globalThis.localStorage === "undefined" || typeof globalThis.localStorage.clear !== "function") {
   let _store = new Map<string, string>();
   const localStorageShim: Storage = {

@@ -51,9 +51,9 @@ describe("buildAuthRoute", () => {
   });
 
   it("preserves the reason parameter", () => {
-    expect(buildAuthRoute({ reason: "protected-memo" })).toBe("/auth?reason=protected-memo");
-    expect(buildAuthRoute({ redirect: "/notes/abc", reason: "protected-memo" })).toBe(
-      "/auth?redirect=%2Fnotes%2Fabc&reason=protected-memo",
+    expect(buildAuthRoute({ reason: "protected-note" })).toBe("/auth?reason=protected-note");
+    expect(buildAuthRoute({ redirect: "/notes/abc", reason: "protected-note" })).toBe(
+      "/auth?redirect=%2Fnotes%2Fabc&reason=protected-note",
     );
   });
 

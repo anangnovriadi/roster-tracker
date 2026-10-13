@@ -6,15 +6,15 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func validatePostgresReactionWritePolicy(ctx context.Context, tx *sql.Tx, reaction *store.Reaction) error {
 	policy := reaction.Policy
-	participation, err := readPostgresMemoParticipation(ctx, tx, reaction.MemoID, policy.ActorUserID)
+	participation, err := readPostgresNoteParticipation(ctx, tx, reaction.NoteID, policy.ActorUserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return store.ErrReactionMemoNotFound
+			return store.ErrReactionNoteNotFound
 		}
 		return errors.Wrap(err, "failed to read reaction participation")
 	}
@@ -23,12 +23,12 @@ func validatePostgresReactionWritePolicy(ctx context.Context, tx *sql.Tx, reacti
 
 // validatePostgresReactionDeletePolicy authorizes a withdrawal and returns the
 // participation snapshot so the caller can honour an administrator actor.
-func validatePostgresReactionDeletePolicy(ctx context.Context, tx *sql.Tx, reaction *store.Reaction) (*store.MemoCommentAuthorizationSnapshot, error) {
+func validatePostgresReactionDeletePolicy(ctx context.Context, tx *sql.Tx, reaction *store.Reaction) (*store.NoteCommentAuthorizationSnapshot, error) {
 	policy := reaction.Policy
-	participation, err := readPostgresMemoParticipation(ctx, tx, reaction.MemoID, policy.ActorUserID)
+	participation, err := readPostgresNoteParticipation(ctx, tx, reaction.NoteID, policy.ActorUserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, store.ErrReactionMemoNotFound
+			return nil, store.ErrReactionNoteNotFound
 		}
 		return nil, errors.Wrap(err, "failed to read reaction participation")
 	}

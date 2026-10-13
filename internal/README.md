@@ -1,6 +1,6 @@
 # internal
 
-Private plumbing with no memos vocabulary. A package belongs here only if it
+Private plumbing with no notes vocabulary. A package belongs here only if it
 could be published tomorrow as a standalone module without changes: it imports
 nothing from `store`, `core`, `server`, `provider`, `markdown`, `filter`, or
 `proto/gen`. The `depguard` rules in `.golangci.yaml` enforce that.

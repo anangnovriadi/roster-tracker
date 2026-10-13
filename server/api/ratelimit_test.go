@@ -11,8 +11,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/internal/identifier"
-	"github.com/usememos/memos/internal/ratelimit"
+	"github.com/anangnovriadi/roster-tracker/internal/identifier"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
 )
 
 func refusedDecision() ratelimit.Decision {

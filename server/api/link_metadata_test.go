@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/internal/linkmeta"
-	apipb "github.com/usememos/memos/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/internal/linkmeta"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 )
 
 type fakeLinkMetadataFetcher func(context.Context, string) (*linkmeta.HTMLMeta, error)

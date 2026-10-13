@@ -87,13 +87,13 @@ func TestCompileTimestampAccessorsPerDialect(t *testing.T) {
 		// getFullYear == 2024
 		{"sqlite year", `created_ts.getFullYear() == 2024`, DialectSQLite, []string{"strftime('%Y'", "'unixepoch'"}, 2024},
 		{"pg year", `created_ts.getFullYear() == 2024`, DialectPostgres, []string{"EXTRACT(YEAR FROM to_timestamp(", "AT TIME ZONE 'UTC'"}, 2024},
-		{"mysql year", `created_ts.getFullYear() == 2024`, DialectMySQL, []string{"YEAR(`memo`.`created_ts`)"}, 2024},
+		{"mysql year", `created_ts.getFullYear() == 2024`, DialectMySQL, []string{"YEAR(`note`.`created_ts`)"}, 2024},
 		// getMonth is 0-based -> SQL must subtract 1
 		{"sqlite month", `created_ts.getMonth() == 5`, DialectSQLite, []string{"strftime('%m'", "- 1)"}, 5},
 		{"pg month", `created_ts.getMonth() == 5`, DialectPostgres, []string{"EXTRACT(MONTH FROM", "- 1)"}, 5},
-		{"mysql month", `created_ts.getMonth() == 5`, DialectMySQL, []string{"MONTH(`memo`.`created_ts`)", "- 1)"}, 5},
+		{"mysql month", `created_ts.getMonth() == 5`, DialectMySQL, []string{"MONTH(`note`.`created_ts`)", "- 1)"}, 5},
 		// getDayOfWeek 0=Sunday -> MySQL DAYOFWEEK is 1-based and must subtract 1
-		{"mysql dow", `created_ts.getDayOfWeek() == 0`, DialectMySQL, []string{"DAYOFWEEK(`memo`.`created_ts`)", "- 1)"}, 0},
+		{"mysql dow", `created_ts.getDayOfWeek() == 0`, DialectMySQL, []string{"DAYOFWEEK(`note`.`created_ts`)", "- 1)"}, 0},
 		{"sqlite dow", `created_ts.getDayOfWeek() == 0`, DialectSQLite, []string{"strftime('%w'"}, 0},
 		// getDate is 1-based -> no offset
 		{"sqlite date", `created_ts.getDate() == 22`, DialectSQLite, []string{"strftime('%d'"}, 22},
@@ -112,7 +112,7 @@ func TestCompileNowAccessorsFoldToInjectedClock(t *testing.T) {
 	t.Parallel()
 
 	// 2026-07-07T10:30:45Z, a Tuesday (year day 188).
-	engine := memoEngineAt(t, time.Date(2026, time.July, 7, 10, 30, 45, 0, time.UTC).Unix())
+	engine := noteEngineAt(t, time.Date(2026, time.July, 7, 10, 30, 45, 0, time.UTC).Unix())
 
 	cases := []struct {
 		name   string
@@ -146,7 +146,7 @@ func TestCompileOnThisDayPerDialect(t *testing.T) {
 	t.Parallel()
 
 	const onThisDay = `created_ts.getMonth() == now.getMonth() && created_ts.getDate() == now.getDate()`
-	engine := memoEngineAt(t, time.Date(2026, time.July, 7, 10, 30, 45, 0, time.UTC).Unix())
+	engine := noteEngineAt(t, time.Date(2026, time.July, 7, 10, 30, 45, 0, time.UTC).Unix())
 
 	cases := []struct {
 		dialect   DialectName
@@ -154,7 +154,7 @@ func TestCompileOnThisDayPerDialect(t *testing.T) {
 	}{
 		{DialectSQLite, []string{"strftime('%m'", "strftime('%d'", "'unixepoch'"}},
 		{DialectPostgres, []string{"EXTRACT(MONTH FROM", "EXTRACT(DAY FROM"}},
-		{DialectMySQL, []string{"MONTH(`memo`.`created_ts`)", "DAYOFMONTH(`memo`.`created_ts`)"}},
+		{DialectMySQL, []string{"MONTH(`note`.`created_ts`)", "DAYOFMONTH(`note`.`created_ts`)"}},
 	}
 	for _, tc := range cases {
 		stmt, err := engine.CompileToStatement(context.Background(), onThisDay, RenderOptions{Dialect: tc.dialect})
@@ -208,7 +208,7 @@ func TestCompileNowAccessorsAtBoundaryDates(t *testing.T) {
 		},
 	}
 	for _, tc := range cases {
-		engine := memoEngineAt(t, tc.clock.Unix())
+		engine := noteEngineAt(t, tc.clock.Unix())
 		stmt, err := engine.CompileToStatement(context.Background(), allAccessors, RenderOptions{Dialect: DialectSQLite})
 		require.NoError(t, err, tc.name)
 		require.Equal(t, tc.args, stmt.Args, tc.name)
@@ -238,7 +238,7 @@ func TestCompileNowAccessorFoldsInUTC(t *testing.T) {
 func TestCompileNowAccessorOnLeftSide(t *testing.T) {
 	t.Parallel()
 
-	engine := memoEngineAt(t, time.Date(2026, time.July, 7, 10, 30, 45, 0, time.UTC).Unix())
+	engine := noteEngineAt(t, time.Date(2026, time.July, 7, 10, 30, 45, 0, time.UTC).Unix())
 	stmt, err := engine.CompileToStatement(context.Background(), `now.getMonth() == created_ts.getMonth()`, RenderOptions{Dialect: DialectSQLite})
 	require.NoError(t, err)
 	require.Contains(t, stmt.SQL, "strftime('%m'")
@@ -249,7 +249,7 @@ func TestCompileNowAccessorMirrorsOrderingOperator(t *testing.T) {
 	t.Parallel()
 
 	// Swapping the literal to the right must flip < to > to keep the meaning.
-	engine := memoEngineAt(t, time.Date(2026, time.July, 7, 10, 30, 45, 0, time.UTC).Unix())
+	engine := noteEngineAt(t, time.Date(2026, time.July, 7, 10, 30, 45, 0, time.UTC).Unix())
 	stmt, err := engine.CompileToStatement(context.Background(), `now.getHours() < created_ts.getHours()`, RenderOptions{Dialect: DialectSQLite})
 	require.NoError(t, err)
 	require.Contains(t, stmt.SQL, "> ?")
@@ -260,7 +260,7 @@ func TestCompileNowAccessorAgainstLiteralFoldsToConstant(t *testing.T) {
 	t.Parallel()
 
 	// Both sides fold to literals; the comparison folds to a constant condition.
-	engine := memoEngineAt(t, time.Date(2026, time.July, 7, 10, 30, 45, 0, time.UTC).Unix())
+	engine := noteEngineAt(t, time.Date(2026, time.July, 7, 10, 30, 45, 0, time.UTC).Unix())
 
 	// True → trivial filter (empty SQL, matches everything).
 	stmt, err := engine.CompileToStatement(context.Background(), `now.getFullYear() >= 2026`, RenderOptions{Dialect: DialectSQLite})

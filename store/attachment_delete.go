@@ -8,12 +8,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-// AttachmentDeletionPolicy captures the caller and the memo content observed
+// AttachmentDeletionPolicy captures the caller and the note content observed
 // while validating a transport-facing attachment deletion. Drivers compare the
-// snapshots with current memo state in the deletion transaction.
+// snapshots with current note state in the deletion transaction.
 type AttachmentDeletionPolicy struct {
 	ActorUserID          int32
-	ExpectedMemoContents map[int32]string
+	ExpectedNoteContents map[int32]string
 }
 
 // DeleteAttachmentsWithPolicy atomically authorizes and removes the selected
@@ -41,73 +41,73 @@ func normalizeAttachmentDelete(policy *AttachmentDeletionPolicy, attachmentIDs [
 			return nil, nil, errors.New("duplicate attachment deletion ID")
 		}
 	}
-	expectedMemoContents := maps.Clone(policy.ExpectedMemoContents)
-	for memoID := range expectedMemoContents {
-		if memoID <= 0 {
-			return nil, nil, errors.New("attachment deletion memo IDs must be positive")
+	expectedNoteContents := maps.Clone(policy.ExpectedNoteContents)
+	for noteID := range expectedNoteContents {
+		if noteID <= 0 {
+			return nil, nil, errors.New("attachment deletion note IDs must be positive")
 		}
 	}
 	return &AttachmentDeletionPolicy{
 		ActorUserID:          policy.ActorUserID,
-		ExpectedMemoContents: expectedMemoContents,
+		ExpectedNoteContents: expectedNoteContents,
 	}, ids, nil
 }
 
-// ValidateAttachmentDeletionMemoSnapshots requires exactly one expected
-// content snapshot for every memo currently bound to the selected attachments.
-func ValidateAttachmentDeletionMemoSnapshots(memoIDs []int32, expectedMemoContents map[int32]string) error {
-	if len(memoIDs) != len(expectedMemoContents) {
-		return ErrMemoMutationConflict
+// ValidateAttachmentDeletionNoteSnapshots requires exactly one expected
+// content snapshot for every note currently bound to the selected attachments.
+func ValidateAttachmentDeletionNoteSnapshots(noteIDs []int32, expectedNoteContents map[int32]string) error {
+	if len(noteIDs) != len(expectedNoteContents) {
+		return ErrNoteMutationConflict
 	}
-	for _, memoID := range memoIDs {
-		if _, ok := expectedMemoContents[memoID]; !ok {
-			return ErrMemoMutationConflict
+	for _, noteID := range noteIDs {
+		if _, ok := expectedNoteContents[noteID]; !ok {
+			return ErrNoteMutationConflict
 		}
 	}
 	return nil
 }
 
 // ValidateAttachmentMutationTargets verifies attachment rows used by a
-// transport-facing mutation and returns their distinct memo bindings in
+// transport-facing mutation and returns their distinct note bindings in
 // ascending order. Every attachment must be owned by the actor unless the
 // actor is an instance administrator.
 func ValidateAttachmentMutationTargets(actorUserID int32, actorIsAdmin bool, attachmentIDs []int32, attachments []*Attachment) ([]int32, error) {
 	if actorUserID <= 0 || len(attachmentIDs) == 0 || len(attachments) != len(attachmentIDs) {
-		return nil, ErrMemoMutationConflict
+		return nil, ErrNoteMutationConflict
 	}
 	expectedIDs := make(map[int32]struct{}, len(attachmentIDs))
 	for _, id := range attachmentIDs {
 		if id <= 0 {
-			return nil, ErrMemoMutationConflict
+			return nil, ErrNoteMutationConflict
 		}
 		expectedIDs[id] = struct{}{}
 	}
-	memoIDs := make(map[int32]struct{})
+	noteIDs := make(map[int32]struct{})
 	seen := make(map[int32]struct{}, len(attachments))
 	for _, attachment := range attachments {
 		if attachment == nil || attachment.ID <= 0 {
-			return nil, ErrMemoMutationConflict
+			return nil, ErrNoteMutationConflict
 		}
 		if _, expected := expectedIDs[attachment.ID]; !expected {
-			return nil, ErrMemoMutationConflict
+			return nil, ErrNoteMutationConflict
 		}
 		if _, duplicate := seen[attachment.ID]; duplicate {
-			return nil, ErrMemoMutationConflict
+			return nil, ErrNoteMutationConflict
 		}
 		seen[attachment.ID] = struct{}{}
 		if !actorIsAdmin && attachment.CreatorID != actorUserID {
-			return nil, ErrMemoPermissionDenied
+			return nil, ErrNotePermissionDenied
 		}
-		if attachment.MemoID != nil {
-			if *attachment.MemoID <= 0 {
-				return nil, ErrMemoMutationConflict
+		if attachment.NoteID != nil {
+			if *attachment.NoteID <= 0 {
+				return nil, ErrNoteMutationConflict
 			}
-			memoIDs[*attachment.MemoID] = struct{}{}
+			noteIDs[*attachment.NoteID] = struct{}{}
 		}
 	}
-	result := make([]int32, 0, len(memoIDs))
-	for memoID := range memoIDs {
-		result = append(result, memoID)
+	result := make([]int32, 0, len(noteIDs))
+	for noteID := range noteIDs {
+		result = append(result, noteID)
 	}
 	slices.Sort(result)
 	return result, nil

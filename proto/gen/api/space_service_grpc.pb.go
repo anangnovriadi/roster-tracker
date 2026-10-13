@@ -20,22 +20,22 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SpaceService_ListSpaces_FullMethodName               = "/memos.api.SpaceService/ListSpaces"
-	SpaceService_GetSpace_FullMethodName                 = "/memos.api.SpaceService/GetSpace"
-	SpaceService_CreateSpace_FullMethodName              = "/memos.api.SpaceService/CreateSpace"
-	SpaceService_UpdateSpace_FullMethodName              = "/memos.api.SpaceService/UpdateSpace"
-	SpaceService_DeleteSpace_FullMethodName              = "/memos.api.SpaceService/DeleteSpace"
-	SpaceService_ListSpaceMembers_FullMethodName         = "/memos.api.SpaceService/ListSpaceMembers"
-	SpaceService_GetSpaceMember_FullMethodName           = "/memos.api.SpaceService/GetSpaceMember"
-	SpaceService_UpdateSpaceMember_FullMethodName        = "/memos.api.SpaceService/UpdateSpaceMember"
-	SpaceService_DeleteSpaceMember_FullMethodName        = "/memos.api.SpaceService/DeleteSpaceMember"
-	SpaceService_ListSpaceInvitations_FullMethodName     = "/memos.api.SpaceService/ListSpaceInvitations"
-	SpaceService_ListUserSpaceInvitations_FullMethodName = "/memos.api.SpaceService/ListUserSpaceInvitations"
-	SpaceService_GetSpaceInvitation_FullMethodName       = "/memos.api.SpaceService/GetSpaceInvitation"
-	SpaceService_CreateSpaceInvitation_FullMethodName    = "/memos.api.SpaceService/CreateSpaceInvitation"
-	SpaceService_DeleteSpaceInvitation_FullMethodName    = "/memos.api.SpaceService/DeleteSpaceInvitation"
-	SpaceService_AcceptSpaceInvitation_FullMethodName    = "/memos.api.SpaceService/AcceptSpaceInvitation"
-	SpaceService_DeclineSpaceInvitation_FullMethodName   = "/memos.api.SpaceService/DeclineSpaceInvitation"
+	SpaceService_ListSpaces_FullMethodName               = "/roster.api.SpaceService/ListSpaces"
+	SpaceService_GetSpace_FullMethodName                 = "/roster.api.SpaceService/GetSpace"
+	SpaceService_CreateSpace_FullMethodName              = "/roster.api.SpaceService/CreateSpace"
+	SpaceService_UpdateSpace_FullMethodName              = "/roster.api.SpaceService/UpdateSpace"
+	SpaceService_DeleteSpace_FullMethodName              = "/roster.api.SpaceService/DeleteSpace"
+	SpaceService_ListSpaceMembers_FullMethodName         = "/roster.api.SpaceService/ListSpaceMembers"
+	SpaceService_GetSpaceMember_FullMethodName           = "/roster.api.SpaceService/GetSpaceMember"
+	SpaceService_UpdateSpaceMember_FullMethodName        = "/roster.api.SpaceService/UpdateSpaceMember"
+	SpaceService_DeleteSpaceMember_FullMethodName        = "/roster.api.SpaceService/DeleteSpaceMember"
+	SpaceService_ListSpaceInvitations_FullMethodName     = "/roster.api.SpaceService/ListSpaceInvitations"
+	SpaceService_ListUserSpaceInvitations_FullMethodName = "/roster.api.SpaceService/ListUserSpaceInvitations"
+	SpaceService_GetSpaceInvitation_FullMethodName       = "/roster.api.SpaceService/GetSpaceInvitation"
+	SpaceService_CreateSpaceInvitation_FullMethodName    = "/roster.api.SpaceService/CreateSpaceInvitation"
+	SpaceService_DeleteSpaceInvitation_FullMethodName    = "/roster.api.SpaceService/DeleteSpaceInvitation"
+	SpaceService_AcceptSpaceInvitation_FullMethodName    = "/roster.api.SpaceService/AcceptSpaceInvitation"
+	SpaceService_DeclineSpaceInvitation_FullMethodName   = "/roster.api.SpaceService/DeclineSpaceInvitation"
 )
 
 // SpaceServiceClient is the client API for SpaceService service.
@@ -55,8 +55,8 @@ type SpaceServiceClient interface {
 	// UpdateSpace updates space metadata. Only a space administrator can update
 	// a space.
 	UpdateSpace(ctx context.Context, in *UpdateSpaceRequest, opts ...grpc.CallOption) (*Space, error)
-	// DeleteSpace permanently deletes a space and every memo currently placed
-	// in it. It never follows memo relations to other memos. Only a space
+	// DeleteSpace permanently deletes a space and every note currently placed
+	// in it. It never follows note relations to other notes. Only a space
 	// administrator can delete a space.
 	DeleteSpace(ctx context.Context, in *DeleteSpaceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListSpaceMembers lists the members of a space. The caller must be a member
@@ -281,8 +281,8 @@ type SpaceServiceServer interface {
 	// UpdateSpace updates space metadata. Only a space administrator can update
 	// a space.
 	UpdateSpace(context.Context, *UpdateSpaceRequest) (*Space, error)
-	// DeleteSpace permanently deletes a space and every memo currently placed
-	// in it. It never follows memo relations to other memos. Only a space
+	// DeleteSpace permanently deletes a space and every note currently placed
+	// in it. It never follows note relations to other notes. Only a space
 	// administrator can delete a space.
 	DeleteSpace(context.Context, *DeleteSpaceRequest) (*emptypb.Empty, error)
 	// ListSpaceMembers lists the members of a space. The caller must be a member
@@ -691,7 +691,7 @@ func _SpaceService_DeclineSpaceInvitation_Handler(srv interface{}, ctx context.C
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var SpaceService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "memos.api.SpaceService",
+	ServiceName: "roster.api.SpaceService",
 	HandlerType: (*SpaceServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -11,7 +11,7 @@ export const usageLimitKeys = {
 };
 
 /** The metrics an admin can limit, in display order. */
-export const USAGE_LIMIT_METRICS = [UsageLimit_Metric.MEMOS, UsageLimit_Metric.STORAGE_BYTES, UsageLimit_Metric.UPLOAD_BYTES] as const;
+export const USAGE_LIMIT_METRICS = [UsageLimit_Metric.NOTES, UsageLimit_Metric.STORAGE_BYTES, UsageLimit_Metric.UPLOAD_BYTES] as const;
 
 /** Lists every usage limit. Admin only on the server side. */
 export function useUsageLimits(options?: { enabled?: boolean }) {

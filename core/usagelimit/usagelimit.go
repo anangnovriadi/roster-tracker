@@ -1,5 +1,5 @@
 // Package usagelimit resolves the usage limits that apply to a user and
-// decides whether creating a memo or uploading a file stays within them.
+// decides whether creating a note or uploading a file stays within them.
 //
 // A usage limit sets one value for one metric, for every user (a default) or
 // for one user. For each metric, the user's own limit applies if there is
@@ -15,7 +15,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 // Metric is what a usage limit counts.
@@ -23,7 +23,7 @@ type Metric = storepb.InstanceUsageLimitsSetting_Metric
 
 // The metrics a usage limit can set.
 const (
-	MetricMemos        = storepb.InstanceUsageLimitsSetting_MEMOS
+	MetricNotes        = storepb.InstanceUsageLimitsSetting_NOTES
 	MetricStorageBytes = storepb.InstanceUsageLimitsSetting_STORAGE_BYTES
 	MetricUploadBytes  = storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES
 )
@@ -31,7 +31,7 @@ const (
 // Store is the data the checks read. *store.Store implements it.
 type Store interface {
 	GetInstanceUsageLimitsSetting(ctx context.Context) (*storepb.InstanceUsageLimitsSetting, error)
-	CountUserMemos(ctx context.Context, creatorID int32) (int64, error)
+	CountUserNotes(ctx context.Context, creatorID int32) (int64, error)
 	GetAttachmentStorageUsage(ctx context.Context, creatorID int32) (int64, error)
 }
 
@@ -51,7 +51,7 @@ func (l Limit) Limited() bool {
 
 // Effective is the limit in effect for each metric of one user.
 type Effective struct {
-	Memos        Limit
+	Notes        Limit
 	StorageBytes Limit
 	UploadBytes  Limit
 }
@@ -79,8 +79,8 @@ func Resolve(setting *storepb.InstanceUsageLimitsSetting, userID int32) Effectiv
 
 func (e *Effective) get(metric Metric) *Limit {
 	switch metric {
-	case MetricMemos:
-		return &e.Memos
+	case MetricNotes:
+		return &e.Notes
 	case MetricStorageBytes:
 		return &e.StorageBytes
 	case MetricUploadBytes:
@@ -95,7 +95,7 @@ type Refusal struct {
 	Metric Metric
 	// Limit is the value of the usage limit that applied.
 	Limit int64
-	// Usage is the current usage: the memo count, the stored bytes, or for
+	// Usage is the current usage: the note count, the stored bytes, or for
 	// UPLOAD_BYTES the size of the refused file.
 	Usage int64
 	// Source is the ID of the usage limit that applied.
@@ -124,22 +124,22 @@ func EffectiveFor(ctx context.Context, s Store, userID int32) (Effective, error)
 	return Resolve(setting, userID), nil
 }
 
-// CheckMemoCreate returns a *Refusal when userID has reached the memo limit.
-// With no memo limit in effect it runs no count query.
-func CheckMemoCreate(ctx context.Context, s Store, userID int32) error {
+// CheckNoteCreate returns a *Refusal when userID has reached the note limit.
+// With no note limit in effect it runs no count query.
+func CheckNoteCreate(ctx context.Context, s Store, userID int32) error {
 	effective, err := EffectiveFor(ctx, s, userID)
 	if err != nil {
 		return err
 	}
-	if !effective.Memos.Limited() {
+	if !effective.Notes.Limited() {
 		return nil
 	}
-	count, err := s.CountUserMemos(ctx, userID)
+	count, err := s.CountUserNotes(ctx, userID)
 	if err != nil {
-		return errors.Wrap(err, "failed to count memos")
+		return errors.Wrap(err, "failed to count notes")
 	}
-	if count >= effective.Memos.Value {
-		return &Refusal{Metric: MetricMemos, Limit: effective.Memos.Value, Usage: count, Source: effective.Memos.Source}
+	if count >= effective.Notes.Value {
+		return &Refusal{Metric: MetricNotes, Limit: effective.Notes.Value, Usage: count, Source: effective.Notes.Source}
 	}
 	return nil
 }
@@ -187,24 +187,24 @@ func CheckUpload(ctx context.Context, s Store, userID int32, size int64) error {
 
 // Usage is a user's usage and the limits in effect for the user.
 type Usage struct {
-	MemoCount    int64
+	NoteCount    int64
 	StorageBytes int64
 	Limits       Effective
 }
 
-// UsageFor counts userID's memos and stored bytes and resolves the limits.
+// UsageFor counts userID's notes and stored bytes and resolves the limits.
 func UsageFor(ctx context.Context, s Store, userID int32) (*Usage, error) {
 	effective, err := EffectiveFor(ctx, s, userID)
 	if err != nil {
 		return nil, err
 	}
-	count, err := s.CountUserMemos(ctx, userID)
+	count, err := s.CountUserNotes(ctx, userID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to count memos")
+		return nil, errors.Wrap(err, "failed to count notes")
 	}
 	used, err := s.GetAttachmentStorageUsage(ctx, userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to sum storage usage")
 	}
-	return &Usage{MemoCount: count, StorageBytes: used, Limits: effective}, nil
+	return &Usage{NoteCount: count, StorageBytes: used, Limits: effective}, nil
 }

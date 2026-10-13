@@ -1,8 +1,8 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
-import Editor from "@/components/MemoEditor/Editor";
-import type { EditorController } from "@/components/MemoEditor/types/editorController";
+import Editor from "@/components/NoteEditor/Editor";
+import type { EditorController } from "@/components/NoteEditor/types/editorController";
 
 const queries = vi.hoisted(() => ({
   useTagCounts: vi.fn(() => ({ data: {} })),
@@ -14,7 +14,7 @@ vi.mock("@/hooks/useUserQueries", () => ({
 
 describe("Editor", () => {
   it("scopes tag autocomplete stats to the current user", () => {
-    render(<Editor className="x" initialContent="" placeholder="memo" onContentChange={vi.fn()} onFiles={vi.fn()} onSubmit={vi.fn()} />);
+    render(<Editor className="x" initialContent="" placeholder="note" onContentChange={vi.fn()} onFiles={vi.fn()} onSubmit={vi.fn()} />);
 
     expect(queries.useTagCounts).toHaveBeenCalledWith(true);
   });
@@ -26,7 +26,7 @@ describe("Editor", () => {
         ref={ref}
         className="x"
         initialContent={"# Title\n\n- a\n  1. b"}
-        placeholder="memo"
+        placeholder="note"
         onContentChange={vi.fn()}
         onFiles={vi.fn()}
         onSubmit={vi.fn()}
@@ -43,7 +43,7 @@ describe("Editor", () => {
         ref={ref}
         className="x"
         initialContent=""
-        placeholder="memo"
+        placeholder="note"
         onContentChange={onChange}
         onFiles={vi.fn()}
         onSubmit={vi.fn()}
@@ -58,7 +58,7 @@ describe("Editor", () => {
     const props = {
       ref,
       className: "x",
-      placeholder: "memo",
+      placeholder: "note",
       onContentChange: vi.fn(),
       onFiles: vi.fn(),
       onSubmit: vi.fn(),
@@ -79,7 +79,7 @@ describe("Editor", () => {
     const props = {
       ref,
       className: "x",
-      placeholder: "memo",
+      placeholder: "note",
       onContentChange: onChange,
       onExternalContentApplied,
       onFiles: vi.fn(),
@@ -109,7 +109,7 @@ describe("Editor", () => {
     const props = {
       className: "x",
       initialContent: "",
-      placeholder: "memo",
+      placeholder: "note",
       onContentChange: vi.fn(),
       onFiles: vi.fn(),
       onSubmit: vi.fn(),

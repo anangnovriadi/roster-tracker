@@ -22,9 +22,9 @@ func TestRemovedAPIVersionRoutesReturnGone(t *testing.T) {
 		path     string
 		wantCode any
 	}{
-		{http.MethodGet, "/api/v1/memos", float64(12)},
+		{http.MethodGet, "/api/v1/notes", float64(12)},
 		{http.MethodPost, "/api/v1/auth/signin", float64(12)},
-		{http.MethodPost, "/memos.api.v1.MemoService/ListMemos", "unimplemented"},
+		{http.MethodPost, "/roster.api.v1.NoteService/ListNotes", "unimplemented"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.path, func(t *testing.T) {

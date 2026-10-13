@@ -1,8 +1,8 @@
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { describe, expect, it, vi } from "vitest";
-import { createController } from "@/components/MemoEditor/Editor/controller";
-import { type UploadAnchorDescriptor, uploadAnchorField } from "@/components/MemoEditor/Editor/uploadAnchors";
+import { createController } from "@/components/NoteEditor/Editor/controller";
+import { type UploadAnchorDescriptor, uploadAnchorField } from "@/components/NoteEditor/Editor/uploadAnchors";
 
 const descriptor = (id: string): UploadAnchorDescriptor => ({
   id,

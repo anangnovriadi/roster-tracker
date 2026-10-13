@@ -11,7 +11,7 @@ const HomeLocation = () => {
 describe("legacy profile links", () => {
   it.each([
     ["/u/alice", "/?creator=alice"],
-    ["/u/j%C3%BAlia?filter=tagSearch%3Awork#memo", "/?filter=tagSearch%3Awork&creator=j%C3%BAlia#memo"],
+    ["/u/j%C3%BAlia?filter=tagSearch%3Awork#note", "/?filter=tagSearch%3Awork&creator=j%C3%BAlia#note"],
     ["/u/alice?creator=bob", "/?creator=alice"],
   ])("redirects %s to %s", (source, expected) => {
     render(

@@ -1,5 +1,5 @@
 // Package gemini implements audiollm.Model against the Gemini generateContent
-// endpoint. Used by Memos transcription when the user picks a Gemini provider:
+// endpoint. Used by Roster Tracker transcription when the user picks a Gemini provider:
 // the handler issues a transcription instruction via audiollm.Request.Instructions.
 package gemini
 
@@ -13,9 +13,9 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/genai"
 
-	"github.com/usememos/memos/provider/ai"
-	"github.com/usememos/memos/provider/ai/audio"
-	"github.com/usememos/memos/provider/ai/audiollm"
+	"github.com/anangnovriadi/roster-tracker/provider/ai"
+	"github.com/anangnovriadi/roster-tracker/provider/ai/audio"
+	"github.com/anangnovriadi/roster-tracker/provider/ai/audiollm"
 )
 
 const (

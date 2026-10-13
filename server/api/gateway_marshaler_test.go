@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 )
 
 // TestGatewayMarshalerOmitsUnsetMessageFields pins the REST payload shape the
@@ -108,14 +108,14 @@ func TestGatewayMarshalerKeepsPopulatedMessageFields(t *testing.T) {
 // default-value behaviour: list fields the schema types as arrays must not
 // disappear when empty.
 func TestGatewayMarshalerKeepsEmptyCollections(t *testing.T) {
-	memo := &apipb.Memo{
-		Name:       "memos/plainmemo1",
+	note := &apipb.Note{
+		Name:       "notes/plainnote1",
 		Content:    "",
 		State:      apipb.State_NORMAL,
 		Visibility: apipb.Visibility_PRIVATE,
 	}
 
-	payload := marshalThroughGateway(t, memo)
+	payload := marshalThroughGateway(t, note)
 
 	require.Equal(t, []any{}, payload["attachments"])
 	require.Equal(t, []any{}, payload["relations"])

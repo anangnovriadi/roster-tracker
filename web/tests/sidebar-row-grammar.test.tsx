@@ -70,7 +70,7 @@ describe("sidebar row grammar", () => {
     expect(document.querySelector(".lucide-chevron-right")).toHaveClass("me-auto");
   });
 
-  it("indents nested tags by the same step the memo outline uses", () => {
+  it("indents nested tags by the same step the note outline uses", () => {
     render(
       <TagTree
         tagAmounts={[

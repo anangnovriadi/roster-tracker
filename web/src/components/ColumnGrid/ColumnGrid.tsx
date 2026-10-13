@@ -14,7 +14,7 @@ interface ColumnGridProps<T> {
   leading?: ReactNode;
   /** Optional node spanning the packed columns above them all (e.g. a page identity block). */
   header?: ReactNode;
-  /** Key that must land at the top of column one (e.g. a just-created memo), not the shortest column. */
+  /** Key that must land at the top of column one (e.g. a just-created note), not the shortest column. */
   priorityKey?: string;
   /** Upper bound on the column count; 0 or undefined means as many as fit. */
   maxColumns?: number;
@@ -194,7 +194,7 @@ function ColumnGrid<T>({
       // become the containing block for their own position:fixed descendants. A transform
       // (or will-change:transform) would trap the editor's focus-mode overlay — which is
       // meant to cover the viewport — inside this column tile. The leading composer tile
-      // always opts out; a memo tile opts out while its inline editor is in focus mode. Both
+      // always opts out; a note tile opts out while its inline editor is in focus mode. Both
       // are pinned horizontally and only shift on resize (which snaps anyway), so neither
       // loses an animation that matters.
       if (key === LEADING_KEY || untrappedKeys.has(key)) {

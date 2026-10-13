@@ -108,8 +108,8 @@ export function useGeneralSetting() {
   return { data: generalSetting, ...rest };
 }
 
-export function useMemoRelatedSetting() {
-  const { data: setting, ...rest } = useInstanceSetting(InstanceSetting_Key.MEMO_RELATED);
-  const memoRelatedSetting = setting?.value.case === "memoRelatedSetting" ? setting.value.value : undefined;
-  return { data: memoRelatedSetting, ...rest };
+export function useNoteRelatedSetting() {
+  const { data: setting, ...rest } = useInstanceSetting(InstanceSetting_Key.NOTE_RELATED);
+  const noteRelatedSetting = setting?.value.case === "noteRelatedSetting" ? setting.value.value : undefined;
+  return { data: noteRelatedSetting, ...rest };
 }

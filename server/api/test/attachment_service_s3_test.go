@@ -7,12 +7,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/internal/testutil/fakes3"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/provider/storage/s3"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/testutil/fakes3"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/provider/storage/s3"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {

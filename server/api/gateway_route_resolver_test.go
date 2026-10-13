@@ -17,8 +17,8 @@ import (
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"gopkg.in/yaml.v3"
 
-	memosproto "github.com/usememos/memos/proto"
-	apipb "github.com/usememos/memos/proto/gen/api"
+	notesproto "github.com/anangnovriadi/roster-tracker/proto"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 )
 
 func TestCanonicalGatewayPattern(t *testing.T) {
@@ -35,8 +35,8 @@ func TestCanonicalGatewayPattern(t *testing.T) {
 		},
 		{
 			name:     "bare variable",
-			template: "/api/shares/{share_token}/memo",
-			want:     "/api/shares/{share_token=*}/memo",
+			template: "/api/shares/{share_token}/note",
+			want:     "/api/shares/{share_token=*}/note",
 		},
 		{
 			name:     "resource name variable",
@@ -91,30 +91,30 @@ func TestGatewayRouteResolverResolvesKnownRoutes(t *testing.T) {
 		path       string
 		procedure  string
 	}{
-		{http.MethodPost, "/api/auth/signin", "/api/auth/signin", "/memos.api.AuthService/SignIn"},
-		{http.MethodGet, "/api/instance/profile", "/api/instance/profile", "/memos.api.InstanceService/GetInstanceProfile"},
-		{http.MethodPost, "/api/users", "/api/users", "/memos.api.UserService/CreateUser"},
-		{http.MethodGet, "/api/users", "/api/users", "/memos.api.UserService/ListUsers"},
-		{http.MethodGet, "/api/{name=users/*}", "/api/users/1", "/memos.api.UserService/GetUser"},
-		{http.MethodGet, "/api/{parent=users/*}/stats", "/api/users/-/stats", "/memos.api.UserService/ListUserStats"},
-		{http.MethodGet, "/api/{parent=users/*}/stats", "/api/users/alice/stats", "/memos.api.UserService/ListUserStats"},
-		{http.MethodGet, "/api/{parent=users/*}/views", "/api/users/alice/views", "/memos.api.UserService/ListMemoViews"},
-		{http.MethodPost, "/api/{parent=users/*}/views", "/api/users/alice/views", "/memos.api.UserService/CreateMemoView"},
-		{http.MethodGet, "/api/{name=users/*/views/*}", "/api/users/alice/views/work", "/memos.api.UserService/GetMemoView"},
-		{http.MethodPatch, "/api/{memo_view.name=users/*/views/*}", "/api/users/alice/views/work", "/memos.api.UserService/UpdateMemoView"},
-		{http.MethodDelete, "/api/{name=users/*/views/*}", "/api/users/alice/views/work", "/memos.api.UserService/DeleteMemoView"},
-		{http.MethodGet, "/api/memos", "/api/memos", "/memos.api.MemoService/ListMemos"},
-		{http.MethodGet, "/api/{name=memos/*}", "/api/memos/abc", "/memos.api.MemoService/GetMemo"},
-		{http.MethodPost, "/api/memos", "/api/memos", "/memos.api.MemoService/CreateMemo"},
-		{http.MethodPost, "/api/spaces", "/api/spaces", "/memos.api.SpaceService/CreateSpace"},
-		{http.MethodGet, "/api/{name=spaces/*}", "/api/spaces/team", "/memos.api.SpaceService/GetSpace"},
-		{http.MethodDelete, "/api/{name=spaces/*}", "/api/spaces/team", "/memos.api.SpaceService/DeleteSpace"},
-		{http.MethodGet, "/api/{name=spaces/*/members/*}", "/api/spaces/team/members/alice", "/memos.api.SpaceService/GetSpaceMember"},
+		{http.MethodPost, "/api/auth/signin", "/api/auth/signin", "/roster.api.AuthService/SignIn"},
+		{http.MethodGet, "/api/instance/profile", "/api/instance/profile", "/roster.api.InstanceService/GetInstanceProfile"},
+		{http.MethodPost, "/api/users", "/api/users", "/roster.api.UserService/CreateUser"},
+		{http.MethodGet, "/api/users", "/api/users", "/roster.api.UserService/ListUsers"},
+		{http.MethodGet, "/api/{name=users/*}", "/api/users/1", "/roster.api.UserService/GetUser"},
+		{http.MethodGet, "/api/{parent=users/*}/stats", "/api/users/-/stats", "/roster.api.UserService/ListUserStats"},
+		{http.MethodGet, "/api/{parent=users/*}/stats", "/api/users/alice/stats", "/roster.api.UserService/ListUserStats"},
+		{http.MethodGet, "/api/{parent=users/*}/views", "/api/users/alice/views", "/roster.api.UserService/ListNoteViews"},
+		{http.MethodPost, "/api/{parent=users/*}/views", "/api/users/alice/views", "/roster.api.UserService/CreateNoteView"},
+		{http.MethodGet, "/api/{name=users/*/views/*}", "/api/users/alice/views/work", "/roster.api.UserService/GetNoteView"},
+		{http.MethodPatch, "/api/{note_view.name=users/*/views/*}", "/api/users/alice/views/work", "/roster.api.UserService/UpdateNoteView"},
+		{http.MethodDelete, "/api/{name=users/*/views/*}", "/api/users/alice/views/work", "/roster.api.UserService/DeleteNoteView"},
+		{http.MethodGet, "/api/notes", "/api/notes", "/roster.api.NoteService/ListNotes"},
+		{http.MethodGet, "/api/{name=notes/*}", "/api/notes/abc", "/roster.api.NoteService/GetNote"},
+		{http.MethodPost, "/api/notes", "/api/notes", "/roster.api.NoteService/CreateNote"},
+		{http.MethodPost, "/api/spaces", "/api/spaces", "/roster.api.SpaceService/CreateSpace"},
+		{http.MethodGet, "/api/{name=spaces/*}", "/api/spaces/team", "/roster.api.SpaceService/GetSpace"},
+		{http.MethodDelete, "/api/{name=spaces/*}", "/api/spaces/team", "/roster.api.SpaceService/DeleteSpace"},
+		{http.MethodGet, "/api/{name=spaces/*/members/*}", "/api/spaces/team/members/alice", "/roster.api.SpaceService/GetSpaceMember"},
 		{
 			http.MethodGet,
-			"/api/shares/{share_token}/memo",
-			"/api/shares/token:with-colon/memo",
-			"/memos.api.MemoService/GetSharedMemo",
+			"/api/shares/{share_token}/note",
+			"/api/shares/token:with-colon/note",
+			"/roster.api.NoteService/GetSharedNote",
 		},
 	}
 
@@ -142,7 +142,7 @@ func TestGatewayRouteResolverResolvesFormPostFallback(t *testing.T) {
 			"application/x-www-form-urlencoded",
 		)
 		require.True(t, ok)
-		require.Equal(t, "/memos.api.InstanceService/GetInstanceProfile", procedure)
+		require.Equal(t, "/roster.api.InstanceService/GetInstanceProfile", procedure)
 	})
 
 	t.Run("uses matching POST binding", func(t *testing.T) {
@@ -150,13 +150,13 @@ func TestGatewayRouteResolverResolvesFormPostFallback(t *testing.T) {
 			t,
 			resolver,
 			http.MethodPost,
-			"/api/memos",
+			"/api/notes",
 			http.MethodPost,
-			"/api/memos",
+			"/api/notes",
 			"application/x-www-form-urlencoded",
 		)
 		require.True(t, ok)
-		require.Equal(t, "/memos.api.MemoService/CreateMemo", procedure)
+		require.Equal(t, "/roster.api.NoteService/CreateNote", procedure)
 	})
 }
 
@@ -164,7 +164,7 @@ func TestGatewayRouteResolverRequiresMatchedPattern(t *testing.T) {
 	resolver, err := newGatewayRouteResolver()
 	require.NoError(t, err)
 
-	request := httptest.NewRequest(http.MethodGet, "/api/memos", nil)
+	request := httptest.NewRequest(http.MethodGet, "/api/notes", nil)
 	_, ok := resolver.resolveRequest(request)
 	require.False(t, ok)
 }
@@ -236,7 +236,7 @@ func TestOpenAPIPathsReachTheirGatewayMethods(t *testing.T) {
 	require.NoError(t, apipb.RegisterInstanceServiceHandlerServer(ctx, mux, apipb.UnimplementedInstanceServiceServer{}))
 	require.NoError(t, apipb.RegisterAuthServiceHandlerServer(ctx, mux, apipb.UnimplementedAuthServiceServer{}))
 	require.NoError(t, apipb.RegisterUserServiceHandlerServer(ctx, mux, apipb.UnimplementedUserServiceServer{}))
-	require.NoError(t, apipb.RegisterMemoServiceHandlerServer(ctx, mux, apipb.UnimplementedMemoServiceServer{}))
+	require.NoError(t, apipb.RegisterNoteServiceHandlerServer(ctx, mux, apipb.UnimplementedNoteServiceServer{}))
 	require.NoError(t, apipb.RegisterSpaceServiceHandlerServer(ctx, mux, apipb.UnimplementedSpaceServiceServer{}))
 	require.NoError(t, apipb.RegisterAttachmentServiceHandlerServer(ctx, mux, apipb.UnimplementedAttachmentServiceServer{}))
 	require.NoError(t, apipb.RegisterAIServiceHandlerServer(ctx, mux, apipb.UnimplementedAIServiceServer{}))
@@ -248,7 +248,7 @@ func TestOpenAPIPathsReachTheirGatewayMethods(t *testing.T) {
 			OperationID string `yaml:"operationId"`
 		} `yaml:"paths"`
 	}
-	require.NoError(t, yaml.Unmarshal(memosproto.OpenAPIYAML(), &spec))
+	require.NoError(t, yaml.Unmarshal(notesproto.OpenAPIYAML(), &spec))
 	require.NotEmpty(t, spec.Paths)
 
 	// The generator renders instance/settings/{setting} as /api/instance/{instance}/*,

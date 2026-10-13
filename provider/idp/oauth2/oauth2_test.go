@@ -13,8 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/provider/idp"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/provider/idp"
 )
 
 func TestNewIdentityProvider(t *testing.T) {

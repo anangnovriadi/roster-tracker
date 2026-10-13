@@ -11,13 +11,13 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	"github.com/usememos/memos/internal/email"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/email"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
-func TestListUserNotificationsIncludesMemoCommentPayload(t *testing.T) {
+func TestListUserNotificationsIncludesNoteCommentPayload(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -30,17 +30,17 @@ func TestListUserNotificationsIncludesMemoCommentPayload(t *testing.T) {
 	require.NoError(t, err)
 	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
 
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "Base memo",
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "Base note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	comment, err := ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	comment, err := ts.Service.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent: note.Name,
+		Comment: &apipb.Note{
 			Content:    "Comment content",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -58,15 +58,15 @@ func TestListUserNotificationsIncludesMemoCommentPayload(t *testing.T) {
 	require.Equal(t, fmt.Sprintf("users/%s", commenter.Username), notification.Sender)
 	require.NotNil(t, notification.SenderUser)
 	require.Equal(t, commenter.Username, notification.SenderUser.Username)
-	require.Equal(t, apipb.UserNotification_MEMO_COMMENT, notification.Type)
-	require.NotNil(t, notification.GetMemoComment())
-	require.Equal(t, comment.Name, notification.GetMemoComment().Memo)
-	require.Equal(t, memo.Name, notification.GetMemoComment().RelatedMemo)
-	require.Equal(t, "Comment content", notification.GetMemoComment().MemoSnippet)
-	require.Equal(t, "Base memo", notification.GetMemoComment().RelatedMemoSnippet)
+	require.Equal(t, apipb.UserNotification_NOTE_COMMENT, notification.Type)
+	require.NotNil(t, notification.GetNoteComment())
+	require.Equal(t, comment.Name, notification.GetNoteComment().Note)
+	require.Equal(t, note.Name, notification.GetNoteComment().RelatedNote)
+	require.Equal(t, "Comment content", notification.GetNoteComment().NoteSnippet)
+	require.Equal(t, "Base note", notification.GetNoteComment().RelatedNoteSnippet)
 }
 
-func TestListUserNotificationsStoresMemoCommentPayloadInInbox(t *testing.T) {
+func TestListUserNotificationsStoresNoteCommentPayloadInInbox(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -79,24 +79,24 @@ func TestListUserNotificationsStoresMemoCommentPayloadInInbox(t *testing.T) {
 	require.NoError(t, err)
 	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
 
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "Base memo",
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "Base note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent: note.Name,
+		Comment: &apipb.Note{
 			Content:    "Comment content",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	messageType := storepb.InboxMessage_MEMO_COMMENT
+	messageType := storepb.InboxMessage_NOTE_COMMENT
 	inboxes, err := ts.Store.ListInboxes(ctx, &store.FindInbox{
 		ReceiverID:  &owner.ID,
 		MessageType: &messageType,
@@ -104,12 +104,12 @@ func TestListUserNotificationsStoresMemoCommentPayloadInInbox(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
 	require.NotNil(t, inboxes[0].Message)
-	require.NotNil(t, inboxes[0].Message.GetMemoComment())
-	require.NotZero(t, inboxes[0].Message.GetMemoComment().MemoId)
-	require.NotZero(t, inboxes[0].Message.GetMemoComment().RelatedMemoId)
+	require.NotNil(t, inboxes[0].Message.GetNoteComment())
+	require.NotZero(t, inboxes[0].Message.GetNoteComment().NoteId)
+	require.NotZero(t, inboxes[0].Message.GetNoteComment().RelatedNoteId)
 }
 
-func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
+func TestAssignedPublicNoteCommentNotifiesReadableRemovedAuthor(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -147,25 +147,25 @@ func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
 		Role:    store.SpaceMemberRoleAdmin,
 	}, owner.ID)
 	require.NoError(t, err)
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
-		Content:    "assigned public memo",
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
+		Content:    "assigned public note",
 		Visibility: apipb.Visibility_PUBLIC,
 		Space:      new("spaces/" + space.UID),
 	}})
 	require.NoError(t, err)
 	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: owner.ID}, owner.ID))
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent: note.Name,
+		Comment: &apipb.Note{
 			Content:    "public comment visible to removed owner",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
-	require.NotNil(t, sentMessage, "membership does not add a read gate to PUBLIC memo endpoints")
+	require.NotNil(t, sentMessage, "membership does not add a read gate to PUBLIC note endpoints")
 
-	messageType := storepb.InboxMessage_MEMO_COMMENT
+	messageType := storepb.InboxMessage_NOTE_COMMENT
 	inboxes, err := ts.Store.ListInboxes(ctx, &store.FindInbox{ReceiverID: &owner.ID, MessageType: &messageType})
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
@@ -180,9 +180,9 @@ func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
 	}, commenter.ID)
 	require.NoError(t, err)
 	sentMessage = nil
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent: note.Name,
+		Comment: &apipb.Note{
 			Content:    "comment visible while owner is a member",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -199,7 +199,7 @@ func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
 	require.Len(t, response.Notifications, 2, "both PUBLIC endpoints remain readable after membership revocation")
 }
 
-func TestCreateMemoCommentSendsEmailNotificationWhenEnabled(t *testing.T) {
+func TestCreateNoteCommentSendsEmailNotificationWhenEnabled(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -222,7 +222,7 @@ func TestCreateMemoCommentSendsEmailNotificationWhenEnabled(t *testing.T) {
 					SmtpUsername: "bot@example.com",
 					SmtpPassword: "password",
 					FromEmail:    "bot@example.com",
-					FromName:     "Memos",
+					FromName:     "Roster Tracker",
 					ReplyTo:      "reply@example.com",
 					UseTls:       true,
 				},
@@ -239,17 +239,17 @@ func TestCreateMemoCommentSendsEmailNotificationWhenEnabled(t *testing.T) {
 	require.NoError(t, err)
 	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
 
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "Base memo for email",
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "Base note for email",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	comment, err := ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	comment, err := ts.Service.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent: note.Name,
+		Comment: &apipb.Note{
 			Content:    "Email comment content",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -268,13 +268,13 @@ func TestCreateMemoCommentSendsEmailNotificationWhenEnabled(t *testing.T) {
 	require.Contains(t, sentMessage.Subject, "commented on your note")
 	require.Contains(t, sentMessage.Body, "Hi email-comment-owner,")
 	require.Contains(t, sentMessage.Body, "email-commenter commented on your note.")
-	require.Contains(t, sentMessage.Body, fmt.Sprintf("http://localhost:8080/notes/%s#%s", strings.TrimPrefix(memo.Name, "memos/"), strings.TrimPrefix(comment.Name, "memos/")))
+	require.Contains(t, sentMessage.Body, fmt.Sprintf("http://localhost:8080/notes/%s#%s", strings.TrimPrefix(note.Name, "notes/"), strings.TrimPrefix(comment.Name, "notes/")))
 	require.Contains(t, sentMessage.Body, "You are receiving this because you own this note.")
 	require.NotContains(t, sentMessage.Body, "Email comment content")
-	require.NotContains(t, sentMessage.Body, "Base memo for email")
+	require.NotContains(t, sentMessage.Body, "Base note for email")
 }
 
-func TestCreateMemoMentionSendsEmailNotificationWhenEnabled(t *testing.T) {
+func TestCreateNoteMentionSendsEmailNotificationWhenEnabled(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -306,8 +306,8 @@ func TestCreateMemoMentionSendsEmailNotificationWhenEnabled(t *testing.T) {
 	target, err := ts.CreateRegularUser(ctx, "email-mention-target")
 	require.NoError(t, err)
 
-	memo, err := ts.Service.CreateMemo(authorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
+	note, err := ts.Service.CreateNote(authorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
 			Content:    fmt.Sprintf("Hello @%s from email", target.Username),
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -319,13 +319,13 @@ func TestCreateMemoMentionSendsEmailNotificationWhenEnabled(t *testing.T) {
 	require.Contains(t, sentMessage.Subject, "mentioned you in a note")
 	require.Contains(t, sentMessage.Body, "Hi email-mention-target,")
 	require.Contains(t, sentMessage.Body, "email-mention-author mentioned you in a note.")
-	require.Contains(t, sentMessage.Body, "http://localhost:8080/notes/"+strings.TrimPrefix(memo.Name, "memos/"))
+	require.Contains(t, sentMessage.Body, "http://localhost:8080/notes/"+strings.TrimPrefix(note.Name, "notes/"))
 	require.Contains(t, sentMessage.Body, "You are receiving this because you were mentioned in this note.")
 	require.NotContains(t, sentMessage.Body, "Hello")
 	require.NotContains(t, sentMessage.Body, fmt.Sprintf("Hello @%s from email", target.Username))
 }
 
-func TestCreateMemoCommentSkipsEmailNotificationWithoutInstanceURL(t *testing.T) {
+func TestCreateNoteCommentSkipsEmailNotificationWithoutInstanceURL(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -359,17 +359,17 @@ func TestCreateMemoCommentSkipsEmailNotificationWithoutInstanceURL(t *testing.T)
 	require.NoError(t, err)
 	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
 
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "Base memo without instance URL",
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "Base note without instance URL",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent: note.Name,
+		Comment: &apipb.Note{
 			Content:    "Comment without instance URL",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -378,7 +378,7 @@ func TestCreateMemoCommentSkipsEmailNotificationWithoutInstanceURL(t *testing.T)
 	require.Nil(t, sentMessage)
 }
 
-func TestListUserNotificationsOmitsNotificationWhenMemoDeleted(t *testing.T) {
+func TestListUserNotificationsOmitsNotificationWhenNoteDeleted(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -391,25 +391,25 @@ func TestListUserNotificationsOmitsNotificationWhenMemoDeleted(t *testing.T) {
 	require.NoError(t, err)
 	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
 
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "Base memo",
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "Base note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent: note.Name,
+		Comment: &apipb.Note{
 			Content:    "Comment content",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.DeleteMemo(ownerCtx, &apipb.DeleteMemoRequest{
-		Name: memo.Name,
+	_, err = ts.Service.DeleteNote(ownerCtx, &apipb.DeleteNoteRequest{
+		Name: note.Name,
 	})
 	require.NoError(t, err)
 
@@ -417,7 +417,7 @@ func TestListUserNotificationsOmitsNotificationWhenMemoDeleted(t *testing.T) {
 		Parent: fmt.Sprintf("users/%s", owner.Username),
 	})
 	require.NoError(t, err)
-	require.Empty(t, resp.Notifications, "a notification whose memo subject is no longer readable must be omitted in full")
+	require.Empty(t, resp.Notifications, "a notification whose note subject is no longer readable must be omitted in full")
 }
 
 func TestListUserNotificationsSkipsNotificationsWithMissingUsers(t *testing.T) {
@@ -433,17 +433,17 @@ func TestListUserNotificationsSkipsNotificationsWithMissingUsers(t *testing.T) {
 	require.NoError(t, err)
 	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
 
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "Base memo",
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "Base note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent: note.Name,
+		Comment: &apipb.Note{
 			Content:    "Comment content",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -473,13 +473,13 @@ func TestUpdateUserNotificationRequiresUpdateMask(t *testing.T) {
 	require.NoError(t, err)
 	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
 
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "Base memo", Visibility: apipb.Visibility_PUBLIC},
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "Base note", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent:  memo.Name,
-		Comment: &apipb.Memo{Content: "Comment content", Visibility: apipb.Visibility_PUBLIC},
+	_, err = ts.Service.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent:  note.Name,
+		Comment: &apipb.Note{Content: "Comment content", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
@@ -517,7 +517,7 @@ func TestListUserNotificationsRejectsNumericParent(t *testing.T) {
 	require.Contains(t, err.Error(), "user not found")
 }
 
-func TestListUserNotificationsIncludesMemoMentionPayload(t *testing.T) {
+func TestListUserNotificationsIncludesNoteMentionPayload(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -530,8 +530,8 @@ func TestListUserNotificationsIncludesMemoMentionPayload(t *testing.T) {
 	require.NoError(t, err)
 	targetCtx := ts.CreateUserContext(ctx, target.ID)
 
-	memo, err := ts.Service.CreateMemo(authorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
+	note, err := ts.Service.CreateNote(authorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
 			Content:    fmt.Sprintf("Hello @%s", target.Username),
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -543,15 +543,15 @@ func TestListUserNotificationsIncludesMemoMentionPayload(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Len(t, resp.Notifications, 1)
-	require.Equal(t, apipb.UserNotification_MEMO_MENTION, resp.Notifications[0].Type)
-	require.NotNil(t, resp.Notifications[0].GetMemoMention())
-	require.Equal(t, memo.Name, resp.Notifications[0].GetMemoMention().Memo)
-	require.Empty(t, resp.Notifications[0].GetMemoMention().RelatedMemo)
+	require.Equal(t, apipb.UserNotification_NOTE_MENTION, resp.Notifications[0].Type)
+	require.NotNil(t, resp.Notifications[0].GetNoteMention())
+	require.Equal(t, note.Name, resp.Notifications[0].GetNoteMention().Note)
+	require.Empty(t, resp.Notifications[0].GetNoteMention().RelatedNote)
 	require.Equal(t, author.Username, resp.Notifications[0].SenderUser.Username)
-	require.Equal(t, "Hello", resp.Notifications[0].GetMemoMention().MemoSnippet)
+	require.Equal(t, "Hello", resp.Notifications[0].GetNoteMention().NoteSnippet)
 }
 
-func TestCreateMemoCommentMentionDoesNotDuplicateOwnerNotification(t *testing.T) {
+func TestCreateNoteCommentMentionDoesNotDuplicateOwnerNotification(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -564,17 +564,17 @@ func TestCreateMemoCommentMentionDoesNotDuplicateOwnerNotification(t *testing.T)
 	require.NoError(t, err)
 	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
 
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "Base memo",
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "Base note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: memo.Name,
-		Comment: &apipb.Memo{
+	_, err = ts.Service.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent: note.Name,
+		Comment: &apipb.Note{
 			Content:    fmt.Sprintf("Hi @%s", owner.Username),
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -586,10 +586,10 @@ func TestCreateMemoCommentMentionDoesNotDuplicateOwnerNotification(t *testing.T)
 	})
 	require.NoError(t, err)
 	require.Len(t, resp.Notifications, 1)
-	require.Equal(t, apipb.UserNotification_MEMO_COMMENT, resp.Notifications[0].Type)
+	require.Equal(t, apipb.UserNotification_NOTE_COMMENT, resp.Notifications[0].Type)
 }
 
-func TestUpdateMemoMentionOnlyNotifiesNewTargets(t *testing.T) {
+func TestUpdateNoteMentionOnlyNotifiesNewTargets(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -606,17 +606,17 @@ func TestUpdateMemoMentionOnlyNotifiesNewTargets(t *testing.T) {
 	require.NoError(t, err)
 	secondTargetCtx := ts.CreateUserContext(ctx, secondTarget.ID)
 
-	memo, err := ts.Service.CreateMemo(authorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
+	note, err := ts.Service.CreateNote(authorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
 			Content:    "",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	updatedMemo, err := ts.Service.UpdateMemo(authorCtx, &apipb.UpdateMemoRequest{
-		Memo: &apipb.Memo{
-			Name:       memo.Name,
+	updatedNote, err := ts.Service.UpdateNote(authorCtx, &apipb.UpdateNoteRequest{
+		Note: &apipb.Note{
+			Name:       note.Name,
 			Content:    fmt.Sprintf("Hello @%s", firstTarget.Username),
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -629,12 +629,12 @@ func TestUpdateMemoMentionOnlyNotifiesNewTargets(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Len(t, firstResp.Notifications, 1)
-	require.Equal(t, apipb.UserNotification_MEMO_MENTION, firstResp.Notifications[0].Type)
-	require.Equal(t, updatedMemo.Name, firstResp.Notifications[0].GetMemoMention().Memo)
+	require.Equal(t, apipb.UserNotification_NOTE_MENTION, firstResp.Notifications[0].Type)
+	require.Equal(t, updatedNote.Name, firstResp.Notifications[0].GetNoteMention().Note)
 
-	_, err = ts.Service.UpdateMemo(authorCtx, &apipb.UpdateMemoRequest{
-		Memo: &apipb.Memo{
-			Name:       memo.Name,
+	_, err = ts.Service.UpdateNote(authorCtx, &apipb.UpdateNoteRequest{
+		Note: &apipb.Note{
+			Name:       note.Name,
 			Content:    fmt.Sprintf("Hello again @%s and @%s", firstTarget.Username, secondTarget.Username),
 			Visibility: apipb.Visibility_PUBLIC,
 		},
@@ -653,5 +653,5 @@ func TestUpdateMemoMentionOnlyNotifiesNewTargets(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Len(t, secondResp.Notifications, 1)
-	require.Equal(t, apipb.UserNotification_MEMO_MENTION, secondResp.Notifications[0].Type)
+	require.Equal(t, apipb.UserNotification_NOTE_MENTION, secondResp.Notifications[0].Type)
 }

@@ -35,19 +35,19 @@ describe("<AuthPageLayout> explore band", () => {
     instance.accessMode = InstanceAccessMode.PUBLIC;
     renderLayout();
 
-    expect(screen.getByRole("link", { name: /auth\.explore-public-memos/ })).toHaveAttribute("href", "/explore");
+    expect(screen.getByRole("link", { name: /auth\.explore-public-notes/ })).toHaveAttribute("href", "/explore");
   });
 
   it("omits the band on private instances even when an instance URL is configured", () => {
     renderLayout();
 
-    expect(screen.queryByRole("link", { name: /auth\.explore-public-memos/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /auth\.explore-public-notes/ })).not.toBeInTheDocument();
   });
 
   it("omits the band when hideExplore is set (first-run setup)", () => {
     instance.accessMode = InstanceAccessMode.PUBLIC;
     renderLayout({ hideExplore: true });
 
-    expect(screen.queryByRole("link", { name: /auth\.explore-public-memos/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /auth\.explore-public-notes/ })).not.toBeInTheDocument();
   });
 });

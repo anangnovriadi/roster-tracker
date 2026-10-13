@@ -11,10 +11,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/random"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/auth"
+	"github.com/anangnovriadi/roster-tracker/internal/random"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
 )
 
 func (s *APIService) ListPersonalAccessTokens(ctx context.Context, request *apipb.ListPersonalAccessTokensRequest) (*apipb.ListPersonalAccessTokensResponse, error) {
@@ -56,7 +56,7 @@ func (s *APIService) ListPersonalAccessTokens(ctx context.Context, request *apip
 // - User creates token for third-party integration
 //
 // Token properties:
-// - Random string with memos_pat_ prefix
+// - Random string with roster_pat_ prefix
 // - SHA-256 hash stored in database
 // - Optional expiration time (can be never-expiring)
 // - User-provided description for identification

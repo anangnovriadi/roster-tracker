@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestSpaceStoreMembershipGuards(t *testing.T) {
@@ -255,68 +255,68 @@ func TestListSpacesByIDList(t *testing.T) {
 	require.Equal(t, []int32{third.ID, first.ID}, []int32{spaces[0].ID, spaces[1].ID})
 }
 
-func TestSpaceMemoAccessDoesNotFlowAcrossCommentRelation(t *testing.T) {
+func TestSpaceNoteAccessDoesNotFlowAcrossCommentRelation(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
 
-	owner, err := ts.CreateUser(ctx, &store.User{Username: "memo-space-owner", Role: store.RoleUser, PasswordHash: "hash"})
+	owner, err := ts.CreateUser(ctx, &store.User{Username: "note-space-owner", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
-	member, err := ts.CreateUser(ctx, &store.User{Username: "memo-space-member", Role: store.RoleUser, PasswordHash: "hash"})
+	member, err := ts.CreateUser(ctx, &store.User{Username: "note-space-member", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
-	outsider, err := ts.CreateUser(ctx, &store.User{Username: "memo-space-outsider", Role: store.RoleUser, PasswordHash: "hash"})
+	outsider, err := ts.CreateUser(ctx, &store.User{Username: "note-space-outsider", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
 
-	space, err := ts.CreateSpace(ctx, &store.Space{UID: "memo-space", Title: "Memo Space"}, owner.ID)
+	space, err := ts.CreateSpace(ctx, &store.Space{UID: "note-space", Title: "Note Space"}, owner.ID)
 	require.NoError(t, err)
 	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 
-	contextMemo, err := ts.CreateMemo(ctx, &store.Memo{
+	contextNote, err := ts.CreateNote(ctx, &store.Note{
 		UID: "space-context", CreatorID: owner.ID, Content: "context", Visibility: store.SpaceAudience, SpaceID: &space.ID,
 	})
 	require.NoError(t, err)
-	_, err = ts.CreateMemo(ctx, &store.Memo{
+	_, err = ts.CreateNote(ctx, &store.Note{
 		UID: "outsider-assigned", CreatorID: outsider.ID, Content: "no", Visibility: store.Public, SpaceID: &space.ID,
 	})
-	require.ErrorIs(t, err, store.ErrMemoSpaceMembershipRequired)
-	applicationAdmin, err := ts.CreateUser(ctx, &store.User{Username: "memo-space-app-admin", Role: store.RoleAdmin, PasswordHash: "hash"})
+	require.ErrorIs(t, err, store.ErrNoteSpaceMembershipRequired)
+	applicationAdmin, err := ts.CreateUser(ctx, &store.User{Username: "note-space-app-admin", Role: store.RoleAdmin, PasswordHash: "hash"})
 	require.NoError(t, err)
-	_, err = ts.CreateMemo(ctx, &store.Memo{
+	_, err = ts.CreateNote(ctx, &store.Note{
 		UID: "admin-assigned", CreatorID: applicationAdmin.ID, Content: "superuser", Visibility: store.Private, SpaceID: &space.ID,
 	})
-	require.NoError(t, err, "an instance administrator places memos without membership")
+	require.NoError(t, err, "an instance administrator places notes without membership")
 	missingSpaceID := space.ID + 1000
-	_, err = ts.CreateMemo(ctx, &store.Memo{
+	_, err = ts.CreateNote(ctx, &store.Note{
 		UID: "admin-dangling", CreatorID: applicationAdmin.ID, Content: "no", Visibility: store.Public, SpaceID: &missingSpaceID,
 	})
-	require.ErrorIs(t, err, store.ErrMemoSpaceNotWritable, "structural validity still applies to an administrator")
+	require.ErrorIs(t, err, store.ErrNoteSpaceNotWritable, "structural validity still applies to an administrator")
 
-	comment, err := ts.CreateMemoComment(ctx, &store.Memo{
+	comment, err := ts.CreateNoteComment(ctx, &store.Note{
 		UID: "space-public-comment", CreatorID: owner.ID, Content: "public comment", Visibility: store.Public,
-	}, contextMemo.ID, owner.ID)
+	}, contextNote.ID, owner.ID)
 	require.NoError(t, err)
 	require.Nil(t, comment.SpaceID)
 	require.Equal(t, store.Public, comment.Visibility)
 
-	memberMemos, err := ts.ListMemos(ctx, &store.FindMemo{
-		Access: &store.MemoAccessScope{UserID: &member.ID, AllowPublic: true, AllowProtected: true},
+	memberNotes, err := ts.ListNotes(ctx, &store.FindNote{
+		Access: &store.NoteAccessScope{UserID: &member.ID, AllowPublic: true, AllowProtected: true},
 	})
 	require.NoError(t, err)
-	require.ElementsMatch(t, []int32{contextMemo.ID, comment.ID}, memoIDs(memberMemos))
+	require.ElementsMatch(t, []int32{contextNote.ID, comment.ID}, noteIDs(memberNotes))
 
-	outsiderMemos, err := ts.ListMemos(ctx, &store.FindMemo{
-		Access: &store.MemoAccessScope{UserID: &outsider.ID, AllowPublic: true, AllowProtected: true},
+	outsiderNotes, err := ts.ListNotes(ctx, &store.FindNote{
+		Access: &store.NoteAccessScope{UserID: &outsider.ID, AllowPublic: true, AllowProtected: true},
 	})
 	require.NoError(t, err)
-	require.Equal(t, []int32{comment.ID}, memoIDs(outsiderMemos), "application ADMIN sees the public comment but cannot inherit its Space context")
+	require.Equal(t, []int32{comment.ID}, noteIDs(outsiderNotes), "application ADMIN sees the public comment but cannot inherit its Space context")
 
-	nonComments, err := ts.ListMemos(ctx, &store.FindMemo{
-		Access:          &store.MemoAccessScope{UserID: &member.ID, AllowPublic: true, AllowProtected: true},
+	nonComments, err := ts.ListNotes(ctx, &store.FindNote{
+		Access:          &store.NoteAccessScope{UserID: &member.ID, AllowPublic: true, AllowProtected: true},
 		ExcludeComments: true,
 	})
 	require.NoError(t, err)
-	require.Equal(t, []int32{contextMemo.ID}, memoIDs(nonComments))
+	require.Equal(t, []int32{contextNote.ID}, noteIDs(nonComments))
 }
 
 func TestUserArchiveAndDeleteRequireLeavingSpaces(t *testing.T) {
@@ -342,7 +342,7 @@ func TestUserArchiveAndDeleteRequireLeavingSpaces(t *testing.T) {
 	require.ErrorIs(t, err, store.ErrUserHasSpaceMembership)
 }
 
-func TestDeleteUserRemovesAuthoredMemoWithoutFollowingComments(t *testing.T) {
+func TestDeleteUserRemovesAuthoredNoteWithoutFollowingComments(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
@@ -351,13 +351,13 @@ func TestDeleteUserRemovesAuthoredMemoWithoutFollowingComments(t *testing.T) {
 	require.NoError(t, err)
 	peer, err := ts.CreateUser(ctx, &store.User{Username: "delete-comment-peer", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
-	contextMemo, err := ts.CreateMemo(ctx, &store.Memo{UID: "peer-context", CreatorID: peer.ID, Content: "context", Visibility: store.Public})
+	contextNote, err := ts.CreateNote(ctx, &store.Note{UID: "peer-context", CreatorID: peer.ID, Content: "context", Visibility: store.Public})
 	require.NoError(t, err)
-	comment, err := ts.CreateMemoComment(ctx, &store.Memo{
+	comment, err := ts.CreateNoteComment(ctx, &store.Note{
 		UID: "user-comment", CreatorID: user.ID, Content: "comment", Visibility: store.Public,
-	}, contextMemo.ID, user.ID)
+	}, contextNote.ID, user.ID)
 	require.NoError(t, err)
-	reply, err := ts.CreateMemoComment(ctx, &store.Memo{
+	reply, err := ts.CreateNoteComment(ctx, &store.Note{
 		UID: "peer-reply", CreatorID: peer.ID, Content: "reply", Visibility: store.Public,
 	}, comment.ID, peer.ID)
 	require.NoError(t, err)
@@ -367,15 +367,15 @@ func TestDeleteUserRemovesAuthoredMemoWithoutFollowingComments(t *testing.T) {
 	deletedUser, err := ts.GetUser(ctx, &store.FindUser{ID: &user.ID})
 	require.NoError(t, err)
 	require.Nil(t, deletedUser)
-	deletedComment, err := ts.GetMemo(ctx, &store.FindMemo{ID: &comment.ID})
+	deletedComment, err := ts.GetNote(ctx, &store.FindNote{ID: &comment.ID})
 	require.NoError(t, err)
 	require.Nil(t, deletedComment)
-	for _, memo := range []*store.Memo{contextMemo, reply} {
-		remaining, getErr := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	for _, note := range []*store.Note{contextNote, reply} {
+		remaining, getErr := ts.GetNote(ctx, &store.FindNote{ID: &note.ID})
 		require.NoError(t, getErr)
 		require.NotNil(t, remaining)
 	}
-	relations, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{MemoIDList: []int32{comment.ID}})
+	relations, err := ts.ListNoteRelations(ctx, &store.FindNoteRelation{NoteIDList: []int32{comment.ID}})
 	require.NoError(t, err)
 	require.Empty(t, relations)
 }

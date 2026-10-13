@@ -7,9 +7,9 @@ import (
 	"github.com/yuin/goldmark/text"
 	"github.com/yuin/goldmark/util"
 
-	"github.com/usememos/memos/internal/identifier"
-	mast "github.com/usememos/memos/markdown/ast"
-	mparser "github.com/usememos/memos/markdown/parser"
+	"github.com/anangnovriadi/roster-tracker/internal/identifier"
+	mast "github.com/anangnovriadi/roster-tracker/markdown/ast"
+	mparser "github.com/anangnovriadi/roster-tracker/markdown/parser"
 )
 
 type mentionExtension struct{}

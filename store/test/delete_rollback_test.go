@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // rejectStoreDelete injects a real database failure in an isolated test database.

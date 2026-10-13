@@ -18,20 +18,20 @@ vi.mock("@/connect", () => ({
   attachmentServiceClient: { listAttachments: clients.listAttachments },
 }));
 
-const attachment = (name: string, type: string, memo?: string): Attachment =>
-  create(AttachmentSchema, { name: `attachments/${name}`, filename: name, type, memo });
+const attachment = (name: string, type: string, note?: string): Attachment =>
+  create(AttachmentSchema, { name: `attachments/${name}`, filename: name, type, note });
 
 describe("buildAttachmentLibraryStats", () => {
   beforeEach(() => clients.listAttachments.mockReset());
 
   it("counts linked attachment types without expanding live-photo pairs", () => {
-    const still = attachment("live.jpg", "image/jpeg", "memos/one");
+    const still = attachment("live.jpg", "image/jpeg", "notes/one");
     still.motionMedia = create(MotionMediaSchema, {
       family: MotionMediaFamily.APPLE_LIVE_PHOTO,
       role: MotionMediaRole.STILL,
       groupId: "live-photo",
     });
-    const video = attachment("live.mov", "video/quicktime", "memos/one");
+    const video = attachment("live.mov", "video/quicktime", "notes/one");
     video.motionMedia = create(MotionMediaSchema, {
       family: MotionMediaFamily.APPLE_LIVE_PHOTO,
       role: MotionMediaRole.VIDEO,
@@ -42,9 +42,9 @@ describe("buildAttachmentLibraryStats", () => {
       buildAttachmentLibraryStats([
         still,
         video,
-        attachment("photo.png", "image/png", "memos/one"),
-        attachment("recording.mp3", "audio/mpeg", "memos/one"),
-        attachment("notes.pdf", "application/pdf", "memos/one"),
+        attachment("photo.png", "image/png", "notes/one"),
+        attachment("recording.mp3", "audio/mpeg", "notes/one"),
+        attachment("notes.pdf", "application/pdf", "notes/one"),
         attachment("unused.png", "image/png"),
       ]),
     ).toEqual({
@@ -58,7 +58,7 @@ describe("buildAttachmentLibraryStats", () => {
   it("loads every page before exposing complete sidebar counts", async () => {
     clients.listAttachments
       .mockResolvedValueOnce({
-        attachments: [attachment("photo.png", "image/png", "memos/one")],
+        attachments: [attachment("photo.png", "image/png", "notes/one")],
         nextPageToken: "1000",
       })
       .mockResolvedValueOnce({
@@ -85,7 +85,7 @@ describe("buildAttachmentLibraryStats", () => {
     await waitFor(() => expect(result.current.isComplete).toBe(true));
     expect(clients.listAttachments).toHaveBeenCalledWith(
       expect.objectContaining({
-        filter: "(memo_id == null)",
+        filter: "(note_id == null)",
       }),
     );
   });
@@ -100,7 +100,7 @@ describe("buildAttachmentLibraryStats", () => {
     await waitFor(() => expect(result.current.isComplete).toBe(true));
     expect(clients.listAttachments).toHaveBeenCalledWith(
       expect.objectContaining({
-        filter: "(memo_id == null) && (space == null)",
+        filter: "(note_id == null) && (space == null)",
       }),
     );
   });

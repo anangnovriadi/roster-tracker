@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 )
 
 func TestInstanceAdminRetrieval(t *testing.T) {

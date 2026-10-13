@@ -6,15 +6,15 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func validateSQLiteReactionWritePolicy(ctx context.Context, tx dbExecutor, reaction *store.Reaction) error {
 	policy := reaction.Policy
-	participation, err := loadSQLiteMemoParticipation(ctx, tx, reaction.MemoID, policy.ActorUserID)
+	participation, err := loadSQLiteNoteParticipation(ctx, tx, reaction.NoteID, policy.ActorUserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return store.ErrReactionMemoNotFound
+			return store.ErrReactionNoteNotFound
 		}
 		return errors.Wrap(err, "failed to read reaction participation")
 	}
@@ -23,12 +23,12 @@ func validateSQLiteReactionWritePolicy(ctx context.Context, tx dbExecutor, react
 
 // validateSQLiteReactionDeletePolicy authorizes a withdrawal and returns the
 // participation snapshot so the caller can honour an administrator actor.
-func validateSQLiteReactionDeletePolicy(ctx context.Context, tx dbExecutor, reaction *store.Reaction) (*store.MemoCommentAuthorizationSnapshot, error) {
+func validateSQLiteReactionDeletePolicy(ctx context.Context, tx dbExecutor, reaction *store.Reaction) (*store.NoteCommentAuthorizationSnapshot, error) {
 	policy := reaction.Policy
-	participation, err := loadSQLiteMemoParticipation(ctx, tx, reaction.MemoID, policy.ActorUserID)
+	participation, err := loadSQLiteNoteParticipation(ctx, tx, reaction.NoteID, policy.ActorUserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, store.ErrReactionMemoNotFound
+			return nil, store.ErrReactionNoteNotFound
 		}
 		return nil, errors.Wrap(err, "failed to read reaction participation")
 	}

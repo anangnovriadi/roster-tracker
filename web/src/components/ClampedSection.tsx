@@ -59,7 +59,7 @@ const ClampedSection = ({ enabled, children }: ClampedSectionProps) => {
       </div>
       {clamped && (
         <Button variant="quiet" size="sm" onClick={() => setExpanded((prev) => !prev)}>
-          {t(collapsed ? "memo.show-more" : "memo.show-less")}
+          {t(collapsed ? "note.show-more" : "note.show-less")}
           {collapsed ? (
             <ChevronDownIcon className="size-3.5" strokeWidth={1.8} />
           ) : (

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COMPACT_TOOLBAR_WIDTH, isCompactWidth } from "@/components/MemoEditor/hooks/useElementWidth";
+import { COMPACT_TOOLBAR_WIDTH, isCompactWidth } from "@/components/NoteEditor/hooks/useElementWidth";
 
 describe("isCompactWidth", () => {
   it("treats an unmeasured (0) width as not compact (full layout default)", () => {

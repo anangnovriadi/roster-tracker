@@ -14,15 +14,15 @@ func TestValidateInstanceURL(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "empty", url: ""},
-		{name: "canonical https", url: "https://memos.example.com", want: "https://memos.example.com"},
-		{name: "trim spaces and trailing slash", url: "  https://memos.example.com/app/  ", want: "https://memos.example.com/app"},
+		{name: "canonical https", url: "https://notes.example.com", want: "https://notes.example.com"},
+		{name: "trim spaces and trailing slash", url: "  https://notes.example.com/app/  ", want: "https://notes.example.com/app"},
 		{name: "http with port", url: "http://localhost:8080/", want: "http://localhost:8080"},
-		{name: "missing scheme", url: "memos.example.com", wantErr: true},
-		{name: "unsupported scheme", url: "ftp://memos.example.com", wantErr: true},
-		{name: "missing host", url: "https:///memos", wantErr: true},
-		{name: "credentials", url: "https://user:pass@memos.example.com", wantErr: true},
-		{name: "query", url: "https://memos.example.com?tenant=one", wantErr: true},
-		{name: "fragment", url: "https://memos.example.com/#top", wantErr: true},
+		{name: "missing scheme", url: "notes.example.com", wantErr: true},
+		{name: "unsupported scheme", url: "ftp://notes.example.com", wantErr: true},
+		{name: "missing host", url: "https:///notes", wantErr: true},
+		{name: "credentials", url: "https://user:pass@notes.example.com", wantErr: true},
+		{name: "query", url: "https://notes.example.com?tenant=one", wantErr: true},
+		{name: "fragment", url: "https://notes.example.com/#top", wantErr: true},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

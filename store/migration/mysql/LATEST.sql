@@ -50,8 +50,8 @@ CREATE TABLE `space_member` (
 
 CREATE INDEX `idx_space_member_user_id` ON `space_member`(`user_id`, `space_id`);
 
--- memo
-CREATE TABLE `memo` (
+-- note
+CREATE TABLE `note` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `uid` VARCHAR(256) NOT NULL UNIQUE,
   `creator_id` INT NOT NULL,
@@ -65,19 +65,19 @@ CREATE TABLE `memo` (
   `space_id` INT DEFAULT NULL
 );
 
-CREATE INDEX `idx_memo_space_id` ON `memo`(`space_id`, `row_status`, `created_ts`, `id`);
-CREATE INDEX `idx_memo_creator_id` ON `memo`(`creator_id`);
+CREATE INDEX `idx_note_space_id` ON `note`(`space_id`, `row_status`, `created_ts`, `id`);
+CREATE INDEX `idx_note_creator_id` ON `note`(`creator_id`);
 
--- memo_relation
-CREATE TABLE `memo_relation` (
-  `memo_id` INT NOT NULL,
-  `related_memo_id` INT NOT NULL,
+-- note_relation
+CREATE TABLE `note_relation` (
+  `note_id` INT NOT NULL,
+  `related_note_id` INT NOT NULL,
   `type` VARCHAR(256) NOT NULL,
-  UNIQUE(`memo_id`,`related_memo_id`,`type`)
+  UNIQUE(`note_id`,`related_note_id`,`type`)
 );
 
-CREATE INDEX `idx_memo_relation_related_type_memo`
-  ON `memo_relation`(`related_memo_id`, `type`, `memo_id`);
+CREATE INDEX `idx_note_relation_related_type_note`
+  ON `note_relation`(`related_note_id`, `type`, `note_id`);
 
 -- attachment
 CREATE TABLE `attachment` (
@@ -90,7 +90,7 @@ CREATE TABLE `attachment` (
   `blob` MEDIUMBLOB,
   `type` VARCHAR(256) NOT NULL DEFAULT '',
   `size` INT NOT NULL DEFAULT '0',
-  `memo_id` INT DEFAULT NULL,
+  `note_id` INT DEFAULT NULL,
   `storage_type` VARCHAR(256) NOT NULL DEFAULT '',
   `reference` TEXT NOT NULL DEFAULT (''),
   `payload` TEXT NOT NULL
@@ -118,28 +118,28 @@ CREATE TABLE `inbox` (
   `message` TEXT NOT NULL
 );
 
--- memo reaction
+-- note reaction
 CREATE TABLE `reaction` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `creator_id` INT NOT NULL,
-  `memo_id` INT NOT NULL,
+  `note_id` INT NOT NULL,
   `reaction_type` VARCHAR(256) NOT NULL,
-  UNIQUE(`creator_id`,`memo_id`,`reaction_type`)
+  UNIQUE(`creator_id`,`note_id`,`reaction_type`)
 );
 
--- memo_share
-CREATE TABLE `memo_share` (
+-- note_share
+CREATE TABLE `note_share` (
   `id`         INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `uid`        VARCHAR(255) NOT NULL UNIQUE,
-  `memo_id`    INT          NOT NULL,
+  `note_id`    INT          NOT NULL,
   `creator_id` INT          NOT NULL,
   `created_ts` BIGINT       NOT NULL DEFAULT (UNIX_TIMESTAMP()),
   `expires_ts` BIGINT       DEFAULT NULL,
-  FOREIGN KEY (`memo_id`) REFERENCES `memo`(`id`) ON DELETE CASCADE
+  FOREIGN KEY (`note_id`) REFERENCES `note`(`id`) ON DELETE CASCADE
 );
 
-CREATE INDEX `idx_memo_share_memo_id` ON `memo_share`(`memo_id`);
+CREATE INDEX `idx_note_share_note_id` ON `note_share`(`note_id`);
 
 -- user_identity
 CREATE TABLE `user_identity` (

@@ -9,8 +9,8 @@ import (
 	// Note: modernc.org/sqlite driver is imported in functions.go where
 	// RegisterScalarFunction is used. No blank import needed here.
 
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 type DB struct {
@@ -77,9 +77,9 @@ func (d *DB) Close() error {
 }
 
 func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
-	// Check if the database is initialized by checking if the memo table exists.
+	// Check if the database is initialized by checking if the note table exists.
 	var exists bool
-	err := d.db.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='memo')").Scan(&exists)
+	err := d.db.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='note')").Scan(&exists)
 	if err != nil {
 		return false, errors.Wrap(err, "failed to check if database is initialized")
 	}

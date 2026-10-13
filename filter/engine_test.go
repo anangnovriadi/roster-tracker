@@ -105,7 +105,7 @@ func TestRenderSpaceFilters(t *testing.T) {
 		}
 
 		_, err = engine.Compile(context.Background(), `space != "spaces/team"`)
-		require.ErrorContains(t, err, `operator != not allowed for field "space"`, "NULL != value would silently drop unassigned memos")
+		require.ErrorContains(t, err, `operator != not allowed for field "space"`, "NULL != value would silently drop unassigned notes")
 	}
 }
 
@@ -258,7 +258,7 @@ func TestRenderTagStringPredicatesAreExactPerDialect(t *testing.T) {
 				require.Contains(t, sqliteStmt.SQL, "json_each(")
 				require.Contains(t, sqliteStmt.SQL, comprehension.sqlFragment)
 				require.Contains(t, sqliteStmt.SQL, predicate.sqliteSQL)
-				require.NotContains(t, sqliteStmt.SQL, "memos_unicode_lower")
+				require.NotContains(t, sqliteStmt.SQL, "notes_unicode_lower")
 				require.Equal(t, predicate.sqliteArgs, sqliteStmt.Args)
 
 				mysqlStmt, err := engine.CompileToStatement(context.Background(), expression, RenderOptions{Dialect: DialectMySQL})
@@ -311,7 +311,7 @@ func TestRenderTagStringPredicatesSQLiteBehavior(t *testing.T) {
 	db.SetMaxOpenConns(1)
 	t.Cleanup(func() { require.NoError(t, db.Close()) })
 
-	_, err = db.Exec(`CREATE TABLE memo (id INTEGER PRIMARY KEY, payload TEXT)`)
+	_, err = db.Exec(`CREATE TABLE note (id INTEGER PRIMARY KEY, payload TEXT)`)
 	require.NoError(t, err)
 	for _, fixture := range []struct {
 		id      int
@@ -326,7 +326,7 @@ func TestRenderTagStringPredicatesSQLiteBehavior(t *testing.T) {
 		{7, `{"tags":["preWork_%done"]}`},
 		{8, `{"tags":["Work_%doneSuffix"]}`},
 	} {
-		_, err = db.Exec(`INSERT INTO memo (id, payload) VALUES (?, ?)`, fixture.id, fixture.payload)
+		_, err = db.Exec(`INSERT INTO note (id, payload) VALUES (?, ?)`, fixture.id, fixture.payload)
 		require.NoError(t, err)
 	}
 
@@ -386,17 +386,17 @@ func TestRenderTagStringPredicatesSQLiteBehavior(t *testing.T) {
 						RenderOptions{Dialect: DialectSQLite},
 					)
 					require.NoError(t, err)
-					require.Equal(t, comprehension.want, selectMemoIDs(t, db, stmt))
+					require.Equal(t, comprehension.want, selectNoteIDs(t, db, stmt))
 				})
 			}
 		})
 	}
 }
 
-func selectMemoIDs(t *testing.T, db *sql.DB, stmt Statement) []int {
+func selectNoteIDs(t *testing.T, db *sql.DB, stmt Statement) []int {
 	t.Helper()
 
-	rows, err := db.Query(`SELECT id FROM memo WHERE `+stmt.SQL+` ORDER BY id`, stmt.Args...)
+	rows, err := db.Query(`SELECT id FROM note WHERE `+stmt.SQL+` ORDER BY id`, stmt.Args...)
 	require.NoError(t, err)
 	defer rows.Close()
 
@@ -425,9 +425,9 @@ func TestRenderStartsWithPerDialect(t *testing.T) {
 		dialect   DialectName
 		fragments []string
 	}{
-		{DialectSQLite, []string{"memos_unicode_lower(", "`memo`.`content`", `ESCAPE '\'`}},
-		{DialectPostgres, []string{"memo.content ILIKE $1"}},
-		{DialectMySQL, []string{"`memo`.`content` LIKE ?"}},
+		{DialectSQLite, []string{"notes_unicode_lower(", "`note`.`content`", `ESCAPE '\'`}},
+		{DialectPostgres, []string{"note.content ILIKE $1"}},
+		{DialectMySQL, []string{"`note`.`content` LIKE ?"}},
 	}
 	for _, tc := range cases {
 		stmt, err := engine.CompileToStatement(context.Background(), `content.startsWith("TODO")`, RenderOptions{Dialect: tc.dialect})
@@ -462,9 +462,9 @@ func TestRenderMatchesPerDialect(t *testing.T) {
 		dialect  DialectName
 		fragment string
 	}{
-		{DialectSQLite, "`memo`.`content` REGEXP ?"},
-		{DialectMySQL, "`memo`.`content` REGEXP ?"},
-		{DialectPostgres, "memo.content ~ $1"},
+		{DialectSQLite, "`note`.`content` REGEXP ?"},
+		{DialectMySQL, "`note`.`content` REGEXP ?"},
+		{DialectPostgres, "note.content ~ $1"},
 	}
 	for _, tc := range cases {
 		stmt, err := engine.CompileToStatement(context.Background(), `content.matches("v[0-9]+")`, RenderOptions{Dialect: tc.dialect})
@@ -572,9 +572,9 @@ func TestRenderHasLocationPerDialect(t *testing.T) {
 		dialect DialectName
 		sql     string
 	}{
-		{DialectSQLite, "JSON_EXTRACT(`memo`.`payload`, '$.location') IS NOT NULL"},
-		{DialectMySQL, "COALESCE(JSON_TYPE(JSON_EXTRACT(`memo`.`payload`, '$.location')), 'NULL') != 'NULL'"},
-		{DialectPostgres, "memo.payload->>'location' IS NOT NULL"},
+		{DialectSQLite, "JSON_EXTRACT(`note`.`payload`, '$.location') IS NOT NULL"},
+		{DialectMySQL, "COALESCE(JSON_TYPE(JSON_EXTRACT(`note`.`payload`, '$.location')), 'NULL') != 'NULL'"},
+		{DialectPostgres, "note.payload->>'location' IS NOT NULL"},
 	}
 	for _, tc := range cases {
 		stmt, err := engine.CompileToStatement(context.Background(), `has_location`, RenderOptions{Dialect: tc.dialect})
@@ -590,7 +590,7 @@ func TestRenderHasLocationNegationAndComparisons(t *testing.T) {
 	engine, err := NewEngine(NewSchema())
 	require.NoError(t, err)
 
-	const exists = "JSON_EXTRACT(`memo`.`payload`, '$.location') IS NOT NULL"
+	const exists = "JSON_EXTRACT(`note`.`payload`, '$.location') IS NOT NULL"
 	cases := []struct {
 		expr string
 		sql  string
@@ -630,7 +630,7 @@ func TestHasLocationSQLiteBehavior(t *testing.T) {
 	db.SetMaxOpenConns(1)
 	t.Cleanup(func() { require.NoError(t, db.Close()) })
 
-	_, err = db.Exec(`CREATE TABLE memo (id INTEGER PRIMARY KEY, payload TEXT)`)
+	_, err = db.Exec(`CREATE TABLE note (id INTEGER PRIMARY KEY, payload TEXT)`)
 	require.NoError(t, err)
 	for _, fixture := range []struct {
 		id      int
@@ -642,7 +642,7 @@ func TestHasLocationSQLiteBehavior(t *testing.T) {
 		{4, `{"location":null}`},
 		{5, nil},
 	} {
-		_, err = db.Exec(`INSERT INTO memo (id, payload) VALUES (?, ?)`, fixture.id, fixture.payload)
+		_, err = db.Exec(`INSERT INTO note (id, payload) VALUES (?, ?)`, fixture.id, fixture.payload)
 		require.NoError(t, err)
 	}
 
@@ -661,7 +661,7 @@ func TestHasLocationSQLiteBehavior(t *testing.T) {
 	for _, tc := range cases {
 		stmt, err := engine.CompileToStatement(context.Background(), tc.expr, RenderOptions{Dialect: DialectSQLite})
 		require.NoError(t, err, tc.expr)
-		require.Equal(t, tc.want, selectMemoIDs(t, db, stmt), tc.expr)
+		require.Equal(t, tc.want, selectNoteIDs(t, db, stmt), tc.expr)
 	}
 }
 
@@ -672,9 +672,9 @@ func TestRenderJSONBoolComparisonsPerDialect(t *testing.T) {
 	require.NoError(t, err)
 
 	predicates := map[DialectName]string{
-		DialectSQLite:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') IS TRUE",
-		DialectMySQL:    "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
-		DialectPostgres: "(memo.payload->'property'->>'hasLink')::boolean IS TRUE",
+		DialectSQLite:   "JSON_EXTRACT(`note`.`payload`, '$.property.hasLink') IS TRUE",
+		DialectMySQL:    "COALESCE(JSON_EXTRACT(`note`.`payload`, '$.property.hasLink'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
+		DialectPostgres: "(note.payload->'property'->>'hasLink')::boolean IS TRUE",
 	}
 	for dialect, predicate := range predicates {
 		cases := []struct {
@@ -698,7 +698,7 @@ func TestRenderJSONBoolComparisonsPerDialect(t *testing.T) {
 }
 
 // TestJSONBoolComparisonSQLiteBehavior pins the comparison semantics of the
-// JSON boolean flags against a real database. Memo payloads omit false flags,
+// JSON boolean flags against a real database. Note payloads omit false flags,
 // so a missing key, a missing property object and a NULL payload all count as
 // false, and `flag == false` must match the same rows as `!flag`.
 func TestJSONBoolComparisonSQLiteBehavior(t *testing.T) {
@@ -707,7 +707,7 @@ func TestJSONBoolComparisonSQLiteBehavior(t *testing.T) {
 	db.SetMaxOpenConns(1)
 	t.Cleanup(func() { require.NoError(t, db.Close()) })
 
-	_, err = db.Exec(`CREATE TABLE memo (id INTEGER PRIMARY KEY, payload TEXT)`)
+	_, err = db.Exec(`CREATE TABLE note (id INTEGER PRIMARY KEY, payload TEXT)`)
 	require.NoError(t, err)
 
 	engine, err := NewEngine(NewSchema())
@@ -720,7 +720,7 @@ func TestJSONBoolComparisonSQLiteBehavior(t *testing.T) {
 		"has_incomplete_tasks": "hasIncompleteTasks",
 	}
 	for field, key := range flags {
-		_, err = db.Exec(`DELETE FROM memo`)
+		_, err = db.Exec(`DELETE FROM note`)
 		require.NoError(t, err)
 		for _, fixture := range []struct {
 			id      int
@@ -732,7 +732,7 @@ func TestJSONBoolComparisonSQLiteBehavior(t *testing.T) {
 			{4, `{"property":{}}`},
 			{5, nil},
 		} {
-			_, err = db.Exec(`INSERT INTO memo (id, payload) VALUES (?, ?)`, fixture.id, fixture.payload)
+			_, err = db.Exec(`INSERT INTO note (id, payload) VALUES (?, ?)`, fixture.id, fixture.payload)
 			require.NoError(t, err)
 		}
 
@@ -750,7 +750,7 @@ func TestJSONBoolComparisonSQLiteBehavior(t *testing.T) {
 		for _, tc := range cases {
 			stmt, err := engine.CompileToStatement(context.Background(), tc.expr, RenderOptions{Dialect: DialectSQLite})
 			require.NoError(t, err, tc.expr)
-			require.Equal(t, tc.want, selectMemoIDs(t, db, stmt), tc.expr)
+			require.Equal(t, tc.want, selectNoteIDs(t, db, stmt), tc.expr)
 		}
 	}
 }

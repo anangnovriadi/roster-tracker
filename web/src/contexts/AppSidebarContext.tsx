@@ -1,16 +1,16 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import type { MemoParentStatus } from "@/components/MemoParentPlaceholder";
+import type { NoteParentStatus } from "@/components/NoteParentPlaceholder";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import type { Memo } from "@/types/proto/api/memo_service_pb";
+import type { Note } from "@/types/proto/api/note_service_pb";
 
 export type AttachmentSection = "all" | "media" | "documents" | "unused";
 export type InboxFilter = "all" | "unread" | "archived";
 
-export interface MemoDetailSidebarDescriptor {
-  memo: Memo;
-  parentMemo?: Memo;
-  parentStatus?: MemoParentStatus;
+export interface NoteDetailSidebarDescriptor {
+  note: Note;
+  parentNote?: Note;
+  parentStatus?: NoteParentStatus;
   onParentRetry?: () => void;
   from?: string;
   commentCount?: number;
@@ -25,8 +25,8 @@ interface AppSidebarContextValue {
   setAttachmentSection: (section: AttachmentSection) => void;
   inboxFilter: InboxFilter;
   setInboxFilter: (filter: InboxFilter) => void;
-  memoDetail: MemoDetailSidebarDescriptor | undefined;
-  setMemoDetail: (descriptor?: MemoDetailSidebarDescriptor) => void;
+  noteDetail: NoteDetailSidebarDescriptor | undefined;
+  setNoteDetail: (descriptor?: NoteDetailSidebarDescriptor) => void;
   mobileOpen: boolean;
   setMobileOpen: (open: boolean) => void;
   closeMobileThen: (action: () => void) => void;
@@ -44,7 +44,7 @@ export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const [attachmentSection, setAttachmentSection] = useState<AttachmentSection>("all");
   const [inboxFilter, setInboxFilter] = useState<InboxFilter>("all");
-  const [memoDetail, setMemoDetailState] = useState<MemoDetailSidebarDescriptor>();
+  const [noteDetail, setNoteDetailState] = useState<NoteDetailSidebarDescriptor>();
   const [mobileOpen, setMobileOpen] = useState(false);
   const pendingMobileCloseActionRef = useRef<(() => void) | undefined>(undefined);
   const scheduledMobileCloseActionFrameRef = useRef<number | undefined>(undefined);
@@ -70,8 +70,8 @@ export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [location.pathname]);
 
-  const setMemoDetail = useCallback((descriptor?: MemoDetailSidebarDescriptor) => {
-    setMemoDetailState(descriptor);
+  const setNoteDetail = useCallback((descriptor?: NoteDetailSidebarDescriptor) => {
+    setNoteDetailState(descriptor);
   }, []);
 
   const closeMobileThen = useCallback(
@@ -107,8 +107,8 @@ export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
       setAttachmentSection,
       inboxFilter,
       setInboxFilter,
-      memoDetail,
-      setMemoDetail,
+      noteDetail,
+      setNoteDetail,
       mobileOpen,
       setMobileOpen,
       closeMobileThen,
@@ -121,8 +121,8 @@ export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
     [
       attachmentSection,
       inboxFilter,
-      memoDetail,
-      setMemoDetail,
+      noteDetail,
+      setNoteDetail,
       mobileOpen,
       closeMobileThen,
       completeMobileClose,

@@ -30,14 +30,14 @@ const (
 	testUser     = "root"
 	testPassword = "test"
 
-	// Memos container settings for migration testing.
-	MemosDockerImage = "neosmemo/memos"
-	// PreBaselineMemosVersion exercises the mandatory v0.31.0 intermediate upgrade.
+	// Roster Tracker container settings for migration testing.
+	NotesDockerImage = "anangnovriadi/roster-tracker"
+	// PreBaselineNotesVersion exercises the mandatory v0.31.0 intermediate upgrade.
 	// Keep this pinned: the current binary no longer ships its migration history.
-	PreBaselineMemosVersion = "0.30.0"
+	PreBaselineNotesVersion = "0.30.0"
 
-	mysqlNetworkAlias    = "memos-mysql"
-	postgresNetworkAlias = "memos-postgres"
+	mysqlNetworkAlias    = "notes-mysql"
+	postgresNetworkAlias = "notes-postgres"
 )
 
 var (
@@ -143,7 +143,7 @@ func GetMySQLDSN(t *testing.T) string {
 	defer dbCreationMutex.Unlock()
 
 	// Create a fresh database for this test
-	dbName := fmt.Sprintf("memos_test_%d", dbCounter.Add(1))
+	dbName := fmt.Sprintf("notes_test_%d", dbCounter.Add(1))
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		t.Fatalf("failed to connect to MySQL: %v", err)
@@ -242,7 +242,7 @@ func GetPostgresDSN(t *testing.T) string {
 	defer dbCreationMutex.Unlock()
 
 	// Create a fresh database for this test
-	dbName := fmt.Sprintf("memos_test_%d", dbCounter.Add(1))
+	dbName := fmt.Sprintf("notes_test_%d", dbCounter.Add(1))
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		t.Fatalf("failed to connect to PostgreSQL: %v", err)
@@ -272,26 +272,26 @@ func TerminateContainers() {
 	}
 }
 
-// MemosContainerConfig holds configuration for starting a Memos container.
-type MemosContainerConfig struct {
-	Version string // Memos version tag (e.g., "0.24.0")
+// NotesContainerConfig holds configuration for starting a Roster Tracker container.
+type NotesContainerConfig struct {
+	Version string // Roster Tracker version tag (e.g., "0.24.0")
 	Driver  string // Database driver: sqlite, mysql, postgres
 	DSN     string // Database DSN (for mysql/postgres)
 	DataDir string // Host directory to mount for SQLite data
 }
 
-// MemosStartupWaitStrategy defines the wait strategy for Memos container startup.
+// NotesStartupWaitStrategy defines the wait strategy for Roster Tracker container startup.
 // Uses regex to match various log message formats across versions.
-var MemosStartupWaitStrategy = wait.ForAll(
+var NotesStartupWaitStrategy = wait.ForAll(
 	wait.ForLog("(started successfully|has been started on port)").AsRegexp(),
 	wait.ForListeningPort("5230/tcp"),
 ).WithDeadline(180 * time.Second)
 
-// StartMemosContainer starts a Memos container for migration testing.
-// For SQLite, it mounts the dataDir to /var/opt/memos.
-func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcontainers.Container, error) {
+// StartNotesContainer starts a Roster Tracker container for migration testing.
+// For SQLite, it mounts the dataDir to /var/opt/roster-tracker.
+func StartNotesContainer(ctx context.Context, cfg NotesContainerConfig) (testcontainers.Container, error) {
 	env := map[string]string{
-		"MEMOS_MODE": "prod",
+		"ROSTER_MODE": "prod",
 	}
 
 	nw, err := requireTestNetwork(ctx)
@@ -303,32 +303,32 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 
 	switch cfg.Driver {
 	case "sqlite":
-		env["MEMOS_DRIVER"] = "sqlite"
+		env["ROSTER_DRIVER"] = "sqlite"
 		opts = append(opts, testcontainers.WithHostConfigModifier(func(hc *container.HostConfig) {
-			hc.Binds = append(hc.Binds, fmt.Sprintf("%s:%s", cfg.DataDir, "/var/opt/memos"))
+			hc.Binds = append(hc.Binds, fmt.Sprintf("%s:%s", cfg.DataDir, "/var/opt/roster-tracker"))
 		}))
 	case "mysql", "postgres":
 		if cfg.DSN == "" {
 			return nil, errors.Errorf("dsn is required for %s migration testing", cfg.Driver)
 		}
-		env["MEMOS_DRIVER"] = cfg.Driver
-		env["MEMOS_DSN"] = cfg.DSN
+		env["ROSTER_DRIVER"] = cfg.Driver
+		env["ROSTER_DSN"] = cfg.DSN
 	default:
 		return nil, errors.Errorf("unsupported driver for migration testing: %s", cfg.Driver)
 	}
 
 	req := testcontainers.ContainerRequest{
-		Image:        fmt.Sprintf("%s:%s", MemosDockerImage, cfg.Version),
+		Image:        fmt.Sprintf("%s:%s", NotesDockerImage, cfg.Version),
 		Env:          env,
 		ExposedPorts: []string{"5230/tcp"},
-		WaitingFor:   MemosStartupWaitStrategy,
+		WaitingFor:   NotesStartupWaitStrategy,
 		User:         fmt.Sprintf("%d:%d", os.Getuid(), os.Getgid()),
 	}
 
 	// Use local image if specified
 	if cfg.Version == "local" {
-		if os.Getenv("MEMOS_TEST_IMAGE_BUILT") == "1" {
-			req.Image = "memos-test:local"
+		if os.Getenv("ROSTER_TEST_IMAGE_BUILT") == "1" {
+			req.Image = "notes-test:local"
 		} else {
 			req.Image = ""
 			req.FromDockerfile = testcontainers.FromDockerfile{
@@ -353,7 +353,7 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 
 	ctr, err := testcontainers.GenericContainer(ctx, genericReq)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to start memos container")
+		return nil, errors.Wrap(err, "failed to start notes container")
 	}
 
 	return ctr, nil

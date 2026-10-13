@@ -3,7 +3,7 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";
 import { TimelineViewProvider, useLinkPreviewEnabled, useView } from "@/contexts/ViewContext";
 
-const storageKey = "memos-view-setting";
+const storageKey = "notes-view-setting";
 const saved = { timeBasis: "update_time", orderByTimeAsc: true, maxColumns: 3, compactMode: true, linkPreview: false };
 const defaults = { timeBasis: "create_time", orderByTimeAsc: false, maxColumns: 1, compactMode: false, linkPreview: true };
 
@@ -45,8 +45,8 @@ describe("Timeline display settings scope", () => {
     "/calendar",
     "/archived",
     "/attachments",
-    "/memos/example",
-    "/memos/shares/example",
+    "/notes/example",
+    "/notes/shares/example",
     "/setting",
     "/views",
   ])("keeps %s independent of Timeline preferences", (path) => {

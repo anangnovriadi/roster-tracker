@@ -4,7 +4,7 @@ import "sync"
 
 const (
 	sseClientEventBufferSize = 32
-	memoChangedSSEFrame      = "data: {\"type\":\"memo.changed\"}\n\n"
+	noteChangedSSEFrame      = "data: {\"type\":\"note.changed\"}\n\n"
 	spaceChangedSSEFrame     = "data: {\"type\":\"space.changed\"}\n\n"
 )
 
@@ -74,17 +74,17 @@ func (h *SSEHub) Close() {
 	}
 }
 
-// publishMemoChanged tells connected clients to refresh memo-backed caches.
+// publishNoteChanged tells connected clients to refresh note-backed caches.
 // The event deliberately carries no subject or authorization-sensitive data.
 // Slow clients with a full buffer are disconnected so they can reconnect and
 // resynchronize instead of silently missing an event.
-func (h *SSEHub) publishMemoChanged() {
-	h.publish([]byte(memoChangedSSEFrame))
+func (h *SSEHub) publishNoteChanged() {
+	h.publish([]byte(noteChangedSSEFrame))
 }
 
 // publishSpaceChanged tells connected clients to refresh Space-backed caches
 // and caches whose visibility or presentation depends on Space state.
-// Like memo.changed, the event carries no authorization-sensitive data.
+// Like note.changed, the event carries no authorization-sensitive data.
 func (h *SSEHub) publishSpaceChanged() {
 	h.publish([]byte(spaceChangedSSEFrame))
 }

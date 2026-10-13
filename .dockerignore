@@ -2,8 +2,8 @@
 /build/
 /bin/
 /tmp/
-/memos
-/memos.exe
+/notes
+/notes.exe
 coverage.out
 /.pnpm-store/
 /.worktrees/

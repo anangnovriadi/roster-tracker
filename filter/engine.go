@@ -113,7 +113,7 @@ var (
 	defaultAttachmentErr  error
 )
 
-// DefaultEngine returns the process-wide memo filter engine.
+// DefaultEngine returns the process-wide note filter engine.
 func DefaultEngine() (*Engine, error) {
 	defaultOnce.Do(func() {
 		defaultInst, defaultErr = NewEngine(NewSchema())

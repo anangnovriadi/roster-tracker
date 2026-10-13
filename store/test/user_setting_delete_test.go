@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestDeleteUserSettingsInvalidatesOnlyMatchingCacheEntries(t *testing.T) {
@@ -26,9 +26,9 @@ func TestDeleteUserSettingsInvalidatesOnlyMatchingCacheEntries(t *testing.T) {
 				settings = append(settings,
 					&storepb.UserSetting{UserId: user.ID, Key: storepb.UserSetting_GENERAL,
 						Value: &storepb.UserSetting_General{General: &storepb.GeneralUserSetting{Locale: user.Username}}},
-					&storepb.UserSetting{UserId: user.ID, Key: storepb.UserSetting_MEMO_VIEWS,
-						Value: &storepb.UserSetting_MemoViews{MemoViews: &storepb.MemoViewsUserSetting{
-							MemoViews: []*storepb.MemoViewsUserSetting_MemoView{{Id: "saved", Title: user.Username}},
+					&storepb.UserSetting{UserId: user.ID, Key: storepb.UserSetting_NOTE_VIEWS,
+						Value: &storepb.UserSetting_NoteViews{NoteViews: &storepb.NoteViewsUserSetting{
+							NoteViews: []*storepb.NoteViewsUserSetting_NoteView{{Id: "saved", Title: user.Username}},
 						}}})
 			}
 			for _, setting := range settings {

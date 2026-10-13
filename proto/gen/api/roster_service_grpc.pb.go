@@ -20,9 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	RosterService_ListRosterAssignments_FullMethodName  = "/memos.api.RosterService/ListRosterAssignments"
-	RosterService_CreateRosterAssignment_FullMethodName = "/memos.api.RosterService/CreateRosterAssignment"
-	RosterService_DeleteRosterAssignment_FullMethodName = "/memos.api.RosterService/DeleteRosterAssignment"
+	RosterService_ListRosterAssignments_FullMethodName  = "/roster.api.RosterService/ListRosterAssignments"
+	RosterService_CreateRosterAssignment_FullMethodName = "/roster.api.RosterService/CreateRosterAssignment"
+	RosterService_DeleteRosterAssignment_FullMethodName = "/roster.api.RosterService/DeleteRosterAssignment"
 )
 
 // RosterServiceClient is the client API for RosterService service.
@@ -193,7 +193,7 @@ func _RosterService_DeleteRosterAssignment_Handler(srv interface{}, ctx context.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var RosterService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "memos.api.RosterService",
+	ServiceName: "roster.api.RosterService",
 	HandlerType: (*RosterServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

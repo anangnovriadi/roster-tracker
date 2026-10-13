@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	api "github.com/usememos/memos/proto/gen/api"
+	api "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 	http "net/http"
 	strings "strings"
 )
@@ -22,7 +22,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// AIServiceName is the fully-qualified name of the AIService service.
-	AIServiceName = "memos.api.AIService"
+	AIServiceName = "roster.api.AIService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -34,17 +34,17 @@ const (
 // period.
 const (
 	// AIServiceTranscribeProcedure is the fully-qualified name of the AIService's Transcribe RPC.
-	AIServiceTranscribeProcedure = "/memos.api.AIService/Transcribe"
+	AIServiceTranscribeProcedure = "/roster.api.AIService/Transcribe"
 )
 
-// AIServiceClient is a client for the memos.api.AIService service.
+// AIServiceClient is a client for the roster.api.AIService service.
 type AIServiceClient interface {
 	// Transcribe transcribes an audio file with the instance's configured
 	// transcription provider. The caller must be signed in, and requests are rate limited per user.
 	Transcribe(context.Context, *connect.Request[api.TranscribeRequest]) (*connect.Response[api.TranscribeResponse], error)
 }
 
-// NewAIServiceClient constructs a client for the memos.api.AIService service. By default, it uses
+// NewAIServiceClient constructs a client for the roster.api.AIService service. By default, it uses
 // the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
@@ -69,12 +69,12 @@ type aIServiceClient struct {
 	transcribe *connect.Client[api.TranscribeRequest, api.TranscribeResponse]
 }
 
-// Transcribe calls memos.api.AIService.Transcribe.
+// Transcribe calls roster.api.AIService.Transcribe.
 func (c *aIServiceClient) Transcribe(ctx context.Context, req *connect.Request[api.TranscribeRequest]) (*connect.Response[api.TranscribeResponse], error) {
 	return c.transcribe.CallUnary(ctx, req)
 }
 
-// AIServiceHandler is an implementation of the memos.api.AIService service.
+// AIServiceHandler is an implementation of the roster.api.AIService service.
 type AIServiceHandler interface {
 	// Transcribe transcribes an audio file with the instance's configured
 	// transcription provider. The caller must be signed in, and requests are rate limited per user.
@@ -94,7 +94,7 @@ func NewAIServiceHandler(svc AIServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aIServiceMethods.ByName("Transcribe")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/memos.api.AIService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/roster.api.AIService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AIServiceTranscribeProcedure:
 			aIServiceTranscribeHandler.ServeHTTP(w, r)
@@ -108,5 +108,5 @@ func NewAIServiceHandler(svc AIServiceHandler, opts ...connect.HandlerOption) (s
 type UnimplementedAIServiceHandler struct{}
 
 func (UnimplementedAIServiceHandler) Transcribe(context.Context, *connect.Request[api.TranscribeRequest]) (*connect.Response[api.TranscribeResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AIService.Transcribe is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AIService.Transcribe is not implemented"))
 }

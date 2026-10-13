@@ -7,12 +7,12 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 type fakeStore struct {
 	setting     *storepb.InstanceUsageLimitsSetting
-	memos       int64
+	notes       int64
 	storage     int64
 	countCalls  int
 	sumCalls    int
@@ -30,9 +30,9 @@ func (f *fakeStore) GetInstanceUsageLimitsSetting(context.Context) (*storepb.Ins
 	return f.setting, nil
 }
 
-func (f *fakeStore) CountUserMemos(context.Context, int32) (int64, error) {
+func (f *fakeStore) CountUserNotes(context.Context, int32) (int64, error) {
 	f.countCalls++
-	return f.memos, f.countingErr
+	return f.notes, f.countingErr
 }
 
 func (f *fakeStore) GetAttachmentStorageUsage(context.Context, int32) (int64, error) {
@@ -50,40 +50,40 @@ func TestResolve(t *testing.T) {
 		// A user's limit listed before the default still wins.
 		limit("alice-storage", MetricStorageBytes, alice, 5<<30),
 		limit("default-storage", MetricStorageBytes, 0, 1<<30),
-		limit("default-memos", MetricMemos, 0, 1000),
-		limit("alice-memos", MetricMemos, alice, 0),
+		limit("default-notes", MetricNotes, 0, 1000),
+		limit("alice-notes", MetricNotes, alice, 0),
 		limit("bob-upload", MetricUploadBytes, bob, 10<<20),
 	}}
 
 	require.Equal(t, Effective{
-		Memos:        Limit{Value: 0, Source: "alice-memos"},
+		Notes:        Limit{Value: 0, Source: "alice-notes"},
 		StorageBytes: Limit{Value: 5 << 30, Source: "alice-storage"},
 	}, Resolve(setting, alice), "a user's own limit, even unlimited, replaces the default")
 	require.Equal(t, Effective{
-		Memos:        Limit{Value: 1000, Source: "default-memos"},
+		Notes:        Limit{Value: 1000, Source: "default-notes"},
 		StorageBytes: Limit{Value: 1 << 30, Source: "default-storage"},
 		UploadBytes:  Limit{Value: 10 << 20, Source: "bob-upload"},
 	}, Resolve(setting, bob))
 	require.Equal(t, Effective{}, Resolve(&storepb.InstanceUsageLimitsSetting{}, alice), "no limits means unlimited")
 }
 
-func TestCheckMemoCreate(t *testing.T) {
+func TestCheckNoteCreate(t *testing.T) {
 	ctx := context.Background()
 
-	unlimited := &fakeStore{memos: 1 << 20}
-	require.NoError(t, CheckMemoCreate(ctx, unlimited, 1))
-	require.Zero(t, unlimited.countCalls, "no count query runs without a memo limit")
+	unlimited := &fakeStore{notes: 1 << 20}
+	require.NoError(t, CheckNoteCreate(ctx, unlimited, 1))
+	require.Zero(t, unlimited.countCalls, "no count query runs without a note limit")
 
-	limited := &fakeStore{memos: 2, setting: &storepb.InstanceUsageLimitsSetting{Limits: []*storepb.InstanceUsageLimitsSetting_UsageLimit{
-		limit("default-memos", MetricMemos, 0, 3),
+	limited := &fakeStore{notes: 2, setting: &storepb.InstanceUsageLimitsSetting{Limits: []*storepb.InstanceUsageLimitsSetting_UsageLimit{
+		limit("default-notes", MetricNotes, 0, 3),
 	}}}
-	require.NoError(t, CheckMemoCreate(ctx, limited, 1))
-	limited.memos = 3
-	refusal := AsRefusal(CheckMemoCreate(ctx, limited, 1))
-	require.Equal(t, &Refusal{Metric: MetricMemos, Limit: 3, Usage: 3, Source: "default-memos"}, refusal)
+	require.NoError(t, CheckNoteCreate(ctx, limited, 1))
+	limited.notes = 3
+	refusal := AsRefusal(CheckNoteCreate(ctx, limited, 1))
+	require.Equal(t, &Refusal{Metric: MetricNotes, Limit: 3, Usage: 3, Source: "default-notes"}, refusal)
 
 	limited.countingErr = errors.New("database down")
-	err := CheckMemoCreate(ctx, limited, 1)
+	err := CheckNoteCreate(ctx, limited, 1)
 	require.Error(t, err)
 	require.Nil(t, AsRefusal(err), "a failed count is an error, not a refusal")
 }

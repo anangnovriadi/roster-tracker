@@ -1,4 +1,4 @@
-module github.com/usememos/memos
+module github.com/anangnovriadi/roster-tracker
 
 go 1.27.2
 

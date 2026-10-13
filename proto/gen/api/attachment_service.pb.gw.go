@@ -336,7 +336,7 @@ func RegisterAttachmentServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AttachmentService/ListAttachments", runtime.WithHTTPPathPattern("/api/attachments"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AttachmentService/ListAttachments", runtime.WithHTTPPathPattern("/api/attachments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -356,7 +356,7 @@ func RegisterAttachmentServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AttachmentService/GetAttachment", runtime.WithHTTPPathPattern("/api/{name=attachments/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AttachmentService/GetAttachment", runtime.WithHTTPPathPattern("/api/{name=attachments/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -376,7 +376,7 @@ func RegisterAttachmentServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AttachmentService/CreateAttachment", runtime.WithHTTPPathPattern("/api/attachments"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AttachmentService/CreateAttachment", runtime.WithHTTPPathPattern("/api/attachments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -396,7 +396,7 @@ func RegisterAttachmentServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AttachmentService/UpdateAttachment", runtime.WithHTTPPathPattern("/api/{attachment.name=attachments/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AttachmentService/UpdateAttachment", runtime.WithHTTPPathPattern("/api/{attachment.name=attachments/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -416,7 +416,7 @@ func RegisterAttachmentServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AttachmentService/DeleteAttachment", runtime.WithHTTPPathPattern("/api/{name=attachments/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AttachmentService/DeleteAttachment", runtime.WithHTTPPathPattern("/api/{name=attachments/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -436,7 +436,7 @@ func RegisterAttachmentServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AttachmentService/BatchDeleteAttachments", runtime.WithHTTPPathPattern("/api/attachments:batchDelete"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AttachmentService/BatchDeleteAttachments", runtime.WithHTTPPathPattern("/api/attachments:batchDelete"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -456,7 +456,7 @@ func RegisterAttachmentServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AttachmentService/UploadAttachment", runtime.WithHTTPPathPattern("/api/attachments:upload"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AttachmentService/UploadAttachment", runtime.WithHTTPPathPattern("/api/attachments:upload"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -514,7 +514,7 @@ func RegisterAttachmentServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AttachmentService/ListAttachments", runtime.WithHTTPPathPattern("/api/attachments"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AttachmentService/ListAttachments", runtime.WithHTTPPathPattern("/api/attachments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -531,7 +531,7 @@ func RegisterAttachmentServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AttachmentService/GetAttachment", runtime.WithHTTPPathPattern("/api/{name=attachments/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AttachmentService/GetAttachment", runtime.WithHTTPPathPattern("/api/{name=attachments/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -548,7 +548,7 @@ func RegisterAttachmentServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AttachmentService/CreateAttachment", runtime.WithHTTPPathPattern("/api/attachments"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AttachmentService/CreateAttachment", runtime.WithHTTPPathPattern("/api/attachments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -565,7 +565,7 @@ func RegisterAttachmentServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AttachmentService/UpdateAttachment", runtime.WithHTTPPathPattern("/api/{attachment.name=attachments/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AttachmentService/UpdateAttachment", runtime.WithHTTPPathPattern("/api/{attachment.name=attachments/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -582,7 +582,7 @@ func RegisterAttachmentServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AttachmentService/DeleteAttachment", runtime.WithHTTPPathPattern("/api/{name=attachments/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AttachmentService/DeleteAttachment", runtime.WithHTTPPathPattern("/api/{name=attachments/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -599,7 +599,7 @@ func RegisterAttachmentServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AttachmentService/BatchDeleteAttachments", runtime.WithHTTPPathPattern("/api/attachments:batchDelete"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AttachmentService/BatchDeleteAttachments", runtime.WithHTTPPathPattern("/api/attachments:batchDelete"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -616,7 +616,7 @@ func RegisterAttachmentServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AttachmentService/UploadAttachment", runtime.WithHTTPPathPattern("/api/attachments:upload"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AttachmentService/UploadAttachment", runtime.WithHTTPPathPattern("/api/attachments:upload"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

@@ -12,10 +12,10 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/internal/version"
-	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/internal/version"
+	"github.com/anangnovriadi/roster-tracker/store"
+	"github.com/anangnovriadi/roster-tracker/store/db"
 )
 
 // NewTestingStore creates a new testing store with a fresh database.
@@ -100,7 +100,7 @@ func getTestingProfileForDriver(t *testing.T, driver string) *profile.Profile {
 	var dsn string
 	switch driver {
 	case "sqlite":
-		dsn = fmt.Sprintf("%s/memos_%s.db", dir, mode)
+		dsn = fmt.Sprintf("%s/notes_%s.db", dir, mode)
 	case "mysql":
 		dsn = GetMySQLDSN(t)
 	case "postgres":

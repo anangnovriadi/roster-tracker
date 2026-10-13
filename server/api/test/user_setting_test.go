@@ -8,9 +8,9 @@ import (
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/api"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/api"
 )
 
 func TestListUserSettingsOmitsInternalStoreSettings(t *testing.T) {
@@ -32,9 +32,9 @@ func TestListUserSettingsOmitsInternalStoreSettings(t *testing.T) {
 
 	_, err = ts.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
-		Value: &storepb.UserSetting_MemoViews{
-			MemoViews: &storepb.MemoViewsUserSetting{},
+		Key:    storepb.UserSetting_NOTE_VIEWS,
+		Value: &storepb.UserSetting_NoteViews{
+			NoteViews: &storepb.NoteViewsUserSetting{},
 		},
 	})
 	require.NoError(t, err)
@@ -85,7 +85,7 @@ func TestGeneralUserSettingSaveMediaMetadata(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, updated.GetGeneralSetting().GetSaveMediaMetadata())
 	require.Equal(t, "en", updated.GetGeneralSetting().GetLocale())
-	require.Equal(t, "PRIVATE", updated.GetGeneralSetting().GetMemoVisibility())
+	require.Equal(t, "PRIVATE", updated.GetGeneralSetting().GetNoteVisibility())
 
 	updated, err = ts.Service.UpdateUserSetting(userCtx, &apipb.UpdateUserSettingRequest{
 		UserSetting: &apipb.UserSetting{

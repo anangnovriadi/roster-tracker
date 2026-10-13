@@ -10,7 +10,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 type InstanceSetting struct {
@@ -40,8 +40,8 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 	} else if upsert.Key == storepb.InstanceSettingKey_STORAGE {
 		NormalizeInstanceStorageSetting(upsert.GetStorageSetting())
 		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
-	} else if upsert.Key == storepb.InstanceSettingKey_MEMO_RELATED {
-		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
+	} else if upsert.Key == storepb.InstanceSettingKey_NOTE_RELATED {
+		valueBytes, err = protojson.Marshal(upsert.GetNoteRelatedSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_TAGS {
 		valueBytes, err = protojson.Marshal(upsert.GetTagsSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_NOTIFICATION {
@@ -265,32 +265,32 @@ func (s *Store) AllowsAnonymousAccess(ctx context.Context) (bool, error) {
 // DefaultContentLengthLimit is the default limit of content length in bytes. 8KB.
 const DefaultContentLengthLimit = 8 * 1024
 
-// DefaultReactions is the default reactions for memo related setting.
+// DefaultReactions is the default reactions for note related setting.
 var DefaultReactions = []string{"👍", "👎", "❤️", "🎉", "😄", "😕", "😢", "😡"}
 
-func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.InstanceMemoRelatedSetting, error) {
+func (s *Store) GetInstanceNoteRelatedSetting(ctx context.Context) (*storepb.InstanceNoteRelatedSetting, error) {
 	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
-		Name: storepb.InstanceSettingKey_MEMO_RELATED.String(),
+		Name: storepb.InstanceSettingKey_NOTE_RELATED.String(),
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get instance general setting")
 	}
 
-	instanceMemoRelatedSetting := &storepb.InstanceMemoRelatedSetting{}
+	instanceNoteRelatedSetting := &storepb.InstanceNoteRelatedSetting{}
 	if instanceSetting != nil {
-		instanceMemoRelatedSetting = instanceSetting.GetMemoRelatedSetting()
+		instanceNoteRelatedSetting = instanceSetting.GetNoteRelatedSetting()
 	}
-	if instanceMemoRelatedSetting.ContentLengthLimit < DefaultContentLengthLimit {
-		instanceMemoRelatedSetting.ContentLengthLimit = DefaultContentLengthLimit
+	if instanceNoteRelatedSetting.ContentLengthLimit < DefaultContentLengthLimit {
+		instanceNoteRelatedSetting.ContentLengthLimit = DefaultContentLengthLimit
 	}
-	if len(instanceMemoRelatedSetting.Reactions) == 0 {
-		instanceMemoRelatedSetting.Reactions = append(instanceMemoRelatedSetting.Reactions, DefaultReactions...)
+	if len(instanceNoteRelatedSetting.Reactions) == 0 {
+		instanceNoteRelatedSetting.Reactions = append(instanceNoteRelatedSetting.Reactions, DefaultReactions...)
 	}
 	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key:   storepb.InstanceSettingKey_MEMO_RELATED,
-		Value: &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: instanceMemoRelatedSetting},
+		Key:   storepb.InstanceSettingKey_NOTE_RELATED,
+		Value: &storepb.InstanceSetting_NoteRelatedSetting{NoteRelatedSetting: instanceNoteRelatedSetting},
 	})
-	return instanceMemoRelatedSetting, nil
+	return instanceNoteRelatedSetting, nil
 }
 
 func (s *Store) GetInstanceTagsSetting(ctx context.Context) (*storepb.InstanceTagsSetting, error) {
@@ -436,12 +436,12 @@ func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storep
 			return nil, err
 		}
 		instanceSetting.Value = &storepb.InstanceSetting_StorageSetting{StorageSetting: storageSetting}
-	case storepb.InstanceSettingKey_MEMO_RELATED.String():
-		memoRelatedSetting := &storepb.InstanceMemoRelatedSetting{}
-		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), memoRelatedSetting); err != nil {
+	case storepb.InstanceSettingKey_NOTE_RELATED.String():
+		noteRelatedSetting := &storepb.InstanceNoteRelatedSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), noteRelatedSetting); err != nil {
 			return nil, err
 		}
-		instanceSetting.Value = &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSetting}
+		instanceSetting.Value = &storepb.InstanceSetting_NoteRelatedSetting{NoteRelatedSetting: noteRelatedSetting}
 	case storepb.InstanceSettingKey_TAGS.String():
 		tagsSetting := &storepb.InstanceTagsSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), tagsSetting); err != nil {

@@ -813,7 +813,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/ListSpaces", runtime.WithHTTPPathPattern("/api/spaces"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/ListSpaces", runtime.WithHTTPPathPattern("/api/spaces"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -833,7 +833,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/GetSpace", runtime.WithHTTPPathPattern("/api/{name=spaces/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/GetSpace", runtime.WithHTTPPathPattern("/api/{name=spaces/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -853,7 +853,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/CreateSpace", runtime.WithHTTPPathPattern("/api/spaces"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/CreateSpace", runtime.WithHTTPPathPattern("/api/spaces"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -873,7 +873,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/UpdateSpace", runtime.WithHTTPPathPattern("/api/{space.name=spaces/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/UpdateSpace", runtime.WithHTTPPathPattern("/api/{space.name=spaces/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -893,7 +893,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/DeleteSpace", runtime.WithHTTPPathPattern("/api/{name=spaces/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/DeleteSpace", runtime.WithHTTPPathPattern("/api/{name=spaces/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -913,7 +913,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/ListSpaceMembers", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/members"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/ListSpaceMembers", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/members"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -933,7 +933,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/GetSpaceMember", runtime.WithHTTPPathPattern("/api/{name=spaces/*/members/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/GetSpaceMember", runtime.WithHTTPPathPattern("/api/{name=spaces/*/members/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -953,7 +953,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/UpdateSpaceMember", runtime.WithHTTPPathPattern("/api/{space_member.name=spaces/*/members/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/UpdateSpaceMember", runtime.WithHTTPPathPattern("/api/{space_member.name=spaces/*/members/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -973,7 +973,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/DeleteSpaceMember", runtime.WithHTTPPathPattern("/api/{name=spaces/*/members/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/DeleteSpaceMember", runtime.WithHTTPPathPattern("/api/{name=spaces/*/members/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -993,7 +993,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/ListSpaceInvitations", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/invitations"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/ListSpaceInvitations", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/invitations"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1013,7 +1013,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/ListUserSpaceInvitations", runtime.WithHTTPPathPattern("/api/{parent=users/*}/spaceInvitations"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/ListUserSpaceInvitations", runtime.WithHTTPPathPattern("/api/{parent=users/*}/spaceInvitations"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1033,7 +1033,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/GetSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/GetSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1053,7 +1053,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/CreateSpaceInvitation", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/invitations"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/CreateSpaceInvitation", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/invitations"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1073,7 +1073,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/DeleteSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/DeleteSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1093,7 +1093,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/AcceptSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}:accept"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/AcceptSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}:accept"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1113,7 +1113,7 @@ func RegisterSpaceServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.SpaceService/DeclineSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}:decline"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.SpaceService/DeclineSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}:decline"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1171,7 +1171,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/ListSpaces", runtime.WithHTTPPathPattern("/api/spaces"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/ListSpaces", runtime.WithHTTPPathPattern("/api/spaces"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1188,7 +1188,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/GetSpace", runtime.WithHTTPPathPattern("/api/{name=spaces/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/GetSpace", runtime.WithHTTPPathPattern("/api/{name=spaces/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1205,7 +1205,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/CreateSpace", runtime.WithHTTPPathPattern("/api/spaces"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/CreateSpace", runtime.WithHTTPPathPattern("/api/spaces"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1222,7 +1222,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/UpdateSpace", runtime.WithHTTPPathPattern("/api/{space.name=spaces/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/UpdateSpace", runtime.WithHTTPPathPattern("/api/{space.name=spaces/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1239,7 +1239,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/DeleteSpace", runtime.WithHTTPPathPattern("/api/{name=spaces/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/DeleteSpace", runtime.WithHTTPPathPattern("/api/{name=spaces/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1256,7 +1256,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/ListSpaceMembers", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/members"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/ListSpaceMembers", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/members"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1273,7 +1273,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/GetSpaceMember", runtime.WithHTTPPathPattern("/api/{name=spaces/*/members/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/GetSpaceMember", runtime.WithHTTPPathPattern("/api/{name=spaces/*/members/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1290,7 +1290,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/UpdateSpaceMember", runtime.WithHTTPPathPattern("/api/{space_member.name=spaces/*/members/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/UpdateSpaceMember", runtime.WithHTTPPathPattern("/api/{space_member.name=spaces/*/members/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1307,7 +1307,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/DeleteSpaceMember", runtime.WithHTTPPathPattern("/api/{name=spaces/*/members/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/DeleteSpaceMember", runtime.WithHTTPPathPattern("/api/{name=spaces/*/members/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1324,7 +1324,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/ListSpaceInvitations", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/invitations"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/ListSpaceInvitations", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/invitations"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1341,7 +1341,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/ListUserSpaceInvitations", runtime.WithHTTPPathPattern("/api/{parent=users/*}/spaceInvitations"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/ListUserSpaceInvitations", runtime.WithHTTPPathPattern("/api/{parent=users/*}/spaceInvitations"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1358,7 +1358,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/GetSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/GetSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1375,7 +1375,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/CreateSpaceInvitation", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/invitations"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/CreateSpaceInvitation", runtime.WithHTTPPathPattern("/api/{parent=spaces/*}/invitations"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1392,7 +1392,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/DeleteSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/DeleteSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1409,7 +1409,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/AcceptSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}:accept"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/AcceptSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}:accept"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1426,7 +1426,7 @@ func RegisterSpaceServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.SpaceService/DeclineSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}:decline"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.SpaceService/DeclineSpaceInvitation", runtime.WithHTTPPathPattern("/api/{name=spaces/*/invitations/*}:decline"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

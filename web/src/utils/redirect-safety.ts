@@ -9,8 +9,8 @@ export const AUTH_AUTO_SIGN_IN_PARAM = "auto_sign_in";
 /** Query parameter used to surface why the user was sent to the auth page. */
 export const AUTH_REASON_PARAM = "reason";
 
-/** Reason code signalling that the user hit a memo that requires authentication. */
-export const AUTH_REASON_PROTECTED_MEMO = "protected-memo";
+/** Reason code signalling that the user hit a note that requires authentication. */
+export const AUTH_REASON_PROTECTED_NOTE = "protected-note";
 
 /**
  * Validates a post-authentication redirect target.
@@ -66,10 +66,10 @@ const PUBLIC_ROUTE_PREFIXES = [
   ROUTES.AUTH, // Authentication pages
   ROUTES.EXPLORE, // Explore page
   ROUTES.CALENDAR, // Calendar and the duty roster
-  `${ROUTES.SHARED_MEMO}/`, // Shared memo pages (share-link viewer)
+  `${ROUTES.SHARED_NOTE}/`, // Shared note pages (share-link viewer)
   "/u/", // Legacy author links redirect to Home with a creator filter
   `${ROUTES.NOTE}/`, // Individual note pages (dynamic)
-  "/memos/", // Old note links, redirected to /notes/
+  "/notes/", // Old note links, redirected to /notes/
 ] as const;
 
 /**
@@ -95,7 +95,7 @@ export function shouldGatePrivateInstance(params: { isPrivateInstance: boolean; 
   if (!isPrivateInstance || isAuthenticated) {
     return false;
   }
-  return !pathname.startsWith(`${ROUTES.SHARED_MEMO}/`);
+  return !pathname.startsWith(`${ROUTES.SHARED_NOTE}/`);
 }
 
 /**

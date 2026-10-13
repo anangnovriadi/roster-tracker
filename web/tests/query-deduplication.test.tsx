@@ -2,26 +2,26 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import type { PropsWithChildren, ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MentionResolutionProvider, useResolvedMentionUsernames, useResolvedUser } from "@/components/MemoContent/MentionResolutionContext";
-import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
-import { memoKeys } from "@/hooks/useMemoQueries";
-import { useMemoViews, userKeys, useUser, useUsersByNames, useUsersByUsernames } from "@/hooks/useUserQueries";
-import type { Memo } from "@/types/proto/api/memo_service_pb";
+import { MentionResolutionProvider, useResolvedMentionUsernames, useResolvedUser } from "@/components/NoteContent/MentionResolutionContext";
+import { useResolvedRelationNotes } from "@/components/NoteMetadata/Relation/useResolvedRelationNotes";
+import { noteKeys } from "@/hooks/useNoteQueries";
+import { useNoteViews, userKeys, useUser, useUsersByNames, useUsersByUsernames } from "@/hooks/useUserQueries";
+import type { Note } from "@/types/proto/api/note_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
 
 const clients = vi.hoisted(() => ({
   batchGetUsers: vi.fn(),
-  getMemo: vi.fn(),
+  getNote: vi.fn(),
   getUser: vi.fn(),
-  listMemoViews: vi.fn(),
+  listNoteViews: vi.fn(),
 }));
 
 vi.mock("@/connect", () => ({
-  memoServiceClient: {
-    getMemo: clients.getMemo,
+  noteServiceClient: {
+    getNote: clients.getNote,
   },
   userServiceClient: {
-    listMemoViews: clients.listMemoViews,
+    listNoteViews: clients.listNoteViews,
     batchGetUsers: clients.batchGetUsers,
     getUser: clients.getUser,
   },
@@ -44,31 +44,31 @@ const createWrapper = (queryClient: QueryClient) =>
 describe("query deduplication", () => {
   beforeEach(() => {
     clients.batchGetUsers.mockReset();
-    clients.getMemo.mockReset();
+    clients.getNote.mockReset();
     clients.getUser.mockReset();
-    clients.listMemoViews.mockReset();
+    clients.listNoteViews.mockReset();
   });
 
-  it("scopes memo-view queries by parent and skips requests without one", async () => {
-    clients.listMemoViews.mockImplementation(async ({ parent }: { parent: string }) => ({
-      memoViews: [{ name: `${parent}/views/work`, title: parent, filter: "pinned" }],
+  it("scopes note-view queries by parent and skips requests without one", async () => {
+    clients.listNoteViews.mockImplementation(async ({ parent }: { parent: string }) => ({
+      noteViews: [{ name: `${parent}/views/work`, title: parent, filter: "pinned" }],
     }));
     const queryClient = createQueryClient();
     const wrapper = createWrapper(queryClient);
 
-    const disabled = renderHook(() => useMemoViews(undefined), { wrapper });
+    const disabled = renderHook(() => useNoteViews(undefined), { wrapper });
     expect(disabled.result.current.fetchStatus).toBe("idle");
 
-    const alice = renderHook(() => useMemoViews("users/alice"), { wrapper });
-    const bob = renderHook(() => useMemoViews("users/bob"), { wrapper });
+    const alice = renderHook(() => useNoteViews("users/alice"), { wrapper });
+    const bob = renderHook(() => useNoteViews("users/bob"), { wrapper });
     await waitFor(() => {
       expect(alice.result.current.isSuccess).toBe(true);
       expect(bob.result.current.isSuccess).toBe(true);
     });
 
-    expect(clients.listMemoViews.mock.calls.map(([request]) => request.parent)).toEqual(["users/alice", "users/bob"]);
-    expect(queryClient.getQueryData(userKeys.memoViews("users/alice"))).toEqual(alice.result.current.data);
-    expect(queryClient.getQueryData(userKeys.memoViews("users/bob"))).toEqual(bob.result.current.data);
+    expect(clients.listNoteViews.mock.calls.map(([request]) => request.parent)).toEqual(["users/alice", "users/bob"]);
+    expect(queryClient.getQueryData(userKeys.noteViews("users/alice"))).toEqual(alice.result.current.data);
+    expect(queryClient.getQueryData(userKeys.noteViews("users/bob"))).toEqual(bob.result.current.data);
   });
 
   it("fetches each user name once across individual and overlapping group queries", async () => {
@@ -152,32 +152,32 @@ describe("query deduplication", () => {
     expect(clients.getUser).not.toHaveBeenCalled();
   });
 
-  it("reuses memo list data and canonical detail queries when resolving relations", async () => {
-    const cachedMemo = { name: "memos/cached", snippet: "Already in the list" } as Memo;
-    const missingMemo = { name: "memos/missing", snippet: "Fetched once" } as Memo;
-    clients.getMemo.mockResolvedValue(missingMemo);
+  it("reuses note list data and canonical detail queries when resolving relations", async () => {
+    const cachedNote = { name: "notes/cached", snippet: "Already in the list" } as Note;
+    const missingNote = { name: "notes/missing", snippet: "Fetched once" } as Note;
+    clients.getNote.mockResolvedValue(missingNote);
 
     const queryClient = createQueryClient();
-    queryClient.setQueryData(memoKeys.list({}), {
-      pages: [{ memos: [cachedMemo], nextPageToken: "" }],
+    queryClient.setQueryData(noteKeys.list({}), {
+      pages: [{ notes: [cachedNote], nextPageToken: "" }],
       pageParams: [""],
     });
 
     const { result } = renderHook(
       () => ({
-        first: useResolvedRelationMemos([cachedMemo.name, missingMemo.name]),
-        second: useResolvedRelationMemos([missingMemo.name]),
+        first: useResolvedRelationNotes([cachedNote.name, missingNote.name]),
+        second: useResolvedRelationNotes([missingNote.name]),
       }),
       { wrapper: createWrapper(queryClient) },
     );
 
     await waitFor(() => {
-      expect(result.current.first[cachedMemo.name]?.snippet).toBe(cachedMemo.snippet);
-      expect(result.current.first[missingMemo.name]?.snippet).toBe(missingMemo.snippet);
-      expect(result.current.second[missingMemo.name]?.snippet).toBe(missingMemo.snippet);
+      expect(result.current.first[cachedNote.name]?.snippet).toBe(cachedNote.snippet);
+      expect(result.current.first[missingNote.name]?.snippet).toBe(missingNote.snippet);
+      expect(result.current.second[missingNote.name]?.snippet).toBe(missingNote.snippet);
     });
 
-    expect(clients.getMemo).toHaveBeenCalledTimes(1);
-    expect(clients.getMemo).toHaveBeenCalledWith({ name: missingMemo.name }, { signal: expect.any(AbortSignal) });
+    expect(clients.getNote).toHaveBeenCalledTimes(1);
+    expect(clients.getNote).toHaveBeenCalledWith({ name: missingNote.name }, { signal: expect.any(AbortSignal) });
   });
 });

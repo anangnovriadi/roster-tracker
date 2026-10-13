@@ -6,8 +6,8 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/proto"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 const (

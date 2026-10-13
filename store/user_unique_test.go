@@ -25,7 +25,7 @@ func TestClassifyUserUniqueViolation(t *testing.T) {
 		{name: "wrapped driver error", message: "failed to create user: UNIQUE constraint failed: user.email", want: ErrEmailTaken},
 		{name: "username spelled email is still a username conflict", message: "Error 1062 (23000): Duplicate entry 'email' for key 'user.username'", want: ErrUsernameTaken},
 		{name: "not a unique violation", message: "database is locked", want: nil},
-		{name: "unique violation on another table", message: "UNIQUE constraint failed: memo.uid", want: nil},
+		{name: "unique violation on another table", message: "UNIQUE constraint failed: note.uid", want: nil},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

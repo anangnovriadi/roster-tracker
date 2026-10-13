@@ -88,8 +88,8 @@ const (
 	InstanceSetting_GENERAL InstanceSetting_Key = 1
 	// Attachment storage settings.
 	InstanceSetting_STORAGE InstanceSetting_Key = 2
-	// Memo-related settings.
-	InstanceSetting_MEMO_RELATED InstanceSetting_Key = 3
+	// Note-related settings.
+	InstanceSetting_NOTE_RELATED InstanceSetting_Key = 3
 	// Tag metadata.
 	InstanceSetting_TAGS InstanceSetting_Key = 4
 	// Notification transport settings.
@@ -106,7 +106,7 @@ var (
 		0: "KEY_UNSPECIFIED",
 		1: "GENERAL",
 		2: "STORAGE",
-		3: "MEMO_RELATED",
+		3: "NOTE_RELATED",
 		4: "TAGS",
 		5: "NOTIFICATION",
 		6: "AI",
@@ -116,7 +116,7 @@ var (
 		"KEY_UNSPECIFIED": 0,
 		"GENERAL":         1,
 		"STORAGE":         2,
-		"MEMO_RELATED":    3,
+		"NOTE_RELATED":    3,
 		"TAGS":            4,
 		"NOTIFICATION":    5,
 		"AI":              6,
@@ -320,11 +320,11 @@ type UsageLimit_Metric int32
 
 const (
 	UsageLimit_METRIC_UNSPECIFIED UsageLimit_Metric = 0
-	// The number of memos the user created, including comments, archived
-	// memos, and memos in Spaces.
-	UsageLimit_MEMOS UsageLimit_Metric = 1
+	// The number of notes the user created, including comments, archived
+	// notes, and notes in Spaces.
+	UsageLimit_NOTES UsageLimit_Metric = 1
 	// The total size in bytes of the user's uploads, including uploads not
-	// attached to a memo. External links do not count.
+	// attached to a note. External links do not count.
 	UsageLimit_STORAGE_BYTES UsageLimit_Metric = 2
 	// The size in bytes of one uploaded file.
 	UsageLimit_UPLOAD_BYTES UsageLimit_Metric = 3
@@ -334,13 +334,13 @@ const (
 var (
 	UsageLimit_Metric_name = map[int32]string{
 		0: "METRIC_UNSPECIFIED",
-		1: "MEMOS",
+		1: "NOTES",
 		2: "STORAGE_BYTES",
 		3: "UPLOAD_BYTES",
 	}
 	UsageLimit_Metric_value = map[string]int32{
 		"METRIC_UNSPECIFIED": 0,
-		"MEMOS":              1,
+		"NOTES":              1,
 		"STORAGE_BYTES":      2,
 		"UPLOAD_BYTES":       3,
 	}
@@ -385,7 +385,7 @@ type InstanceProfile struct {
 	// The configured URL of the instance.
 	InstanceUrl string `protobuf:"bytes,4,opt,name=instance_url,json=instanceUrl,proto3" json:"instance_url,omitempty"`
 	// Whether unauthenticated users may access instance content.
-	AccessMode InstanceAccessMode `protobuf:"varint,5,opt,name=access_mode,json=accessMode,proto3,enum=memos.api.InstanceAccessMode" json:"access_mode,omitempty"`
+	AccessMode InstanceAccessMode `protobuf:"varint,5,opt,name=access_mode,json=accessMode,proto3,enum=roster.api.InstanceAccessMode" json:"access_mode,omitempty"`
 	// Whether the instance has no users yet and requires initial setup (creating the first admin account).
 	// Unlike a null admin, this stays false once any user exists, so an instance that has lost its admins is not
 	// mistaken for a fresh install.
@@ -536,7 +536,7 @@ type InstanceSetting struct {
 	//
 	//	*InstanceSetting_GeneralSetting_
 	//	*InstanceSetting_StorageSetting_
-	//	*InstanceSetting_MemoRelatedSetting_
+	//	*InstanceSetting_NoteRelatedSetting_
 	//	*InstanceSetting_TagsSetting_
 	//	*InstanceSetting_NotificationSetting_
 	//	*InstanceSetting_AiSetting
@@ -608,10 +608,10 @@ func (x *InstanceSetting) GetStorageSetting() *InstanceSetting_StorageSetting {
 	return nil
 }
 
-func (x *InstanceSetting) GetMemoRelatedSetting() *InstanceSetting_MemoRelatedSetting {
+func (x *InstanceSetting) GetNoteRelatedSetting() *InstanceSetting_NoteRelatedSetting {
 	if x != nil {
-		if x, ok := x.Value.(*InstanceSetting_MemoRelatedSetting_); ok {
-			return x.MemoRelatedSetting
+		if x, ok := x.Value.(*InstanceSetting_NoteRelatedSetting_); ok {
+			return x.NoteRelatedSetting
 		}
 	}
 	return nil
@@ -667,9 +667,9 @@ type InstanceSetting_StorageSetting_ struct {
 	StorageSetting *InstanceSetting_StorageSetting `protobuf:"bytes,3,opt,name=storage_setting,json=storageSetting,proto3,oneof"`
 }
 
-type InstanceSetting_MemoRelatedSetting_ struct {
-	// The value of the MEMO_RELATED setting.
-	MemoRelatedSetting *InstanceSetting_MemoRelatedSetting `protobuf:"bytes,4,opt,name=memo_related_setting,json=memoRelatedSetting,proto3,oneof"`
+type InstanceSetting_NoteRelatedSetting_ struct {
+	// The value of the NOTE_RELATED setting.
+	NoteRelatedSetting *InstanceSetting_NoteRelatedSetting `protobuf:"bytes,4,opt,name=note_related_setting,json=noteRelatedSetting,proto3,oneof"`
 }
 
 type InstanceSetting_TagsSetting_ struct {
@@ -696,7 +696,7 @@ func (*InstanceSetting_GeneralSetting_) isInstanceSetting_Value() {}
 
 func (*InstanceSetting_StorageSetting_) isInstanceSetting_Value() {}
 
-func (*InstanceSetting_MemoRelatedSetting_) isInstanceSetting_Value() {}
+func (*InstanceSetting_NoteRelatedSetting_) isInstanceSetting_Value() {}
 
 func (*InstanceSetting_TagsSetting_) isInstanceSetting_Value() {}
 
@@ -1066,7 +1066,7 @@ type UsageLimit struct {
 	// Format: usageLimits/{usage_limit}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Immutable. What is limited.
-	Metric UsageLimit_Metric `protobuf:"varint,2,opt,name=metric,proto3,enum=memos.api.UsageLimit_Metric" json:"metric,omitempty"`
+	Metric UsageLimit_Metric `protobuf:"varint,2,opt,name=metric,proto3,enum=roster.api.UsageLimit_Metric" json:"metric,omitempty"`
 	// Optional. Immutable. The user the limit applies to. Empty means every user.
 	// Format: users/{user}
 	User string `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
@@ -1660,7 +1660,7 @@ type InstanceSetting_StorageSetting struct {
 	// Default is assets/{timestamp}_{uuid}_{filename}.
 	FilepathTemplate string `protobuf:"bytes,3,opt,name=filepath_template,json=filepathTemplate,proto3" json:"filepath_template,omitempty"`
 	// Legacy compatibility field. New clients use default_storage_id.
-	StorageType InstanceSetting_StorageSetting_StorageType `protobuf:"varint,4,opt,name=storage_type,json=storageType,proto3,enum=memos.api.InstanceSetting_StorageSetting_StorageType" json:"storage_type,omitempty"`
+	StorageType InstanceSetting_StorageSetting_StorageType `protobuf:"varint,4,opt,name=storage_type,json=storageType,proto3,enum=roster.api.InstanceSetting_StorageSetting_StorageType" json:"storage_type,omitempty"`
 	// Legacy compatibility field. New clients use storages.
 	S3Config      *InstanceSetting_StorageSetting_S3Config `protobuf:"bytes,5,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1740,7 +1740,7 @@ type InstanceSetting_Storage struct {
 	// The human-readable storage name.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// The storage backend.
-	Type InstanceSetting_StorageType `protobuf:"varint,3,opt,name=type,proto3,enum=memos.api.InstanceSetting_StorageType" json:"type,omitempty"`
+	Type InstanceSetting_StorageType `protobuf:"varint,3,opt,name=type,proto3,enum=roster.api.InstanceSetting_StorageType" json:"type,omitempty"`
 	// The backend-specific configuration.
 	//
 	// Types that are valid to be assigned to Config:
@@ -1829,33 +1829,33 @@ type InstanceSetting_Storage_S3Config_ struct {
 
 func (*InstanceSetting_Storage_S3Config_) isInstanceSetting_Storage_Config() {}
 
-// MemoRelatedSetting is the memo-related instance configuration.
-type InstanceSetting_MemoRelatedSetting struct {
+// NoteRelatedSetting is the note-related instance configuration.
+type InstanceSetting_NoteRelatedSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The maximum memo content length in bytes. Default and minimum is 8192.
+	// The maximum note content length in bytes. Default and minimum is 8192.
 	ContentLengthLimit int32 `protobuf:"varint,1,opt,name=content_length_limit,json=contentLengthLimit,proto3" json:"content_length_limit,omitempty"`
 	// The reactions users can choose from. Defaults to a built-in emoji set when empty.
 	Reactions []string `protobuf:"bytes,2,rep,name=reactions,proto3" json:"reactions,omitempty"`
-	// Whether double-clicking a memo opens it for editing.
+	// Whether double-clicking a note opens it for editing.
 	EnableDoubleClickEdit bool `protobuf:"varint,3,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
 
-func (x *InstanceSetting_MemoRelatedSetting) Reset() {
-	*x = InstanceSetting_MemoRelatedSetting{}
+func (x *InstanceSetting_NoteRelatedSetting) Reset() {
+	*x = InstanceSetting_NoteRelatedSetting{}
 	mi := &file_api_instance_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *InstanceSetting_MemoRelatedSetting) String() string {
+func (x *InstanceSetting_NoteRelatedSetting) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*InstanceSetting_MemoRelatedSetting) ProtoMessage() {}
+func (*InstanceSetting_NoteRelatedSetting) ProtoMessage() {}
 
-func (x *InstanceSetting_MemoRelatedSetting) ProtoReflect() protoreflect.Message {
+func (x *InstanceSetting_NoteRelatedSetting) ProtoReflect() protoreflect.Message {
 	mi := &file_api_instance_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1867,26 +1867,26 @@ func (x *InstanceSetting_MemoRelatedSetting) ProtoReflect() protoreflect.Message
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use InstanceSetting_MemoRelatedSetting.ProtoReflect.Descriptor instead.
-func (*InstanceSetting_MemoRelatedSetting) Descriptor() ([]byte, []int) {
+// Deprecated: Use InstanceSetting_NoteRelatedSetting.ProtoReflect.Descriptor instead.
+func (*InstanceSetting_NoteRelatedSetting) Descriptor() ([]byte, []int) {
 	return file_api_instance_service_proto_rawDescGZIP(), []int{2, 3}
 }
 
-func (x *InstanceSetting_MemoRelatedSetting) GetContentLengthLimit() int32 {
+func (x *InstanceSetting_NoteRelatedSetting) GetContentLengthLimit() int32 {
 	if x != nil {
 		return x.ContentLengthLimit
 	}
 	return 0
 }
 
-func (x *InstanceSetting_MemoRelatedSetting) GetReactions() []string {
+func (x *InstanceSetting_NoteRelatedSetting) GetReactions() []string {
 	if x != nil {
 		return x.Reactions
 	}
 	return nil
 }
 
-func (x *InstanceSetting_MemoRelatedSetting) GetEnableDoubleClickEdit() bool {
+func (x *InstanceSetting_NoteRelatedSetting) GetEnableDoubleClickEdit() bool {
 	if x != nil {
 		return x.EnableDoubleClickEdit
 	}
@@ -1948,7 +1948,7 @@ type InstanceSetting_TagMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The background color of the tag label. When unset, the default tag color is used.
 	BackgroundColor *color.Color `protobuf:"bytes,1,opt,name=background_color,json=backgroundColor,proto3" json:"background_color,omitempty"`
-	// Whether memos with this tag have their content blurred.
+	// Whether notes with this tag have their content blurred.
 	BlurContent   bool `protobuf:"varint,2,opt,name=blur_content,json=blurContent,proto3" json:"blur_content,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2109,7 +2109,7 @@ type InstanceSetting_AIProviderConfig struct {
 	// The provider display title.
 	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	// The provider implementation type.
-	Type InstanceSetting_AIProviderType `protobuf:"varint,3,opt,name=type,proto3,enum=memos.api.InstanceSetting_AIProviderType" json:"type,omitempty"`
+	Type InstanceSetting_AIProviderType `protobuf:"varint,3,opt,name=type,proto3,enum=roster.api.InstanceSetting_AIProviderType" json:"type,omitempty"`
 	// The provider API endpoint. Defaults to the provider's public endpoint when empty.
 	Endpoint string `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 	// Input only. The provider API key. Never returned; an empty value keeps the stored key.
@@ -2281,7 +2281,7 @@ func (x *InstanceSetting_TranscriptionConfig) GetPrompt() string {
 type InstanceSetting_AccessSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Whether unauthenticated users may access instance content. Must be PRIVATE or PUBLIC on update.
-	AccessMode    InstanceAccessMode `protobuf:"varint,1,opt,name=access_mode,json=accessMode,proto3,enum=memos.api.InstanceAccessMode" json:"access_mode,omitempty"`
+	AccessMode    InstanceAccessMode `protobuf:"varint,1,opt,name=access_mode,json=accessMode,proto3,enum=roster.api.InstanceAccessMode" json:"access_mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2780,34 +2780,35 @@ var File_api_instance_service_proto protoreflect.FileDescriptor
 
 const file_api_instance_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1aapi/instance_service.proto\x12\tmemos.api\x1a\x16api/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\x8a\x03\n" +
+	"\x1aapi/instance_service.proto\x12\n" +
+	"roster.api\x1a\x16api/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\x8d\x03\n" +
 	"\x0fInstanceProfile\x12\x18\n" +
 	"\aversion\x18\x01 \x01(\tR\aversion\x12\x16\n" +
 	"\x06commit\x18\x02 \x01(\tR\x06commit\x12\x12\n" +
 	"\x04demo\x18\x03 \x01(\bR\x04demo\x12!\n" +
-	"\finstance_url\x18\x04 \x01(\tR\vinstanceUrl\x12>\n" +
-	"\vaccess_mode\x18\x05 \x01(\x0e2\x1d.memos.api.InstanceAccessModeR\n" +
+	"\finstance_url\x18\x04 \x01(\tR\vinstanceUrl\x12?\n" +
+	"\vaccess_mode\x18\x05 \x01(\x0e2\x1e.roster.api.InstanceAccessModeR\n" +
 	"accessMode\x12\x1f\n" +
 	"\vneeds_setup\x18\x06 \x01(\bR\n" +
-	"needsSetup\x12%\n" +
-	"\x05admin\x18\a \x01(\v2\x0f.memos.api.UserR\x05admin\x12B\n" +
-	"\tchallenge\x18\b \x01(\v2$.memos.api.InstanceProfile.ChallengeR\tchallenge\x1aB\n" +
+	"needsSetup\x12&\n" +
+	"\x05admin\x18\a \x01(\v2\x10.roster.api.UserR\x05admin\x12C\n" +
+	"\tchallenge\x18\b \x01(\v2%.roster.api.InstanceProfile.ChallengeR\tchallenge\x1aB\n" +
 	"\tChallenge\x12\x1a\n" +
 	"\bprovider\x18\x01 \x01(\tR\bprovider\x12\x19\n" +
 	"\bsite_key\x18\x02 \x01(\tR\asiteKey\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xc0!\n" +
+	"\x19GetInstanceProfileRequest\"\xd5!\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12T\n" +
-	"\x0fgeneral_setting\x18\x02 \x01(\v2).memos.api.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12T\n" +
-	"\x0fstorage_setting\x18\x03 \x01(\v2).memos.api.InstanceSetting.StorageSettingH\x00R\x0estorageSetting\x12a\n" +
-	"\x14memo_related_setting\x18\x04 \x01(\v2-.memos.api.InstanceSetting.MemoRelatedSettingH\x00R\x12memoRelatedSetting\x12K\n" +
-	"\ftags_setting\x18\x05 \x01(\v2&.memos.api.InstanceSetting.TagsSettingH\x00R\vtagsSetting\x12c\n" +
-	"\x14notification_setting\x18\x06 \x01(\v2..memos.api.InstanceSetting.NotificationSettingH\x00R\x13notificationSetting\x12E\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12U\n" +
+	"\x0fgeneral_setting\x18\x02 \x01(\v2*.roster.api.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12U\n" +
+	"\x0fstorage_setting\x18\x03 \x01(\v2*.roster.api.InstanceSetting.StorageSettingH\x00R\x0estorageSetting\x12b\n" +
+	"\x14note_related_setting\x18\x04 \x01(\v2..roster.api.InstanceSetting.NoteRelatedSettingH\x00R\x12noteRelatedSetting\x12L\n" +
+	"\ftags_setting\x18\x05 \x01(\v2'.roster.api.InstanceSetting.TagsSettingH\x00R\vtagsSetting\x12d\n" +
+	"\x14notification_setting\x18\x06 \x01(\v2/.roster.api.InstanceSetting.NotificationSettingH\x00R\x13notificationSetting\x12F\n" +
 	"\n" +
-	"ai_setting\x18\a \x01(\v2$.memos.api.InstanceSetting.AISettingH\x00R\taiSetting\x12Q\n" +
-	"\x0eaccess_setting\x18\b \x01(\v2(.memos.api.InstanceSetting.AccessSettingH\x00R\raccessSetting\x1a\xc7\x04\n" +
-	"\x0eGeneralSetting\x12^\n" +
-	"\x0ecustom_profile\x18\x01 \x01(\v27.memos.api.InstanceSetting.GeneralSetting.CustomProfileR\rcustomProfile\x12<\n" +
+	"ai_setting\x18\a \x01(\v2%.roster.api.InstanceSetting.AISettingH\x00R\taiSetting\x12R\n" +
+	"\x0eaccess_setting\x18\b \x01(\v2).roster.api.InstanceSetting.AccessSettingH\x00R\raccessSetting\x1a\xc8\x04\n" +
+	"\x0eGeneralSetting\x12_\n" +
+	"\x0ecustom_profile\x18\x01 \x01(\v28.roster.api.InstanceSetting.GeneralSetting.CustomProfileR\rcustomProfile\x12<\n" +
 	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
 	"\x16disallow_password_auth\x18\x03 \x01(\bR\x14disallowPasswordAuth\x128\n" +
 	"\x18disallow_change_username\x18\x04 \x01(\bR\x16disallowChangeUsername\x128\n" +
@@ -2818,13 +2819,13 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\rCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
-	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x1a\xb1\x05\n" +
-	"\x0eStorageSetting\x12>\n" +
-	"\bstorages\x18\x01 \x03(\v2\".memos.api.InstanceSetting.StorageR\bstorages\x12,\n" +
+	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x1a\xb4\x05\n" +
+	"\x0eStorageSetting\x12?\n" +
+	"\bstorages\x18\x01 \x03(\v2#.roster.api.InstanceSetting.StorageR\bstorages\x12,\n" +
 	"\x12default_storage_id\x18\x02 \x01(\tR\x10defaultStorageId\x12+\n" +
-	"\x11filepath_template\x18\x03 \x01(\tR\x10filepathTemplate\x12X\n" +
-	"\fstorage_type\x18\x04 \x01(\x0e25.memos.api.InstanceSetting.StorageSetting.StorageTypeR\vstorageType\x12O\n" +
-	"\ts3_config\x18\x05 \x01(\v22.memos.api.InstanceSetting.StorageSetting.S3ConfigR\bs3Config\x1a\x8a\x02\n" +
+	"\x11filepath_template\x18\x03 \x01(\tR\x10filepathTemplate\x12Y\n" +
+	"\fstorage_type\x18\x04 \x01(\x0e26.roster.api.InstanceSetting.StorageSetting.StorageTypeR\vstorageType\x12P\n" +
+	"\ts3_config\x18\x05 \x01(\v23.roster.api.InstanceSetting.StorageSetting.S3ConfigR\bs3Config\x1a\x8a\x02\n" +
 	"\bS3Config\x12\x1a\n" +
 	"\bendpoint\x18\x01 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x02 \x01(\tR\x06region\x12\x16\n" +
@@ -2837,12 +2838,12 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\x1a\xcc\x03\n" +
+	"\x02S3\x10\x03\x1a\xce\x03\n" +
 	"\aStorage\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12:\n" +
-	"\x04type\x18\x03 \x01(\x0e2&.memos.api.InstanceSetting.StorageTypeR\x04type\x12J\n" +
-	"\ts3_config\x18\x04 \x01(\v2+.memos.api.InstanceSetting.Storage.S3ConfigH\x00R\bs3Config\x1a\x8a\x02\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12;\n" +
+	"\x04type\x18\x03 \x01(\x0e2'.roster.api.InstanceSetting.StorageTypeR\x04type\x12K\n" +
+	"\ts3_config\x18\x04 \x01(\v2,.roster.api.InstanceSetting.Storage.S3ConfigH\x00R\bs3Config\x1a\x8a\x02\n" +
 	"\bS3Config\x12\x1a\n" +
 	"\bendpoint\x18\x01 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x02 \x01(\tR\x06region\x12\x16\n" +
@@ -2852,20 +2853,20 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\x127\n" +
 	"\x18insecure_skip_tls_verify\x18\a \x01(\bR\x15insecureSkipTlsVerifyB\b\n" +
 	"\x06config\x1a\x9d\x01\n" +
-	"\x12MemoRelatedSetting\x120\n" +
+	"\x12NoteRelatedSetting\x120\n" +
 	"\x14content_length_limit\x18\x01 \x01(\x05R\x12contentLengthLimit\x12\x1c\n" +
 	"\treactions\x18\x02 \x03(\tR\treactions\x127\n" +
-	"\x18enable_double_click_edit\x18\x03 \x01(\bR\x15enableDoubleClickEdit\x1a\xb4\x01\n" +
-	"\vTagsSetting\x12D\n" +
-	"\x04tags\x18\x01 \x03(\v20.memos.api.InstanceSetting.TagsSetting.TagsEntryR\x04tags\x1a_\n" +
+	"\x18enable_double_click_edit\x18\x03 \x01(\bR\x15enableDoubleClickEdit\x1a\xb6\x01\n" +
+	"\vTagsSetting\x12E\n" +
+	"\x04tags\x18\x01 \x03(\v21.roster.api.InstanceSetting.TagsSetting.TagsEntryR\x04tags\x1a`\n" +
 	"\tTagsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12<\n" +
-	"\x05value\x18\x02 \x01(\v2&.memos.api.InstanceSetting.TagMetadataR\x05value:\x028\x01\x1ao\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
+	"\x05value\x18\x02 \x01(\v2'.roster.api.InstanceSetting.TagMetadataR\x05value:\x028\x01\x1ao\n" +
 	"\vTagMetadata\x12=\n" +
 	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorR\x0fbackgroundColor\x12!\n" +
-	"\fblur_content\x18\x02 \x01(\bR\vblurContent\x1a\xa5\x03\n" +
-	"\x13NotificationSetting\x12Q\n" +
-	"\x05email\x18\x01 \x01(\v2;.memos.api.InstanceSetting.NotificationSetting.EmailSettingR\x05email\x1a\xba\x02\n" +
+	"\fblur_content\x18\x02 \x01(\bR\vblurContent\x1a\xa6\x03\n" +
+	"\x13NotificationSetting\x12R\n" +
+	"\x05email\x18\x01 \x01(\v2<.roster.api.InstanceSetting.NotificationSetting.EmailSettingR\x05email\x1a\xba\x02\n" +
 	"\fEmailSetting\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12\x1b\n" +
 	"\tsmtp_host\x18\x02 \x01(\tR\bsmtpHost\x12\x1b\n" +
@@ -2878,14 +2879,14 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"from_email\x18\b \x01(\tR\tfromEmail\x12\x1b\n" +
 	"\tfrom_name\x18\t \x01(\tR\bfromName\x12\x19\n" +
 	"\breply_to\x18\n" +
-	" \x01(\tR\areplyTo\x1a\xac\x01\n" +
-	"\tAISetting\x12I\n" +
-	"\tproviders\x18\x01 \x03(\v2+.memos.api.InstanceSetting.AIProviderConfigR\tproviders\x12T\n" +
-	"\rtranscription\x18\x02 \x01(\v2..memos.api.InstanceSetting.TranscriptionConfigR\rtranscription\x1a\xfd\x01\n" +
+	" \x01(\tR\areplyTo\x1a\xae\x01\n" +
+	"\tAISetting\x12J\n" +
+	"\tproviders\x18\x01 \x03(\v2,.roster.api.InstanceSetting.AIProviderConfigR\tproviders\x12U\n" +
+	"\rtranscription\x18\x02 \x01(\v2/.roster.api.InstanceSetting.TranscriptionConfigR\rtranscription\x1a\xfe\x01\n" +
 	"\x10AIProviderConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12=\n" +
-	"\x04type\x18\x03 \x01(\x0e2).memos.api.InstanceSetting.AIProviderTypeR\x04type\x12\x1a\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12>\n" +
+	"\x04type\x18\x03 \x01(\x0e2*.roster.api.InstanceSetting.AIProviderTypeR\x04type\x12\x1a\n" +
 	"\bendpoint\x18\x04 \x01(\tR\bendpoint\x12\x1c\n" +
 	"\aapi_key\x18\x05 \x01(\tB\x03\xe0A\x04R\x06apiKey\x12#\n" +
 	"\vapi_key_set\x18\x06 \x01(\bB\x03\xe0A\x03R\tapiKeySet\x12%\n" +
@@ -2896,15 +2897,15 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"providerId\x12\x14\n" +
 	"\x05model\x18\x02 \x01(\tR\x05model\x12\x1a\n" +
 	"\blanguage\x18\x03 \x01(\tR\blanguage\x12\x16\n" +
-	"\x06prompt\x18\x04 \x01(\tR\x06prompt\x1aO\n" +
-	"\rAccessSetting\x12>\n" +
-	"\vaccess_mode\x18\x01 \x01(\x0e2\x1d.memos.api.InstanceAccessModeR\n" +
+	"\x06prompt\x18\x04 \x01(\tR\x06prompt\x1aP\n" +
+	"\rAccessSetting\x12?\n" +
+	"\vaccess_mode\x18\x01 \x01(\x0e2\x1e.roster.api.InstanceAccessModeR\n" +
 	"accessMode\"v\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\v\n" +
 	"\aSTORAGE\x10\x02\x12\x10\n" +
-	"\fMEMO_RELATED\x10\x03\x12\b\n" +
+	"\fNOTE_RELATED\x10\x03\x12\b\n" +
 	"\x04TAGS\x10\x04\x12\x10\n" +
 	"\fNOTIFICATION\x10\x05\x12\x06\n" +
 	"\x02AI\x10\x06\x12\n" +
@@ -2920,39 +2921,39 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\n" +
 	"\x06OPENAI\x10\x01\x12\n" +
 	"\n" +
-	"\x06GEMINI\x10\x02:^\xeaA[\n" +
-	"\x19memos.api/InstanceSetting\x12\x1binstance/settings/{setting}*\x10instanceSettings2\x0finstanceSettingB\a\n" +
-	"\x05value\"R\n" +
-	"\x19GetInstanceSettingRequest\x125\n" +
-	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
-	"\x19memos.api/InstanceSettingR\x04name\"Z\n" +
-	"\x1fBatchGetInstanceSettingsRequest\x127\n" +
-	"\x05names\x18\x01 \x03(\tB!\xe0A\x02\xfaA\x1b\n" +
-	"\x19memos.api/InstanceSettingR\x05names\"k\n" +
-	" BatchGetInstanceSettingsResponse\x12G\n" +
-	"\x11instance_settings\x18\x01 \x03(\v2\x1a.memos.api.InstanceSettingR\x10instanceSettings\"\xac\x01\n" +
-	"\x1cUpdateInstanceSettingRequest\x12J\n" +
-	"\x10instance_setting\x18\x01 \x01(\v2\x1a.memos.api.InstanceSettingB\x03\xe0A\x02R\x0finstanceSetting\x12@\n" +
+	"\x06GEMINI\x10\x02:_\xeaA\\\n" +
+	"\x1aroster.api/InstanceSetting\x12\x1binstance/settings/{setting}*\x10instanceSettings2\x0finstanceSettingB\a\n" +
+	"\x05value\"S\n" +
+	"\x19GetInstanceSettingRequest\x126\n" +
+	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x1aroster.api/InstanceSettingR\x04name\"[\n" +
+	"\x1fBatchGetInstanceSettingsRequest\x128\n" +
+	"\x05names\x18\x01 \x03(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x1aroster.api/InstanceSettingR\x05names\"l\n" +
+	" BatchGetInstanceSettingsResponse\x12H\n" +
+	"\x11instance_settings\x18\x01 \x03(\v2\x1b.roster.api.InstanceSettingR\x10instanceSettings\"\xad\x01\n" +
+	"\x1cUpdateInstanceSettingRequest\x12K\n" +
+	"\x10instance_setting\x18\x01 \x01(\v2\x1b.roster.api.InstanceSettingB\x03\xe0A\x02R\x0finstanceSetting\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"\xa7\x01\n" +
-	"\x1fTestInstanceEmailSettingRequest\x12V\n" +
-	"\x05email\x18\x01 \x01(\v2;.memos.api.InstanceSetting.NotificationSetting.EmailSettingB\x03\xe0A\x01R\x05email\x12,\n" +
-	"\x0frecipient_email\x18\x02 \x01(\tB\x03\xe0A\x01R\x0erecipientEmail\"\x8e\x02\n" +
-	"\rInstanceStats\x12B\n" +
-	"\bdatabase\x18\x01 \x01(\v2&.memos.api.InstanceStats.DatabaseStatsR\bdatabase\x12.\n" +
+	"updateMask\"\xa8\x01\n" +
+	"\x1fTestInstanceEmailSettingRequest\x12W\n" +
+	"\x05email\x18\x01 \x01(\v2<.roster.api.InstanceSetting.NotificationSetting.EmailSettingB\x03\xe0A\x01R\x05email\x12,\n" +
+	"\x0frecipient_email\x18\x02 \x01(\tB\x03\xe0A\x01R\x0erecipientEmail\"\x8f\x02\n" +
+	"\rInstanceStats\x12C\n" +
+	"\bdatabase\x18\x01 \x01(\v2'.roster.api.InstanceStats.DatabaseStatsR\bdatabase\x12.\n" +
 	"\x13local_storage_bytes\x18\x02 \x01(\x03R\x11localStorageBytes\x12A\n" +
 	"\x0egenerated_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\rgeneratedTime\x1aF\n" +
 	"\rDatabaseStats\x12\x16\n" +
 	"\x06driver\x18\x01 \x01(\tR\x06driver\x12\x1d\n" +
 	"\n" +
 	"size_bytes\x18\x02 \x01(\x03R\tsizeBytes\"\x19\n" +
-	"\x17GetInstanceStatsRequest\"\xd2\x03\n" +
+	"\x17GetInstanceStatsRequest\"\xd5\x03\n" +
 	"\n" +
 	"UsageLimit\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12<\n" +
-	"\x06metric\x18\x02 \x01(\x0e2\x1c.memos.api.UsageLimit.MetricB\x06\xe0A\x02\xe0A\x05R\x06metric\x12-\n" +
-	"\x04user\x18\x03 \x01(\tB\x19\xe0A\x01\xe0A\x05\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x04user\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12=\n" +
+	"\x06metric\x18\x02 \x01(\x0e2\x1d.roster.api.UsageLimit.MetricB\x06\xe0A\x02\xe0A\x05R\x06metric\x12.\n" +
+	"\x04user\x18\x03 \x01(\tB\x1a\xe0A\x01\xe0A\x05\xfaA\x11\n" +
+	"\x0froster.api/UserR\x04user\x12\x19\n" +
 	"\x05value\x18\x04 \x01(\x03B\x03\xe0A\x02R\x05value\x12@\n" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
@@ -2960,52 +2961,53 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"updateTime\"P\n" +
 	"\x06Metric\x12\x16\n" +
 	"\x12METRIC_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05MEMOS\x10\x01\x12\x11\n" +
+	"\x05NOTES\x10\x01\x12\x11\n" +
 	"\rSTORAGE_BYTES\x10\x02\x12\x10\n" +
-	"\fUPLOAD_BYTES\x10\x03:M\xeaAJ\n" +
-	"\x14memos.api/UsageLimit\x12\x19usageLimits/{usage_limit}*\vusageLimits2\n" +
+	"\fUPLOAD_BYTES\x10\x03:N\xeaAK\n" +
+	"\x15roster.api/UsageLimit\x12\x19usageLimits/{usage_limit}*\vusageLimits2\n" +
 	"usageLimit\"{\n" +
 	"\x16ListUsageLimitsRequest\x12 \n" +
 	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"{\n" +
-	"\x17ListUsageLimitsResponse\x128\n" +
-	"\fusage_limits\x18\x01 \x03(\v2\x15.memos.api.UsageLimitR\vusageLimits\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"H\n" +
-	"\x14GetUsageLimitRequest\x120\n" +
-	"\x04name\x18\x01 \x01(\tB\x1c\xe0A\x02\xfaA\x16\n" +
-	"\x14memos.api/UsageLimitR\x04name\"\x81\x01\n" +
-	"\x17CreateUsageLimitRequest\x12;\n" +
-	"\vusage_limit\x18\x01 \x01(\v2\x15.memos.api.UsageLimitB\x03\xe0A\x02R\n" +
+	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"|\n" +
+	"\x17ListUsageLimitsResponse\x129\n" +
+	"\fusage_limits\x18\x01 \x03(\v2\x16.roster.api.UsageLimitR\vusageLimits\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"I\n" +
+	"\x14GetUsageLimitRequest\x121\n" +
+	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
+	"\x15roster.api/UsageLimitR\x04name\"\x82\x01\n" +
+	"\x17CreateUsageLimitRequest\x12<\n" +
+	"\vusage_limit\x18\x01 \x01(\v2\x16.roster.api.UsageLimitB\x03\xe0A\x02R\n" +
 	"usageLimit\x12)\n" +
-	"\x0eusage_limit_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fusageLimitId\"\x98\x01\n" +
-	"\x17UpdateUsageLimitRequest\x12;\n" +
-	"\vusage_limit\x18\x01 \x01(\v2\x15.memos.api.UsageLimitB\x03\xe0A\x02R\n" +
+	"\x0eusage_limit_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fusageLimitId\"\x99\x01\n" +
+	"\x17UpdateUsageLimitRequest\x12<\n" +
+	"\vusage_limit\x18\x01 \x01(\v2\x16.roster.api.UsageLimitB\x03\xe0A\x02R\n" +
 	"usageLimit\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"K\n" +
-	"\x17DeleteUsageLimitRequest\x120\n" +
-	"\x04name\x18\x01 \x01(\tB\x1c\xe0A\x02\xfaA\x16\n" +
-	"\x14memos.api/UsageLimitR\x04name*}\n" +
+	"updateMask\"L\n" +
+	"\x17DeleteUsageLimitRequest\x121\n" +
+	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
+	"\x15roster.api/UsageLimitR\x04name*}\n" +
 	"\x12InstanceAccessMode\x12$\n" +
 	" INSTANCE_ACCESS_MODE_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cINSTANCE_ACCESS_MODE_PRIVATE\x10\x01\x12\x1f\n" +
-	"\x1bINSTANCE_ACCESS_MODE_PUBLIC\x10\x022\xa2\f\n" +
-	"\x0fInstanceService\x12u\n" +
-	"\x12GetInstanceProfile\x12$.memos.api.GetInstanceProfileRequest\x1a\x1a.memos.api.InstanceProfile\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/instance/profile\x12\x86\x01\n" +
-	"\x12GetInstanceSetting\x12$.memos.api.GetInstanceSettingRequest\x1a\x1a.memos.api.InstanceSetting\".\xdaA\x04name\x82\xd3\xe4\x93\x02!\x12\x1f/api/{name=instance/settings/*}\x12\x9f\x01\n" +
-	"\x18BatchGetInstanceSettings\x12*.memos.api.BatchGetInstanceSettingsRequest\x1a+.memos.api.BatchGetInstanceSettingsResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/api/instance/settings:batchGet\x12\xc7\x01\n" +
-	"\x15UpdateInstanceSetting\x12'.memos.api.UpdateInstanceSettingRequest\x1a\x1a.memos.api.InstanceSetting\"i\xdaA\x1cinstance_setting,update_mask\x82\xd3\xe4\x93\x02D:\x10instance_setting20/api/{instance_setting.name=instance/settings/*}\x12\x98\x01\n" +
-	"\x18TestInstanceEmailSetting\x12*.memos.api.TestInstanceEmailSettingRequest\x1a\x16.google.protobuf.Empty\"8\x82\xd3\xe4\x93\x022:\x01*\"-/api/instance/settings/notification:testEmail\x12m\n" +
-	"\x10GetInstanceStats\x12\".memos.api.GetInstanceStatsRequest\x1a\x18.memos.api.InstanceStats\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/instance/stats\x12r\n" +
-	"\x0fListUsageLimits\x12!.memos.api.ListUsageLimitsRequest\x1a\".memos.api.ListUsageLimitsResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/usageLimits\x12q\n" +
-	"\rGetUsageLimit\x12\x1f.memos.api.GetUsageLimitRequest\x1a\x15.memos.api.UsageLimit\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/{name=usageLimits/*}\x12\x91\x01\n" +
-	"\x10CreateUsageLimit\x12\".memos.api.CreateUsageLimitRequest\x1a\x15.memos.api.UsageLimit\"B\xdaA\x1ausage_limit,usage_limit_id\x82\xd3\xe4\x93\x02\x1f:\vusage_limit\"\x10/api/usageLimits\x12\xa3\x01\n" +
-	"\x10UpdateUsageLimit\x12\".memos.api.UpdateUsageLimitRequest\x1a\x15.memos.api.UsageLimit\"T\xdaA\x17usage_limit,update_mask\x82\xd3\xe4\x93\x024:\vusage_limit2%/api/{usage_limit.name=usageLimits/*}\x12x\n" +
-	"\x10DeleteUsageLimit\x12\".memos.api.DeleteUsageLimitRequest\x1a\x16.google.protobuf.Empty\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b*\x19/api/{name=usageLimits/*}B\x93\x01\n" +
-	"\rcom.memos.apiB\x14InstanceServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
-	"Memos::Apib\x06proto3"
+	"\x1bINSTANCE_ACCESS_MODE_PUBLIC\x10\x022\xb6\f\n" +
+	"\x0fInstanceService\x12w\n" +
+	"\x12GetInstanceProfile\x12%.roster.api.GetInstanceProfileRequest\x1a\x1b.roster.api.InstanceProfile\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/instance/profile\x12\x88\x01\n" +
+	"\x12GetInstanceSetting\x12%.roster.api.GetInstanceSettingRequest\x1a\x1b.roster.api.InstanceSetting\".\xdaA\x04name\x82\xd3\xe4\x93\x02!\x12\x1f/api/{name=instance/settings/*}\x12\xa1\x01\n" +
+	"\x18BatchGetInstanceSettings\x12+.roster.api.BatchGetInstanceSettingsRequest\x1a,.roster.api.BatchGetInstanceSettingsResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/api/instance/settings:batchGet\x12\xc9\x01\n" +
+	"\x15UpdateInstanceSetting\x12(.roster.api.UpdateInstanceSettingRequest\x1a\x1b.roster.api.InstanceSetting\"i\xdaA\x1cinstance_setting,update_mask\x82\xd3\xe4\x93\x02D:\x10instance_setting20/api/{instance_setting.name=instance/settings/*}\x12\x99\x01\n" +
+	"\x18TestInstanceEmailSetting\x12+.roster.api.TestInstanceEmailSettingRequest\x1a\x16.google.protobuf.Empty\"8\x82\xd3\xe4\x93\x022:\x01*\"-/api/instance/settings/notification:testEmail\x12o\n" +
+	"\x10GetInstanceStats\x12#.roster.api.GetInstanceStatsRequest\x1a\x19.roster.api.InstanceStats\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/instance/stats\x12t\n" +
+	"\x0fListUsageLimits\x12\".roster.api.ListUsageLimitsRequest\x1a#.roster.api.ListUsageLimitsResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/usageLimits\x12s\n" +
+	"\rGetUsageLimit\x12 .roster.api.GetUsageLimitRequest\x1a\x16.roster.api.UsageLimit\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/{name=usageLimits/*}\x12\x93\x01\n" +
+	"\x10CreateUsageLimit\x12#.roster.api.CreateUsageLimitRequest\x1a\x16.roster.api.UsageLimit\"B\xdaA\x1ausage_limit,usage_limit_id\x82\xd3\xe4\x93\x02\x1f:\vusage_limit\"\x10/api/usageLimits\x12\xa5\x01\n" +
+	"\x10UpdateUsageLimit\x12#.roster.api.UpdateUsageLimitRequest\x1a\x16.roster.api.UsageLimit\"T\xdaA\x17usage_limit,update_mask\x82\xd3\xe4\x93\x024:\vusage_limit2%/api/{usage_limit.name=usageLimits/*}\x12y\n" +
+	"\x10DeleteUsageLimit\x12#.roster.api.DeleteUsageLimitRequest\x1a\x16.google.protobuf.Empty\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b*\x19/api/{name=usageLimits/*}B\xa6\x01\n" +
+	"\x0ecom.roster.apiB\x14InstanceServiceProtoP\x01Z5github.com/anangnovriadi/roster-tracker/proto/gen/api\xa2\x02\x03RAX\xaa\x02\n" +
+	"Roster.Api\xca\x02\n" +
+	"Roster\\Api\xe2\x02\x16Roster\\Api\\GPBMetadata\xea\x02\vRoster::Apib\x06proto3"
 
 var (
 	file_api_instance_service_proto_rawDescOnce sync.Once
@@ -3022,113 +3024,113 @@ func file_api_instance_service_proto_rawDescGZIP() []byte {
 var file_api_instance_service_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_api_instance_service_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
 var file_api_instance_service_proto_goTypes = []any{
-	(InstanceAccessMode)(0),                                  // 0: memos.api.InstanceAccessMode
-	(InstanceSetting_Key)(0),                                 // 1: memos.api.InstanceSetting.Key
-	(InstanceSetting_StorageType)(0),                         // 2: memos.api.InstanceSetting.StorageType
-	(InstanceSetting_AIProviderType)(0),                      // 3: memos.api.InstanceSetting.AIProviderType
-	(InstanceSetting_StorageSetting_StorageType)(0),          // 4: memos.api.InstanceSetting.StorageSetting.StorageType
-	(UsageLimit_Metric)(0),                                   // 5: memos.api.UsageLimit.Metric
-	(*InstanceProfile)(nil),                                  // 6: memos.api.InstanceProfile
-	(*GetInstanceProfileRequest)(nil),                        // 7: memos.api.GetInstanceProfileRequest
-	(*InstanceSetting)(nil),                                  // 8: memos.api.InstanceSetting
-	(*GetInstanceSettingRequest)(nil),                        // 9: memos.api.GetInstanceSettingRequest
-	(*BatchGetInstanceSettingsRequest)(nil),                  // 10: memos.api.BatchGetInstanceSettingsRequest
-	(*BatchGetInstanceSettingsResponse)(nil),                 // 11: memos.api.BatchGetInstanceSettingsResponse
-	(*UpdateInstanceSettingRequest)(nil),                     // 12: memos.api.UpdateInstanceSettingRequest
-	(*TestInstanceEmailSettingRequest)(nil),                  // 13: memos.api.TestInstanceEmailSettingRequest
-	(*InstanceStats)(nil),                                    // 14: memos.api.InstanceStats
-	(*GetInstanceStatsRequest)(nil),                          // 15: memos.api.GetInstanceStatsRequest
-	(*UsageLimit)(nil),                                       // 16: memos.api.UsageLimit
-	(*ListUsageLimitsRequest)(nil),                           // 17: memos.api.ListUsageLimitsRequest
-	(*ListUsageLimitsResponse)(nil),                          // 18: memos.api.ListUsageLimitsResponse
-	(*GetUsageLimitRequest)(nil),                             // 19: memos.api.GetUsageLimitRequest
-	(*CreateUsageLimitRequest)(nil),                          // 20: memos.api.CreateUsageLimitRequest
-	(*UpdateUsageLimitRequest)(nil),                          // 21: memos.api.UpdateUsageLimitRequest
-	(*DeleteUsageLimitRequest)(nil),                          // 22: memos.api.DeleteUsageLimitRequest
-	(*InstanceProfile_Challenge)(nil),                        // 23: memos.api.InstanceProfile.Challenge
-	(*InstanceSetting_GeneralSetting)(nil),                   // 24: memos.api.InstanceSetting.GeneralSetting
-	(*InstanceSetting_StorageSetting)(nil),                   // 25: memos.api.InstanceSetting.StorageSetting
-	(*InstanceSetting_Storage)(nil),                          // 26: memos.api.InstanceSetting.Storage
-	(*InstanceSetting_MemoRelatedSetting)(nil),               // 27: memos.api.InstanceSetting.MemoRelatedSetting
-	(*InstanceSetting_TagsSetting)(nil),                      // 28: memos.api.InstanceSetting.TagsSetting
-	(*InstanceSetting_TagMetadata)(nil),                      // 29: memos.api.InstanceSetting.TagMetadata
-	(*InstanceSetting_NotificationSetting)(nil),              // 30: memos.api.InstanceSetting.NotificationSetting
-	(*InstanceSetting_AISetting)(nil),                        // 31: memos.api.InstanceSetting.AISetting
-	(*InstanceSetting_AIProviderConfig)(nil),                 // 32: memos.api.InstanceSetting.AIProviderConfig
-	(*InstanceSetting_TranscriptionConfig)(nil),              // 33: memos.api.InstanceSetting.TranscriptionConfig
-	(*InstanceSetting_AccessSetting)(nil),                    // 34: memos.api.InstanceSetting.AccessSetting
-	(*InstanceSetting_GeneralSetting_CustomProfile)(nil),     // 35: memos.api.InstanceSetting.GeneralSetting.CustomProfile
-	(*InstanceSetting_StorageSetting_S3Config)(nil),          // 36: memos.api.InstanceSetting.StorageSetting.S3Config
-	(*InstanceSetting_Storage_S3Config)(nil),                 // 37: memos.api.InstanceSetting.Storage.S3Config
-	nil,                                                      // 38: memos.api.InstanceSetting.TagsSetting.TagsEntry
-	(*InstanceSetting_NotificationSetting_EmailSetting)(nil), // 39: memos.api.InstanceSetting.NotificationSetting.EmailSetting
-	(*InstanceStats_DatabaseStats)(nil),                      // 40: memos.api.InstanceStats.DatabaseStats
-	(*User)(nil),                                             // 41: memos.api.User
+	(InstanceAccessMode)(0),                                  // 0: roster.api.InstanceAccessMode
+	(InstanceSetting_Key)(0),                                 // 1: roster.api.InstanceSetting.Key
+	(InstanceSetting_StorageType)(0),                         // 2: roster.api.InstanceSetting.StorageType
+	(InstanceSetting_AIProviderType)(0),                      // 3: roster.api.InstanceSetting.AIProviderType
+	(InstanceSetting_StorageSetting_StorageType)(0),          // 4: roster.api.InstanceSetting.StorageSetting.StorageType
+	(UsageLimit_Metric)(0),                                   // 5: roster.api.UsageLimit.Metric
+	(*InstanceProfile)(nil),                                  // 6: roster.api.InstanceProfile
+	(*GetInstanceProfileRequest)(nil),                        // 7: roster.api.GetInstanceProfileRequest
+	(*InstanceSetting)(nil),                                  // 8: roster.api.InstanceSetting
+	(*GetInstanceSettingRequest)(nil),                        // 9: roster.api.GetInstanceSettingRequest
+	(*BatchGetInstanceSettingsRequest)(nil),                  // 10: roster.api.BatchGetInstanceSettingsRequest
+	(*BatchGetInstanceSettingsResponse)(nil),                 // 11: roster.api.BatchGetInstanceSettingsResponse
+	(*UpdateInstanceSettingRequest)(nil),                     // 12: roster.api.UpdateInstanceSettingRequest
+	(*TestInstanceEmailSettingRequest)(nil),                  // 13: roster.api.TestInstanceEmailSettingRequest
+	(*InstanceStats)(nil),                                    // 14: roster.api.InstanceStats
+	(*GetInstanceStatsRequest)(nil),                          // 15: roster.api.GetInstanceStatsRequest
+	(*UsageLimit)(nil),                                       // 16: roster.api.UsageLimit
+	(*ListUsageLimitsRequest)(nil),                           // 17: roster.api.ListUsageLimitsRequest
+	(*ListUsageLimitsResponse)(nil),                          // 18: roster.api.ListUsageLimitsResponse
+	(*GetUsageLimitRequest)(nil),                             // 19: roster.api.GetUsageLimitRequest
+	(*CreateUsageLimitRequest)(nil),                          // 20: roster.api.CreateUsageLimitRequest
+	(*UpdateUsageLimitRequest)(nil),                          // 21: roster.api.UpdateUsageLimitRequest
+	(*DeleteUsageLimitRequest)(nil),                          // 22: roster.api.DeleteUsageLimitRequest
+	(*InstanceProfile_Challenge)(nil),                        // 23: roster.api.InstanceProfile.Challenge
+	(*InstanceSetting_GeneralSetting)(nil),                   // 24: roster.api.InstanceSetting.GeneralSetting
+	(*InstanceSetting_StorageSetting)(nil),                   // 25: roster.api.InstanceSetting.StorageSetting
+	(*InstanceSetting_Storage)(nil),                          // 26: roster.api.InstanceSetting.Storage
+	(*InstanceSetting_NoteRelatedSetting)(nil),               // 27: roster.api.InstanceSetting.NoteRelatedSetting
+	(*InstanceSetting_TagsSetting)(nil),                      // 28: roster.api.InstanceSetting.TagsSetting
+	(*InstanceSetting_TagMetadata)(nil),                      // 29: roster.api.InstanceSetting.TagMetadata
+	(*InstanceSetting_NotificationSetting)(nil),              // 30: roster.api.InstanceSetting.NotificationSetting
+	(*InstanceSetting_AISetting)(nil),                        // 31: roster.api.InstanceSetting.AISetting
+	(*InstanceSetting_AIProviderConfig)(nil),                 // 32: roster.api.InstanceSetting.AIProviderConfig
+	(*InstanceSetting_TranscriptionConfig)(nil),              // 33: roster.api.InstanceSetting.TranscriptionConfig
+	(*InstanceSetting_AccessSetting)(nil),                    // 34: roster.api.InstanceSetting.AccessSetting
+	(*InstanceSetting_GeneralSetting_CustomProfile)(nil),     // 35: roster.api.InstanceSetting.GeneralSetting.CustomProfile
+	(*InstanceSetting_StorageSetting_S3Config)(nil),          // 36: roster.api.InstanceSetting.StorageSetting.S3Config
+	(*InstanceSetting_Storage_S3Config)(nil),                 // 37: roster.api.InstanceSetting.Storage.S3Config
+	nil,                                                      // 38: roster.api.InstanceSetting.TagsSetting.TagsEntry
+	(*InstanceSetting_NotificationSetting_EmailSetting)(nil), // 39: roster.api.InstanceSetting.NotificationSetting.EmailSetting
+	(*InstanceStats_DatabaseStats)(nil),                      // 40: roster.api.InstanceStats.DatabaseStats
+	(*User)(nil),                                             // 41: roster.api.User
 	(*fieldmaskpb.FieldMask)(nil),                            // 42: google.protobuf.FieldMask
 	(*timestamppb.Timestamp)(nil),                            // 43: google.protobuf.Timestamp
 	(*color.Color)(nil),                                      // 44: google.type.Color
 	(*emptypb.Empty)(nil),                                    // 45: google.protobuf.Empty
 }
 var file_api_instance_service_proto_depIdxs = []int32{
-	0,  // 0: memos.api.InstanceProfile.access_mode:type_name -> memos.api.InstanceAccessMode
-	41, // 1: memos.api.InstanceProfile.admin:type_name -> memos.api.User
-	23, // 2: memos.api.InstanceProfile.challenge:type_name -> memos.api.InstanceProfile.Challenge
-	24, // 3: memos.api.InstanceSetting.general_setting:type_name -> memos.api.InstanceSetting.GeneralSetting
-	25, // 4: memos.api.InstanceSetting.storage_setting:type_name -> memos.api.InstanceSetting.StorageSetting
-	27, // 5: memos.api.InstanceSetting.memo_related_setting:type_name -> memos.api.InstanceSetting.MemoRelatedSetting
-	28, // 6: memos.api.InstanceSetting.tags_setting:type_name -> memos.api.InstanceSetting.TagsSetting
-	30, // 7: memos.api.InstanceSetting.notification_setting:type_name -> memos.api.InstanceSetting.NotificationSetting
-	31, // 8: memos.api.InstanceSetting.ai_setting:type_name -> memos.api.InstanceSetting.AISetting
-	34, // 9: memos.api.InstanceSetting.access_setting:type_name -> memos.api.InstanceSetting.AccessSetting
-	8,  // 10: memos.api.BatchGetInstanceSettingsResponse.instance_settings:type_name -> memos.api.InstanceSetting
-	8,  // 11: memos.api.UpdateInstanceSettingRequest.instance_setting:type_name -> memos.api.InstanceSetting
-	42, // 12: memos.api.UpdateInstanceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
-	39, // 13: memos.api.TestInstanceEmailSettingRequest.email:type_name -> memos.api.InstanceSetting.NotificationSetting.EmailSetting
-	40, // 14: memos.api.InstanceStats.database:type_name -> memos.api.InstanceStats.DatabaseStats
-	43, // 15: memos.api.InstanceStats.generated_time:type_name -> google.protobuf.Timestamp
-	5,  // 16: memos.api.UsageLimit.metric:type_name -> memos.api.UsageLimit.Metric
-	43, // 17: memos.api.UsageLimit.create_time:type_name -> google.protobuf.Timestamp
-	43, // 18: memos.api.UsageLimit.update_time:type_name -> google.protobuf.Timestamp
-	16, // 19: memos.api.ListUsageLimitsResponse.usage_limits:type_name -> memos.api.UsageLimit
-	16, // 20: memos.api.CreateUsageLimitRequest.usage_limit:type_name -> memos.api.UsageLimit
-	16, // 21: memos.api.UpdateUsageLimitRequest.usage_limit:type_name -> memos.api.UsageLimit
-	42, // 22: memos.api.UpdateUsageLimitRequest.update_mask:type_name -> google.protobuf.FieldMask
-	35, // 23: memos.api.InstanceSetting.GeneralSetting.custom_profile:type_name -> memos.api.InstanceSetting.GeneralSetting.CustomProfile
-	26, // 24: memos.api.InstanceSetting.StorageSetting.storages:type_name -> memos.api.InstanceSetting.Storage
-	4,  // 25: memos.api.InstanceSetting.StorageSetting.storage_type:type_name -> memos.api.InstanceSetting.StorageSetting.StorageType
-	36, // 26: memos.api.InstanceSetting.StorageSetting.s3_config:type_name -> memos.api.InstanceSetting.StorageSetting.S3Config
-	2,  // 27: memos.api.InstanceSetting.Storage.type:type_name -> memos.api.InstanceSetting.StorageType
-	37, // 28: memos.api.InstanceSetting.Storage.s3_config:type_name -> memos.api.InstanceSetting.Storage.S3Config
-	38, // 29: memos.api.InstanceSetting.TagsSetting.tags:type_name -> memos.api.InstanceSetting.TagsSetting.TagsEntry
-	44, // 30: memos.api.InstanceSetting.TagMetadata.background_color:type_name -> google.type.Color
-	39, // 31: memos.api.InstanceSetting.NotificationSetting.email:type_name -> memos.api.InstanceSetting.NotificationSetting.EmailSetting
-	32, // 32: memos.api.InstanceSetting.AISetting.providers:type_name -> memos.api.InstanceSetting.AIProviderConfig
-	33, // 33: memos.api.InstanceSetting.AISetting.transcription:type_name -> memos.api.InstanceSetting.TranscriptionConfig
-	3,  // 34: memos.api.InstanceSetting.AIProviderConfig.type:type_name -> memos.api.InstanceSetting.AIProviderType
-	0,  // 35: memos.api.InstanceSetting.AccessSetting.access_mode:type_name -> memos.api.InstanceAccessMode
-	29, // 36: memos.api.InstanceSetting.TagsSetting.TagsEntry.value:type_name -> memos.api.InstanceSetting.TagMetadata
-	7,  // 37: memos.api.InstanceService.GetInstanceProfile:input_type -> memos.api.GetInstanceProfileRequest
-	9,  // 38: memos.api.InstanceService.GetInstanceSetting:input_type -> memos.api.GetInstanceSettingRequest
-	10, // 39: memos.api.InstanceService.BatchGetInstanceSettings:input_type -> memos.api.BatchGetInstanceSettingsRequest
-	12, // 40: memos.api.InstanceService.UpdateInstanceSetting:input_type -> memos.api.UpdateInstanceSettingRequest
-	13, // 41: memos.api.InstanceService.TestInstanceEmailSetting:input_type -> memos.api.TestInstanceEmailSettingRequest
-	15, // 42: memos.api.InstanceService.GetInstanceStats:input_type -> memos.api.GetInstanceStatsRequest
-	17, // 43: memos.api.InstanceService.ListUsageLimits:input_type -> memos.api.ListUsageLimitsRequest
-	19, // 44: memos.api.InstanceService.GetUsageLimit:input_type -> memos.api.GetUsageLimitRequest
-	20, // 45: memos.api.InstanceService.CreateUsageLimit:input_type -> memos.api.CreateUsageLimitRequest
-	21, // 46: memos.api.InstanceService.UpdateUsageLimit:input_type -> memos.api.UpdateUsageLimitRequest
-	22, // 47: memos.api.InstanceService.DeleteUsageLimit:input_type -> memos.api.DeleteUsageLimitRequest
-	6,  // 48: memos.api.InstanceService.GetInstanceProfile:output_type -> memos.api.InstanceProfile
-	8,  // 49: memos.api.InstanceService.GetInstanceSetting:output_type -> memos.api.InstanceSetting
-	11, // 50: memos.api.InstanceService.BatchGetInstanceSettings:output_type -> memos.api.BatchGetInstanceSettingsResponse
-	8,  // 51: memos.api.InstanceService.UpdateInstanceSetting:output_type -> memos.api.InstanceSetting
-	45, // 52: memos.api.InstanceService.TestInstanceEmailSetting:output_type -> google.protobuf.Empty
-	14, // 53: memos.api.InstanceService.GetInstanceStats:output_type -> memos.api.InstanceStats
-	18, // 54: memos.api.InstanceService.ListUsageLimits:output_type -> memos.api.ListUsageLimitsResponse
-	16, // 55: memos.api.InstanceService.GetUsageLimit:output_type -> memos.api.UsageLimit
-	16, // 56: memos.api.InstanceService.CreateUsageLimit:output_type -> memos.api.UsageLimit
-	16, // 57: memos.api.InstanceService.UpdateUsageLimit:output_type -> memos.api.UsageLimit
-	45, // 58: memos.api.InstanceService.DeleteUsageLimit:output_type -> google.protobuf.Empty
+	0,  // 0: roster.api.InstanceProfile.access_mode:type_name -> roster.api.InstanceAccessMode
+	41, // 1: roster.api.InstanceProfile.admin:type_name -> roster.api.User
+	23, // 2: roster.api.InstanceProfile.challenge:type_name -> roster.api.InstanceProfile.Challenge
+	24, // 3: roster.api.InstanceSetting.general_setting:type_name -> roster.api.InstanceSetting.GeneralSetting
+	25, // 4: roster.api.InstanceSetting.storage_setting:type_name -> roster.api.InstanceSetting.StorageSetting
+	27, // 5: roster.api.InstanceSetting.note_related_setting:type_name -> roster.api.InstanceSetting.NoteRelatedSetting
+	28, // 6: roster.api.InstanceSetting.tags_setting:type_name -> roster.api.InstanceSetting.TagsSetting
+	30, // 7: roster.api.InstanceSetting.notification_setting:type_name -> roster.api.InstanceSetting.NotificationSetting
+	31, // 8: roster.api.InstanceSetting.ai_setting:type_name -> roster.api.InstanceSetting.AISetting
+	34, // 9: roster.api.InstanceSetting.access_setting:type_name -> roster.api.InstanceSetting.AccessSetting
+	8,  // 10: roster.api.BatchGetInstanceSettingsResponse.instance_settings:type_name -> roster.api.InstanceSetting
+	8,  // 11: roster.api.UpdateInstanceSettingRequest.instance_setting:type_name -> roster.api.InstanceSetting
+	42, // 12: roster.api.UpdateInstanceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	39, // 13: roster.api.TestInstanceEmailSettingRequest.email:type_name -> roster.api.InstanceSetting.NotificationSetting.EmailSetting
+	40, // 14: roster.api.InstanceStats.database:type_name -> roster.api.InstanceStats.DatabaseStats
+	43, // 15: roster.api.InstanceStats.generated_time:type_name -> google.protobuf.Timestamp
+	5,  // 16: roster.api.UsageLimit.metric:type_name -> roster.api.UsageLimit.Metric
+	43, // 17: roster.api.UsageLimit.create_time:type_name -> google.protobuf.Timestamp
+	43, // 18: roster.api.UsageLimit.update_time:type_name -> google.protobuf.Timestamp
+	16, // 19: roster.api.ListUsageLimitsResponse.usage_limits:type_name -> roster.api.UsageLimit
+	16, // 20: roster.api.CreateUsageLimitRequest.usage_limit:type_name -> roster.api.UsageLimit
+	16, // 21: roster.api.UpdateUsageLimitRequest.usage_limit:type_name -> roster.api.UsageLimit
+	42, // 22: roster.api.UpdateUsageLimitRequest.update_mask:type_name -> google.protobuf.FieldMask
+	35, // 23: roster.api.InstanceSetting.GeneralSetting.custom_profile:type_name -> roster.api.InstanceSetting.GeneralSetting.CustomProfile
+	26, // 24: roster.api.InstanceSetting.StorageSetting.storages:type_name -> roster.api.InstanceSetting.Storage
+	4,  // 25: roster.api.InstanceSetting.StorageSetting.storage_type:type_name -> roster.api.InstanceSetting.StorageSetting.StorageType
+	36, // 26: roster.api.InstanceSetting.StorageSetting.s3_config:type_name -> roster.api.InstanceSetting.StorageSetting.S3Config
+	2,  // 27: roster.api.InstanceSetting.Storage.type:type_name -> roster.api.InstanceSetting.StorageType
+	37, // 28: roster.api.InstanceSetting.Storage.s3_config:type_name -> roster.api.InstanceSetting.Storage.S3Config
+	38, // 29: roster.api.InstanceSetting.TagsSetting.tags:type_name -> roster.api.InstanceSetting.TagsSetting.TagsEntry
+	44, // 30: roster.api.InstanceSetting.TagMetadata.background_color:type_name -> google.type.Color
+	39, // 31: roster.api.InstanceSetting.NotificationSetting.email:type_name -> roster.api.InstanceSetting.NotificationSetting.EmailSetting
+	32, // 32: roster.api.InstanceSetting.AISetting.providers:type_name -> roster.api.InstanceSetting.AIProviderConfig
+	33, // 33: roster.api.InstanceSetting.AISetting.transcription:type_name -> roster.api.InstanceSetting.TranscriptionConfig
+	3,  // 34: roster.api.InstanceSetting.AIProviderConfig.type:type_name -> roster.api.InstanceSetting.AIProviderType
+	0,  // 35: roster.api.InstanceSetting.AccessSetting.access_mode:type_name -> roster.api.InstanceAccessMode
+	29, // 36: roster.api.InstanceSetting.TagsSetting.TagsEntry.value:type_name -> roster.api.InstanceSetting.TagMetadata
+	7,  // 37: roster.api.InstanceService.GetInstanceProfile:input_type -> roster.api.GetInstanceProfileRequest
+	9,  // 38: roster.api.InstanceService.GetInstanceSetting:input_type -> roster.api.GetInstanceSettingRequest
+	10, // 39: roster.api.InstanceService.BatchGetInstanceSettings:input_type -> roster.api.BatchGetInstanceSettingsRequest
+	12, // 40: roster.api.InstanceService.UpdateInstanceSetting:input_type -> roster.api.UpdateInstanceSettingRequest
+	13, // 41: roster.api.InstanceService.TestInstanceEmailSetting:input_type -> roster.api.TestInstanceEmailSettingRequest
+	15, // 42: roster.api.InstanceService.GetInstanceStats:input_type -> roster.api.GetInstanceStatsRequest
+	17, // 43: roster.api.InstanceService.ListUsageLimits:input_type -> roster.api.ListUsageLimitsRequest
+	19, // 44: roster.api.InstanceService.GetUsageLimit:input_type -> roster.api.GetUsageLimitRequest
+	20, // 45: roster.api.InstanceService.CreateUsageLimit:input_type -> roster.api.CreateUsageLimitRequest
+	21, // 46: roster.api.InstanceService.UpdateUsageLimit:input_type -> roster.api.UpdateUsageLimitRequest
+	22, // 47: roster.api.InstanceService.DeleteUsageLimit:input_type -> roster.api.DeleteUsageLimitRequest
+	6,  // 48: roster.api.InstanceService.GetInstanceProfile:output_type -> roster.api.InstanceProfile
+	8,  // 49: roster.api.InstanceService.GetInstanceSetting:output_type -> roster.api.InstanceSetting
+	11, // 50: roster.api.InstanceService.BatchGetInstanceSettings:output_type -> roster.api.BatchGetInstanceSettingsResponse
+	8,  // 51: roster.api.InstanceService.UpdateInstanceSetting:output_type -> roster.api.InstanceSetting
+	45, // 52: roster.api.InstanceService.TestInstanceEmailSetting:output_type -> google.protobuf.Empty
+	14, // 53: roster.api.InstanceService.GetInstanceStats:output_type -> roster.api.InstanceStats
+	18, // 54: roster.api.InstanceService.ListUsageLimits:output_type -> roster.api.ListUsageLimitsResponse
+	16, // 55: roster.api.InstanceService.GetUsageLimit:output_type -> roster.api.UsageLimit
+	16, // 56: roster.api.InstanceService.CreateUsageLimit:output_type -> roster.api.UsageLimit
+	16, // 57: roster.api.InstanceService.UpdateUsageLimit:output_type -> roster.api.UsageLimit
+	45, // 58: roster.api.InstanceService.DeleteUsageLimit:output_type -> google.protobuf.Empty
 	48, // [48:59] is the sub-list for method output_type
 	37, // [37:48] is the sub-list for method input_type
 	37, // [37:37] is the sub-list for extension type_name
@@ -3145,7 +3147,7 @@ func file_api_instance_service_proto_init() {
 	file_api_instance_service_proto_msgTypes[2].OneofWrappers = []any{
 		(*InstanceSetting_GeneralSetting_)(nil),
 		(*InstanceSetting_StorageSetting_)(nil),
-		(*InstanceSetting_MemoRelatedSetting_)(nil),
+		(*InstanceSetting_NoteRelatedSetting_)(nil),
 		(*InstanceSetting_TagsSetting_)(nil),
 		(*InstanceSetting_NotificationSetting_)(nil),
 		(*InstanceSetting_AiSetting)(nil),

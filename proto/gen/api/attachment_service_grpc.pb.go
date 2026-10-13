@@ -20,25 +20,25 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AttachmentService_ListAttachments_FullMethodName        = "/memos.api.AttachmentService/ListAttachments"
-	AttachmentService_GetAttachment_FullMethodName          = "/memos.api.AttachmentService/GetAttachment"
-	AttachmentService_CreateAttachment_FullMethodName       = "/memos.api.AttachmentService/CreateAttachment"
-	AttachmentService_UpdateAttachment_FullMethodName       = "/memos.api.AttachmentService/UpdateAttachment"
-	AttachmentService_DeleteAttachment_FullMethodName       = "/memos.api.AttachmentService/DeleteAttachment"
-	AttachmentService_BatchDeleteAttachments_FullMethodName = "/memos.api.AttachmentService/BatchDeleteAttachments"
-	AttachmentService_UploadAttachment_FullMethodName       = "/memos.api.AttachmentService/UploadAttachment"
+	AttachmentService_ListAttachments_FullMethodName        = "/roster.api.AttachmentService/ListAttachments"
+	AttachmentService_GetAttachment_FullMethodName          = "/roster.api.AttachmentService/GetAttachment"
+	AttachmentService_CreateAttachment_FullMethodName       = "/roster.api.AttachmentService/CreateAttachment"
+	AttachmentService_UpdateAttachment_FullMethodName       = "/roster.api.AttachmentService/UpdateAttachment"
+	AttachmentService_DeleteAttachment_FullMethodName       = "/roster.api.AttachmentService/DeleteAttachment"
+	AttachmentService_BatchDeleteAttachments_FullMethodName = "/roster.api.AttachmentService/BatchDeleteAttachments"
+	AttachmentService_UploadAttachment_FullMethodName       = "/roster.api.AttachmentService/UploadAttachment"
 )
 
 // AttachmentServiceClient is the client API for AttachmentService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// AttachmentService manages files attached to memos.
+// AttachmentService manages files attached to notes.
 type AttachmentServiceClient interface {
-	// ListAttachments lists attachments linked to memos the caller can read, plus the caller's unlinked uploads.
+	// ListAttachments lists attachments linked to notes the caller can read, plus the caller's unlinked uploads.
 	ListAttachments(ctx context.Context, in *ListAttachmentsRequest, opts ...grpc.CallOption) (*ListAttachmentsResponse, error)
 	// GetAttachment gets an attachment by name. An unlinked attachment is visible only to its uploader and admins;
-	// a linked attachment follows the read access of its memo.
+	// a linked attachment follows the read access of its note.
 	GetAttachment(ctx context.Context, in *GetAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error)
 	// CreateAttachment creates an attachment from inline content.
 	CreateAttachment(ctx context.Context, in *CreateAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error)
@@ -138,12 +138,12 @@ func (c *attachmentServiceClient) UploadAttachment(ctx context.Context, in *Uplo
 // All implementations must embed UnimplementedAttachmentServiceServer
 // for forward compatibility.
 //
-// AttachmentService manages files attached to memos.
+// AttachmentService manages files attached to notes.
 type AttachmentServiceServer interface {
-	// ListAttachments lists attachments linked to memos the caller can read, plus the caller's unlinked uploads.
+	// ListAttachments lists attachments linked to notes the caller can read, plus the caller's unlinked uploads.
 	ListAttachments(context.Context, *ListAttachmentsRequest) (*ListAttachmentsResponse, error)
 	// GetAttachment gets an attachment by name. An unlinked attachment is visible only to its uploader and admins;
-	// a linked attachment follows the read access of its memo.
+	// a linked attachment follows the read access of its note.
 	GetAttachment(context.Context, *GetAttachmentRequest) (*Attachment, error)
 	// CreateAttachment creates an attachment from inline content.
 	CreateAttachment(context.Context, *CreateAttachmentRequest) (*Attachment, error)
@@ -341,7 +341,7 @@ func _AttachmentService_UploadAttachment_Handler(srv interface{}, ctx context.Co
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AttachmentService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "memos.api.AttachmentService",
+	ServiceName: "roster.api.AttachmentService",
 	HandlerType: (*AttachmentServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

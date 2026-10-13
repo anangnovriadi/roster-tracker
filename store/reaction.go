@@ -7,20 +7,20 @@ import (
 	"github.com/pkg/errors"
 )
 
-// ErrReactionMemoNotFound indicates that a reaction's memo no longer exists.
-var ErrReactionMemoNotFound = stderrors.New("reaction memo not found")
+// ErrReactionNoteNotFound indicates that a reaction's note no longer exists.
+var ErrReactionNoteNotFound = stderrors.New("reaction note not found")
 
 // ErrReactionPermissionDenied indicates that an actor cannot mutate the
 // reaction.
 var ErrReactionPermissionDenied = stderrors.New("reaction mutation permission denied")
 
-// Reaction is a reaction attached to a memo.
+// Reaction is a reaction attached to a note.
 type Reaction struct {
 	ID        int32
 	CreatedTs int64
 	CreatorID int32
-	// MemoID is the ID of the memo that the reaction is for.
-	MemoID       int32
+	// NoteID is the ID of the note that the reaction is for.
+	NoteID       int32
 	ReactionType string
 	// Policy is required for transport-facing participation mutations. A nil
 	// policy preserves trusted internal and migration callers.
@@ -30,13 +30,13 @@ type Reaction struct {
 type FindReaction struct {
 	ID         *int32
 	CreatorID  *int32
-	MemoID     *int32
-	MemoIDList []int32
+	NoteID     *int32
+	NoteIDList []int32
 }
 
 type DeleteReaction struct {
 	ID          *int32
-	MemoID      *int32
+	NoteID      *int32
 	ActorUserID *int32
 	// Policy is required for transport-facing participation mutations. It is
 	// revalidated in the same transaction before the reaction row is deleted.
@@ -76,12 +76,12 @@ func (s *Store) DeleteReaction(ctx context.Context, delete *DeleteReaction) erro
 		return errors.New("authorized reaction deletion requires reaction and actor")
 	}
 	if delete.Policy != nil {
-		if delete.MemoID == nil || *delete.MemoID <= 0 {
-			return errors.New("authorized reaction deletion policy requires memo")
+		if delete.NoteID == nil || *delete.NoteID <= 0 {
+			return errors.New("authorized reaction deletion policy requires note")
 		}
 		if err := validateReactionWritePolicy(&Reaction{
 			CreatorID: *delete.ActorUserID,
-			MemoID:    *delete.MemoID,
+			NoteID:    *delete.NoteID,
 			Policy:    delete.Policy,
 		}); err != nil {
 			return err

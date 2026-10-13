@@ -7,7 +7,7 @@ import (
 	"google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 )
 
 // This file contains all Connect service handler method implementations.
@@ -206,16 +206,16 @@ func (s *ConnectServiceHandler) GetUserUsage(ctx context.Context, req *connect.R
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ExportMemos(ctx context.Context, req *connect.Request[apipb.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error) {
-	resp, err := s.APIService.ExportMemos(ctx, req.Msg)
+func (s *ConnectServiceHandler) ExportNotes(ctx context.Context, req *connect.Request[apipb.ExportNotesRequest]) (*connect.Response[httpbody.HttpBody], error) {
+	resp, err := s.APIService.ExportNotes(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ImportMemos(ctx context.Context, req *connect.Request[apipb.ImportMemosRequest]) (*connect.Response[apipb.ImportMemosResponse], error) {
-	resp, err := s.APIService.ImportMemos(ctx, req.Msg)
+func (s *ConnectServiceHandler) ImportNotes(ctx context.Context, req *connect.Request[apipb.ImportNotesRequest]) (*connect.Response[apipb.ImportNotesResponse], error) {
+	resp, err := s.APIService.ImportNotes(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
@@ -366,191 +366,191 @@ func (s *ConnectServiceHandler) DeleteUserNotification(ctx context.Context, req 
 	return connect.NewResponse(resp), nil
 }
 
-// ListMemoViews lists the saved memo views owned by a user.
-func (s *ConnectServiceHandler) ListMemoViews(ctx context.Context, req *connect.Request[apipb.ListMemoViewsRequest]) (*connect.Response[apipb.ListMemoViewsResponse], error) {
-	resp, err := s.APIService.ListMemoViews(ctx, req.Msg)
+// ListNoteViews lists the saved note views owned by a user.
+func (s *ConnectServiceHandler) ListNoteViews(ctx context.Context, req *connect.Request[apipb.ListNoteViewsRequest]) (*connect.Response[apipb.ListNoteViewsResponse], error) {
+	resp, err := s.APIService.ListNoteViews(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-// GetMemoView returns a saved memo view by resource name.
-func (s *ConnectServiceHandler) GetMemoView(ctx context.Context, req *connect.Request[apipb.GetMemoViewRequest]) (*connect.Response[apipb.MemoView], error) {
-	resp, err := s.APIService.GetMemoView(ctx, req.Msg)
+// GetNoteView returns a saved note view by resource name.
+func (s *ConnectServiceHandler) GetNoteView(ctx context.Context, req *connect.Request[apipb.GetNoteViewRequest]) (*connect.Response[apipb.NoteView], error) {
+	resp, err := s.APIService.GetNoteView(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-// CreateMemoView creates a saved memo view for a user.
-func (s *ConnectServiceHandler) CreateMemoView(ctx context.Context, req *connect.Request[apipb.CreateMemoViewRequest]) (*connect.Response[apipb.MemoView], error) {
-	resp, err := s.APIService.CreateMemoView(ctx, req.Msg)
+// CreateNoteView creates a saved note view for a user.
+func (s *ConnectServiceHandler) CreateNoteView(ctx context.Context, req *connect.Request[apipb.CreateNoteViewRequest]) (*connect.Response[apipb.NoteView], error) {
+	resp, err := s.APIService.CreateNoteView(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-// UpdateMemoView updates the selected fields of a saved memo view.
-func (s *ConnectServiceHandler) UpdateMemoView(ctx context.Context, req *connect.Request[apipb.UpdateMemoViewRequest]) (*connect.Response[apipb.MemoView], error) {
-	resp, err := s.APIService.UpdateMemoView(ctx, req.Msg)
+// UpdateNoteView updates the selected fields of a saved note view.
+func (s *ConnectServiceHandler) UpdateNoteView(ctx context.Context, req *connect.Request[apipb.UpdateNoteViewRequest]) (*connect.Response[apipb.NoteView], error) {
+	resp, err := s.APIService.UpdateNoteView(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-// DeleteMemoView deletes a saved memo view by resource name.
-func (s *ConnectServiceHandler) DeleteMemoView(ctx context.Context, req *connect.Request[apipb.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIService.DeleteMemoView(ctx, req.Msg)
+// DeleteNoteView deletes a saved note view by resource name.
+func (s *ConnectServiceHandler) DeleteNoteView(ctx context.Context, req *connect.Request[apipb.DeleteNoteViewRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIService.DeleteNoteView(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-// MemoService
+// NoteService
 
-func (s *ConnectServiceHandler) CreateMemo(ctx context.Context, req *connect.Request[apipb.CreateMemoRequest]) (*connect.Response[apipb.Memo], error) {
-	resp, err := s.APIService.CreateMemo(ctx, req.Msg)
+func (s *ConnectServiceHandler) CreateNote(ctx context.Context, req *connect.Request[apipb.CreateNoteRequest]) (*connect.Response[apipb.Note], error) {
+	resp, err := s.APIService.CreateNote(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ListMemos(ctx context.Context, req *connect.Request[apipb.ListMemosRequest]) (*connect.Response[apipb.ListMemosResponse], error) {
-	resp, err := s.APIService.ListMemos(ctx, req.Msg)
+func (s *ConnectServiceHandler) ListNotes(ctx context.Context, req *connect.Request[apipb.ListNotesRequest]) (*connect.Response[apipb.ListNotesResponse], error) {
+	resp, err := s.APIService.ListNotes(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) GetMemo(ctx context.Context, req *connect.Request[apipb.GetMemoRequest]) (*connect.Response[apipb.Memo], error) {
-	resp, err := s.APIService.GetMemo(ctx, req.Msg)
+func (s *ConnectServiceHandler) GetNote(ctx context.Context, req *connect.Request[apipb.GetNoteRequest]) (*connect.Response[apipb.Note], error) {
+	resp, err := s.APIService.GetNote(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) UpdateMemo(ctx context.Context, req *connect.Request[apipb.UpdateMemoRequest]) (*connect.Response[apipb.Memo], error) {
-	resp, err := s.APIService.UpdateMemo(ctx, req.Msg)
+func (s *ConnectServiceHandler) UpdateNote(ctx context.Context, req *connect.Request[apipb.UpdateNoteRequest]) (*connect.Response[apipb.Note], error) {
+	resp, err := s.APIService.UpdateNote(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) DeleteMemo(ctx context.Context, req *connect.Request[apipb.DeleteMemoRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIService.DeleteMemo(ctx, req.Msg)
+func (s *ConnectServiceHandler) DeleteNote(ctx context.Context, req *connect.Request[apipb.DeleteNoteRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIService.DeleteNote(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) SetMemoAttachments(ctx context.Context, req *connect.Request[apipb.SetMemoAttachmentsRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIService.SetMemoAttachments(ctx, req.Msg)
+func (s *ConnectServiceHandler) SetNoteAttachments(ctx context.Context, req *connect.Request[apipb.SetNoteAttachmentsRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIService.SetNoteAttachments(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ListMemoAttachments(ctx context.Context, req *connect.Request[apipb.ListMemoAttachmentsRequest]) (*connect.Response[apipb.ListMemoAttachmentsResponse], error) {
-	resp, err := s.APIService.ListMemoAttachments(ctx, req.Msg)
+func (s *ConnectServiceHandler) ListNoteAttachments(ctx context.Context, req *connect.Request[apipb.ListNoteAttachmentsRequest]) (*connect.Response[apipb.ListNoteAttachmentsResponse], error) {
+	resp, err := s.APIService.ListNoteAttachments(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) SetMemoRelations(ctx context.Context, req *connect.Request[apipb.SetMemoRelationsRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIService.SetMemoRelations(ctx, req.Msg)
+func (s *ConnectServiceHandler) SetNoteRelations(ctx context.Context, req *connect.Request[apipb.SetNoteRelationsRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIService.SetNoteRelations(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ListMemoRelations(ctx context.Context, req *connect.Request[apipb.ListMemoRelationsRequest]) (*connect.Response[apipb.ListMemoRelationsResponse], error) {
-	resp, err := s.APIService.ListMemoRelations(ctx, req.Msg)
+func (s *ConnectServiceHandler) ListNoteRelations(ctx context.Context, req *connect.Request[apipb.ListNoteRelationsRequest]) (*connect.Response[apipb.ListNoteRelationsResponse], error) {
+	resp, err := s.APIService.ListNoteRelations(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) CreateMemoComment(ctx context.Context, req *connect.Request[apipb.CreateMemoCommentRequest]) (*connect.Response[apipb.Memo], error) {
-	resp, err := s.APIService.CreateMemoComment(ctx, req.Msg)
+func (s *ConnectServiceHandler) CreateNoteComment(ctx context.Context, req *connect.Request[apipb.CreateNoteCommentRequest]) (*connect.Response[apipb.Note], error) {
+	resp, err := s.APIService.CreateNoteComment(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ListMemoComments(ctx context.Context, req *connect.Request[apipb.ListMemoCommentsRequest]) (*connect.Response[apipb.ListMemoCommentsResponse], error) {
-	resp, err := s.APIService.ListMemoComments(ctx, req.Msg)
+func (s *ConnectServiceHandler) ListNoteComments(ctx context.Context, req *connect.Request[apipb.ListNoteCommentsRequest]) (*connect.Response[apipb.ListNoteCommentsResponse], error) {
+	resp, err := s.APIService.ListNoteComments(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ListMemoReactions(ctx context.Context, req *connect.Request[apipb.ListMemoReactionsRequest]) (*connect.Response[apipb.ListMemoReactionsResponse], error) {
-	resp, err := s.APIService.ListMemoReactions(ctx, req.Msg)
+func (s *ConnectServiceHandler) ListNoteReactions(ctx context.Context, req *connect.Request[apipb.ListNoteReactionsRequest]) (*connect.Response[apipb.ListNoteReactionsResponse], error) {
+	resp, err := s.APIService.ListNoteReactions(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) UpsertMemoReaction(ctx context.Context, req *connect.Request[apipb.UpsertMemoReactionRequest]) (*connect.Response[apipb.Reaction], error) {
-	resp, err := s.APIService.UpsertMemoReaction(ctx, req.Msg)
+func (s *ConnectServiceHandler) UpsertNoteReaction(ctx context.Context, req *connect.Request[apipb.UpsertNoteReactionRequest]) (*connect.Response[apipb.Reaction], error) {
+	resp, err := s.APIService.UpsertNoteReaction(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) DeleteMemoReaction(ctx context.Context, req *connect.Request[apipb.DeleteMemoReactionRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIService.DeleteMemoReaction(ctx, req.Msg)
+func (s *ConnectServiceHandler) DeleteNoteReaction(ctx context.Context, req *connect.Request[apipb.DeleteNoteReactionRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIService.DeleteNoteReaction(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) CreateMemoShare(ctx context.Context, req *connect.Request[apipb.CreateMemoShareRequest]) (*connect.Response[apipb.MemoShare], error) {
-	resp, err := s.APIService.CreateMemoShare(ctx, req.Msg)
+func (s *ConnectServiceHandler) CreateNoteShare(ctx context.Context, req *connect.Request[apipb.CreateNoteShareRequest]) (*connect.Response[apipb.NoteShare], error) {
+	resp, err := s.APIService.CreateNoteShare(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ListMemoShares(ctx context.Context, req *connect.Request[apipb.ListMemoSharesRequest]) (*connect.Response[apipb.ListMemoSharesResponse], error) {
-	resp, err := s.APIService.ListMemoShares(ctx, req.Msg)
+func (s *ConnectServiceHandler) ListNoteShares(ctx context.Context, req *connect.Request[apipb.ListNoteSharesRequest]) (*connect.Response[apipb.ListNoteSharesResponse], error) {
+	resp, err := s.APIService.ListNoteShares(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) DeleteMemoShare(ctx context.Context, req *connect.Request[apipb.DeleteMemoShareRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIService.DeleteMemoShare(ctx, req.Msg)
+func (s *ConnectServiceHandler) DeleteNoteShare(ctx context.Context, req *connect.Request[apipb.DeleteNoteShareRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIService.DeleteNoteShare(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) GetSharedMemo(ctx context.Context, req *connect.Request[apipb.GetSharedMemoRequest]) (*connect.Response[apipb.Memo], error) {
-	resp, err := s.APIService.GetSharedMemo(ctx, req.Msg)
+func (s *ConnectServiceHandler) GetSharedNote(ctx context.Context, req *connect.Request[apipb.GetSharedNoteRequest]) (*connect.Response[apipb.Note], error) {
+	resp, err := s.APIService.GetSharedNote(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

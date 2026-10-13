@@ -1,12 +1,12 @@
-# Memo Filter Engine
+# Note Filter Engine
 
-This package houses the memo-only filter engine that turns standard CEL syntax
-into SQL fragments for the subset of expressions supported by the memo schema.
+This package houses the note-only filter engine that turns standard CEL syntax
+into SQL fragments for the subset of expressions supported by the note schema.
 The engine follows a three phase pipeline inspired by systems
 such as Calcite or Prisma:
 
 1. **Parsing** – CEL expressions are parsed with `cel-go` and validated against
-   the memo-specific environment declared in `schema.go`. Only fields that
+   the note-specific environment declared in `schema.go`. Only fields that
    exist in the schema can surface in the filter, and non-standard legacy
    coercions are rejected.
 2. **Normalization** – the raw CEL AST is converted into an intermediate
@@ -20,14 +20,14 @@ such as Calcite or Prisma:
    renderer helpers.
 
 The entry point is `filter.DefaultEngine()` from `engine.go`. It lazily constructs
-an `Engine` configured with the memo schema and exposes:
+an `Engine` configured with the note schema and exposes:
 
 ```go
 engine, _ := filter.DefaultEngine()
 stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLIC"`, filter.RenderOptions{
 	Dialect: filter.DialectPostgres,
 })
-// stmt.SQL  -> "((memo.payload->'property'->>'hasTaskList')::boolean IS TRUE AND memo.visibility = $1)"
+// stmt.SQL  -> "((note.payload->'property'->>'hasTaskList')::boolean IS TRUE AND note.visibility = $1)"
 // stmt.Args -> ["PUBLIC"]
 ```
 
@@ -35,7 +35,7 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
 
 | File          | Responsibility                                                                  |
 | ------------- | ------------------------------------------------------------------------------- |
-| `schema.go`   | Declares memo fields, their types, backing columns, CEL environment options     |
+| `schema.go`   | Declares note fields, their types, backing columns, CEL environment options     |
 | `ir.go`       | IR node definitions used across the pipeline                                    |
 | `parser.go`   | Converts CEL `Expr` into IR while applying schema validation                    |
 | `render.go`   | Translates IR into SQL, handling dialect-specific behavior                      |
@@ -46,7 +46,7 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
 
 - **Placeholders** — `?` is used for SQLite/MySQL, `$n` for Postgres. The renderer
   tracks offsets to compose queries with pre-existing arguments.
-- **JSON Fields** — Memo metadata lives in `memo.payload`. The renderer handles
+- **JSON Fields** — Note metadata lives in `note.payload`. The renderer handles
   `JSON_EXTRACT`/`json_extract`/`->`/`->>` variations and boolean coercion.
 - **Time Fields** — `created_ts`, `updated_ts`, and attachment `create_time` are
   CEL `timestamp` values. Express instants with the `now` variable,
@@ -58,20 +58,20 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
   predicates evaluate individual JSON array elements. Equality and string
   matching are case-sensitive, without Unicode normalization; `%` and `_` in
   string operands are literal. Hierarchy works through implied ancestors already
-  present in the memo tag set, not through prefix matching.
+  present in the note tag set, not through prefix matching.
 - **Boolean Flags** — Fields such as `has_task_list` render as an `IS TRUE` check
-  (a comparison against `CAST('true' AS JSON)` on MySQL). Memo payloads omit false
+  (a comparison against `CAST('true' AS JSON)` on MySQL). Note payloads omit false
   flags, so a missing key counts as false: `flag == false` and `flag != true`
-  render as the negated check and match the same memos as `!flag`.
+  render as the negated check and match the same notes as `!flag`.
 - **Presence Flags** — `has_location` renders as a JSON key-existence check on
-  `memo.payload` (`$.location`). A missing key and an explicit JSON null both
+  `note.payload` (`$.location`). A missing key and an explicit JSON null both
   count as absent on every dialect; any other value — including an empty object —
   counts as present. Only `==`/`!=` against a boolean literal (or bare/negated
   use) is allowed.
 - **String Matching** — `content.contains(x)`, `content.startsWith(x)`, and
   `content.endsWith(x)` render as case-insensitive `LIKE`/`ILIKE` with LIKE
   metacharacters (`%`, `_`, `\`) escaped. Available on scalar string fields whose
-  schema sets `SupportsContains` (memo `content`; attachment `filename`,
+  schema sets `SupportsContains` (note `content`; attachment `filename`,
   `mime_type`).
 - **Regex** — `field.matches("pattern")` renders to `~` (Postgres) or `REGEXP`
   (MySQL/SQLite). SQLite uses a Go-backed `regexp` function registered in

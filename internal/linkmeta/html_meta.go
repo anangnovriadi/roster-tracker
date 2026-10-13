@@ -21,7 +21,7 @@ import (
 var ErrInternalIP = errors.New("internal IP addresses are not allowed")
 
 const (
-	defaultLinkPreviewUserAgent = "MemosBot/1.0 (+https://usememos.com)"
+	defaultLinkPreviewUserAgent = "RosterTrackerBot/1.0 (+https://github.com/anangnovriadi/roster-tracker#readme)"
 
 	initialHTMLMetaBytes = 512 * 1024
 	maxHTMLMetaBytes     = 2 * 1024 * 1024

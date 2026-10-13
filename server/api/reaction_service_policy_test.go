@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestReactionWritePolicy(t *testing.T) {
@@ -22,12 +22,12 @@ func TestMapReactionMutationError(t *testing.T) {
 		err  error
 		code codes.Code
 	}{
-		{name: "missing memo", err: store.ErrReactionMemoNotFound, code: codes.NotFound},
+		{name: "missing note", err: store.ErrReactionNoteNotFound, code: codes.NotFound},
 		{name: "reaction ownership", err: store.ErrReactionPermissionDenied, code: codes.PermissionDenied},
-		{name: "space membership", err: store.ErrMemoSpaceMembershipRequired, code: codes.PermissionDenied},
-		{name: "private memo", err: store.ErrMemoPermissionDenied, code: codes.PermissionDenied},
-		{name: "stale memo snapshot", err: store.ErrMemoMutationConflict, code: codes.FailedPrecondition},
-		{name: "invalid space", err: store.ErrMemoSpaceNotWritable, code: codes.FailedPrecondition},
+		{name: "space membership", err: store.ErrNoteSpaceMembershipRequired, code: codes.PermissionDenied},
+		{name: "private note", err: store.ErrNotePermissionDenied, code: codes.PermissionDenied},
+		{name: "stale note snapshot", err: store.ErrNoteMutationConflict, code: codes.FailedPrecondition},
+		{name: "invalid space", err: store.ErrNoteSpaceNotWritable, code: codes.FailedPrecondition},
 		{name: "unexpected storage failure", err: errors.New("database unavailable"), code: codes.Internal},
 	}
 

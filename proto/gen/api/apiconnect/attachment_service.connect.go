@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	api "github.com/usememos/memos/proto/gen/api"
+	api "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
@@ -23,7 +23,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// AttachmentServiceName is the fully-qualified name of the AttachmentService service.
-	AttachmentServiceName = "memos.api.AttachmentService"
+	AttachmentServiceName = "roster.api.AttachmentService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -36,33 +36,33 @@ const (
 const (
 	// AttachmentServiceListAttachmentsProcedure is the fully-qualified name of the AttachmentService's
 	// ListAttachments RPC.
-	AttachmentServiceListAttachmentsProcedure = "/memos.api.AttachmentService/ListAttachments"
+	AttachmentServiceListAttachmentsProcedure = "/roster.api.AttachmentService/ListAttachments"
 	// AttachmentServiceGetAttachmentProcedure is the fully-qualified name of the AttachmentService's
 	// GetAttachment RPC.
-	AttachmentServiceGetAttachmentProcedure = "/memos.api.AttachmentService/GetAttachment"
+	AttachmentServiceGetAttachmentProcedure = "/roster.api.AttachmentService/GetAttachment"
 	// AttachmentServiceCreateAttachmentProcedure is the fully-qualified name of the AttachmentService's
 	// CreateAttachment RPC.
-	AttachmentServiceCreateAttachmentProcedure = "/memos.api.AttachmentService/CreateAttachment"
+	AttachmentServiceCreateAttachmentProcedure = "/roster.api.AttachmentService/CreateAttachment"
 	// AttachmentServiceUpdateAttachmentProcedure is the fully-qualified name of the AttachmentService's
 	// UpdateAttachment RPC.
-	AttachmentServiceUpdateAttachmentProcedure = "/memos.api.AttachmentService/UpdateAttachment"
+	AttachmentServiceUpdateAttachmentProcedure = "/roster.api.AttachmentService/UpdateAttachment"
 	// AttachmentServiceDeleteAttachmentProcedure is the fully-qualified name of the AttachmentService's
 	// DeleteAttachment RPC.
-	AttachmentServiceDeleteAttachmentProcedure = "/memos.api.AttachmentService/DeleteAttachment"
+	AttachmentServiceDeleteAttachmentProcedure = "/roster.api.AttachmentService/DeleteAttachment"
 	// AttachmentServiceBatchDeleteAttachmentsProcedure is the fully-qualified name of the
 	// AttachmentService's BatchDeleteAttachments RPC.
-	AttachmentServiceBatchDeleteAttachmentsProcedure = "/memos.api.AttachmentService/BatchDeleteAttachments"
+	AttachmentServiceBatchDeleteAttachmentsProcedure = "/roster.api.AttachmentService/BatchDeleteAttachments"
 	// AttachmentServiceUploadAttachmentProcedure is the fully-qualified name of the AttachmentService's
 	// UploadAttachment RPC.
-	AttachmentServiceUploadAttachmentProcedure = "/memos.api.AttachmentService/UploadAttachment"
+	AttachmentServiceUploadAttachmentProcedure = "/roster.api.AttachmentService/UploadAttachment"
 )
 
-// AttachmentServiceClient is a client for the memos.api.AttachmentService service.
+// AttachmentServiceClient is a client for the roster.api.AttachmentService service.
 type AttachmentServiceClient interface {
-	// ListAttachments lists attachments linked to memos the caller can read, plus the caller's unlinked uploads.
+	// ListAttachments lists attachments linked to notes the caller can read, plus the caller's unlinked uploads.
 	ListAttachments(context.Context, *connect.Request[api.ListAttachmentsRequest]) (*connect.Response[api.ListAttachmentsResponse], error)
 	// GetAttachment gets an attachment by name. An unlinked attachment is visible only to its uploader and admins;
-	// a linked attachment follows the read access of its memo.
+	// a linked attachment follows the read access of its note.
 	GetAttachment(context.Context, *connect.Request[api.GetAttachmentRequest]) (*connect.Response[api.Attachment], error)
 	// CreateAttachment creates an attachment from inline content.
 	CreateAttachment(context.Context, *connect.Request[api.CreateAttachmentRequest]) (*connect.Response[api.Attachment], error)
@@ -80,7 +80,7 @@ type AttachmentServiceClient interface {
 	UploadAttachment(context.Context, *connect.Request[api.UploadAttachmentRequest]) (*connect.Response[api.UploadAttachmentResponse], error)
 }
 
-// NewAttachmentServiceClient constructs a client for the memos.api.AttachmentService service. By
+// NewAttachmentServiceClient constructs a client for the roster.api.AttachmentService service. By
 // default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
 // and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
 // connect.WithGRPC() or connect.WithGRPCWeb() options.
@@ -147,47 +147,47 @@ type attachmentServiceClient struct {
 	uploadAttachment       *connect.Client[api.UploadAttachmentRequest, api.UploadAttachmentResponse]
 }
 
-// ListAttachments calls memos.api.AttachmentService.ListAttachments.
+// ListAttachments calls roster.api.AttachmentService.ListAttachments.
 func (c *attachmentServiceClient) ListAttachments(ctx context.Context, req *connect.Request[api.ListAttachmentsRequest]) (*connect.Response[api.ListAttachmentsResponse], error) {
 	return c.listAttachments.CallUnary(ctx, req)
 }
 
-// GetAttachment calls memos.api.AttachmentService.GetAttachment.
+// GetAttachment calls roster.api.AttachmentService.GetAttachment.
 func (c *attachmentServiceClient) GetAttachment(ctx context.Context, req *connect.Request[api.GetAttachmentRequest]) (*connect.Response[api.Attachment], error) {
 	return c.getAttachment.CallUnary(ctx, req)
 }
 
-// CreateAttachment calls memos.api.AttachmentService.CreateAttachment.
+// CreateAttachment calls roster.api.AttachmentService.CreateAttachment.
 func (c *attachmentServiceClient) CreateAttachment(ctx context.Context, req *connect.Request[api.CreateAttachmentRequest]) (*connect.Response[api.Attachment], error) {
 	return c.createAttachment.CallUnary(ctx, req)
 }
 
-// UpdateAttachment calls memos.api.AttachmentService.UpdateAttachment.
+// UpdateAttachment calls roster.api.AttachmentService.UpdateAttachment.
 func (c *attachmentServiceClient) UpdateAttachment(ctx context.Context, req *connect.Request[api.UpdateAttachmentRequest]) (*connect.Response[api.Attachment], error) {
 	return c.updateAttachment.CallUnary(ctx, req)
 }
 
-// DeleteAttachment calls memos.api.AttachmentService.DeleteAttachment.
+// DeleteAttachment calls roster.api.AttachmentService.DeleteAttachment.
 func (c *attachmentServiceClient) DeleteAttachment(ctx context.Context, req *connect.Request[api.DeleteAttachmentRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteAttachment.CallUnary(ctx, req)
 }
 
-// BatchDeleteAttachments calls memos.api.AttachmentService.BatchDeleteAttachments.
+// BatchDeleteAttachments calls roster.api.AttachmentService.BatchDeleteAttachments.
 func (c *attachmentServiceClient) BatchDeleteAttachments(ctx context.Context, req *connect.Request[api.BatchDeleteAttachmentsRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.batchDeleteAttachments.CallUnary(ctx, req)
 }
 
-// UploadAttachment calls memos.api.AttachmentService.UploadAttachment.
+// UploadAttachment calls roster.api.AttachmentService.UploadAttachment.
 func (c *attachmentServiceClient) UploadAttachment(ctx context.Context, req *connect.Request[api.UploadAttachmentRequest]) (*connect.Response[api.UploadAttachmentResponse], error) {
 	return c.uploadAttachment.CallUnary(ctx, req)
 }
 
-// AttachmentServiceHandler is an implementation of the memos.api.AttachmentService service.
+// AttachmentServiceHandler is an implementation of the roster.api.AttachmentService service.
 type AttachmentServiceHandler interface {
-	// ListAttachments lists attachments linked to memos the caller can read, plus the caller's unlinked uploads.
+	// ListAttachments lists attachments linked to notes the caller can read, plus the caller's unlinked uploads.
 	ListAttachments(context.Context, *connect.Request[api.ListAttachmentsRequest]) (*connect.Response[api.ListAttachmentsResponse], error)
 	// GetAttachment gets an attachment by name. An unlinked attachment is visible only to its uploader and admins;
-	// a linked attachment follows the read access of its memo.
+	// a linked attachment follows the read access of its note.
 	GetAttachment(context.Context, *connect.Request[api.GetAttachmentRequest]) (*connect.Response[api.Attachment], error)
 	// CreateAttachment creates an attachment from inline content.
 	CreateAttachment(context.Context, *connect.Request[api.CreateAttachmentRequest]) (*connect.Response[api.Attachment], error)
@@ -254,7 +254,7 @@ func NewAttachmentServiceHandler(svc AttachmentServiceHandler, opts ...connect.H
 		connect.WithSchema(attachmentServiceMethods.ByName("UploadAttachment")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/memos.api.AttachmentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/roster.api.AttachmentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AttachmentServiceListAttachmentsProcedure:
 			attachmentServiceListAttachmentsHandler.ServeHTTP(w, r)
@@ -280,29 +280,29 @@ func NewAttachmentServiceHandler(svc AttachmentServiceHandler, opts ...connect.H
 type UnimplementedAttachmentServiceHandler struct{}
 
 func (UnimplementedAttachmentServiceHandler) ListAttachments(context.Context, *connect.Request[api.ListAttachmentsRequest]) (*connect.Response[api.ListAttachmentsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AttachmentService.ListAttachments is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AttachmentService.ListAttachments is not implemented"))
 }
 
 func (UnimplementedAttachmentServiceHandler) GetAttachment(context.Context, *connect.Request[api.GetAttachmentRequest]) (*connect.Response[api.Attachment], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AttachmentService.GetAttachment is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AttachmentService.GetAttachment is not implemented"))
 }
 
 func (UnimplementedAttachmentServiceHandler) CreateAttachment(context.Context, *connect.Request[api.CreateAttachmentRequest]) (*connect.Response[api.Attachment], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AttachmentService.CreateAttachment is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AttachmentService.CreateAttachment is not implemented"))
 }
 
 func (UnimplementedAttachmentServiceHandler) UpdateAttachment(context.Context, *connect.Request[api.UpdateAttachmentRequest]) (*connect.Response[api.Attachment], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AttachmentService.UpdateAttachment is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AttachmentService.UpdateAttachment is not implemented"))
 }
 
 func (UnimplementedAttachmentServiceHandler) DeleteAttachment(context.Context, *connect.Request[api.DeleteAttachmentRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AttachmentService.DeleteAttachment is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AttachmentService.DeleteAttachment is not implemented"))
 }
 
 func (UnimplementedAttachmentServiceHandler) BatchDeleteAttachments(context.Context, *connect.Request[api.BatchDeleteAttachmentsRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AttachmentService.BatchDeleteAttachments is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AttachmentService.BatchDeleteAttachments is not implemented"))
 }
 
 func (UnimplementedAttachmentServiceHandler) UploadAttachment(context.Context, *connect.Request[api.UploadAttachmentRequest]) (*connect.Response[api.UploadAttachmentResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AttachmentService.UploadAttachment is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AttachmentService.UploadAttachment is not implemented"))
 }

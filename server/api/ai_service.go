@@ -11,14 +11,14 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/internal/ratelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/provider/ai"
-	"github.com/usememos/memos/provider/ai/audiollm"
-	audiollmgemini "github.com/usememos/memos/provider/ai/audiollm/gemini"
-	"github.com/usememos/memos/provider/ai/stt"
-	sttopenai "github.com/usememos/memos/provider/ai/stt/openai"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/provider/ai"
+	"github.com/anangnovriadi/roster-tracker/provider/ai/audiollm"
+	audiollmgemini "github.com/anangnovriadi/roster-tracker/provider/ai/audiollm/gemini"
+	"github.com/anangnovriadi/roster-tracker/provider/ai/stt"
+	sttopenai "github.com/anangnovriadi/roster-tracker/provider/ai/stt/openai"
 )
 
 const (

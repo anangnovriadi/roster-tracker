@@ -7,24 +7,36 @@ interface Props {
   username: string;
   password: string;
   passwordAutoComplete: "current-password" | "new-password";
+  /** Sign-in also accepts an email address in the username field. */
+  acceptEmail?: boolean;
   readOnly?: boolean;
   onUsernameChange: (username: string) => void;
   onPasswordChange: (password: string) => void;
 }
 
 // Username + password field pair shared by the sign-in and sign-up forms.
-const CredentialFields = ({ idPrefix, username, password, passwordAutoComplete, readOnly, onUsernameChange, onPasswordChange }: Props) => {
+const CredentialFields = ({
+  idPrefix,
+  username,
+  password,
+  passwordAutoComplete,
+  acceptEmail,
+  readOnly,
+  onUsernameChange,
+  onPasswordChange,
+}: Props) => {
   const t = useTranslate();
+  const usernameLabel = acceptEmail ? t("common.username-or-email") : t("common.username");
 
   return (
     <>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`${idPrefix}-username`}>{t("common.username")}</Label>
+        <Label htmlFor={`${idPrefix}-username`}>{usernameLabel}</Label>
         <Input
           id={`${idPrefix}-username`}
           type="text"
           readOnly={readOnly}
-          placeholder={t("common.username")}
+          placeholder={usernameLabel}
           value={username}
           autoComplete="username"
           autoCapitalize="off"

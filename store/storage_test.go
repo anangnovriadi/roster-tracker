@@ -7,13 +7,13 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/provider/storage/s3"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/provider/storage/s3"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestNormalizeInstanceStorageSettingMigratesLegacyS3Config(t *testing.T) {
-	setting := legacyS3StorageSetting("https://s3.example.com", "memos", "secret")
+	setting := legacyS3StorageSetting("https://s3.example.com", "notes", "secret")
 
 	store.NormalizeInstanceStorageSetting(setting)
 
@@ -28,11 +28,11 @@ func TestNormalizeInstanceStorageSettingMigratesLegacyS3Config(t *testing.T) {
 }
 
 func TestPrepareInstanceStorageSettingUpdateRotatesCredentialsInPlace(t *testing.T) {
-	existing := legacyS3StorageSetting("https://s3.example.com", "memos", "old-secret")
+	existing := legacyS3StorageSetting("https://s3.example.com", "notes", "old-secret")
 	store.NormalizeInstanceStorageSetting(existing)
 	existingID := existing.DefaultStorageId
 
-	incoming := legacyS3StorageSetting("https://s3.example.com/", "memos", "")
+	incoming := legacyS3StorageSetting("https://s3.example.com/", "notes", "")
 	incoming.S3Config.AccessKeyId = "new-access-key"
 	require.NoError(t, store.PrepareInstanceStorageSettingUpdate(incoming, existing))
 
@@ -77,7 +77,7 @@ func TestPrepareInstanceStorageSettingUpdateDoesNotReuseCredentialsAcrossEndpoin
 }
 
 func TestPrepareInstanceStorageSettingUpdateKeepsReferencedDefault(t *testing.T) {
-	existing := legacyS3StorageSetting("https://s3.example.com", "memos", "secret")
+	existing := legacyS3StorageSetting("https://s3.example.com", "notes", "secret")
 	store.NormalizeInstanceStorageSetting(existing)
 	existingID := existing.DefaultStorageId
 
@@ -96,7 +96,7 @@ func TestPrepareInstanceStorageSettingUpdateKeepsReferencedDefault(t *testing.T)
 }
 
 func TestPrepareInstanceStorageSettingUpdateKeepsEditedStorageOnIdentityCollision(t *testing.T) {
-	existing := legacyS3StorageSetting("https://s3.example.com", "memos", "secret-a")
+	existing := legacyS3StorageSetting("https://s3.example.com", "notes", "secret-a")
 	store.NormalizeInstanceStorageSetting(existing)
 	hashID := existing.DefaultStorageId
 	otherStorage := s3Storage("custom-b", "other-bucket")
@@ -119,7 +119,7 @@ func TestPrepareInstanceStorageSettingUpdateKeepsEditedStorageOnIdentityCollisio
 					AccessKeySecret: "secret-b-new",
 					Endpoint:        "https://s3.example.com",
 					Region:          "us-east-1",
-					Bucket:          "memos",
+					Bucket:          "notes",
 				}},
 			},
 		},
@@ -227,7 +227,7 @@ func TestNormalizeInstanceStorageSettingUnspecifiedTypeDefaultsToLocal(t *testin
 			AccessKeySecret: "secret",
 			Endpoint:        "https://s3.example.com",
 			Region:          "us-east-1",
-			Bucket:          "memos",
+			Bucket:          "notes",
 		},
 	}
 
@@ -244,7 +244,7 @@ func TestNormalizeInstanceStorageSettingUnspecifiedTypeDefaultsToLocal(t *testin
 }
 
 func TestResolveStorageFallsBackWhenStorageIDMissing(t *testing.T) {
-	setting := legacyS3StorageSetting("https://s3.example.com", "memos", "secret")
+	setting := legacyS3StorageSetting("https://s3.example.com", "notes", "secret")
 	store.NormalizeInstanceStorageSetting(setting)
 
 	// The registry may be rebuilt without preserving IDs (deployment file,
@@ -259,7 +259,7 @@ func TestResolveStorageFallsBackWhenStorageIDMissing(t *testing.T) {
 		AccessKeySecret: "old-secret",
 		Endpoint:        "https://s3.example.com/",
 		Region:          "us-east-1",
-		Bucket:          "memos",
+		Bucket:          "notes",
 	}
 	resolved, err = store.ResolveStorage(setting, "s3-dangling", embedded)
 	require.NoError(t, err)
@@ -282,7 +282,7 @@ func TestResolveStorageDriverByStorageID(t *testing.T) {
 					AccessKeySecret: "secret",
 					Endpoint:        "https://s3.example.com",
 					Region:          "us-east-1",
-					Bucket:          "memos",
+					Bucket:          "notes",
 				}},
 			},
 		},
@@ -318,7 +318,7 @@ func TestStorageDriverCacheIncludesResolvedConfiguration(t *testing.T) {
 	ctx := context.Background()
 	stores := &store.Store{}
 
-	retainedOldStorage := s3Storage("stable", "memos")
+	retainedOldStorage := s3Storage("stable", "notes")
 	retainedOldStorage.GetS3Config().AccessKeyId = "old-access-key"
 	retainedOldStorage.GetS3Config().AccessKeySecret = "old-secret"
 	currentStorage := proto.CloneOf(retainedOldStorage)
@@ -357,7 +357,7 @@ func TestResolveStorageDriverUsesCurrentCredentialsForLegacyAttachment(t *testin
 		AccessKeySecret: "old-secret",
 		Endpoint:        "https://s3.example.com/",
 		Region:          "us-east-1",
-		Bucket:          "memos",
+		Bucket:          "notes",
 	}
 	setting := &storepb.InstanceStorageSetting{
 		DefaultStorageId: "primary",
@@ -370,7 +370,7 @@ func TestResolveStorageDriverUsesCurrentCredentialsForLegacyAttachment(t *testin
 					AccessKeySecret: "new-secret",
 					Endpoint:        "https://s3.example.com",
 					Region:          "us-east-1",
-					Bucket:          "memos",
+					Bucket:          "notes",
 					UsePathStyle:    true,
 				}},
 			},

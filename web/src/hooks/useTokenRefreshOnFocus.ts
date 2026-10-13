@@ -8,7 +8,7 @@ import { FOCUS_TOKEN_EXPIRY_BUFFER_MS, hasStoredToken, isTokenExpired } from "@/
  * This prevents React Query's automatic refetch-on-window-focus from triggering
  * multiple 401 errors when the user returns to the tab after the token has expired.
  *
- * Related issue: https://github.com/usememos/memos/issues/5589
+ * Related issue: https://github.com/anangnovriadi/roster-tracker/issues/5589
  */
 export function useTokenRefreshOnFocus(refreshFn: () => Promise<void>, enabled: boolean = true) {
   useEffect(() => {

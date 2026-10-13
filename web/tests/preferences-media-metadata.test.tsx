@@ -11,7 +11,7 @@ vi.mock("@/contexts/AuthContext", () => ({
     currentUser: { name: "users/alice" },
     userGeneralSetting: {
       locale: "en",
-      memoVisibility: "PRIVATE",
+      noteVisibility: "PRIVATE",
       theme: "system",
       saveMediaMetadata: false,
     },

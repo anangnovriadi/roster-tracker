@@ -4,10 +4,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/usememos/memos/internal/profile"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/provider/storage"
-	"github.com/usememos/memos/store/cache"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/provider/storage"
+	"github.com/anangnovriadi/roster-tracker/store/cache"
 )
 
 // Store provides database access to all raw objects.
@@ -19,7 +19,7 @@ type Store struct {
 	authConfigMu   sync.Mutex
 	refreshTokenMu sync.Mutex
 	patMu          sync.Mutex
-	memoViewMu     sync.Mutex
+	noteViewMu     sync.Mutex
 
 	deploymentConfigMu sync.RWMutex
 	deploymentConfig   *deploymentConfiguration

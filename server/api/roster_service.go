@@ -11,8 +11,8 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // maxRosterListDays bounds one ListRosterAssignments request.

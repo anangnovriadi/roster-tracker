@@ -1,6 +1,6 @@
 import { render, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { MermaidBlock } from "@/components/MemoContent/MermaidBlock";
+import { MermaidBlock } from "@/components/NoteContent/MermaidBlock";
 
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({

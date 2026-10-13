@@ -1,4 +1,4 @@
-type InkScene = "memo" | "search" | "inbox";
+type InkScene = "note" | "search" | "inbox";
 
 interface InkIllustrationProps {
   scene: InkScene;
@@ -52,7 +52,7 @@ const InkIllustration = ({ scene }: InkIllustrationProps) => (
     <circle cx="458" cy="119" r="4" fill="#bb785c" />
     <path d="M467 104 Q479 90 493 95 Q481 108 467 104Z" fill="#b7c5a6" stroke="#2e3435" strokeWidth="1.5" />
 
-    {scene === "memo" && (
+    {scene === "note" && (
       <>
         <path
           d="M215 57 Q264 50 307 62 L311 181 Q261 171 211 183Z"

@@ -1,0 +1,129 @@
+import { create } from "@bufbuild/protobuf";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { act, renderHook } from "@testing-library/react";
+import type { PropsWithChildren } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useNoteSave } from "@/components/NoteEditor/hooks/useNoteSave";
+import { noteService } from "@/components/NoteEditor/services/noteService";
+import type { EditorState } from "@/components/NoteEditor/state";
+import { createInitialState } from "@/components/NoteEditor/state/types";
+import type { LocalFile } from "@/components/NoteEditor/types/attachment";
+import { type Attachment, AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+
+const mocks = vi.hoisted(() => ({
+  createNote: vi.fn(),
+  uploadAttachment: vi.fn(),
+  save: vi.fn(),
+  state: undefined as unknown as EditorState,
+}));
+
+vi.mock("@/connect", () => ({
+  noteServiceClient: { createNote: mocks.createNote },
+  attachmentServiceClient: { uploadAttachment: mocks.uploadAttachment },
+}));
+
+vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
+vi.mock("@/contexts/NewNoteContext", () => ({ useNewNote: () => ({ markNewNote: vi.fn() }) }));
+vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
+
+// The hook test drives a small stand-in for the editor reducer, so that what
+// the hook dispatches after a failure is what the next save reads.
+vi.mock("@/components/NoteEditor/state", () => ({
+  useEditorContext: () => ({
+    actions: {
+      reset: () => ({ type: "reset" }),
+      setLoading: () => ({ type: "noop" }),
+      setJustSaved: () => ({ type: "noop" }),
+      setMetadata: (metadata: Partial<EditorState["metadata"]>) => ({ type: "set-metadata", metadata }),
+      setLocalFiles: (localFiles: LocalFile[]) => ({ type: "set-local-files", localFiles }),
+      setTimestamps: () => ({ type: "noop" }),
+    },
+    dispatch: (action: { type: string; metadata?: Partial<EditorState["metadata"]>; localFiles?: LocalFile[] }) => {
+      if (action.type === "set-metadata") mocks.state = { ...mocks.state, metadata: { ...mocks.state.metadata, ...action.metadata } };
+      if (action.type === "set-local-files") mocks.state = { ...mocks.state, localFiles: action.localFiles ?? [] };
+    },
+    getState: () => mocks.state,
+  }),
+}));
+
+const localFile = (name: string): LocalFile => ({ file: new File(["data"], name, { type: "text/plain" }), previewUrl: `blob:${name}` });
+
+const editorState = (localFiles: LocalFile[], attachments: Attachment[] = []): EditorState => {
+  const state = createInitialState();
+  return { ...state, content: "hello", localFiles, metadata: { ...state.metadata, attachments } };
+};
+
+const uploadedAttachment = (name: string) => create(AttachmentSchema, { name: `attachments/${name}`, filename: name });
+
+describe("noteService.save", () => {
+  beforeEach(() => {
+    mocks.createNote.mockReset();
+    mocks.uploadAttachment.mockReset();
+    mocks.uploadAttachment.mockImplementation(async (request: { upload: { case: string }; finishWrite?: boolean }) =>
+      request.upload.case === "spec"
+        ? { uploadId: "u1", committedSize: 0n, maxChunkSize: 1024 }
+        : { committedSize: 4n, attachment: uploadedAttachment("a.txt") },
+    );
+  });
+
+  it("reports each upload before the note create can fail", async () => {
+    mocks.createNote.mockRejectedValue(new Error("quota exceeded"));
+    const file = localFile("a.txt");
+    const onFileUploaded = vi.fn();
+
+    await expect(noteService.save(editorState([file]), { onFileUploaded })).rejects.toThrow("quota exceeded");
+
+    expect(onFileUploaded).toHaveBeenCalledOnce();
+    expect(onFileUploaded).toHaveBeenCalledWith(file, expect.objectContaining({ name: "attachments/a.txt" }));
+  });
+});
+
+describe("useNoteSave after a failed save", () => {
+  beforeEach(() => {
+    mocks.save.mockReset();
+    vi.spyOn(noteService, "save").mockImplementation(mocks.save);
+  });
+
+  it("keeps uploaded files on the draft so a retry does not upload them again", async () => {
+    const uploaded = localFile("a.txt");
+    const pending = localFile("b.txt");
+    const attachment = uploadedAttachment("a.txt");
+    mocks.state = editorState([uploaded, pending]);
+    // The first save uploads one file, then the note create is refused.
+    mocks.save.mockImplementationOnce(async (_state, options) => {
+      options.onFileUploaded(uploaded, attachment);
+      throw new Error("quota exceeded");
+    });
+    mocks.save.mockResolvedValueOnce({ hasChanges: true, noteName: "notes/new" });
+
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useNoteSave({ discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(mocks.state.metadata.attachments).toEqual([attachment]);
+    expect(mocks.state.localFiles).toEqual([pending]);
+
+    await act(async () => result.current());
+
+    const retried = mocks.save.mock.calls[1][0] as EditorState;
+    expect(retried.localFiles).toEqual([pending]);
+    expect(retried.metadata.attachments).toEqual([attachment]);
+  });
+
+  it("leaves the draft alone when nothing uploaded", async () => {
+    const file = localFile("a.txt");
+    mocks.state = editorState([file]);
+    mocks.save.mockRejectedValueOnce(new Error("offline"));
+
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useNoteSave({ discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(mocks.state.localFiles).toEqual([file]);
+    expect(mocks.state.metadata.attachments).toEqual([]);
+  });
+});

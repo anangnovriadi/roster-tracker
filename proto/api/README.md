@@ -1,8 +1,8 @@
-# Memos API Design
+# Roster Tracker API Design
 
 This API design should follow the guidelines and best practices outlined in the [Google API Improvement Proposals (AIPs)](https://google.aip.dev/).
 
-The package is `memos.api`. It carries no version marker; breaking changes are recorded in [CHANGELOG.md](CHANGELOG.md).
+The package is `roster.api`. It carries no version marker; breaking changes are recorded in [CHANGELOG.md](CHANGELOG.md).
 
 ## File Layout
 
@@ -28,5 +28,5 @@ Within a group, order RPCs `List`, `Get`, `BatchGet`, `Create`, `Update`, `Delet
 - Every service, RPC, message, enum and field has a comment. RPC comments start with the RPC name.
 - Fields with `google.api.field_behavior` start with the matching prefix: `Identifier.`, `Required.`, `Optional.`,
   `Output only.`, or `Input only.`. Fields without the annotation get no prefix.
-- Resource-name fields end with a `Format: memos/{memo}` line.
+- Resource-name fields end with a `Format: notes/{note}` line.
 - Describe what the server does, not what it might do.

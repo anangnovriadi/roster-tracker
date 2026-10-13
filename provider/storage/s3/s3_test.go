@@ -11,8 +11,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/internal/testutil/fakes3"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/internal/testutil/fakes3"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 // assertObjectLifecycle exercises the full driver contract — upload, download,
@@ -69,8 +69,8 @@ func TestDriverObjectLifecycle(t *testing.T) {
 func TestNewDriverInsecureSkipTLSVerify(t *testing.T) {
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, http.MethodGet, r.Method)
-		require.Equal(t, "/memos/note.txt", r.URL.Path)
-		_, err := w.Write([]byte("stored memo"))
+		require.Equal(t, "/notes/note.txt", r.URL.Path)
+		_, err := w.Write([]byte("stored note"))
 		require.NoError(t, err)
 	}))
 	defer server.Close()
@@ -81,7 +81,7 @@ func TestNewDriverInsecureSkipTLSVerify(t *testing.T) {
 			AccessKeySecret:       "access-secret",
 			Endpoint:              server.URL,
 			Region:                "us-east-1",
-			Bucket:                "memos",
+			Bucket:                "notes",
 			UsePathStyle:          true,
 			InsecureSkipTlsVerify: skipVerify,
 		}
@@ -102,6 +102,6 @@ func TestNewDriverInsecureSkipTLSVerify(t *testing.T) {
 
 		content, err := driver.GetObject(context.Background(), "note.txt")
 		require.NoError(t, err)
-		require.Equal(t, []byte("stored memo"), content)
+		require.Equal(t, []byte("stored note"), content)
 	})
 }

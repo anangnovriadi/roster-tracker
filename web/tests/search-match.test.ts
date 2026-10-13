@@ -5,13 +5,13 @@ const matches = (text: string, ...terms: string[]) => findSearchMatches(text, pr
 
 describe("prepareSearchTerms", () => {
   it("folds case, trims, drops empties and duplicates", () => {
-    expect(prepareSearchTerms(["  Memo ", "", "memo", "MEMO", "   "])).toEqual(["memo"]);
+    expect(prepareSearchTerms(["  Note ", "", "note", "NOTE", "   "])).toEqual(["note"]);
   });
 });
 
 describe("findSearchMatches", () => {
   it("finds every occurrence of a term, ignoring case", () => {
-    expect(matches("Memo memo MEMO", "memo")).toEqual([
+    expect(matches("Note note NOTE", "note")).toEqual([
       { start: 0, end: 4 },
       { start: 5, end: 9 },
       { start: 10, end: 14 },
@@ -19,9 +19,9 @@ describe("findSearchMatches", () => {
   });
 
   it("returns nothing without text or terms", () => {
-    expect(matches("", "memo")).toEqual([]);
-    expect(matches("memo")).toEqual([]);
-    expect(matches("memo", "  ")).toEqual([]);
+    expect(matches("", "note")).toEqual([]);
+    expect(matches("note")).toEqual([]);
+    expect(matches("note", "  ")).toEqual([]);
   });
 
   it("matches several terms and sorts the hits", () => {

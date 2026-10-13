@@ -15,12 +15,12 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/internal/clientip"
-	"github.com/usememos/memos/internal/ratelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // limitedPolicy returns the default table with one scope tightened.
@@ -347,18 +347,18 @@ func TestWriteAndUploadBudgets(t *testing.T) {
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
 
-	createMemo := func(content string) error {
-		_, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: content, Visibility: apipb.Visibility_PRIVATE}})
+	createNote := func(content string) error {
+		_, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{Content: content, Visibility: apipb.Visibility_PRIVATE}})
 		return err
 	}
-	require.NoError(t, createMemo("one"))
-	require.NoError(t, createMemo("two"))
-	requireRateLimited(t, createMemo("three"), ratelimit.ScopeWriteUser)
+	require.NoError(t, createNote("one"))
+	require.NoError(t, createNote("two"))
+	requireRateLimited(t, createNote("three"), ratelimit.ScopeWriteUser)
 
 	// Another user has their own budget.
 	other, err := ts.CreateRegularUser(ctx, "other")
 	require.NoError(t, err)
-	_, err = ts.Service.CreateMemo(ts.CreateUserContext(ctx, other.ID), &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "hi", Visibility: apipb.Visibility_PRIVATE}})
+	_, err = ts.Service.CreateNote(ts.CreateUserContext(ctx, other.ID), &apipb.CreateNoteRequest{Note: &apipb.Note{Content: "hi", Visibility: apipb.Visibility_PRIVATE}})
 	require.NoError(t, err)
 }
 
@@ -371,7 +371,7 @@ func TestAuthorizerBudgets(t *testing.T) {
 	policy[ratelimit.ScopeAuthenticated] = ratelimit.Rule{Limit: 3, Window: time.Hour}
 	limiter := ratelimit.NewMemoryLimiter(policy)
 	authorizer := api.NewAuthorizer(ts.Store, ts.Secret).WithRateLimiter(limiter)
-	const procedure = "/memos.api.MemoService/ListMemos"
+	const procedure = "/roster.api.NoteService/ListNotes"
 
 	// Anonymous callers share a budget per address.
 	require.NoError(t, authorizer.Throttle(ctx, procedure, nil))

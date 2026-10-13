@@ -15,14 +15,14 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/sync/semaphore"
 
-	"github.com/usememos/memos/core/notification"
-	"github.com/usememos/memos/internal/linkmeta"
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/internal/ratelimit"
-	"github.com/usememos/memos/markdown"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/core/notification"
+	"github.com/anangnovriadi/roster-tracker/internal/linkmeta"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	"github.com/anangnovriadi/roster-tracker/markdown"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // MaxAPIRequestBytes caps the size of a request body accepted by the API. The
@@ -33,21 +33,21 @@ const MaxAPIRequestBytes = 256 << 20
 // maxGeneralRequestBytes caps every procedure that does not carry file bytes.
 // Request bodies are buffered in memory before they are parsed, so the cap is
 // what bounds memory per in-flight request; it leaves ample room for the
-// largest memo content and settings an instance can be configured to accept.
+// largest note content and settings an instance can be configured to accept.
 const maxGeneralRequestBytes = 16 << 20
 
 // inlineContentProcedures carry a whole file in one request body and keep
 // the large cap; the size of that content is checked again by the handler
 // against the user's upload limits.
 var inlineContentProcedures = map[string]struct{}{
-	"/memos.api.AttachmentService/CreateAttachment": {},
-	"/memos.api.AIService/Transcribe":               {},
+	"/roster.api.AttachmentService/CreateAttachment": {},
+	"/roster.api.AIService/Transcribe":               {},
 }
 
 // requestBodyLimit returns the request body cap for a procedure. Chunked
 // uploads carry at most one chunk per call, so they get a much lower cap.
 func requestBodyLimit(procedure string) int64 {
-	if procedure == attachmentUploadProcedure || procedure == importMemosProcedure {
+	if procedure == attachmentUploadProcedure || procedure == importNotesProcedure {
 		return uploadRequestLimit
 	}
 	if _, ok := inlineContentProcedures[procedure]; ok {
@@ -60,7 +60,7 @@ type APIService struct {
 	apipb.UnimplementedInstanceServiceServer
 	apipb.UnimplementedAuthServiceServer
 	apipb.UnimplementedUserServiceServer
-	apipb.UnimplementedMemoServiceServer
+	apipb.UnimplementedNoteServiceServer
 	apipb.UnimplementedSpaceServiceServer
 	apipb.UnimplementedAttachmentServiceServer
 	apipb.UnimplementedAIServiceServer
@@ -92,7 +92,7 @@ type APIService struct {
 
 	linkMetadataFetcher linkMetadataFetcher
 	attachmentUploads   attachmentUploads
-	memoImports         memoImports
+	noteImports         noteImports
 }
 
 // NewAPIService creates an API v1 service with its shared dependencies.
@@ -153,7 +153,7 @@ func (s *APIService) RegisterGateway(ctx context.Context, echoServer *echo.Echo)
 	gatewayAuthMiddleware := func(next runtime.HandlerFunc) runtime.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 			// grpc-gateway does not pass through the Connect metadata interceptor.
-			// Apply the same no-store policy here so a memo that later loses access
+			// Apply the same no-store policy here so a note that later loses access
 			// cannot remain readable from a browser or intermediary response cache.
 			setAPIResponseNoStoreHeaders(w.Header())
 			ctx := r.Context()
@@ -201,7 +201,7 @@ func (s *APIService) RegisterGateway(ctx context.Context, echoServer *echo.Echo)
 	if err := apipb.RegisterUserServiceHandlerServer(ctx, gwMux, s); err != nil {
 		return err
 	}
-	if err := apipb.RegisterMemoServiceHandlerServer(ctx, gwMux, s); err != nil {
+	if err := apipb.RegisterNoteServiceHandlerServer(ctx, gwMux, s); err != nil {
 		return err
 	}
 	if err := apipb.RegisterSpaceServiceHandlerServer(ctx, gwMux, s); err != nil {
@@ -245,21 +245,21 @@ func (s *APIService) RegisterGateway(ctx context.Context, echoServer *echo.Echo)
 		}))
 
 	connectGroup := echoServer.Group("")
-	connectGroup.Any("/memos.api.*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	connectGroup.Any("/roster.api.*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.Body = http.MaxBytesReader(w, r.Body, requestBodyLimit(r.URL.Path))
 		connectMux.ServeHTTP(w, r)
 	})))
-	connectGroup.Any("/memos.api.v1.*", removedAPIVersionHandler(true))
+	connectGroup.Any("/roster.api.v1.*", removedAPIVersionHandler(true))
 
 	return nil
 }
 
 // removedAPIMessage tells clients of the removed v1 API where it went.
-const removedAPIMessage = "API v1 has been removed. Use /api/... for REST and /memos.api.<Service>/<Method> for Connect. " +
-	"See https://github.com/usememos/memos/blob/main/proto/api/CHANGELOG.md"
+const removedAPIMessage = "API v1 has been removed. Use /api/... for REST and /roster.api.<Service>/<Method> for Connect. " +
+	"See https://github.com/anangnovriadi/roster-tracker/blob/main/proto/api/CHANGELOG.md"
 
 // removedAPIVersionHandler answers requests to the removed /api/v1 and
-// memos.api.v1 routes with 410 Gone, in the error body shape each transport's
+// roster.api.v1 routes with 410 Gone, in the error body shape each transport's
 // clients decode. It exists for one release so old clients fail with a
 // pointer to the migration; delete it in the release after.
 func removedAPIVersionHandler(connectProtocol bool) echo.HandlerFunc {

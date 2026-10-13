@@ -47,7 +47,7 @@ const listUnusedAttachmentNames = async (filter: string | undefined) => {
   do {
     const response = await attachmentServiceClient.listAttachments(
       create(ListAttachmentsRequestSchema, {
-        filter: combineCELFilters("memo_id == null", filter),
+        filter: combineCELFilters("note_id == null", filter),
         pageSize: UNUSED_PAGE_SIZE,
         pageToken,
       }),
@@ -65,7 +65,7 @@ const Attachments = () => {
   const currentUser = useCurrentUser();
   const deleteUnusedAttachmentsDialog = useDialog();
   const { attachmentSection, setAttachmentSection } = useAppSidebar();
-  const { memoFilter, creatorUsername } = useSpaceContext();
+  const { noteFilter, creatorUsername } = useSpaceContext();
   const canShowUnused = !creatorUsername || creatorUsername === currentUser?.username;
   const [previewState, setPreviewState] = useState({ open: false, initialIndex: 0 });
   const { mutateAsync: batchDeleteAttachments, isPending: isDeletingUnused } = useBatchDeleteAttachments();
@@ -82,7 +82,7 @@ const Attachments = () => {
     mediaPreviewItems,
     refetch,
     stats,
-  } = useAttachmentLibrary(i18n.language, memoFilter);
+  } = useAttachmentLibrary(i18n.language, noteFilter);
   const {
     error: unusedError,
     isComplete: unusedIsComplete,
@@ -90,7 +90,7 @@ const Attachments = () => {
     isLoading: unusedIsLoading,
     refetch: refetchUnused,
     unusedItems: completeUnusedItems,
-  } = useUnusedAttachmentLibrary(i18n.language, memoFilter, attachmentSection === "unused" && canShowUnused);
+  } = useUnusedAttachmentLibrary(i18n.language, noteFilter, attachmentSection === "unused" && canShowUnused);
   const creatorNames = useMemo(
     () =>
       Array.from(
@@ -119,7 +119,7 @@ const Attachments = () => {
 
   const handleDeleteUnusedAttachments = async () => {
     try {
-      const names = await listUnusedAttachmentNames(memoFilter);
+      const names = await listUnusedAttachmentNames(noteFilter);
 
       if (names.length === 0) {
         await Promise.all([refetch(), refetchUnused()]);
@@ -228,7 +228,7 @@ const Attachments = () => {
             <div className="mt-6 flex justify-center">
               <Button variant="outline" className="rounded-full px-4" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
                 {isFetchingNextPage ? <LoaderCircleIcon className="h-4 w-4 animate-spin" /> : null}
-                {isFetchingNextPage ? t("resource.fetching-data") : t("memo.load-more")}
+                {isFetchingNextPage ? t("resource.fetching-data") : t("note.load-more")}
               </Button>
             </div>
           )}

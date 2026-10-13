@@ -14,12 +14,12 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	"github.com/usememos/memos/internal/profile"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
-	teststore "github.com/usememos/memos/store/test"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
+	teststore "github.com/anangnovriadi/roster-tracker/store/test"
 )
 
 // newIntegrationService builds a minimal APIService backed by an in-memory
@@ -52,9 +52,9 @@ func collectEventsFor(ch <-chan []byte, d time.Duration) []string {
 	}
 }
 
-func requireMemoChanged(t *testing.T, ch <-chan []byte) {
+func requireNoteChanged(t *testing.T, ch <-chan []byte) {
 	t.Helper()
-	require.Equal(t, memoChangedSSEFrame, string(mustReceive(t, ch, time.Second)))
+	require.Equal(t, noteChangedSSEFrame, string(mustReceive(t, ch, time.Second)))
 }
 
 func requireSpaceChanged(t *testing.T, ch <-chan []byte) {
@@ -62,7 +62,7 @@ func requireSpaceChanged(t *testing.T, ch <-chan []byte) {
 	require.Equal(t, spaceChangedSSEFrame, string(mustReceive(t, ch, time.Second)))
 }
 
-func requireNoMemoChanged(t *testing.T, ch <-chan []byte) {
+func requireNoNoteChanged(t *testing.T, ch <-chan []byte) {
 	t.Helper()
 	select {
 	case event := <-ch:
@@ -71,71 +71,71 @@ func requireNoMemoChanged(t *testing.T, ch <-chan []byte) {
 	}
 }
 
-func TestAttachmentMutationsPublishMemoChangedOnlyWhenBound(t *testing.T) {
+func TestAttachmentMutationsPublishNoteChangedOnlyWhenBound(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	owner := createSpaceTestUser(ctx, t, svc, "sse-attachment-owner", store.RoleUser)
 	ownerCtx := userCtx(ctx, owner.ID)
-	memo, err := svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "attachment event memo", Visibility: apipb.Visibility_PRIVATE},
+	note, err := svc.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "attachment event note", Visibility: apipb.Visibility_PRIVATE},
 	})
 	require.NoError(t, err)
 
 	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
-	createAttachment := func(filename string, memoName *string) *apipb.Attachment {
+	createAttachment := func(filename string, noteName *string) *apipb.Attachment {
 		t.Helper()
 		attachment, err := svc.CreateAttachment(ownerCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
 			Filename: filename,
 			Type:     "text/plain",
 			Content:  []byte(filename),
-			Memo:     memoName,
+			Note:     noteName,
 		}})
 		require.NoError(t, err)
 		return attachment
 	}
 
 	unbound := createAttachment("sse-unbound.txt", nil)
-	requireNoMemoChanged(t, client.events)
+	requireNoNoteChanged(t, client.events)
 	_, err = svc.UpdateAttachment(ownerCtx, &apipb.UpdateAttachmentRequest{
 		Attachment: &apipb.Attachment{Name: unbound.Name, Filename: "sse-unbound-renamed.txt"},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"filename"}},
 	})
 	require.NoError(t, err)
-	requireNoMemoChanged(t, client.events)
+	requireNoNoteChanged(t, client.events)
 	_, err = svc.DeleteAttachment(ownerCtx, &apipb.DeleteAttachmentRequest{Name: unbound.Name})
 	require.NoError(t, err)
-	requireNoMemoChanged(t, client.events)
+	requireNoNoteChanged(t, client.events)
 
-	bound := createAttachment("sse-bound.txt", &memo.Name)
-	requireMemoChanged(t, client.events)
+	bound := createAttachment("sse-bound.txt", &note.Name)
+	requireNoteChanged(t, client.events)
 	_, err = svc.UpdateAttachment(ownerCtx, &apipb.UpdateAttachmentRequest{
 		Attachment: &apipb.Attachment{Name: bound.Name, Filename: "sse-bound-renamed.txt"},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"filename"}},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, client.events)
+	requireNoteChanged(t, client.events)
 	_, err = svc.DeleteAttachment(ownerCtx, &apipb.DeleteAttachmentRequest{Name: bound.Name})
 	require.NoError(t, err)
-	requireMemoChanged(t, client.events)
+	requireNoteChanged(t, client.events)
 
 	firstUnbound := createAttachment("sse-batch-unbound-first.txt", nil)
 	secondUnbound := createAttachment("sse-batch-unbound-second.txt", nil)
-	requireNoMemoChanged(t, client.events)
+	requireNoNoteChanged(t, client.events)
 	_, err = svc.BatchDeleteAttachments(ownerCtx, &apipb.BatchDeleteAttachmentsRequest{
 		Names: []string{firstUnbound.Name, secondUnbound.Name},
 	})
 	require.NoError(t, err)
-	requireNoMemoChanged(t, client.events)
+	requireNoNoteChanged(t, client.events)
 
 	mixedUnbound := createAttachment("sse-batch-mixed-unbound.txt", nil)
-	mixedBound := createAttachment("sse-batch-mixed-bound.txt", &memo.Name)
-	requireMemoChanged(t, client.events)
+	mixedBound := createAttachment("sse-batch-mixed-bound.txt", &note.Name)
+	requireNoteChanged(t, client.events)
 	_, err = svc.BatchDeleteAttachments(ownerCtx, &apipb.BatchDeleteAttachmentsRequest{
 		Names: []string{mixedUnbound.Name, mixedBound.Name},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, client.events)
+	requireNoteChanged(t, client.events)
 }
 
 func TestUpdateAttachmentPublishesAfterCommittedAccessChange(t *testing.T) {
@@ -149,7 +149,7 @@ func TestUpdateAttachmentPublishesAfterCommittedAccessChange(t *testing.T) {
 	})
 	require.NoError(t, err)
 	spaceName := space.Name
-	memo, err := svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+	note, err := svc.CreateNote(ownerCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
 		Content:    "attachment access changed during update",
 		Visibility: apipb.Visibility_SPACE,
 		Space:      &spaceName,
@@ -159,7 +159,7 @@ func TestUpdateAttachmentPublishesAfterCommittedAccessChange(t *testing.T) {
 		Filename: "before.txt",
 		Type:     "text/plain",
 		Content:  []byte("attachment"),
-		Memo:     &memo.Name,
+		Note:     &note.Name,
 	}})
 	require.NoError(t, err)
 	attachmentUID, err := ExtractAttachmentUIDFromName(attachment.Name)
@@ -189,8 +189,8 @@ func TestUpdateAttachmentPublishesAfterCommittedAccessChange(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, "after.txt", updated.Filename)
-	requireMemoChanged(t, client.events)
-	requireNoMemoChanged(t, client.events)
+	requireNoteChanged(t, client.events)
+	requireNoNoteChanged(t, client.events)
 
 	_, err = svc.GetAttachment(ownerCtx, &apipb.GetAttachmentRequest{Name: attachment.Name})
 	require.Equal(t, codes.PermissionDenied, status.Code(err), "the authorized read would fail after the committed membership change")
@@ -201,15 +201,15 @@ func TestDeleteAttachmentPublishesBeforeStorageCleanupFailure(t *testing.T) {
 	svc := newIntegrationService(t)
 	owner := createSpaceTestUser(ctx, t, svc, "sse-attachment-cleanup-owner", store.RoleUser)
 	ownerCtx := userCtx(ctx, owner.ID)
-	memo, err := svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "attachment cleanup failure", Visibility: apipb.Visibility_PRIVATE},
+	note, err := svc.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "attachment cleanup failure", Visibility: apipb.Visibility_PRIVATE},
 	})
 	require.NoError(t, err)
 	attachment, err := svc.CreateAttachment(ownerCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
 		Filename: "cleanup.txt",
 		Type:     "text/plain",
 		Content:  []byte("attachment"),
-		Memo:     &memo.Name,
+		Note:     &note.Name,
 	}})
 	require.NoError(t, err)
 
@@ -218,8 +218,8 @@ func TestDeleteAttachmentPublishesBeforeStorageCleanupFailure(t *testing.T) {
 	_, err = svc.DeleteAttachment(store.WithDeleteAttachmentStorageFailpoint(ownerCtx), &apipb.DeleteAttachmentRequest{Name: attachment.Name})
 	require.Equal(t, codes.Internal, status.Code(err))
 	require.ErrorContains(t, err, "attachments were deleted but storage cleanup failed")
-	requireMemoChanged(t, client.events)
-	requireNoMemoChanged(t, client.events)
+	requireNoteChanged(t, client.events)
+	requireNoNoteChanged(t, client.events)
 
 	attachmentUID, err := ExtractAttachmentUIDFromName(attachment.Name)
 	require.NoError(t, err)
@@ -279,7 +279,7 @@ func TestSpaceMutationsPublishSpaceChanged(t *testing.T) {
 	requireSpaceChanged(t, client.events)
 }
 
-func TestUpdateMemoSSEBroadcastsToAllSubscribers(t *testing.T) {
+func TestUpdateNoteSSEBroadcastsToAllSubscribers(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	owner, err := svc.Store.CreateUser(ctx, &store.User{
@@ -287,8 +287,8 @@ func TestUpdateMemoSSEBroadcastsToAllSubscribers(t *testing.T) {
 	})
 	require.NoError(t, err)
 	ownerCtx := userCtx(ctx, owner.ID)
-	memo, err := svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "public before update", Visibility: apipb.Visibility_PUBLIC},
+	note, err := svc.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "public before update", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
@@ -297,24 +297,24 @@ func TestUpdateMemoSSEBroadcastsToAllSubscribers(t *testing.T) {
 	otherClient := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(otherClient)
 
-	_, err = svc.UpdateMemo(ownerCtx, &apipb.UpdateMemoRequest{
-		Memo:       &apipb.Memo{Name: memo.Name, Visibility: apipb.Visibility_PRIVATE},
+	_, err = svc.UpdateNote(ownerCtx, &apipb.UpdateNoteRequest{
+		Note:       &apipb.Note{Name: note.Name, Visibility: apipb.Visibility_PRIVATE},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, ownerClient.events)
-	requireMemoChanged(t, otherClient.events)
+	requireNoteChanged(t, ownerClient.events)
+	requireNoteChanged(t, otherClient.events)
 
-	_, err = svc.UpdateMemo(ownerCtx, &apipb.UpdateMemoRequest{
-		Memo:       &apipb.Memo{Name: memo.Name, Content: "private after update"},
+	_, err = svc.UpdateNote(ownerCtx, &apipb.UpdateNoteRequest{
+		Note:       &apipb.Note{Name: note.Name, Content: "private after update"},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, ownerClient.events)
-	requireMemoChanged(t, otherClient.events)
+	requireNoteChanged(t, ownerClient.events)
+	requireNoteChanged(t, otherClient.events)
 }
 
-func TestMoveSpaceAudienceMemoSSEBroadcastsWithoutAudienceCalculation(t *testing.T) {
+func TestMoveSpaceAudienceNoteSSEBroadcastsWithoutAudienceCalculation(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	owner := createSpaceTestUser(ctx, t, svc, "move-audience-owner", store.RoleAdmin)
@@ -336,7 +336,7 @@ func TestMoveSpaceAudienceMemoSSEBroadcastsWithoutAudienceCalculation(t *testing
 	inviteAndAcceptSpaceTestUser(ctx, t, svc, owner, targetMember, target, apipb.SpaceMember_USER)
 
 	sourceName := source.Name
-	memo, err := svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+	note, err := svc.CreateNote(ownerCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
 		Content:    "move between spaces",
 		Visibility: apipb.Visibility_SPACE,
 		Space:      &sourceName,
@@ -350,32 +350,32 @@ func TestMoveSpaceAudienceMemoSSEBroadcastsWithoutAudienceCalculation(t *testing
 	defer svc.SSEHub.Unsubscribe(outsiderClient)
 
 	targetName := target.Name
-	_, err = svc.UpdateMemo(ownerCtx, &apipb.UpdateMemoRequest{
-		Memo: &apipb.Memo{
-			Name:       memo.Name,
+	_, err = svc.UpdateNote(ownerCtx, &apipb.UpdateNoteRequest{
+		Note: &apipb.Note{
+			Name:       note.Name,
 			Visibility: apipb.Visibility_SPACE,
 			Space:      &targetName,
 		},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"space", "visibility"}},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, sourceClient.events)
-	requireMemoChanged(t, targetClient.events)
-	requireMemoChanged(t, outsiderClient.events)
+	requireNoteChanged(t, sourceClient.events)
+	requireNoteChanged(t, targetClient.events)
+	requireNoteChanged(t, outsiderClient.events)
 
-	_, err = svc.UpdateMemo(ownerCtx, &apipb.UpdateMemoRequest{
-		Memo:       &apipb.Memo{Name: memo.Name, Content: "target only now"},
+	_, err = svc.UpdateNote(ownerCtx, &apipb.UpdateNoteRequest{
+		Note:       &apipb.Note{Name: note.Name, Content: "target only now"},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, sourceClient.events)
-	requireMemoChanged(t, targetClient.events)
-	requireMemoChanged(t, outsiderClient.events)
+	requireNoteChanged(t, sourceClient.events)
+	requireNoteChanged(t, targetClient.events)
+	requireNoteChanged(t, outsiderClient.events)
 }
 
-// ---- CreateMemoComment double-broadcast fix ----
+// ---- CreateNoteComment double-broadcast fix ----
 
-func TestCreateMemoComment_NoDuplicateSSEBroadcast(t *testing.T) {
+func TestCreateNoteComment_NoDuplicateSSEBroadcast(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -392,21 +392,21 @@ func TestCreateMemoComment_NoDuplicateSSEBroadcast(t *testing.T) {
 	authorCtx := userCtx(ctx, author.ID)
 	commenterCtx := userCtx(ctx, commenter.ID)
 
-	// Create a public memo so the commenter can react.
-	parent, err := svc.CreateMemo(authorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "parent memo", Visibility: apipb.Visibility_PUBLIC},
+	// Create a public note so the commenter can react.
+	parent, err := svc.CreateNote(authorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "parent note", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
-	// Subscribe after the parent memo is created so its change event does not
+	// Subscribe after the parent note is created so its change event does not
 	// pollute the assertion window.
 	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
 	// Comment creation is one mutation and emits one invalidation event.
-	_, err = svc.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
+	_, err = svc.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
 		Parent:  parent.Name,
-		Comment: &apipb.Memo{Content: "a comment", Visibility: apipb.Visibility_PUBLIC},
+		Comment: &apipb.Note{Content: "a comment", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
@@ -415,10 +415,10 @@ func TestCreateMemoComment_NoDuplicateSSEBroadcast(t *testing.T) {
 	events := collectEventsFor(client.events, 150*time.Millisecond)
 
 	require.Len(t, events, 1, "expected exactly one SSE event for a comment creation, got: %v", events)
-	assert.Equal(t, memoChangedSSEFrame, events[0])
+	assert.Equal(t, noteChangedSSEFrame, events[0])
 }
 
-func TestCreateMemoComment_SSEBroadcastContainsNoSubject(t *testing.T) {
+func TestCreateNoteComment_SSEBroadcastContainsNoSubject(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	author, err := svc.Store.CreateUser(ctx, &store.User{
@@ -430,8 +430,8 @@ func TestCreateMemoComment_SSEBroadcastContainsNoSubject(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	parent, err := svc.CreateMemo(userCtx(ctx, author.ID), &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "public context", Visibility: apipb.Visibility_PUBLIC},
+	parent, err := svc.CreateNote(userCtx(ctx, author.ID), &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "public context", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 	authorClient := svc.SSEHub.Subscribe()
@@ -439,19 +439,19 @@ func TestCreateMemoComment_SSEBroadcastContainsNoSubject(t *testing.T) {
 	commenterClient := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(commenterClient)
 
-	_, err = svc.CreateMemoComment(userCtx(ctx, commenter.ID), &apipb.CreateMemoCommentRequest{
+	_, err = svc.CreateNoteComment(userCtx(ctx, commenter.ID), &apipb.CreateNoteCommentRequest{
 		Parent: parent.Name,
-		Comment: &apipb.Memo{
+		Comment: &apipb.Note{
 			Content:    "private reply",
 			Visibility: apipb.Visibility_PRIVATE,
 		},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, commenterClient.events)
-	requireMemoChanged(t, authorClient.events)
+	requireNoteChanged(t, commenterClient.events)
+	requireNoteChanged(t, authorClient.events)
 }
 
-func TestCreateMemoWithAttachment_NoDuplicateUpdatedSSEBroadcast(t *testing.T) {
+func TestCreateNoteWithAttachment_NoDuplicateUpdatedSSEBroadcast(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -474,9 +474,9 @@ func TestCreateMemoWithAttachment_NoDuplicateUpdatedSSEBroadcast(t *testing.T) {
 	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
-	_, err = svc.CreateMemo(uctx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "memo with initial attachment",
+	_, err = svc.CreateNote(uctx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "note with initial attachment",
 			Visibility: apipb.Visibility_PUBLIC,
 			Attachments: []*apipb.Attachment{
 				{Name: attachment.Name},
@@ -487,11 +487,11 @@ func TestCreateMemoWithAttachment_NoDuplicateUpdatedSSEBroadcast(t *testing.T) {
 
 	events := collectEventsFor(client.events, 150*time.Millisecond)
 
-	require.Len(t, events, 1, "expected exactly one SSE event for memo creation with attachment, got: %v", events)
-	assert.Equal(t, memoChangedSSEFrame, events[0])
+	require.Len(t, events, 1, "expected exactly one SSE event for note creation with attachment, got: %v", events)
+	assert.Equal(t, noteChangedSSEFrame, events[0])
 }
 
-func TestUpsertMemoReactionPublishesMemoChanged(t *testing.T) {
+func TestUpsertNoteReactionPublishesNoteChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -501,27 +501,27 @@ func TestUpsertMemoReactionPublishesMemoChanged(t *testing.T) {
 	require.NoError(t, err)
 	uctx := userCtx(ctx, user.ID)
 
-	memo, err := svc.CreateMemo(uctx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "reacted memo", Visibility: apipb.Visibility_PUBLIC},
+	note, err := svc.CreateNote(uctx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "reacted note", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
 	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
-	_, err = svc.UpsertMemoReaction(uctx, &apipb.UpsertMemoReactionRequest{
-		Parent: memo.Name,
+	_, err = svc.UpsertNoteReaction(uctx, &apipb.UpsertNoteReactionRequest{
+		Parent: note.Name,
 		Reaction: &apipb.Reaction{
 			ReactionType: "👍",
 		},
 	})
 	require.NoError(t, err)
 
-	requireMemoChanged(t, client.events)
+	requireNoteChanged(t, client.events)
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }
 
-func TestDeleteMemoReactionPublishesMemoChanged(t *testing.T) {
+func TestDeleteNoteReactionPublishesNoteChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -531,13 +531,13 @@ func TestDeleteMemoReactionPublishesMemoChanged(t *testing.T) {
 	require.NoError(t, err)
 	uctx := userCtx(ctx, user.ID)
 
-	memo, err := svc.CreateMemo(uctx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "reacted memo", Visibility: apipb.Visibility_PUBLIC},
+	note, err := svc.CreateNote(uctx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "reacted note", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
-	reaction, err := svc.UpsertMemoReaction(uctx, &apipb.UpsertMemoReactionRequest{
-		Parent: memo.Name,
+	reaction, err := svc.UpsertNoteReaction(uctx, &apipb.UpsertNoteReactionRequest{
+		Parent: note.Name,
 		Reaction: &apipb.Reaction{
 			ReactionType: "❤️",
 		},
@@ -547,16 +547,16 @@ func TestDeleteMemoReactionPublishesMemoChanged(t *testing.T) {
 	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
-	_, err = svc.DeleteMemoReaction(uctx, &apipb.DeleteMemoReactionRequest{
+	_, err = svc.DeleteNoteReaction(uctx, &apipb.DeleteNoteReactionRequest{
 		Name: reaction.Name,
 	})
 	require.NoError(t, err)
 
-	requireMemoChanged(t, client.events)
+	requireNoteChanged(t, client.events)
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }
 
-func TestDeleteMemo_DeletesCommentSubtreeOnly(t *testing.T) {
+func TestDeleteNote_DeletesCommentSubtreeOnly(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	rootAuthor, err := svc.Store.CreateUser(ctx, &store.User{
@@ -572,45 +572,45 @@ func TestDeleteMemo_DeletesCommentSubtreeOnly(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	root, err := svc.CreateMemo(userCtx(ctx, rootAuthor.ID), &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "context memo", Visibility: apipb.Visibility_PUBLIC},
+	root, err := svc.CreateNote(userCtx(ctx, rootAuthor.ID), &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "context note", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
-	comment, err := svc.CreateMemoComment(userCtx(ctx, commentAuthor.ID), &apipb.CreateMemoCommentRequest{
+	comment, err := svc.CreateNoteComment(userCtx(ctx, commentAuthor.ID), &apipb.CreateNoteCommentRequest{
 		Parent:  root.Name,
-		Comment: &apipb.Memo{Content: "branch", Visibility: apipb.Visibility_PUBLIC},
+		Comment: &apipb.Note{Content: "branch", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
-	reply, err := svc.CreateMemoComment(userCtx(ctx, replyAuthor.ID), &apipb.CreateMemoCommentRequest{
+	reply, err := svc.CreateNoteComment(userCtx(ctx, replyAuthor.ID), &apipb.CreateNoteCommentRequest{
 		Parent:  comment.Name,
-		Comment: &apipb.Memo{Content: "nested reply"},
+		Comment: &apipb.Note{Content: "nested reply"},
 	})
 	require.NoError(t, err)
 
 	replyClient := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(replyClient)
-	_, err = svc.DeleteMemo(userCtx(ctx, commentAuthor.ID), &apipb.DeleteMemoRequest{Name: comment.Name})
+	_, err = svc.DeleteNote(userCtx(ctx, commentAuthor.ID), &apipb.DeleteNoteRequest{Name: comment.Name})
 	require.NoError(t, err)
-	requireMemoChanged(t, replyClient.events)
+	requireNoteChanged(t, replyClient.events)
 
-	commentUID, err := ExtractMemoUIDFromName(comment.Name)
+	commentUID, err := ExtractNoteUIDFromName(comment.Name)
 	require.NoError(t, err)
-	storedComment, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &commentUID})
+	storedComment, err := svc.Store.GetNote(ctx, &store.FindNote{UID: &commentUID})
 	require.NoError(t, err)
 	require.Nil(t, storedComment)
-	replyUID, err := ExtractMemoUIDFromName(reply.Name)
+	replyUID, err := ExtractNoteUIDFromName(reply.Name)
 	require.NoError(t, err)
-	storedReply, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &replyUID})
+	storedReply, err := svc.Store.GetNote(ctx, &store.FindNote{UID: &replyUID})
 	require.NoError(t, err)
 	require.Nil(t, storedReply, "deleting a comment must also delete its replies")
-	rootUID, err := ExtractMemoUIDFromName(root.Name)
+	rootUID, err := ExtractNoteUIDFromName(root.Name)
 	require.NoError(t, err)
-	storedRoot, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &rootUID})
+	storedRoot, err := svc.Store.GetNote(ctx, &store.FindNote{UID: &rootUID})
 	require.NoError(t, err)
 	require.NotNil(t, storedRoot)
 }
 
-func TestDeleteMemoCleansAttachmentStorage(t *testing.T) {
+func TestDeleteNoteCleansAttachmentStorage(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	owner, err := svc.Store.CreateUser(ctx, &store.User{
@@ -618,15 +618,15 @@ func TestDeleteMemoCleansAttachmentStorage(t *testing.T) {
 	})
 	require.NoError(t, err)
 	ownerCtx := userCtx(ctx, owner.ID)
-	memo, err := svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "attachment cleanup", Visibility: apipb.Visibility_PRIVATE},
+	note, err := svc.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "attachment cleanup", Visibility: apipb.Visibility_PRIVATE},
 	})
 	require.NoError(t, err)
-	memoUID, err := ExtractMemoUIDFromName(memo.Name)
+	noteUID, err := ExtractNoteUIDFromName(note.Name)
 	require.NoError(t, err)
-	storedMemo, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	storedNote, err := svc.Store.GetNote(ctx, &store.FindNote{UID: &noteUID})
 	require.NoError(t, err)
-	require.NotNil(t, storedMemo)
+	require.NotNil(t, storedNote)
 	attachmentPath := filepath.Join(t.TempDir(), "sse-delete-cleanup.txt")
 	require.NoError(t, os.WriteFile(attachmentPath, []byte("cleanup"), 0o600))
 	attachment, err := svc.Store.CreateAttachment(ctx, &store.Attachment{
@@ -638,19 +638,19 @@ func TestDeleteMemoCleansAttachmentStorage(t *testing.T) {
 		Blob:        []byte("cleanup"),
 		StorageType: storepb.AttachmentStorageType_LOCAL,
 		Reference:   attachmentPath,
-		MemoID:      &storedMemo.ID,
+		NoteID:      &storedNote.ID,
 	})
 	require.NoError(t, err)
 
 	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
-	_, err = svc.DeleteMemo(ownerCtx, &apipb.DeleteMemoRequest{Name: memo.Name})
+	_, err = svc.DeleteNote(ownerCtx, &apipb.DeleteNoteRequest{Name: note.Name})
 	require.NoError(t, err, "committed deletion must not be reported as a failure")
-	requireMemoChanged(t, client.events)
+	requireNoteChanged(t, client.events)
 
-	deletedMemo, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	deletedNote, err := svc.Store.GetNote(ctx, &store.FindNote{UID: &noteUID})
 	require.NoError(t, err)
-	require.Nil(t, deletedMemo)
+	require.Nil(t, deletedNote)
 	deletedAttachment, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID})
 	require.NoError(t, err)
 	require.Nil(t, deletedAttachment)
@@ -658,7 +658,7 @@ func TestDeleteMemoCleansAttachmentStorage(t *testing.T) {
 	require.ErrorIs(t, err, os.ErrNotExist)
 }
 
-func TestSetMemoAttachmentsPublishesMemoChanged(t *testing.T) {
+func TestSetNoteAttachmentsPublishesNoteChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -668,8 +668,8 @@ func TestSetMemoAttachmentsPublishesMemoChanged(t *testing.T) {
 	require.NoError(t, err)
 	uctx := userCtx(ctx, user.ID)
 
-	memo, err := svc.CreateMemo(uctx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "memo with attachments", Visibility: apipb.Visibility_PUBLIC},
+	note, err := svc.CreateNote(uctx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "note with attachments", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
@@ -686,19 +686,19 @@ func TestSetMemoAttachmentsPublishesMemoChanged(t *testing.T) {
 	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
-	_, err = svc.SetMemoAttachments(uctx, &apipb.SetMemoAttachmentsRequest{
-		Name: memo.Name,
+	_, err = svc.SetNoteAttachments(uctx, &apipb.SetNoteAttachmentsRequest{
+		Name: note.Name,
 		Attachments: []*apipb.Attachment{
 			{Name: attachment.Name},
 		},
 	})
 	require.NoError(t, err)
 
-	requireMemoChanged(t, client.events)
+	requireNoteChanged(t, client.events)
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }
 
-func TestSetMemoRelationsPublishesMemoChanged(t *testing.T) {
+func TestSetNoteRelationsPublishesNoteChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -708,29 +708,29 @@ func TestSetMemoRelationsPublishesMemoChanged(t *testing.T) {
 	require.NoError(t, err)
 	uctx := userCtx(ctx, user.ID)
 
-	memo1, err := svc.CreateMemo(uctx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "memo one", Visibility: apipb.Visibility_PUBLIC},
+	note1, err := svc.CreateNote(uctx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "note one", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
-	memo2, err := svc.CreateMemo(uctx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "memo two", Visibility: apipb.Visibility_PUBLIC},
+	note2, err := svc.CreateNote(uctx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "note two", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
 	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
-	_, err = svc.SetMemoRelations(uctx, &apipb.SetMemoRelationsRequest{
-		Name: memo1.Name,
-		Relations: []*apipb.MemoRelation{
+	_, err = svc.SetNoteRelations(uctx, &apipb.SetNoteRelationsRequest{
+		Name: note1.Name,
+		Relations: []*apipb.NoteRelation{
 			{
-				RelatedMemo: &apipb.MemoRelation_MemoRef{Name: memo2.Name},
-				Type:        apipb.MemoRelation_REFERENCE,
+				RelatedNote: &apipb.NoteRelation_NoteRef{Name: note2.Name},
+				Type:        apipb.NoteRelation_REFERENCE,
 			},
 		},
 	})
 	require.NoError(t, err)
 
-	requireMemoChanged(t, client.events)
+	requireNoteChanged(t, client.events)
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }

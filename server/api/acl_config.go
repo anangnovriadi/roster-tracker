@@ -10,42 +10,42 @@ package api
 // or info.FullMethod (gRPC interceptor).
 var PublicMethods = map[string]struct{}{
 	// Auth Service - login/token endpoints must be accessible without auth
-	"/memos.api.AuthService/SignIn":       {},
-	"/memos.api.AuthService/RefreshToken": {}, // Token refresh uses cookie, must be accessible when access token expired
+	"/roster.api.AuthService/SignIn":       {},
+	"/roster.api.AuthService/RefreshToken": {}, // Token refresh uses cookie, must be accessible when access token expired
 
 	// Instance Service - needed before login to show instance info
-	"/memos.api.InstanceService/GetInstanceProfile":       {},
-	"/memos.api.InstanceService/GetInstanceSetting":       {},
-	"/memos.api.InstanceService/BatchGetInstanceSettings": {},
+	"/roster.api.InstanceService/GetInstanceProfile":       {},
+	"/roster.api.InstanceService/GetInstanceSetting":       {},
+	"/roster.api.InstanceService/BatchGetInstanceSettings": {},
 
 	// User Service - public user profiles and stats
-	"/memos.api.UserService/CreateUser":    {}, // Registration policy is enforced in UserService
-	"/memos.api.UserService/GetUser":       {},
-	"/memos.api.UserService/BatchGetUsers": {},
-	"/memos.api.UserService/GetUserStats":  {},
-	"/memos.api.UserService/ListUserStats": {},
+	"/roster.api.UserService/CreateUser":    {}, // Registration policy is enforced in UserService
+	"/roster.api.UserService/GetUser":       {},
+	"/roster.api.UserService/BatchGetUsers": {},
+	"/roster.api.UserService/GetUserStats":  {},
+	"/roster.api.UserService/ListUserStats": {},
 
 	// Identity Provider Service - SSO buttons on login page
-	"/memos.api.IdentityProviderService/ListIdentityProviders": {},
+	"/roster.api.IdentityProviderService/ListIdentityProviders": {},
 
-	// Memo Service - public memos (visibility filtering done in service layer)
-	"/memos.api.MemoService/GetMemo":              {},
-	"/memos.api.MemoService/ListMemos":            {},
-	"/memos.api.MemoService/ListMemoComments":     {},
-	"/memos.api.MemoService/ListMemoAttachments":  {},
-	"/memos.api.MemoService/ListMemoReactions":    {},
-	"/memos.api.MemoService/ListMemoRelations":    {},
-	"/memos.api.MemoService/GetLinkMetadata":      {},
-	"/memos.api.MemoService/BatchGetLinkMetadata": {},
+	// Note Service - public notes (visibility filtering done in service layer)
+	"/roster.api.NoteService/GetNote":              {},
+	"/roster.api.NoteService/ListNotes":            {},
+	"/roster.api.NoteService/ListNoteComments":     {},
+	"/roster.api.NoteService/ListNoteAttachments":  {},
+	"/roster.api.NoteService/ListNoteReactions":    {},
+	"/roster.api.NoteService/ListNoteRelations":    {},
+	"/roster.api.NoteService/GetLinkMetadata":      {},
+	"/roster.api.NoteService/BatchGetLinkMetadata": {},
 
-	// Attachment metadata follows the visibility of its linked memo.
-	"/memos.api.AttachmentService/GetAttachment": {},
+	// Attachment metadata follows the visibility of its linked note.
+	"/roster.api.AttachmentService/GetAttachment": {},
 
-	// Memo sharing - share-token endpoints require no authentication
-	"/memos.api.MemoService/GetSharedMemo": {},
+	// Note sharing - share-token endpoints require no authentication
+	"/roster.api.NoteService/GetSharedNote": {},
 
 	// Roster Service - signed-out visitors can see who is on duty
-	"/memos.api.RosterService/ListRosterAssignments": {},
+	"/roster.api.RosterService/ListRosterAssignments": {},
 }
 
 // IsPublicMethod checks if a procedure path is public (no authentication required).
@@ -63,22 +63,22 @@ func IsPublicMethod(procedure string) bool {
 // MUST also exist in PublicMethods.
 var AuthBootstrapMethods = map[string]struct{}{
 	// Auth Service - sign-in and token refresh.
-	"/memos.api.AuthService/SignIn":       {},
-	"/memos.api.AuthService/RefreshToken": {},
+	"/roster.api.AuthService/SignIn":       {},
+	"/roster.api.AuthService/RefreshToken": {},
 
 	// Instance Service - needed to render the sign-in page (branding, auth options).
-	"/memos.api.InstanceService/GetInstanceProfile":       {},
-	"/memos.api.InstanceService/GetInstanceSetting":       {},
-	"/memos.api.InstanceService/BatchGetInstanceSettings": {},
+	"/roster.api.InstanceService/GetInstanceProfile":       {},
+	"/roster.api.InstanceService/GetInstanceSetting":       {},
+	"/roster.api.InstanceService/BatchGetInstanceSettings": {},
 
 	// Identity Provider Service - SSO buttons on the sign-in page.
-	"/memos.api.IdentityProviderService/ListIdentityProviders": {},
+	"/roster.api.IdentityProviderService/ListIdentityProviders": {},
 
 	// User Service - CreateUser applies registration and password-auth settings.
-	"/memos.api.UserService/CreateUser": {},
+	"/roster.api.UserService/CreateUser": {},
 
-	// Memo sharing - share-token access stays public even on a private instance.
-	"/memos.api.MemoService/GetSharedMemo": {},
+	// Note sharing - share-token access stays public even on a private instance.
+	"/roster.api.NoteService/GetSharedNote": {},
 }
 
 // IsAuthBootstrapMethod reports whether an anonymous request to procedure is one

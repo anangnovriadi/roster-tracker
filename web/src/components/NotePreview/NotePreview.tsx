@@ -1,0 +1,162 @@
+import { create } from "@bufbuild/protobuf";
+import { FileIcon } from "lucide-react";
+import { useMemo } from "react";
+import { extractNoteIdFromName } from "@/lib/resource-names";
+import { cn } from "@/lib/utils";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import { NoteSchema } from "@/types/proto/api/note_service_pb";
+import type { User } from "@/types/proto/api/user_service_pb";
+import { getAttachmentType, isMotionAttachment } from "@/utils/attachment";
+import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
+import { buildAttachmentVisualItems, countLogicalAttachmentItems } from "@/utils/media-item";
+import NoteContent from "../NoteContent";
+import { NoteViewContext, type NoteViewContextValue } from "../NoteView/NoteViewContext";
+
+interface NotePreviewProps {
+  content: string;
+  attachments: Attachment[];
+  name?: string;
+  compact?: boolean;
+  className?: string;
+  creator?: User;
+  showCreator?: boolean;
+  showNoteId?: boolean;
+  truncate?: boolean;
+}
+
+const STUB_CONTEXT: NoteViewContextValue = {
+  note: create(NoteSchema),
+  creator: undefined,
+  currentUser: undefined,
+  parentPage: "/",
+  isArchived: false,
+  readonly: true,
+  showBlurredContent: false,
+  blurred: false,
+  openEditor: () => {},
+  toggleBlurVisibility: () => {},
+  openPreview: () => {},
+};
+
+const AttachmentThumbnails = ({ attachments }: { attachments: Attachment[] }) => {
+  const visualAttachments = attachments.filter(
+    (attachment) =>
+      getAttachmentType(attachment) === "image/*" || getAttachmentType(attachment) === "video/*" || isMotionAttachment(attachment),
+  );
+  const items = buildAttachmentVisualItems(visualAttachments);
+  const images = items.filter((item) => item.kind === "image" || item.kind === "motion");
+  const others = items.filter((item) => item.kind === "video");
+
+  return (
+    <div className="flex items-center gap-1.5 flex-wrap">
+      {images.map((item) => (
+        <div key={item.id} className="relative">
+          <img
+            src={item.posterUrl}
+            alt={item.filename}
+            className="w-10 h-10 rounded border border-border object-cover bg-muted/40"
+            loading="lazy"
+            decoding="async"
+          />
+          {item.kind === "motion" && (
+            <span className="absolute left-1 top-1 rounded bg-black/70 px-1 py-0.5 text-[8px] font-semibold leading-none text-white">
+              LIVE
+            </span>
+          )}
+        </div>
+      ))}
+      {others.map((item) => (
+        <div key={item.id} className="flex items-center gap-1 text-2xs text-muted-foreground">
+          <FileIcon className="size-3 shrink-0" strokeWidth={1.8} />
+          <span className="truncate max-w-[80px]">{item.filename}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const PreviewMeta = ({
+  creator,
+  showCreator,
+  noteName,
+  showNoteId,
+}: {
+  creator?: User;
+  showCreator?: boolean;
+  noteName?: string;
+  showNoteId?: boolean;
+}) => {
+  const creatorName = creator?.displayName || creator?.username;
+  const noteId = showNoteId && noteName ? extractNoteIdFromName(noteName).slice(0, 6) : undefined;
+
+  if (!creatorName && !noteId) {
+    return null;
+  }
+
+  return (
+    <div className="flex min-w-0 shrink-0 items-center gap-1.5 text-ui leading-none text-muted-foreground">
+      {showNoteId && noteId && <span className="shrink-0 font-mono text-2xs text-muted-foreground/60">{noteId}</span>}
+      {showCreator && creatorName && <span className="max-w-32 truncate font-medium text-foreground">{creatorName}</span>}
+    </div>
+  );
+};
+
+const NotePreview = ({
+  content,
+  attachments,
+  name,
+  compact = true,
+  className,
+  creator,
+  showCreator = false,
+  showNoteId = false,
+  truncate = false,
+}: NotePreviewProps) => {
+  const hasContent = content.trim().length > 0;
+  const attachmentOnlyItems = useMemo(() => filterInlineManagedAttachments(content, attachments), [content, attachments]);
+  const hasAttachments = attachmentOnlyItems.length > 0;
+  const showMeta = showCreator || showNoteId;
+
+  if (!hasContent && !hasAttachments) {
+    return null;
+  }
+
+  const meta = <PreviewMeta creator={creator} showCreator={showCreator} noteName={name} showNoteId={showNoteId} />;
+  const contentNode = truncate ? (
+    hasContent ? (
+      <div className="min-w-0 truncate text-ui text-muted-foreground">{content}</div>
+    ) : hasAttachments ? null : (
+      <div className="min-w-0 truncate text-ui text-muted-foreground">No content</div>
+    )
+  ) : (
+    // Previews are inert (pointer-events-none), so a static CSS bound replaces the
+    // interactive clamp a full note card gets.
+    hasContent && (
+      <div className="max-h-36 w-full overflow-hidden">
+        <NoteContent content={content} attachments={attachments} compact={compact} />
+      </div>
+    )
+  );
+
+  return (
+    <NoteViewContext.Provider value={STUB_CONTEXT}>
+      <div
+        className={cn("pointer-events-none", truncate ? "flex items-center gap-2 min-w-0 leading-tight" : "flex flex-col gap-1", className)}
+      >
+        {showMeta && meta}
+        {contentNode}
+        {hasAttachments &&
+          (truncate ? (
+            <div className="inline-flex shrink-0 items-center justify-center gap-0.5 text-muted-foreground/60">
+              <FileIcon className="inline-block size-3" strokeWidth={1.8} />
+              <span className="text-2xs tabular-nums">{countLogicalAttachmentItems(attachmentOnlyItems)}</span>
+            </div>
+          ) : (
+            <AttachmentThumbnails attachments={attachmentOnlyItems} />
+          ))}
+      </div>
+    </NoteViewContext.Provider>
+  );
+};
+
+export default NotePreview;

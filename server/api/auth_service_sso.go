@@ -10,11 +10,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/internal/random"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/provider/idp"
-	"github.com/usememos/memos/provider/idp/oauth2"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/random"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/provider/idp"
+	"github.com/anangnovriadi/roster-tracker/provider/idp/oauth2"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (s *APIService) resolveSSOUser(ctx context.Context, currentUser *store.User, identityProvider *storepb.IdentityProvider, userInfo *idp.IdentityProviderUserInfo) (*store.User, error) {

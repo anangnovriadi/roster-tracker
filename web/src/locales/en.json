@@ -4,7 +4,7 @@
     "admin-sign-in-tip": "Password sign-in stays available for administrators.",
     "back-to-sign-in": "Back to sign in",
     "continue-with": "Continue with {{provider}}",
-    "explore-public-memos": "Go to Public Dashboard",
+    "explore-public-notes": "Go to Public Dashboard",
     "new-password": "New password",
     "redirecting-to-provider": "Redirecting to {{provider}}…",
     "repeat-new-password": "Repeat the new password",
@@ -13,9 +13,9 @@
     "welcome-back": "Welcome back."
   },
   "calendar": {
-    "new-memo-on-day": "New note or report on this day",
+    "new-note-on-day": "New note or report on this day",
     "next-year": "Next year",
-    "no-memos-on-day": "No notes or reports on this day",
+    "no-notes-on-day": "No notes or reports on this day",
     "previous-year": "Previous year",
     "select-month": "Select month",
     "note-count_one": "{{count}} note",
@@ -75,7 +75,7 @@
     "labels": {
       "live": "Live",
       "live-photo": "Live Photo",
-      "memo": "Note",
+      "note": "Note",
       "not-linked": "Not linked",
       "unknown-date": "Unknown date",
       "unused": "Unused"
@@ -124,8 +124,8 @@
     "language": "Language",
     "last-updated-at": "Last updated at",
     "learn-more": "Learn more",
-    "memo": "Note",
-    "memos": "Notes",
+    "note": "Note",
+    "notes": "Notes",
     "month-navigation": "Month navigation",
     "more": "More",
     "name": "Name",
@@ -142,7 +142,7 @@
     "save": "Save",
     "settings": "Settings",
     "sign-in": "Sign in",
-    "sign-in-to-memos": "Sign in to Roster Tracker",
+    "sign-in-to-notes": "Sign in to Roster Tracker",
     "sign-out": "Sign out",
     "statistics": "Statistics",
     "tags": "Tags",
@@ -152,6 +152,7 @@
     "update": "Update",
     "user": "User",
     "username": "Username",
+    "username-or-email": "Username or email",
     "visibility": "Visibility",
     "view-all": "View all",
     "yourself": "Yourself",
@@ -193,7 +194,7 @@
       "uploading-inline-image": "Uploading to content",
       "uploading-images": "Uploading images {{completed}}/{{total}}"
     },
-    "new-memo": "New note",
+    "new-note": "New note",
     "no-changes-detected": "No changes detected",
     "save": "Save",
     "saved": "Saved",
@@ -218,7 +219,7 @@
       "transcribing": "Transcribing..."
     }
   },
-  "memo": {
+  "note": {
     "pinned": "Pinned",
     "parent-loading": "Loading original note…",
     "parent-load-error": "Couldn’t load the original note.",
@@ -230,8 +231,8 @@
       "self": "Comments",
       "write-a-comment": "Write a comment"
     },
-    "count-memos-in-date": "{{count}} {{memos}} in {{date}}",
-    "count-memos-updated-in-date": "{{count}} {{memos}} updated on {{date}}",
+    "count-notes-in-date": "{{count}} {{notes}} in {{date}}",
+    "count-notes-updated-in-date": "{{count}} {{notes}} updated on {{date}}",
     "delete-confirm": "Are you sure you want to delete this note?",
     "delete-confirm-description": "This action is irreversible. Attachments, links, and references will also be removed.",
     "filters": {
@@ -243,8 +244,8 @@
     "connections": "Connections",
     "load-more": "Load more",
     "new-badge": "New",
-    "on-this-memo": "On this note",
-    "parent-memo": "Parent note",
+    "on-this-note": "On this note",
+    "parent-note": "Parent note",
     "show-less": "Show less",
     "show-more": "Show more",
     "task-actions": {
@@ -312,7 +313,7 @@
       "attachment-storage": "Attachment storage",
       "usage-description": "Limits set by the admin of this instance. Comments and archived notes count as notes.",
       "usage-file-size": "Largest file",
-      "usage-memos": "Notes",
+      "usage-notes": "Notes",
       "usage-of": "{{usage}} of {{limit}}",
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
@@ -358,7 +359,7 @@
       "create-success": "{{name}} was added",
       "update-success": "{{name}} was updated"
     },
-    "memo": {
+    "note": {
       "add-reaction": "Add reaction"
     },
     "my-account": {

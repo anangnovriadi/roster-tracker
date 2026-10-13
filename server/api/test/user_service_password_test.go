@@ -12,10 +12,10 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func addSession(ctx context.Context, t *testing.T, ts *TestService, userID int32, tokenID string) {

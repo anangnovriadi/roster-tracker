@@ -3,8 +3,8 @@ import { EditorView } from "@codemirror/view";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { MemoMarkdownRenderer } from "@/components/MemoContent/MemoMarkdownRenderer";
-import { buildEditorExtensions } from "@/components/MemoEditor/Editor/extensions";
+import { NoteMarkdownRenderer } from "@/components/NoteContent/NoteMarkdownRenderer";
+import { buildEditorExtensions } from "@/components/NoteEditor/Editor/extensions";
 
 function makeView(doc: string, onSubmit: () => void = () => {}) {
   return new EditorView({
@@ -178,7 +178,7 @@ describe("editor key bindings", () => {
     expect(md).toBe("1. a\n   1. b\n      1. c");
     // remark-gfm (the display) now reads this as three nested ordered lists.
     const html = renderToStaticMarkup(
-      React.createElement(MemoMarkdownRenderer, { content: md, resolvedMentionUsernames: new Set<string>() }),
+      React.createElement(NoteMarkdownRenderer, { content: md, resolvedMentionUsernames: new Set<string>() }),
     );
     expect((html.match(/<ol/g) ?? []).length).toBe(3);
   });

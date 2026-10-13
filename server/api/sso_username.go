@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/random"
+	"github.com/anangnovriadi/roster-tracker/internal/random"
 )
 
 const ssoUsernameFallbackAttempts = 5

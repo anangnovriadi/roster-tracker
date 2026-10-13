@@ -27,7 +27,7 @@ export default defineConfig({
         target: devProxyServer,
         xfwd: true,
       },
-      "^/memos.api": {
+      "^/roster.api": {
         target: devProxyServer,
         xfwd: true,
       },

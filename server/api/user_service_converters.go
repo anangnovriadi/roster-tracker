@@ -8,9 +8,9 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func convertUserFromStore(user *store.User, viewer *store.User) *apipb.User {
@@ -100,8 +100,8 @@ func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
 	switch key {
 	case storepb.UserSetting_GENERAL:
 		return apipb.UserSetting_Key_name[int32(apipb.UserSetting_GENERAL)]
-	case storepb.UserSetting_MEMO_VIEWS:
-		return "MEMO_VIEWS" // Not defined in API proto
+	case storepb.UserSetting_NOTE_VIEWS:
+		return "NOTE_VIEWS" // Not defined in API proto
 	case storepb.UserSetting_WEBHOOKS:
 		return apipb.UserSetting_Key_name[int32(apipb.UserSetting_WEBHOOKS)]
 	case storepb.UserSetting_TAGS:
@@ -188,7 +188,7 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 			setting.Value = &apipb.UserSetting_GeneralSetting_{
 				GeneralSetting: &apipb.UserSetting_GeneralSetting{
 					Locale:            general.Locale,
-					MemoVisibility:    general.MemoVisibility,
+					NoteVisibility:    general.NoteVisibility,
 					Theme:             general.Theme,
 					SaveMediaMetadata: general.SaveMediaMetadata,
 				},
@@ -242,7 +242,7 @@ func convertUserSettingToStore(apiSetting *apipb.UserSetting, userID int32, key 
 			storeSetting.Value = &storepb.UserSetting_General{
 				General: &storepb.GeneralUserSetting{
 					Locale:            general.Locale,
-					MemoVisibility:    general.MemoVisibility,
+					NoteVisibility:    general.NoteVisibility,
 					Theme:             general.Theme,
 					SaveMediaMetadata: general.SaveMediaMetadata,
 				},

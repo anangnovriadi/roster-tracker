@@ -9,24 +9,24 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/usememos/memos/filter"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/filter"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*store.Attachment, error) {
 	if create.Policy == nil {
 		return insertSQLiteAttachment(ctx, d.db, create)
 	}
-	if create.MemoID == nil || create.CreatorID != create.Policy.ActorUserID {
-		return nil, store.ErrMemoPermissionDenied
+	if create.NoteID == nil || create.CreatorID != create.Policy.ActorUserID {
+		return nil, store.ErrNotePermissionDenied
 	}
 	tx, err := d.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if _, err := validateSQLiteMemoWritePolicy(ctx, tx, *create.MemoID, create.Policy, nil); err != nil {
+	if _, err := validateSQLiteNoteWritePolicy(ctx, tx, *create.NoteID, create.Policy, nil); err != nil {
 		return nil, err
 	}
 	attachment, err := insertSQLiteAttachment(ctx, tx, create)
@@ -40,7 +40,7 @@ func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*s
 }
 
 func insertSQLiteAttachment(ctx context.Context, executor dbExecutor, create *store.Attachment) (*store.Attachment, error) {
-	fields := []string{"`uid`", "`filename`", "`blob`", "`type`", "`size`", "`creator_id`", "`memo_id`", "`storage_type`", "`reference`", "`payload`"}
+	fields := []string{"`uid`", "`filename`", "`blob`", "`type`", "`size`", "`creator_id`", "`note_id`", "`storage_type`", "`reference`", "`payload`"}
 	placeholder := []string{"?", "?", "?", "?", "?", "?", "?", "?", "?", "?"}
 	storageType := ""
 	if create.StorageType != storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED {
@@ -54,7 +54,7 @@ func insertSQLiteAttachment(ctx context.Context, executor dbExecutor, create *st
 		}
 		payloadString = string(bytes)
 	}
-	args := []any{create.UID, create.Filename, create.Blob, create.Type, create.Size, create.CreatorID, create.MemoID, storageType, create.Reference, payloadString}
+	args := []any{create.UID, create.Filename, create.Blob, create.Type, create.Size, create.CreatorID, create.NoteID, storageType, create.Reference, payloadString}
 
 	stmt := "INSERT INTO `attachment` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`, `updated_ts`"
 	if err := executor.QueryRowContext(ctx, stmt, args...).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
@@ -82,21 +82,21 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	if v := find.FilenameSearch; v != nil {
 		where, args = append(where, "`attachment`.`filename` LIKE ?"), append(args, fmt.Sprintf("%%%s%%", *v))
 	}
-	if v := find.MemoID; v != nil {
-		where, args = append(where, "`attachment`.`memo_id` = ?"), append(args, *v)
+	if v := find.NoteID; v != nil {
+		where, args = append(where, "`attachment`.`note_id` = ?"), append(args, *v)
 	}
-	if len(find.MemoIDList) > 0 {
-		placeholders := make([]string, 0, len(find.MemoIDList))
-		for range find.MemoIDList {
+	if len(find.NoteIDList) > 0 {
+		placeholders := make([]string, 0, len(find.NoteIDList))
+		for range find.NoteIDList {
 			placeholders = append(placeholders, "?")
 		}
-		where = append(where, "`attachment`.`memo_id` IN ("+strings.Join(placeholders, ",")+")")
-		for _, id := range find.MemoIDList {
+		where = append(where, "`attachment`.`note_id` IN ("+strings.Join(placeholders, ",")+")")
+		for _, id := range find.NoteIDList {
 			args = append(args, id)
 		}
 	}
-	if find.HasRelatedMemo {
-		where = append(where, "`attachment`.`memo_id` IS NOT NULL")
+	if find.HasRelatedNote {
+		where = append(where, "`attachment`.`note_id` IS NOT NULL")
 	}
 	if len(find.Filters) > 0 {
 		engine, err := filter.DefaultAttachmentEngine()
@@ -110,10 +110,10 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	if access := find.Access; access != nil {
 		scopeClauses := []string{}
 		if access.UserID != nil {
-			scopeClauses = append(scopeClauses, "(`attachment`.`memo_id` IS NULL AND EXISTS (SELECT 1 FROM `user` AS `attachment_user` WHERE `attachment_user`.`id` = ? AND `attachment_user`.`row_status` = 'NORMAL') AND `attachment`.`creator_id` = ?)")
+			scopeClauses = append(scopeClauses, "(`attachment`.`note_id` IS NULL AND EXISTS (SELECT 1 FROM `user` AS `attachment_user` WHERE `attachment_user`.`id` = ? AND `attachment_user`.`row_status` = 'NORMAL') AND `attachment`.`creator_id` = ?)")
 			args = append(args, *access.UserID, *access.UserID)
 		}
-		scopeClauses = append(scopeClauses, "(`attachment`.`memo_id` IS NOT NULL AND "+sqliteMemoAccessPredicate(access, "`memo`", "`attachment_member`", &args)+")")
+		scopeClauses = append(scopeClauses, "(`attachment`.`note_id` IS NOT NULL AND "+sqliteNoteAccessPredicate(access, "`note`", "`attachment_member`", &args)+")")
 		if len(scopeClauses) == 0 {
 			where = append(where, "1 = 0")
 		} else {
@@ -130,11 +130,11 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 		"`attachment`.`creator_id` AS `creator_id`",
 		"`attachment`.`created_ts` AS `created_ts`",
 		"`attachment`.`updated_ts` AS `updated_ts`",
-		"`attachment`.`memo_id` AS `memo_id`",
+		"`attachment`.`note_id` AS `note_id`",
 		"`attachment`.`storage_type` AS `storage_type`",
 		"`attachment`.`reference` AS `reference`",
 		"`attachment`.`payload` AS `payload`",
-		"CASE WHEN `memo`.`uid` IS NOT NULL THEN `memo`.`uid` ELSE NULL END AS `memo_uid`",
+		"CASE WHEN `note`.`uid` IS NOT NULL THEN `note`.`uid` ELSE NULL END AS `note_uid`",
 		"`attachment_creator`.`username` AS `creator_username`",
 	}
 	if find.GetBlob {
@@ -142,9 +142,9 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	}
 
 	query := "SELECT " + strings.Join(fields, ", ") + " FROM `attachment`" + " " +
-		"LEFT JOIN `memo` ON `attachment`.`memo_id` = `memo`.`id`" + " " +
+		"LEFT JOIN `note` ON `attachment`.`note_id` = `note`.`id`" + " " +
 		"LEFT JOIN `user` AS `attachment_creator` ON `attachment`.`creator_id` = `attachment_creator`.`id`" + " " +
-		"LEFT JOIN `space` AS `attachment_space` ON `memo`.`space_id` = `attachment_space`.`id`" + " " +
+		"LEFT JOIN `space` AS `attachment_space` ON `note`.`space_id` = `attachment_space`.`id`" + " " +
 		"WHERE " + strings.Join(where, " AND ") + " " +
 		"ORDER BY `attachment`.`updated_ts` DESC"
 	if find.Limit != nil {
@@ -163,7 +163,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	list := make([]*store.Attachment, 0)
 	for rows.Next() {
 		attachment := store.Attachment{}
-		var memoID sql.NullInt32
+		var noteID sql.NullInt32
 		var storageType string
 		var payloadBytes []byte
 		dests := []any{
@@ -175,11 +175,11 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 			&attachment.CreatorID,
 			&attachment.CreatedTs,
 			&attachment.UpdatedTs,
-			&memoID,
+			&noteID,
 			&storageType,
 			&attachment.Reference,
 			&payloadBytes,
-			&attachment.MemoUID,
+			&attachment.NoteUID,
 			&attachment.CreatorUsername,
 		}
 		if find.GetBlob {
@@ -189,8 +189,8 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 			return nil, err
 		}
 
-		if memoID.Valid {
-			attachment.MemoID = &memoID.Int32
+		if noteID.Valid {
+			attachment.NoteID = &noteID.Int32
 		}
 		attachment.StorageType = storepb.AttachmentStorageType(storepb.AttachmentStorageType_value[storageType])
 		payload := &storepb.AttachmentPayload{}
@@ -212,8 +212,8 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 	if update.Policy == nil {
 		return applySQLiteAttachmentUpdate(ctx, d.db, update)
 	}
-	if update.MemoID != nil {
-		return store.ErrMemoMutationConflict
+	if update.NoteID != nil {
+		return store.ErrNoteMutationConflict
 	}
 	attachmentIDs := []int32{update.ID}
 	tx, err := d.db.BeginTx(ctx, nil)
@@ -221,7 +221,7 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	actor, err := requireSQLiteActiveMemoActor(ctx, tx, update.Policy.ActorUserID)
+	actor, err := requireSQLiteActiveNoteActor(ctx, tx, update.Policy.ActorUserID)
 	if err != nil {
 		return err
 	}
@@ -229,11 +229,11 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 	if err != nil {
 		return err
 	}
-	memoIDs, err := store.ValidateAttachmentMutationTargets(update.Policy.ActorUserID, actor.Admin, attachmentIDs, attachments)
+	noteIDs, err := store.ValidateAttachmentMutationTargets(update.Policy.ActorUserID, actor.Admin, attachmentIDs, attachments)
 	if err != nil {
 		return err
 	}
-	if err := authorizeSQLiteAttachmentMutation(ctx, tx, update.Policy.ActorUserID, actor.Admin, memoIDs, nil); err != nil {
+	if err := authorizeSQLiteAttachmentMutation(ctx, tx, update.Policy.ActorUserID, actor.Admin, noteIDs, nil); err != nil {
 		return err
 	}
 	if err := applySQLiteAttachmentUpdate(ctx, tx, update); err != nil {
@@ -254,8 +254,8 @@ func applySQLiteAttachmentUpdate(ctx context.Context, executor dbExecutor, updat
 	if v := update.Filename; v != nil {
 		set, args = append(set, "`filename` = ?"), append(args, *v)
 	}
-	if v := update.MemoID; v != nil {
-		set, args = append(set, "`memo_id` = ?"), append(args, *v)
+	if v := update.NoteID; v != nil {
+		set, args = append(set, "`note_id` = ?"), append(args, *v)
 	}
 	if v := update.Payload; v != nil {
 		bytes, err := protojson.Marshal(v)

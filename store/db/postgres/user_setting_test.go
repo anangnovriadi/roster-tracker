@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // TestGetUserByPATHashWithMissingData tests the fix for #5611 and #5612.
@@ -238,7 +238,7 @@ func TestGetUserByPATHashPerformance(t *testing.T) {
 // getTestDSN returns PostgreSQL DSN from environment or returns empty string.
 func getTestDSN() string {
 	// For unit tests, we expect TEST_POSTGRES_DSN to be set.
-	// Example: TEST_POSTGRES_DSN="postgresql://user:pass@localhost:5432/memos_test?sslmode=disable".
+	// Example: TEST_POSTGRES_DSN="postgresql://user:pass@localhost:5432/notes_test?sslmode=disable".
 	return ""
 }
 

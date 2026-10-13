@@ -7,8 +7,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (s *APIService) ListLinkedIdentities(ctx context.Context, request *apipb.ListLinkedIdentitiesRequest) (*apipb.ListLinkedIdentitiesResponse, error) {

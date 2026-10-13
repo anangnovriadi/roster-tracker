@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/internal/testutil/fakes3"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/internal/testutil/fakes3"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 func TestNewDriver(t *testing.T) {

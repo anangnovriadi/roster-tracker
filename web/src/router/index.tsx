@@ -5,14 +5,13 @@ import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
 import { lazyWithReload } from "@/utils/lazy";
 import { RequireAuthRoute, RequireFullInitializationRoute, RequireGuestRoute, RequireInstanceInitializationRoute } from "./guards";
-import { LegacyMemoRedirect } from "./LegacyMemoRedirect";
 import { LegacyProfileRedirect } from "./LegacyProfileRedirect";
 import { CALENDAR_ROUTE_PATTERN, ROUTES } from "./routes";
 
 const AdminSignIn = lazyWithReload(() => import("@/pages/AdminSignIn"));
 const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
 const Calendar = lazyWithReload(() => import("@/pages/Calendar"));
-const MemoDetail = lazyWithReload(() => import("@/pages/MemoDetail"));
+const NoteDetail = lazyWithReload(() => import("@/pages/NoteDetail"));
 const NotFound = lazyWithReload(() => import("@/pages/NotFound"));
 const PermissionDenied = lazyWithReload(() => import("@/pages/PermissionDenied"));
 const Attachments = lazyWithReload(() => import("@/pages/Attachments"));
@@ -71,15 +70,13 @@ export const routeConfig: RouteObject[] = [
             children: [
               { index: true, element: <CalendarRedirect /> },
               { path: Routes.EXPLORE, element: <CalendarRedirect /> },
-              // Like Timeline, the calendar is public: guests see the memos readable to them.
+              // Like Timeline, the calendar is public: guests see the notes readable to them.
               { path: CALENDAR_ROUTE_PATTERN, element: <Calendar /> },
               { path: Routes.USER_PROFILE, element: <LegacyProfileRedirect /> },
             ],
           },
-          { path: "notes/:uid", element: <MemoDetail /> },
-          { path: "notes/shares/:token", element: <MemoDetail /> },
-          // Links from before notes moved from /memos/ to /notes/.
-          { path: "memos/*", element: <LegacyMemoRedirect /> },
+          { path: "notes/:uid", element: <NoteDetail /> },
+          { path: "notes/shares/:token", element: <NoteDetail /> },
           {
             element: <RequireAuthRoute />,
             children: [

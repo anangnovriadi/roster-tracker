@@ -16,7 +16,7 @@ import (
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
 )
 
 type apiAdapter struct {
@@ -117,7 +117,7 @@ func substitutePathParameters(operation *openAPIOperation, arguments map[string]
 	}
 
 	// Resolve placeholders in the order they appear in the path so a nested
-	// resource name (e.g. "memos/abc123/reactions/reaction456") can be matched
+	// resource name (e.g. "notes/abc123/reactions/reaction456") can be matched
 	// against its already-resolved parent segments. Each placeholder is resolved
 	// exactly once from the argument map and cached in resolved, so a value that
 	// itself contains a "{" can never be re-expanded into a longer prefix.
@@ -157,7 +157,7 @@ func pathPlaceholderNames(path string) []string {
 
 // trimResourceNamePrefix accepts canonical resource names for path parameters.
 // It uses the already-resolved parent segments so nested names such as
-// "memos/abc123/reactions/reaction456" are accepted only when their parent
+// "notes/abc123/reactions/reaction456" are accepted only when their parent
 // segments match the other arguments. Bare IDs pass through unchanged.
 func trimResourceNamePrefix(path, parameterName, value string, resolved map[string]string) string {
 	placeholder := "/{" + parameterName + "}"

@@ -15,7 +15,7 @@ import { useLocalStorage, useOverflowTitle } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
-/** Matches the memo outline's indent, the app's other nested rail list. */
+/** Matches the note outline's indent, the app's other nested rail list. */
 const INDENT_STEP = 12;
 
 interface TagTreeNode {
@@ -138,7 +138,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
           isAncestorOfActiveTag && !isActive && "text-foreground/75",
         )}
         // Overrides the start half of the box's `px-2`, leaving the trailing 8px intact.
-        // Same 12px step the memo outline indents by.
+        // Same 12px step the note outline indents by.
         style={{ paddingInlineStart: 8 + depth * INDENT_STEP }}
       >
         {isTag && hasSubTags && (
@@ -228,7 +228,7 @@ const TagTree = ({ tagAmounts, activeTag, scope, onTagClick }: Props) => {
     });
   };
 
-  // Reveal the active tag when a filter arrives from elsewhere (URL, memo content). `revealedFor`
+  // Reveal the active tag when a filter arrives from elsewhere (URL, note content). `revealedFor`
   // is persisted so this happens once per selection: collapsing afterwards sticks even though the
   // effect runs again on every mount, and re-picking the same tag later reveals it again.
   useEffect(() => {

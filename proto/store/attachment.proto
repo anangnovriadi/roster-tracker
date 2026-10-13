@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package memos.store;
+package roster.store;
 
 import "store/instance_setting.proto";
 

@@ -16,10 +16,10 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/usememos/memos/internal/testutil"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/testutil"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func newUploadTestService(t *testing.T) (*APIService, context.Context) {
@@ -225,15 +225,15 @@ func TestUploadAttachmentFinalizationRecovery(t *testing.T) {
 	require.Equal(t, "abc", string(content))
 }
 
-func TestUploadAttachmentRechecksMemoAndSize(t *testing.T) {
+func TestUploadAttachmentRechecksNoteAndSize(t *testing.T) {
 	svc, ctx := newUploadTestService(t)
-	memo, err := svc.CreateMemo(ctx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "upload target"}})
+	note, err := svc.CreateNote(ctx, &apipb.CreateNoteRequest{Note: &apipb.Note{Content: "upload target"}})
 	require.NoError(t, err)
 	spec := uploadSpec("file.txt", 3)
-	spec.Spec.Attachment.Memo = &memo.Name
+	spec.Spec.Attachment.Note = &note.Name
 	initial, err := svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{Upload: spec})
 	require.NoError(t, err)
-	_, err = svc.DeleteMemo(ctx, &apipb.DeleteMemoRequest{Name: memo.Name, Force: true})
+	_, err = svc.DeleteNote(ctx, &apipb.DeleteNoteRequest{Name: note.Name, Force: true})
 	require.NoError(t, err)
 	_, err = svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{Upload: uploadID(initial.UploadId), Data: []byte("abc"), FinishWrite: true})
 	require.Equal(t, codes.NotFound, status.Code(err))

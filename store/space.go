@@ -5,8 +5,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/usememos/memos/internal/identifier"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/internal/identifier"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 // ErrLastSpaceAdmin indicates that a membership mutation would leave an active
@@ -65,7 +65,7 @@ func (r SpaceMemberRole) IsActiveMember() bool {
 	return r == SpaceMemberRoleAdmin || r == SpaceMemberRoleUser
 }
 
-// Space groups memos and memberships.
+// Space groups notes and memberships.
 type Space struct {
 	ID int32
 
@@ -224,8 +224,8 @@ func (s *Store) UpdateSpace(ctx context.Context, update *UpdateSpace, actorUserI
 	return s.driver.UpdateSpace(ctx, update, actorUserID)
 }
 
-// DeleteSpace atomically deletes a Space, all directly assigned memos, and
-// their owned database resources. Memo relations are not followed.
+// DeleteSpace atomically deletes a Space, all directly assigned notes, and
+// their owned database resources. Note relations are not followed.
 func (s *Store) DeleteSpace(ctx context.Context, delete *DeleteSpace) (*DeleteSpaceResult, error) {
 	if delete == nil || delete.ID <= 0 || delete.ActorUserID <= 0 {
 		return nil, errors.New("space deletion requires space and actor")

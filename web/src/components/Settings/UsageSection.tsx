@@ -17,10 +17,10 @@ const UsageSection = () => {
 
   if (!usage) return null;
 
-  const memosLimit = usage.memosLimit?.value ?? 0n;
+  const notesLimit = usage.notesLimit?.value ?? 0n;
   const storageLimit = usage.storageBytesLimit?.value ?? 0n;
   const fileSizeLimit = usage.uploadBytesLimit?.value ?? 0n;
-  if (memosLimit === 0n && storageLimit === 0n && fileSizeLimit === 0n) return null;
+  if (notesLimit === 0n && storageLimit === 0n && fileSizeLimit === 0n) return null;
 
   const of = (metric: UsageLimit_Metric, used: bigint, limit: bigint) =>
     limit === 0n
@@ -30,7 +30,7 @@ const UsageSection = () => {
   return (
     <SettingGroup showSeparator title={t("setting.account.usage-title")} description={t("setting.account.usage-description")}>
       <SettingList>
-        <StatRow label={t("setting.account.usage-memos")} value={of(UsageLimit_Metric.MEMOS, usage.memoCount, memosLimit)} />
+        <StatRow label={t("setting.account.usage-notes")} value={of(UsageLimit_Metric.NOTES, usage.noteCount, notesLimit)} />
         <StatRow label={t("setting.account.usage-storage")} value={of(UsageLimit_Metric.STORAGE_BYTES, usage.storageBytes, storageLimit)} />
         {fileSizeLimit > 0n && (
           <StatRow label={t("setting.account.usage-file-size")} value={formatLimitValue(UsageLimit_Metric.UPLOAD_BYTES, fileSizeLimit)} />

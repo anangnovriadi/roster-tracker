@@ -75,7 +75,7 @@ export const usePersistedWidth = (config: PersistedWidthConfig) => {
 };
 
 const SIDEBAR_WIDTH_CONFIG: PersistedWidthConfig = {
-  storageKey: "memos-sidebar-width",
+  storageKey: "notes-sidebar-width",
   defaultWidth: SIDEBAR_DEFAULT_WIDTH,
   minWidth: SIDEBAR_MIN_WIDTH,
   maxWidthFor: (viewportWidth) => Math.min(SIDEBAR_MAX_WIDTH, viewportWidth * MAX_VIEWPORT_SHARE),

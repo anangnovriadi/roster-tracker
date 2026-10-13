@@ -31,7 +31,7 @@ describe("calendar snapshot sizing", () => {
 });
 
 describe("calendar grid beside the open day panel", () => {
-  // MemoPanel's width rule: the persisted width, capped by what the page reserves, never under 320px.
+  // NotePanel's width rule: the persisted width, capped by what the page reserves, never under 320px.
   const SIDEBAR = 256;
   const INSET = 12;
   const panelWidth = (viewport: number, persisted = 400) =>

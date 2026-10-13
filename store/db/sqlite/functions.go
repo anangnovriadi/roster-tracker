@@ -22,14 +22,14 @@ var (
 	unicodeFold = cases.Fold()
 )
 
-// ensureUnicodeLowerRegistered registers the memos_unicode_lower custom function
+// ensureUnicodeLowerRegistered registers the notes_unicode_lower custom function
 // with SQLite. This function provides proper Unicode case folding for case-insensitive
 // text comparisons, overcoming modernc.org/sqlite's lack of ICU extension.
 //
 // The function is registered once globally and is safe to call multiple times.
 func ensureUnicodeLowerRegistered() error {
 	registerUnicodeLowerOnce.Do(func() {
-		registerUnicodeLowerErr = msqlite.RegisterScalarFunction("memos_unicode_lower", 1, func(_ *msqlite.FunctionContext, args []driver.Value) (driver.Value, error) {
+		registerUnicodeLowerErr = msqlite.RegisterScalarFunction("notes_unicode_lower", 1, func(_ *msqlite.FunctionContext, args []driver.Value) (driver.Value, error) {
 			if len(args) == 0 || args[0] == nil {
 				return nil, nil
 			}

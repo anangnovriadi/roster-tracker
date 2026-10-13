@@ -148,7 +148,7 @@ func RegisterRosterServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.RosterService/ListRosterAssignments", runtime.WithHTTPPathPattern("/api/roster-assignments"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.RosterService/ListRosterAssignments", runtime.WithHTTPPathPattern("/api/roster-assignments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -168,7 +168,7 @@ func RegisterRosterServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.RosterService/CreateRosterAssignment", runtime.WithHTTPPathPattern("/api/roster-assignments"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.RosterService/CreateRosterAssignment", runtime.WithHTTPPathPattern("/api/roster-assignments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -188,7 +188,7 @@ func RegisterRosterServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.RosterService/DeleteRosterAssignment", runtime.WithHTTPPathPattern("/api/{name=roster-assignments/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.RosterService/DeleteRosterAssignment", runtime.WithHTTPPathPattern("/api/{name=roster-assignments/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -246,7 +246,7 @@ func RegisterRosterServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.RosterService/ListRosterAssignments", runtime.WithHTTPPathPattern("/api/roster-assignments"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.RosterService/ListRosterAssignments", runtime.WithHTTPPathPattern("/api/roster-assignments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -263,7 +263,7 @@ func RegisterRosterServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.RosterService/CreateRosterAssignment", runtime.WithHTTPPathPattern("/api/roster-assignments"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.RosterService/CreateRosterAssignment", runtime.WithHTTPPathPattern("/api/roster-assignments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -280,7 +280,7 @@ func RegisterRosterServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.RosterService/DeleteRosterAssignment", runtime.WithHTTPPathPattern("/api/{name=roster-assignments/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.RosterService/DeleteRosterAssignment", runtime.WithHTTPPathPattern("/api/{name=roster-assignments/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

@@ -13,7 +13,7 @@ import (
 )
 
 // apiPackage is the proto package whose HTTP bindings the gateway serves.
-const apiPackage = "memos.api"
+const apiPackage = "roster.api"
 
 type gatewayRouteKey struct {
 	httpMethod string

@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (s *APIService) listUsersByID(ctx context.Context, userIDs []int32) (map[int32]*store.User, error) {
@@ -68,7 +68,7 @@ func (s *APIService) ListUserStats(ctx context.Context, request *apipb.ListUserS
 	}
 
 	rowStatus := convertStateToStore(request.State)
-	memoFind := &store.FindMemo{
+	noteFind := &store.FindNote{
 		CreatorID: creatorID,
 		// Exclude comments by default.
 		ExcludeComments: true,
@@ -76,53 +76,53 @@ func (s *APIService) ListUserStats(ctx context.Context, request *apipb.ListUserS
 		RowStatus:       &rowStatus,
 	}
 
-	accessScope, currentUser, err := s.resolveMemoAccessScope(ctx)
+	accessScope, currentUser, err := s.resolveNoteAccessScope(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	if request.Filter != "" {
-		if err := s.validateMemoFilterForUser(ctx, request.Filter, currentUser); err != nil {
+		if err := s.validateNoteFilterForUser(ctx, request.Filter, currentUser); err != nil {
 			return nil, err
 		}
-		memoFind.Filters = append(memoFind.Filters, request.Filter)
+		noteFind.Filters = append(noteFind.Filters, request.Filter)
 	}
 
 	if request.State == apipb.State_ARCHIVED {
-		// Archived memos are only visible to their creator.
+		// Archived notes are only visible to their creator.
 		if currentUser == nil || (creatorID != nil && *creatorID != currentUser.ID) {
 			return &apipb.ListUserStatsResponse{}, nil
 		}
-		memoFind.CreatorID = &currentUser.ID
+		noteFind.CreatorID = &currentUser.ID
 	}
-	memoFind.Access = accessScope
+	noteFind.Access = accessScope
 
-	userMemoStatMap := make(map[int32]*apipb.UserStats)
-	pinnedMemoUIDsByUserID := make(map[int32][]string)
+	userNoteStatMap := make(map[int32]*apipb.UserStats)
+	pinnedNoteUIDsByUserID := make(map[int32][]string)
 	limit := 1000
 	offset := 0
-	memoFind.Limit = &limit
-	memoFind.Offset = &offset
+	noteFind.Limit = &limit
+	noteFind.Offset = &offset
 
 	for {
-		memos, err := s.Store.ListMemos(ctx, memoFind)
+		notes, err := s.Store.ListNotes(ctx, noteFind)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to list notes: %v", err)
 		}
-		if len(memos) == 0 {
+		if len(notes) == 0 {
 			break
 		}
 
-		for _, memo := range memos {
+		for _, note := range notes {
 			// Initialize user stats if not exists
-			if _, exists := userMemoStatMap[memo.CreatorID]; !exists {
-				userMemoStatMap[memo.CreatorID] = &apipb.UserStats{
+			if _, exists := userNoteStatMap[note.CreatorID]; !exists {
+				userNoteStatMap[note.CreatorID] = &apipb.UserStats{
 					Name:                  "",
 					TagCounts:             make(map[string]int32),
-					MemoCreatedTimestamps: []*timestamppb.Timestamp{},
-					MemoUpdatedTimestamps: []*timestamppb.Timestamp{},
-					PinnedMemos:           []string{},
-					MemoTypeStats: &apipb.UserStats_MemoTypeStats{
+					NoteCreatedTimestamps: []*timestamppb.Timestamp{},
+					NoteUpdatedTimestamps: []*timestamppb.Timestamp{},
+					PinnedNotes:           []string{},
+					NoteTypeStats: &apipb.UserStats_NoteTypeStats{
 						LinkCount: 0,
 						CodeCount: 0,
 						TodoCount: 0,
@@ -131,65 +131,65 @@ func (s *APIService) ListUserStats(ctx context.Context, request *apipb.ListUserS
 				}
 			}
 
-			stats := userMemoStatMap[memo.CreatorID]
+			stats := userNoteStatMap[note.CreatorID]
 
-			stats.MemoCreatedTimestamps = append(stats.MemoCreatedTimestamps, timestamppb.New(time.Unix(memo.CreatedTs, 0)))
-			stats.MemoUpdatedTimestamps = append(stats.MemoUpdatedTimestamps, timestamppb.New(time.Unix(memo.UpdatedTs, 0)))
+			stats.NoteCreatedTimestamps = append(stats.NoteCreatedTimestamps, timestamppb.New(time.Unix(note.CreatedTs, 0)))
+			stats.NoteUpdatedTimestamps = append(stats.NoteUpdatedTimestamps, timestamppb.New(time.Unix(note.UpdatedTs, 0)))
 
-			// Count memo stats
-			stats.TotalMemoCount++
+			// Count note stats
+			stats.TotalNoteCount++
 
 			// Count tags and other properties
-			if memo.Payload != nil {
-				incrementTagCounts(stats.TagCounts, memo.Payload.Tags)
-				if memo.Payload.Property != nil {
-					if memo.Payload.Property.HasLink {
-						stats.MemoTypeStats.LinkCount++
+			if note.Payload != nil {
+				incrementTagCounts(stats.TagCounts, note.Payload.Tags)
+				if note.Payload.Property != nil {
+					if note.Payload.Property.HasLink {
+						stats.NoteTypeStats.LinkCount++
 					}
-					if memo.Payload.Property.HasCode {
-						stats.MemoTypeStats.CodeCount++
+					if note.Payload.Property.HasCode {
+						stats.NoteTypeStats.CodeCount++
 					}
-					if memo.Payload.Property.HasTaskList {
-						stats.MemoTypeStats.TodoCount++
+					if note.Payload.Property.HasTaskList {
+						stats.NoteTypeStats.TodoCount++
 					}
-					if memo.Payload.Property.HasIncompleteTasks {
-						stats.MemoTypeStats.UndoCount++
+					if note.Payload.Property.HasIncompleteTasks {
+						stats.NoteTypeStats.UndoCount++
 					}
 				}
 			}
 
-			// Track pinned memos
-			if memo.Pinned {
-				pinnedMemoUIDsByUserID[memo.CreatorID] = append(pinnedMemoUIDsByUserID[memo.CreatorID], memo.UID)
+			// Track pinned notes
+			if note.Pinned {
+				pinnedNoteUIDsByUserID[note.CreatorID] = append(pinnedNoteUIDsByUserID[note.CreatorID], note.UID)
 			}
 		}
 
 		offset += limit
 	}
 
-	userMemoStats := []*apipb.UserStats{}
-	userIDs := make([]int32, 0, len(userMemoStatMap))
-	for userID := range userMemoStatMap {
+	userNoteStats := []*apipb.UserStats{}
+	userIDs := make([]int32, 0, len(userNoteStatMap))
+	for userID := range userNoteStatMap {
 		userIDs = append(userIDs, userID)
 	}
 	usernamesByID, err := s.listUsernamesByID(ctx, userIDs)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
 	}
-	for userID, userMemoStat := range userMemoStatMap {
+	for userID, userNoteStat := range userNoteStatMap {
 		username, ok := usernamesByID[userID]
 		if !ok {
 			return nil, status.Errorf(codes.Internal, "failed to resolve user stats name")
 		}
-		userMemoStat.Name = fmt.Sprintf("%s/stats", BuildUserName(username))
-		for _, memoUID := range pinnedMemoUIDsByUserID[userID] {
-			userMemoStat.PinnedMemos = append(userMemoStat.PinnedMemos, MemoNamePrefix+memoUID)
+		userNoteStat.Name = fmt.Sprintf("%s/stats", BuildUserName(username))
+		for _, noteUID := range pinnedNoteUIDsByUserID[userID] {
+			userNoteStat.PinnedNotes = append(userNoteStat.PinnedNotes, NoteNamePrefix+noteUID)
 		}
-		userMemoStats = append(userMemoStats, userMemoStat)
+		userNoteStats = append(userNoteStats, userNoteStat)
 	}
 
 	response := &apipb.ListUserStatsResponse{
-		UserStats: userMemoStats,
+		UserStats: userNoteStats,
 	}
 	return response, nil
 }
@@ -204,13 +204,13 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 	}
 	userID := user.ID
 
-	accessScope, currentUser, err := s.resolveMemoAccessScope(ctx)
+	accessScope, currentUser, err := s.resolveNoteAccessScope(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	normalStatus := store.Normal
-	memoFind := &store.FindMemo{
+	noteFind := &store.FindNote{
 		CreatorID: &userID,
 		// Exclude comments by default.
 		ExcludeComments: true,
@@ -219,13 +219,13 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 	}
 
 	if request.Filter != "" {
-		if err := s.validateMemoFilterForUser(ctx, request.Filter, currentUser); err != nil {
+		if err := s.validateNoteFilterForUser(ctx, request.Filter, currentUser); err != nil {
 			return nil, err
 		}
-		memoFind.Filters = append(memoFind.Filters, request.Filter)
+		noteFind.Filters = append(noteFind.Filters, request.Filter)
 	}
 
-	memoFind.Access = accessScope
+	noteFind.Access = accessScope
 
 	createdTimestamps := []*timestamppb.Timestamp{}
 	updatedTimestamps := []*timestamppb.Timestamp{}
@@ -234,48 +234,48 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 	codeCount := int32(0)
 	todoCount := int32(0)
 	undoCount := int32(0)
-	pinnedMemos := []string{}
-	totalMemoCount := int32(0)
+	pinnedNotes := []string{}
+	totalNoteCount := int32(0)
 
 	limit := 1000
 	offset := 0
-	memoFind.Limit = &limit
-	memoFind.Offset = &offset
+	noteFind.Limit = &limit
+	noteFind.Offset = &offset
 
 	for {
-		memos, err := s.Store.ListMemos(ctx, memoFind)
+		notes, err := s.Store.ListNotes(ctx, noteFind)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to list notes: %v", err)
 		}
-		if len(memos) == 0 {
+		if len(notes) == 0 {
 			break
 		}
 
-		totalMemoCount += int32(len(memos))
+		totalNoteCount += int32(len(notes))
 
-		for _, memo := range memos {
-			createdTimestamps = append(createdTimestamps, timestamppb.New(time.Unix(memo.CreatedTs, 0)))
-			updatedTimestamps = append(updatedTimestamps, timestamppb.New(time.Unix(memo.UpdatedTs, 0)))
-			// Count different memo types based on content.
-			if memo.Payload != nil {
-				incrementTagCounts(tagCount, memo.Payload.Tags)
-				if memo.Payload.Property != nil {
-					if memo.Payload.Property.HasLink {
+		for _, note := range notes {
+			createdTimestamps = append(createdTimestamps, timestamppb.New(time.Unix(note.CreatedTs, 0)))
+			updatedTimestamps = append(updatedTimestamps, timestamppb.New(time.Unix(note.UpdatedTs, 0)))
+			// Count different note types based on content.
+			if note.Payload != nil {
+				incrementTagCounts(tagCount, note.Payload.Tags)
+				if note.Payload.Property != nil {
+					if note.Payload.Property.HasLink {
 						linkCount++
 					}
-					if memo.Payload.Property.HasCode {
+					if note.Payload.Property.HasCode {
 						codeCount++
 					}
-					if memo.Payload.Property.HasTaskList {
+					if note.Payload.Property.HasTaskList {
 						todoCount++
 					}
-					if memo.Payload.Property.HasIncompleteTasks {
+					if note.Payload.Property.HasIncompleteTasks {
 						undoCount++
 					}
 				}
 			}
-			if memo.Pinned {
-				pinnedMemos = append(pinnedMemos, MemoNamePrefix+memo.UID)
+			if note.Pinned {
+				pinnedNotes = append(pinnedNotes, NoteNamePrefix+note.UID)
 			}
 		}
 
@@ -284,12 +284,12 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 
 	userStats := &apipb.UserStats{
 		Name:                  fmt.Sprintf("%s/stats", BuildUserName(user.Username)),
-		MemoCreatedTimestamps: createdTimestamps,
-		MemoUpdatedTimestamps: updatedTimestamps,
+		NoteCreatedTimestamps: createdTimestamps,
+		NoteUpdatedTimestamps: updatedTimestamps,
 		TagCounts:             tagCount,
-		PinnedMemos:           pinnedMemos,
-		TotalMemoCount:        totalMemoCount,
-		MemoTypeStats: &apipb.UserStats_MemoTypeStats{
+		PinnedNotes:           pinnedNotes,
+		TotalNoteCount:        totalNoteCount,
+		NoteTypeStats: &apipb.UserStats_NoteTypeStats{
 			LinkCount: linkCount,
 			CodeCount: codeCount,
 			TodoCount: todoCount,
@@ -308,7 +308,7 @@ func (s *APIService) GetUserStats(ctx context.Context, request *apipb.GetUserSta
 	return userStats, nil
 }
 
-// incrementTagCounts counts each distinct tag at most once for one memo payload.
+// incrementTagCounts counts each distinct tag at most once for one note payload.
 func incrementTagCounts(counts map[string]int32, tags []string) {
 	seen := make(map[string]struct{}, len(tags))
 	for _, tag := range tags {

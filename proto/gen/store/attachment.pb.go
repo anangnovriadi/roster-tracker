@@ -179,8 +179,8 @@ func (MotionMediaRole) EnumDescriptor() ([]byte, []int) {
 
 type MotionMedia struct {
 	state                   protoimpl.MessageState `protogen:"open.v1"`
-	Family                  MotionMediaFamily      `protobuf:"varint,1,opt,name=family,proto3,enum=memos.store.MotionMediaFamily" json:"family,omitempty"`
-	Role                    MotionMediaRole        `protobuf:"varint,2,opt,name=role,proto3,enum=memos.store.MotionMediaRole" json:"role,omitempty"`
+	Family                  MotionMediaFamily      `protobuf:"varint,1,opt,name=family,proto3,enum=roster.store.MotionMediaFamily" json:"family,omitempty"`
+	Role                    MotionMediaRole        `protobuf:"varint,2,opt,name=role,proto3,enum=roster.store.MotionMediaRole" json:"role,omitempty"`
 	GroupId                 string                 `protobuf:"bytes,3,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	PresentationTimestampUs int64                  `protobuf:"varint,4,opt,name=presentation_timestamp_us,json=presentationTimestampUs,proto3" json:"presentation_timestamp_us,omitempty"`
 	HasEmbeddedVideo        bool                   `protobuf:"varint,5,opt,name=has_embedded_video,json=hasEmbeddedVideo,proto3" json:"has_embedded_video,omitempty"`
@@ -773,24 +773,24 @@ var File_store_attachment_proto protoreflect.FileDescriptor
 
 const file_store_attachment_proto_rawDesc = "" +
 	"\n" +
-	"\x16store/attachment.proto\x12\vmemos.store\x1a\x1cstore/instance_setting.proto\"\xfc\x01\n" +
-	"\vMotionMedia\x126\n" +
-	"\x06family\x18\x01 \x01(\x0e2\x1e.memos.store.MotionMediaFamilyR\x06family\x120\n" +
-	"\x04role\x18\x02 \x01(\x0e2\x1c.memos.store.MotionMediaRoleR\x04role\x12\x19\n" +
+	"\x16store/attachment.proto\x12\froster.store\x1a\x1cstore/instance_setting.proto\"\xfe\x01\n" +
+	"\vMotionMedia\x127\n" +
+	"\x06family\x18\x01 \x01(\x0e2\x1f.roster.store.MotionMediaFamilyR\x06family\x121\n" +
+	"\x04role\x18\x02 \x01(\x0e2\x1d.roster.store.MotionMediaRoleR\x04role\x12\x19\n" +
 	"\bgroup_id\x18\x03 \x01(\tR\agroupId\x12:\n" +
 	"\x19presentation_timestamp_us\x18\x04 \x01(\x03R\x17presentationTimestampUs\x12,\n" +
-	"\x12has_embedded_video\x18\x05 \x01(\bR\x10hasEmbeddedVideo\"\xcf\x01\n" +
+	"\x12has_embedded_video\x18\x05 \x01(\bR\x10hasEmbeddedVideo\"\xd1\x01\n" +
 	"\rMediaMetadata\x12\x19\n" +
 	"\x05width\x18\x01 \x01(\x05H\x01R\x05width\x88\x01\x01\x12\x1b\n" +
-	"\x06height\x18\x02 \x01(\x05H\x02R\x06height\x88\x01\x01\x122\n" +
-	"\x05photo\x18\x03 \x01(\v2\x1a.memos.store.PhotoMetadataH\x00R\x05photo\x122\n" +
-	"\x05video\x18\x04 \x01(\v2\x1a.memos.store.VideoMetadataH\x00R\x05videoB\t\n" +
+	"\x06height\x18\x02 \x01(\x05H\x02R\x06height\x88\x01\x01\x123\n" +
+	"\x05photo\x18\x03 \x01(\v2\x1b.roster.store.PhotoMetadataH\x00R\x05photo\x123\n" +
+	"\x05video\x18\x04 \x01(\v2\x1b.roster.store.VideoMetadataH\x00R\x05videoB\t\n" +
 	"\adetailsB\b\n" +
 	"\x06_widthB\t\n" +
-	"\a_height\"\xa5\x04\n" +
-	"\rPhotoMetadata\x12@\n" +
-	"\fcapture_time\x18\x01 \x01(\v2\x1d.memos.store.MediaCaptureTimeR\vcaptureTime\x126\n" +
-	"\blocation\x18\x02 \x01(\v2\x1a.memos.store.MediaLocationR\blocation\x12;\n" +
+	"\a_height\"\xa7\x04\n" +
+	"\rPhotoMetadata\x12A\n" +
+	"\fcapture_time\x18\x01 \x01(\v2\x1e.roster.store.MediaCaptureTimeR\vcaptureTime\x127\n" +
+	"\blocation\x18\x02 \x01(\v2\x1b.roster.store.MediaLocationR\blocation\x12;\n" +
 	"\x17source_exif_orientation\x18\x03 \x01(\x05H\x00R\x15sourceExifOrientation\x88\x01\x01\x12\x1f\n" +
 	"\vcamera_make\x18\x04 \x01(\tR\n" +
 	"cameraMake\x12!\n" +
@@ -822,14 +822,14 @@ const file_store_attachment_proto_rawDesc = "" +
 	"\x10_altitude_meters\"T\n" +
 	"\rVideoMetadata\x12.\n" +
 	"\x10duration_seconds\x18\x01 \x01(\x01H\x00R\x0fdurationSeconds\x88\x01\x01B\x13\n" +
-	"\x11_duration_seconds\"\xfa\x02\n" +
-	"\x11AttachmentPayload\x12F\n" +
-	"\ts3_object\x18\x01 \x01(\v2'.memos.store.AttachmentPayload.S3ObjectH\x00R\bs3Object\x12;\n" +
+	"\x11_duration_seconds\"\xfe\x02\n" +
+	"\x11AttachmentPayload\x12G\n" +
+	"\ts3_object\x18\x01 \x01(\v2(.roster.store.AttachmentPayload.S3ObjectH\x00R\bs3Object\x12<\n" +
 	"\fmotion_media\x18\n" +
-	" \x01(\v2\x18.memos.store.MotionMediaR\vmotionMedia\x12A\n" +
-	"\x0emedia_metadata\x18\v \x01(\v2\x1a.memos.store.MediaMetadataR\rmediaMetadata\x1a\x91\x01\n" +
-	"\bS3Object\x129\n" +
-	"\ts3_config\x18\x01 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\x12\x10\n" +
+	" \x01(\v2\x19.roster.store.MotionMediaR\vmotionMedia\x12B\n" +
+	"\x0emedia_metadata\x18\v \x01(\v2\x1b.roster.store.MediaMetadataR\rmediaMetadata\x1a\x92\x01\n" +
+	"\bS3Object\x12:\n" +
+	"\ts3_config\x18\x01 \x01(\v2\x1d.roster.store.StorageS3ConfigR\bs3Config\x12\x10\n" +
 	"\x03key\x18\x02 \x01(\tR\x03key\x12\x1d\n" +
 	"\n" +
 	"storage_id\x18\x04 \x01(\tR\tstorageIdJ\x04\b\x03\x10\x04R\x13last_presigned_timeB\t\n" +
@@ -847,8 +847,8 @@ const file_store_attachment_proto_rawDesc = "" +
 	"\x1dMOTION_MEDIA_ROLE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05STILL\x10\x01\x12\t\n" +
 	"\x05VIDEO\x10\x02\x12\r\n" +
-	"\tCONTAINER\x10\x03B\x9a\x01\n" +
-	"\x0fcom.memos.storeB\x0fAttachmentProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
+	"\tCONTAINER\x10\x03B\xad\x01\n" +
+	"\x10com.roster.storeB\x0fAttachmentProtoP\x01Z7github.com/anangnovriadi/roster-tracker/proto/gen/store\xa2\x02\x03RSX\xaa\x02\fRoster.Store\xca\x02\fRoster\\Store\xe2\x02\x18Roster\\Store\\GPBMetadata\xea\x02\rRoster::Storeb\x06proto3"
 
 var (
 	file_store_attachment_proto_rawDescOnce sync.Once
@@ -865,30 +865,30 @@ func file_store_attachment_proto_rawDescGZIP() []byte {
 var file_store_attachment_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_store_attachment_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_store_attachment_proto_goTypes = []any{
-	(AttachmentStorageType)(0),         // 0: memos.store.AttachmentStorageType
-	(MotionMediaFamily)(0),             // 1: memos.store.MotionMediaFamily
-	(MotionMediaRole)(0),               // 2: memos.store.MotionMediaRole
-	(*MotionMedia)(nil),                // 3: memos.store.MotionMedia
-	(*MediaMetadata)(nil),              // 4: memos.store.MediaMetadata
-	(*PhotoMetadata)(nil),              // 5: memos.store.PhotoMetadata
-	(*MediaCaptureTime)(nil),           // 6: memos.store.MediaCaptureTime
-	(*MediaLocation)(nil),              // 7: memos.store.MediaLocation
-	(*VideoMetadata)(nil),              // 8: memos.store.VideoMetadata
-	(*AttachmentPayload)(nil),          // 9: memos.store.AttachmentPayload
-	(*AttachmentPayload_S3Object)(nil), // 10: memos.store.AttachmentPayload.S3Object
-	(*StorageS3Config)(nil),            // 11: memos.store.StorageS3Config
+	(AttachmentStorageType)(0),         // 0: roster.store.AttachmentStorageType
+	(MotionMediaFamily)(0),             // 1: roster.store.MotionMediaFamily
+	(MotionMediaRole)(0),               // 2: roster.store.MotionMediaRole
+	(*MotionMedia)(nil),                // 3: roster.store.MotionMedia
+	(*MediaMetadata)(nil),              // 4: roster.store.MediaMetadata
+	(*PhotoMetadata)(nil),              // 5: roster.store.PhotoMetadata
+	(*MediaCaptureTime)(nil),           // 6: roster.store.MediaCaptureTime
+	(*MediaLocation)(nil),              // 7: roster.store.MediaLocation
+	(*VideoMetadata)(nil),              // 8: roster.store.VideoMetadata
+	(*AttachmentPayload)(nil),          // 9: roster.store.AttachmentPayload
+	(*AttachmentPayload_S3Object)(nil), // 10: roster.store.AttachmentPayload.S3Object
+	(*StorageS3Config)(nil),            // 11: roster.store.StorageS3Config
 }
 var file_store_attachment_proto_depIdxs = []int32{
-	1,  // 0: memos.store.MotionMedia.family:type_name -> memos.store.MotionMediaFamily
-	2,  // 1: memos.store.MotionMedia.role:type_name -> memos.store.MotionMediaRole
-	5,  // 2: memos.store.MediaMetadata.photo:type_name -> memos.store.PhotoMetadata
-	8,  // 3: memos.store.MediaMetadata.video:type_name -> memos.store.VideoMetadata
-	6,  // 4: memos.store.PhotoMetadata.capture_time:type_name -> memos.store.MediaCaptureTime
-	7,  // 5: memos.store.PhotoMetadata.location:type_name -> memos.store.MediaLocation
-	10, // 6: memos.store.AttachmentPayload.s3_object:type_name -> memos.store.AttachmentPayload.S3Object
-	3,  // 7: memos.store.AttachmentPayload.motion_media:type_name -> memos.store.MotionMedia
-	4,  // 8: memos.store.AttachmentPayload.media_metadata:type_name -> memos.store.MediaMetadata
-	11, // 9: memos.store.AttachmentPayload.S3Object.s3_config:type_name -> memos.store.StorageS3Config
+	1,  // 0: roster.store.MotionMedia.family:type_name -> roster.store.MotionMediaFamily
+	2,  // 1: roster.store.MotionMedia.role:type_name -> roster.store.MotionMediaRole
+	5,  // 2: roster.store.MediaMetadata.photo:type_name -> roster.store.PhotoMetadata
+	8,  // 3: roster.store.MediaMetadata.video:type_name -> roster.store.VideoMetadata
+	6,  // 4: roster.store.PhotoMetadata.capture_time:type_name -> roster.store.MediaCaptureTime
+	7,  // 5: roster.store.PhotoMetadata.location:type_name -> roster.store.MediaLocation
+	10, // 6: roster.store.AttachmentPayload.s3_object:type_name -> roster.store.AttachmentPayload.S3Object
+	3,  // 7: roster.store.AttachmentPayload.motion_media:type_name -> roster.store.MotionMedia
+	4,  // 8: roster.store.AttachmentPayload.media_metadata:type_name -> roster.store.MediaMetadata
+	11, // 9: roster.store.AttachmentPayload.S3Object.s3_config:type_name -> roster.store.StorageS3Config
 	10, // [10:10] is the sub-list for method output_type
 	10, // [10:10] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name

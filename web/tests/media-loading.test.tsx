@@ -1,14 +1,14 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { Image } from "@/components/MemoContent/markdown/Image";
-import AudioAttachmentItem from "@/components/MemoMetadata/Attachment/AudioAttachmentItem";
 import MotionPhotoPlayer from "@/components/MotionPhotoPlayer";
+import { Image } from "@/components/NoteContent/markdown/Image";
+import AudioAttachmentItem from "@/components/NoteMetadata/Attachment/AudioAttachmentItem";
 
 describe("media loading", () => {
   it("marks markdown images for native lazy loading", () => {
-    render(<Image src="/image.jpg" alt="memo illustration" />);
+    render(<Image src="/image.jpg" alt="note illustration" />);
 
-    const image = screen.getByRole("img", { name: "memo illustration" });
+    const image = screen.getByRole("img", { name: "note illustration" });
     expect(image).toHaveAttribute("loading", "lazy");
     expect(image).toHaveAttribute("decoding", "async");
   });

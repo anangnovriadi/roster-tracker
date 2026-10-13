@@ -143,7 +143,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AuthService/SignIn", runtime.WithHTTPPathPattern("/api/auth/signin"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AuthService/SignIn", runtime.WithHTTPPathPattern("/api/auth/signin"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -163,7 +163,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AuthService/RefreshToken", runtime.WithHTTPPathPattern("/api/auth/refresh"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AuthService/RefreshToken", runtime.WithHTTPPathPattern("/api/auth/refresh"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -183,7 +183,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AuthService/GetCurrentUser", runtime.WithHTTPPathPattern("/api/auth/me"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AuthService/GetCurrentUser", runtime.WithHTTPPathPattern("/api/auth/me"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -203,7 +203,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.AuthService/SignOut", runtime.WithHTTPPathPattern("/api/auth/signout"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.AuthService/SignOut", runtime.WithHTTPPathPattern("/api/auth/signout"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -261,7 +261,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AuthService/SignIn", runtime.WithHTTPPathPattern("/api/auth/signin"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AuthService/SignIn", runtime.WithHTTPPathPattern("/api/auth/signin"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -278,7 +278,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AuthService/RefreshToken", runtime.WithHTTPPathPattern("/api/auth/refresh"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AuthService/RefreshToken", runtime.WithHTTPPathPattern("/api/auth/refresh"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -295,7 +295,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AuthService/GetCurrentUser", runtime.WithHTTPPathPattern("/api/auth/me"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AuthService/GetCurrentUser", runtime.WithHTTPPathPattern("/api/auth/me"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -312,7 +312,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.AuthService/SignOut", runtime.WithHTTPPathPattern("/api/auth/signout"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.AuthService/SignOut", runtime.WithHTTPPathPattern("/api/auth/signout"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package memos.api;
+package roster.api;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
@@ -59,7 +59,7 @@ service IdentityProviderService {
 // IdentityProvider is an external identity provider users can sign in with.
 message IdentityProvider {
   option (google.api.resource) = {
-    type: "memos.api/IdentityProvider"
+    type: "roster.api/IdentityProvider"
     pattern: "identity-providers/{idp}"
     singular: "identityProvider"
     plural: "identityProviders"
@@ -104,7 +104,7 @@ message GetIdentityProviderRequest {
   // Format: identity-providers/{idp}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/IdentityProvider"}
+    (google.api.resource_reference) = {type: "roster.api/IdentityProvider"}
   ];
 }
 
@@ -135,7 +135,7 @@ message DeleteIdentityProviderRequest {
   // Format: identity-providers/{idp}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/IdentityProvider"}
+    (google.api.resource_reference) = {type: "roster.api/IdentityProvider"}
   ];
 }
 

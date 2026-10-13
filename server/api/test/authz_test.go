@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/random"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/server/auth"
+	"github.com/anangnovriadi/roster-tracker/internal/random"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
 )
 
 // TestAuthorizerPrivateInstanceRegistration verifies that registration and other
@@ -25,12 +25,12 @@ func TestAuthorizerPrivateInstanceRegistration(t *testing.T) {
 	authorizer := api.NewAuthorizer(ts.Store, ts.Secret)
 
 	const (
-		createUser    = "/memos.api.UserService/CreateUser"
-		signIn        = "/memos.api.AuthService/SignIn"
-		listMemos     = "/memos.api.MemoService/ListMemos"
-		listReactions = "/memos.api.MemoService/ListMemoReactions"
-		listRelations = "/memos.api.MemoService/ListMemoRelations"
-		getSharedMemo = "/memos.api.MemoService/GetSharedMemo"
+		createUser    = "/roster.api.UserService/CreateUser"
+		signIn        = "/roster.api.AuthService/SignIn"
+		listNotes     = "/roster.api.NoteService/ListNotes"
+		listReactions = "/roster.api.NoteService/ListNoteReactions"
+		listRelations = "/roster.api.NoteService/ListNoteRelations"
+		getSharedNote = "/roster.api.NoteService/GetSharedNote"
 	)
 
 	// Anonymous request with no Authorization header resolves to no identity.
@@ -39,14 +39,14 @@ func TestAuthorizerPrivateInstanceRegistration(t *testing.T) {
 	// Registration and other bootstrap methods are allowed; browsing is still gated.
 	require.NoError(t, authorizer.CheckAccess(ctx, createUser, nil))
 	require.NoError(t, authorizer.CheckAccess(ctx, signIn, nil))
-	require.NoError(t, authorizer.CheckAccess(ctx, getSharedMemo, nil))
-	require.ErrorIs(t, authorizer.CheckAccess(ctx, listMemos, nil), api.ErrUnauthenticated)
+	require.NoError(t, authorizer.CheckAccess(ctx, getSharedNote, nil))
+	require.ErrorIs(t, authorizer.CheckAccess(ctx, listNotes, nil), api.ErrUnauthenticated)
 	require.ErrorIs(t, authorizer.CheckAccess(ctx, listReactions, nil), api.ErrUnauthenticated)
 	require.ErrorIs(t, authorizer.CheckAccess(ctx, listRelations, nil), api.ErrUnauthenticated)
 
 	// Policy reads are fresh: changing to PUBLIC immediately opens browsing.
 	require.NoError(t, ts.SetInstanceAccessMode(ctx, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC))
-	require.NoError(t, authorizer.CheckAccess(ctx, listMemos, nil))
+	require.NoError(t, authorizer.CheckAccess(ctx, listNotes, nil))
 	require.NoError(t, authorizer.CheckAccess(ctx, listReactions, nil))
 	require.NoError(t, authorizer.CheckAccess(ctx, listRelations, nil))
 	require.NoError(t, ts.SetInstanceAccessMode(ctx, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE))
@@ -87,5 +87,5 @@ func TestAuthorizerAccessTokenAlwaysWorksOnPrivateInstance(t *testing.T) {
 	require.Equal(t, user.ID, result.User.ID)
 
 	// An authenticated caller passes access control even for a gated method.
-	require.NoError(t, authorizer.CheckAccess(ctx, "/memos.api.MemoService/ListMemos", result))
+	require.NoError(t, authorizer.CheckAccess(ctx, "/roster.api.NoteService/ListNotes", result))
 }

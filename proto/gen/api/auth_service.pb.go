@@ -394,7 +394,7 @@ func (*SignOutRequest) Descriptor() ([]byte, []int) {
 // Regular users cannot use them when the instance disallows password sign-in.
 type SignInRequest_PasswordCredentials struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The username to sign in with.
+	// Required. The username or email address to sign in with.
 	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
 	// Required. The password to sign in with.
 	Password      string `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
@@ -525,39 +525,41 @@ var File_api_auth_service_proto protoreflect.FileDescriptor
 
 const file_api_auth_service_proto_rawDesc = "" +
 	"\n" +
-	"\x16api/auth_service.proto\x12\tmemos.api\x1a\x16api/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfd\x03\n" +
-	"\rSignInRequest\x12a\n" +
-	"\x14password_credentials\x18\x01 \x01(\v2,.memos.api.SignInRequest.PasswordCredentialsH\x00R\x13passwordCredentials\x12R\n" +
-	"\x0fsso_credentials\x18\x02 \x01(\v2'.memos.api.SignInRequest.SsoCredentialsH\x00R\x0essoCredentials\x1aW\n" +
+	"\x16api/auth_service.proto\x12\n" +
+	"roster.api\x1a\x16api/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x80\x04\n" +
+	"\rSignInRequest\x12b\n" +
+	"\x14password_credentials\x18\x01 \x01(\v2-.roster.api.SignInRequest.PasswordCredentialsH\x00R\x13passwordCredentials\x12S\n" +
+	"\x0fsso_credentials\x18\x02 \x01(\v2(.roster.api.SignInRequest.SsoCredentialsH\x00R\x0essoCredentials\x1aW\n" +
 	"\x13PasswordCredentials\x12\x1f\n" +
 	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword\x1a\xcc\x01\n" +
-	"\x0eSsoCredentials\x12O\n" +
-	"\x11identity_provider\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1amemos.api/IdentityProviderR\x10identityProvider\x12\x17\n" +
+	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword\x1a\xcd\x01\n" +
+	"\x0eSsoCredentials\x12P\n" +
+	"\x11identity_provider\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"\x1broster.api/IdentityProviderR\x10identityProvider\x12\x17\n" +
 	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04code\x12&\n" +
 	"\fredirect_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\vredirectUri\x12(\n" +
 	"\rcode_verifier\x18\x04 \x01(\tB\x03\xe0A\x01R\fcodeVerifierB\r\n" +
-	"\vcredentials\"\xad\x01\n" +
-	"\x0eSignInResponse\x12#\n" +
-	"\x04user\x18\x01 \x01(\v2\x0f.memos.api.UserR\x04user\x12!\n" +
+	"\vcredentials\"\xae\x01\n" +
+	"\x0eSignInResponse\x12$\n" +
+	"\x04user\x18\x01 \x01(\v2\x10.roster.api.UserR\x04user\x12!\n" +
 	"\faccess_token\x18\x02 \x01(\tR\vaccessToken\x12S\n" +
 	"\x18access_token_expire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x15accessTokenExpireTime\"\x15\n" +
 	"\x13RefreshTokenRequest\"\x8e\x01\n" +
 	"\x14RefreshTokenResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12S\n" +
 	"\x18access_token_expire_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x15accessTokenExpireTime\"\x17\n" +
-	"\x15GetCurrentUserRequest\"=\n" +
-	"\x16GetCurrentUserResponse\x12#\n" +
-	"\x04user\x18\x01 \x01(\v2\x0f.memos.api.UserR\x04user\"\x10\n" +
-	"\x0eSignOutRequest2\x9e\x03\n" +
-	"\vAuthService\x12Z\n" +
-	"\x06SignIn\x12\x18.memos.api.SignInRequest\x1a\x19.memos.api.SignInResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/api/auth/signin\x12m\n" +
-	"\fRefreshToken\x12\x1e.memos.api.RefreshTokenRequest\x1a\x1f.memos.api.RefreshTokenResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/api/auth/refresh\x12k\n" +
-	"\x0eGetCurrentUser\x12 .memos.api.GetCurrentUserRequest\x1a!.memos.api.GetCurrentUserResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/api/auth/me\x12W\n" +
-	"\aSignOut\x12\x19.memos.api.SignOutRequest\x1a\x16.google.protobuf.Empty\"\x19\x82\xd3\xe4\x93\x02\x13\"\x11/api/auth/signoutB\x8f\x01\n" +
-	"\rcom.memos.apiB\x10AuthServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
-	"Memos::Apib\x06proto3"
+	"\x15GetCurrentUserRequest\">\n" +
+	"\x16GetCurrentUserResponse\x12$\n" +
+	"\x04user\x18\x01 \x01(\v2\x10.roster.api.UserR\x04user\"\x10\n" +
+	"\x0eSignOutRequest2\xa5\x03\n" +
+	"\vAuthService\x12\\\n" +
+	"\x06SignIn\x12\x19.roster.api.SignInRequest\x1a\x1a.roster.api.SignInResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/api/auth/signin\x12o\n" +
+	"\fRefreshToken\x12\x1f.roster.api.RefreshTokenRequest\x1a .roster.api.RefreshTokenResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/api/auth/refresh\x12m\n" +
+	"\x0eGetCurrentUser\x12!.roster.api.GetCurrentUserRequest\x1a\".roster.api.GetCurrentUserResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/api/auth/me\x12X\n" +
+	"\aSignOut\x12\x1a.roster.api.SignOutRequest\x1a\x16.google.protobuf.Empty\"\x19\x82\xd3\xe4\x93\x02\x13\"\x11/api/auth/signoutB\xa2\x01\n" +
+	"\x0ecom.roster.apiB\x10AuthServiceProtoP\x01Z5github.com/anangnovriadi/roster-tracker/proto/gen/api\xa2\x02\x03RAX\xaa\x02\n" +
+	"Roster.Api\xca\x02\n" +
+	"Roster\\Api\xe2\x02\x16Roster\\Api\\GPBMetadata\xea\x02\vRoster::Apib\x06proto3"
 
 var (
 	file_api_auth_service_proto_rawDescOnce sync.Once
@@ -573,34 +575,34 @@ func file_api_auth_service_proto_rawDescGZIP() []byte {
 
 var file_api_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_api_auth_service_proto_goTypes = []any{
-	(*SignInRequest)(nil),                     // 0: memos.api.SignInRequest
-	(*SignInResponse)(nil),                    // 1: memos.api.SignInResponse
-	(*RefreshTokenRequest)(nil),               // 2: memos.api.RefreshTokenRequest
-	(*RefreshTokenResponse)(nil),              // 3: memos.api.RefreshTokenResponse
-	(*GetCurrentUserRequest)(nil),             // 4: memos.api.GetCurrentUserRequest
-	(*GetCurrentUserResponse)(nil),            // 5: memos.api.GetCurrentUserResponse
-	(*SignOutRequest)(nil),                    // 6: memos.api.SignOutRequest
-	(*SignInRequest_PasswordCredentials)(nil), // 7: memos.api.SignInRequest.PasswordCredentials
-	(*SignInRequest_SsoCredentials)(nil),      // 8: memos.api.SignInRequest.SsoCredentials
-	(*User)(nil),                              // 9: memos.api.User
+	(*SignInRequest)(nil),                     // 0: roster.api.SignInRequest
+	(*SignInResponse)(nil),                    // 1: roster.api.SignInResponse
+	(*RefreshTokenRequest)(nil),               // 2: roster.api.RefreshTokenRequest
+	(*RefreshTokenResponse)(nil),              // 3: roster.api.RefreshTokenResponse
+	(*GetCurrentUserRequest)(nil),             // 4: roster.api.GetCurrentUserRequest
+	(*GetCurrentUserResponse)(nil),            // 5: roster.api.GetCurrentUserResponse
+	(*SignOutRequest)(nil),                    // 6: roster.api.SignOutRequest
+	(*SignInRequest_PasswordCredentials)(nil), // 7: roster.api.SignInRequest.PasswordCredentials
+	(*SignInRequest_SsoCredentials)(nil),      // 8: roster.api.SignInRequest.SsoCredentials
+	(*User)(nil),                              // 9: roster.api.User
 	(*timestamppb.Timestamp)(nil),             // 10: google.protobuf.Timestamp
 	(*emptypb.Empty)(nil),                     // 11: google.protobuf.Empty
 }
 var file_api_auth_service_proto_depIdxs = []int32{
-	7,  // 0: memos.api.SignInRequest.password_credentials:type_name -> memos.api.SignInRequest.PasswordCredentials
-	8,  // 1: memos.api.SignInRequest.sso_credentials:type_name -> memos.api.SignInRequest.SsoCredentials
-	9,  // 2: memos.api.SignInResponse.user:type_name -> memos.api.User
-	10, // 3: memos.api.SignInResponse.access_token_expire_time:type_name -> google.protobuf.Timestamp
-	10, // 4: memos.api.RefreshTokenResponse.access_token_expire_time:type_name -> google.protobuf.Timestamp
-	9,  // 5: memos.api.GetCurrentUserResponse.user:type_name -> memos.api.User
-	0,  // 6: memos.api.AuthService.SignIn:input_type -> memos.api.SignInRequest
-	2,  // 7: memos.api.AuthService.RefreshToken:input_type -> memos.api.RefreshTokenRequest
-	4,  // 8: memos.api.AuthService.GetCurrentUser:input_type -> memos.api.GetCurrentUserRequest
-	6,  // 9: memos.api.AuthService.SignOut:input_type -> memos.api.SignOutRequest
-	1,  // 10: memos.api.AuthService.SignIn:output_type -> memos.api.SignInResponse
-	3,  // 11: memos.api.AuthService.RefreshToken:output_type -> memos.api.RefreshTokenResponse
-	5,  // 12: memos.api.AuthService.GetCurrentUser:output_type -> memos.api.GetCurrentUserResponse
-	11, // 13: memos.api.AuthService.SignOut:output_type -> google.protobuf.Empty
+	7,  // 0: roster.api.SignInRequest.password_credentials:type_name -> roster.api.SignInRequest.PasswordCredentials
+	8,  // 1: roster.api.SignInRequest.sso_credentials:type_name -> roster.api.SignInRequest.SsoCredentials
+	9,  // 2: roster.api.SignInResponse.user:type_name -> roster.api.User
+	10, // 3: roster.api.SignInResponse.access_token_expire_time:type_name -> google.protobuf.Timestamp
+	10, // 4: roster.api.RefreshTokenResponse.access_token_expire_time:type_name -> google.protobuf.Timestamp
+	9,  // 5: roster.api.GetCurrentUserResponse.user:type_name -> roster.api.User
+	0,  // 6: roster.api.AuthService.SignIn:input_type -> roster.api.SignInRequest
+	2,  // 7: roster.api.AuthService.RefreshToken:input_type -> roster.api.RefreshTokenRequest
+	4,  // 8: roster.api.AuthService.GetCurrentUser:input_type -> roster.api.GetCurrentUserRequest
+	6,  // 9: roster.api.AuthService.SignOut:input_type -> roster.api.SignOutRequest
+	1,  // 10: roster.api.AuthService.SignIn:output_type -> roster.api.SignInResponse
+	3,  // 11: roster.api.AuthService.RefreshToken:output_type -> roster.api.RefreshTokenResponse
+	5,  // 12: roster.api.AuthService.GetCurrentUser:output_type -> roster.api.GetCurrentUserResponse
+	11, // 13: roster.api.AuthService.SignOut:output_type -> google.protobuf.Empty
 	10, // [10:14] is the sub-list for method output_type
 	6,  // [6:10] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name

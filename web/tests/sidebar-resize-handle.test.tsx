@@ -8,7 +8,7 @@ import { SIDEBAR_DEFAULT_WIDTH, SIDEBAR_MAX_WIDTH, SIDEBAR_MIN_WIDTH, SIDEBAR_WI
 // The handle's contract has two halves. Keyboard and double-click go straight through
 // `onWidthChange`. A pointer drag deliberately does not: it writes the width custom property
 // on the layout shell every frame and commits to React exactly once, on release, so that
-// dragging does not re-render the sidebar and the memo feed on every pointer move. Both
+// dragging does not re-render the sidebar and the note feed on every pointer move. Both
 // halves are asserted here, since the drag half is invisible to a props-only test.
 
 vi.mock("@/utils/i18n", () => ({
@@ -314,7 +314,7 @@ describe("<SidebarResizeHandle />", () => {
           maxWidth={640}
           onWidthChange={vi.fn()}
           targetRef={targetRef}
-          cssVariable="--memo-panel-width"
+          cssVariable="--note-panel-width"
           label="Resize panel"
         />
       </DirectionProvider>,

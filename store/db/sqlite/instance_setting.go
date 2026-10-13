@@ -7,7 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // CreateInstanceSettingIfNotExists atomically creates the setting when its name is absent and reports whether it inserted the row.

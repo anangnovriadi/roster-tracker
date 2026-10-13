@@ -134,7 +134,7 @@ const UserMenu = ({ onClose, onOpenAbout }: { onClose: () => void; onOpenAbout?:
   const handleSignOut = async () => {
     await logout();
     try {
-      const keysToPreserve = ["memos-theme", "memos-locale", "memos-view-setting", "tag-view-as-tree"];
+      const keysToPreserve = ["notes-theme", "notes-locale", "notes-view-setting", "tag-view-as-tree"];
       const keysToRemove: string[] = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);

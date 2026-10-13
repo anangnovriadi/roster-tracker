@@ -9,9 +9,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestGetUserStats_TagCount(t *testing.T) {
@@ -28,18 +28,18 @@ func TestGetUserStats_TagCount(t *testing.T) {
 	// Create user context for authentication
 	userCtx := ts.CreateUserContext(ctx, user.ID)
 
-	// Create a memo with a single tag
-	memo, err := ts.Store.CreateMemo(ctx, &store.Memo{
-		UID:        "test-memo-1",
+	// Create a note with a single tag
+	note, err := ts.Store.CreateNote(ctx, &store.Note{
+		UID:        "test-note-1",
 		CreatorID:  user.ID,
-		Content:    "This is a test memo with #test tag",
+		Content:    "This is a test note with #test tag",
 		Visibility: store.Public,
-		Payload: &storepb.MemoPayload{
+		Payload: &storepb.NotePayload{
 			Tags: []string{"test", "test"},
 		},
 	})
 	require.NoError(t, err)
-	require.NotNil(t, memo)
+	require.NotNil(t, note)
 
 	// Test GetUserStats
 	userName := fmt.Sprintf("users/%s", user.Username)
@@ -50,23 +50,23 @@ func TestGetUserStats_TagCount(t *testing.T) {
 	require.NotNil(t, response)
 	require.Equal(t, fmt.Sprintf("users/%s/stats", user.Username), response.Name)
 
-	// A memo contributes at most once to an exact tag count, even if its payload
+	// A note contributes at most once to an exact tag count, even if its payload
 	// accidentally contains the same derived membership more than once.
 	require.Contains(t, response.TagCounts, "test")
 	require.Equal(t, int32(1), response.TagCounts["test"], "Tag count should be 1 for a single occurrence")
 
-	// Create another memo with the same tag
-	memo2, err := ts.Store.CreateMemo(ctx, &store.Memo{
-		UID:        "test-memo-2",
+	// Create another note with the same tag
+	note2, err := ts.Store.CreateNote(ctx, &store.Note{
+		UID:        "test-note-2",
 		CreatorID:  user.ID,
-		Content:    "Another memo with #test tag",
+		Content:    "Another note with #test tag",
 		Visibility: store.Public,
-		Payload: &storepb.MemoPayload{
+		Payload: &storepb.NotePayload{
 			Tags: []string{"test"},
 		},
 	})
 	require.NoError(t, err)
-	require.NotNil(t, memo2)
+	require.NotNil(t, note2)
 
 	// Test GetUserStats again
 	response2, err := ts.Service.GetUserStats(userCtx, &apipb.GetUserStatsRequest{
@@ -80,17 +80,17 @@ func TestGetUserStats_TagCount(t *testing.T) {
 	require.Equal(t, int32(2), response2.TagCounts["test"], "Tag count should be 2 for two occurrences")
 
 	// Test with a new unique tag
-	memo3, err := ts.Store.CreateMemo(ctx, &store.Memo{
-		UID:        "test-memo-3",
+	note3, err := ts.Store.CreateNote(ctx, &store.Note{
+		UID:        "test-note-3",
 		CreatorID:  user.ID,
-		Content:    "Memo with #unique tag",
+		Content:    "Note with #unique tag",
 		Visibility: store.Public,
-		Payload: &storepb.MemoPayload{
+		Payload: &storepb.NotePayload{
 			Tags: []string{"unique"},
 		},
 	})
 	require.NoError(t, err)
-	require.NotNil(t, memo3)
+	require.NotNil(t, note3)
 
 	// Test GetUserStats for the new tag
 	response3, err := ts.Service.GetUserStats(userCtx, &apipb.GetUserStatsRequest{
@@ -127,12 +127,12 @@ func TestGetUserStats_TagCountPreservesExactIdentity(t *testing.T) {
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
 
-	_, err = ts.Store.CreateMemo(ctx, &store.Memo{
-		UID:        "exact-tag-stats-memo",
+	_, err = ts.Store.CreateNote(ctx, &store.Note{
+		UID:        "exact-tag-stats-note",
 		CreatorID:  user.ID,
 		Content:    "Exact tag membership fixture",
 		Visibility: store.Public,
-		Payload: &storepb.MemoPayload{
+		Payload: &storepb.NotePayload{
 			Tags: []string{"book", "book/fiction", "book", "Work", "work", composedTag, decomposedTag},
 		},
 	})
@@ -152,7 +152,7 @@ func TestGetUserStats_TagCountPreservesExactIdentity(t *testing.T) {
 	}, response.TagCounts)
 }
 
-func TestGetUserStats_MemoUpdatedTimestamps(t *testing.T) {
+func TestGetUserStats_NoteUpdatedTimestamps(t *testing.T) {
 	ctx := context.Background()
 
 	ts := NewTestService(t)
@@ -162,22 +162,22 @@ func TestGetUserStats_MemoUpdatedTimestamps(t *testing.T) {
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
 
-	memo, err := ts.Store.CreateMemo(ctx, &store.Memo{
-		UID:        "ts-memo-1",
+	note, err := ts.Store.CreateNote(ctx, &store.Note{
+		UID:        "ts-note-1",
 		CreatorID:  user.ID,
 		Content:    "first content",
 		Visibility: store.Public,
 	})
 	require.NoError(t, err)
-	require.NotNil(t, memo)
+	require.NotNil(t, note)
 
-	// SQLite UpdateMemo only sets fields explicitly passed (created_ts default
+	// SQLite UpdateNote only sets fields explicitly passed (created_ts default
 	// fires on INSERT only). So bump updated_ts explicitly to simulate an edit
 	// happening after creation.
 	newContent := "second content"
-	newUpdatedTs := memo.UpdatedTs + 100
-	require.NoError(t, ts.Store.UpdateMemo(ctx, &store.UpdateMemo{
-		ID:        memo.ID,
+	newUpdatedTs := note.UpdatedTs + 100
+	require.NoError(t, ts.Store.UpdateNote(ctx, &store.UpdateNote{
+		ID:        note.ID,
 		Content:   &newContent,
 		UpdatedTs: &newUpdatedTs,
 	}))
@@ -187,20 +187,20 @@ func TestGetUserStats_MemoUpdatedTimestamps(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 
-	require.Len(t, resp.MemoCreatedTimestamps, 1, "should have one created timestamp")
-	require.Len(t, resp.MemoUpdatedTimestamps, 1, "should have one updated timestamp")
+	require.Len(t, resp.NoteCreatedTimestamps, 1, "should have one created timestamp")
+	require.Len(t, resp.NoteUpdatedTimestamps, 1, "should have one updated timestamp")
 
-	require.Equal(t, memo.CreatedTs, resp.MemoCreatedTimestamps[0].AsTime().Unix())
-	require.Equal(t, newUpdatedTs, resp.MemoUpdatedTimestamps[0].AsTime().Unix())
+	require.Equal(t, note.CreatedTs, resp.NoteCreatedTimestamps[0].AsTime().Unix())
+	require.Equal(t, newUpdatedTs, resp.NoteUpdatedTimestamps[0].AsTime().Unix())
 	require.Greater(
 		t,
-		resp.MemoUpdatedTimestamps[0].AsTime().Unix(),
-		resp.MemoCreatedTimestamps[0].AsTime().Unix(),
+		resp.NoteUpdatedTimestamps[0].AsTime().Unix(),
+		resp.NoteCreatedTimestamps[0].AsTime().Unix(),
 		"updated_ts should be after created_ts after an edit",
 	)
 }
 
-func TestGetUserStats_PinnedMemoUsesCanonicalResourceName(t *testing.T) {
+func TestGetUserStats_PinnedNoteUsesCanonicalResourceName(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -208,22 +208,22 @@ func TestGetUserStats_PinnedMemoUsesCanonicalResourceName(t *testing.T) {
 	user, err := ts.CreateHostUser(ctx, "pinned-stats-user")
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
-	memo, err := ts.Store.CreateMemo(ctx, &store.Memo{
-		UID:        "pinned-stats-memo",
+	note, err := ts.Store.CreateNote(ctx, &store.Note{
+		UID:        "pinned-stats-note",
 		CreatorID:  user.ID,
 		Content:    "pinned",
 		Visibility: store.Public,
 	})
 	require.NoError(t, err)
 	pinned := true
-	require.NoError(t, ts.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memo.ID, Pinned: &pinned}))
+	require.NoError(t, ts.Store.UpdateNote(ctx, &store.UpdateNote{ID: note.ID, Pinned: &pinned}))
 
 	resp, err := ts.Service.GetUserStats(userCtx, &apipb.GetUserStatsRequest{Name: fmt.Sprintf("users/%s", user.Username)})
 	require.NoError(t, err)
-	require.Equal(t, []string{"memos/pinned-stats-memo"}, resp.PinnedMemos)
+	require.Equal(t, []string{"notes/pinned-stats-note"}, resp.PinnedNotes)
 }
 
-func TestListUserStats_FilterExcludesPrivateMemos(t *testing.T) {
+func TestListUserStats_FilterExcludesPrivateNotes(t *testing.T) {
 	ctx := context.Background()
 
 	ts := NewTestService(t)
@@ -233,20 +233,20 @@ func TestListUserStats_FilterExcludesPrivateMemos(t *testing.T) {
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
 
-	_, err = ts.Store.CreateMemo(ctx, &store.Memo{
+	_, err = ts.Store.CreateNote(ctx, &store.Note{
 		UID:        "stats-filter-public",
 		CreatorID:  user.ID,
-		Content:    "public memo",
+		Content:    "public note",
 		Visibility: store.Public,
-		Payload:    &storepb.MemoPayload{Tags: []string{"public", "public"}},
+		Payload:    &storepb.NotePayload{Tags: []string{"public", "public"}},
 	})
 	require.NoError(t, err)
-	_, err = ts.Store.CreateMemo(ctx, &store.Memo{
+	_, err = ts.Store.CreateNote(ctx, &store.Note{
 		UID:        "stats-filter-private",
 		CreatorID:  user.ID,
-		Content:    "private memo",
+		Content:    "private note",
 		Visibility: store.Private,
-		Payload:    &storepb.MemoPayload{Tags: []string{"private", "private"}},
+		Payload:    &storepb.NotePayload{Tags: []string{"private", "private"}},
 	})
 	require.NoError(t, err)
 
@@ -266,7 +266,7 @@ func TestListUserStats_FilterExcludesPrivateMemos(t *testing.T) {
 	require.NotContains(t, filteredResp.UserStats[0].TagCounts, "private")
 }
 
-func TestUserStatsUseMemoLocalAccess(t *testing.T) {
+func TestUserStatsUseNoteLocalAccess(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -302,13 +302,13 @@ func TestUserStatsUseMemoLocalAccess(t *testing.T) {
 		{uid: "stats-access-members", visibility: store.SpaceAudience, spaceID: &space.ID, tag: "space"},
 	}
 	for _, fixture := range fixtures {
-		_, err := ts.Store.CreateMemo(ctx, &store.Memo{
+		_, err := ts.Store.CreateNote(ctx, &store.Note{
 			UID:        fixture.uid,
 			CreatorID:  owner.ID,
 			Content:    fixture.tag,
 			Visibility: fixture.visibility,
 			SpaceID:    fixture.spaceID,
-			Payload:    &storepb.MemoPayload{Tags: []string{fixture.tag}},
+			Payload:    &storepb.NotePayload{Tags: []string{fixture.tag}},
 		})
 		require.NoError(t, err)
 	}
@@ -348,7 +348,7 @@ func TestUserStatsUseMemoLocalAccess(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			response, err := ts.Service.GetUserStats(test.requestCtx, &apipb.GetUserStatsRequest{Name: ownerName})
 			require.NoError(t, err)
-			require.Equal(t, int32(len(test.wantTags)), response.TotalMemoCount)
+			require.Equal(t, int32(len(test.wantTags)), response.TotalNoteCount)
 			for _, tag := range test.wantTags {
 				require.Equal(t, int32(1), response.TagCounts[tag], "expected tag %q to be visible", tag)
 			}
@@ -361,7 +361,7 @@ func TestUserStatsUseMemoLocalAccess(t *testing.T) {
 	memberStats, err := ts.Service.ListUserStats(ts.CreateUserContext(ctx, member.ID), &apipb.ListUserStatsRequest{Parent: "users/-"})
 	require.NoError(t, err)
 	require.Len(t, memberStats.UserStats, 1)
-	require.Equal(t, int32(3), memberStats.UserStats[0].TotalMemoCount)
+	require.Equal(t, int32(3), memberStats.UserStats[0].TotalNoteCount)
 	require.Contains(t, memberStats.UserStats[0].TagCounts, "space")
 	require.NotContains(t, memberStats.UserStats[0].TagCounts, "private")
 }
@@ -404,13 +404,13 @@ func TestUserStatsSpaceFilter(t *testing.T) {
 		{uid: "stats-scope-b-public", creatorID: owner.ID, visibility: store.Public, spaceID: &spaceB.ID, tag: "b-public"},
 	}
 	for _, fixture := range fixtures {
-		_, err := ts.Store.CreateMemo(ctx, &store.Memo{
+		_, err := ts.Store.CreateNote(ctx, &store.Note{
 			UID:        fixture.uid,
 			CreatorID:  fixture.creatorID,
 			Content:    fixture.tag,
 			Visibility: fixture.visibility,
 			SpaceID:    fixture.spaceID,
-			Payload:    &storepb.MemoPayload{Tags: []string{fixture.tag}},
+			Payload:    &storepb.NotePayload{Tags: []string{fixture.tag}},
 		})
 		require.NoError(t, err)
 	}
@@ -422,7 +422,7 @@ func TestUserStatsSpaceFilter(t *testing.T) {
 		Filter: fmt.Sprintf(`space == %q`, spaceAName),
 	})
 	require.NoError(t, err)
-	require.Equal(t, int32(2), ownerSpaceStats.TotalMemoCount)
+	require.Equal(t, int32(2), ownerSpaceStats.TotalNoteCount)
 	require.Contains(t, ownerSpaceStats.TagCounts, "a-members")
 	require.Contains(t, ownerSpaceStats.TagCounts, "a-private")
 	require.NotContains(t, ownerSpaceStats.TagCounts, "unassigned")
@@ -433,7 +433,7 @@ func TestUserStatsSpaceFilter(t *testing.T) {
 		Filter: `space == null`,
 	})
 	require.NoError(t, err)
-	require.Equal(t, int32(1), ownerUnassignedStats.TotalMemoCount)
+	require.Equal(t, int32(1), ownerUnassignedStats.TotalNoteCount)
 	require.Contains(t, ownerUnassignedStats.TagCounts, "unassigned")
 
 	memberSpaceStats, err := ts.Service.ListUserStats(ts.CreateUserContext(ctx, member.ID), &apipb.ListUserStatsRequest{
@@ -488,10 +488,10 @@ func TestGetUserStats_AttachmentStorage(t *testing.T) {
 	attachment := createTestImageAttachment(ownerCtx, t, ts, "owner.png")
 	createTestImageAttachment(ts.CreateUserContext(ctx, other.ID), t, ts, "other.png")
 
-	// Memo filtering must not turn account storage into a partial total.
+	// Note filtering must not turn account storage into a partial total.
 	stats, err = ts.Service.GetUserStats(ownerCtx, &apipb.GetUserStatsRequest{Name: request.Name, Filter: `content.contains("no matches")`})
 	require.NoError(t, err)
-	require.Zero(t, stats.TotalMemoCount)
+	require.Zero(t, stats.TotalNoteCount)
 	require.NotNil(t, stats.AttachmentStorageBytes)
 	require.Equal(t, attachment.Size, *stats.AttachmentStorageBytes)
 
@@ -519,8 +519,8 @@ func TestListUserStatsParent(t *testing.T) {
 	bob, err := ts.CreateRegularUser(ctx, "stats-bob")
 	require.NoError(t, err)
 	for _, user := range []*store.User{alice, bob} {
-		_, err := ts.Service.CreateMemo(ts.CreateUserContext(ctx, user.ID), &apipb.CreateMemoRequest{
-			Memo: &apipb.Memo{Content: "public memo", Visibility: apipb.Visibility_PUBLIC},
+		_, err := ts.Service.CreateNote(ts.CreateUserContext(ctx, user.ID), &apipb.CreateNoteRequest{
+			Note: &apipb.Note{Content: "public note", Visibility: apipb.Visibility_PUBLIC},
 		})
 		require.NoError(t, err)
 	}

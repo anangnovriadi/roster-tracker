@@ -66,20 +66,20 @@ func TestSSEHubClose(t *testing.T) {
 	late := hub.Subscribe()
 	_, ok := <-late.events
 	assert.False(t, ok, "late subscriber should be closed immediately")
-	hub.publishMemoChanged()
+	hub.publishNoteChanged()
 }
 
-func TestSSEHubPublishMemoChangedBroadcastsToSubscribers(t *testing.T) {
+func TestSSEHubPublishNoteChangedBroadcastsToSubscribers(t *testing.T) {
 	hub := NewSSEHub()
 	first := hub.Subscribe()
 	defer hub.Unsubscribe(first)
 	second := hub.Subscribe()
 	defer hub.Unsubscribe(second)
 
-	hub.publishMemoChanged()
+	hub.publishNoteChanged()
 
 	for _, client := range []*SSEClient{first, second} {
-		assert.Equal(t, memoChangedSSEFrame, string(mustReceive(t, client.events, time.Second)))
+		assert.Equal(t, noteChangedSSEFrame, string(mustReceive(t, client.events, time.Second)))
 	}
 }
 
@@ -95,7 +95,7 @@ func TestSSEHubPublishSpaceChangedBroadcastsDistinctFrame(t *testing.T) {
 	for _, client := range []*SSEClient{first, second} {
 		frame := string(mustReceive(t, client.events, time.Second))
 		assert.Equal(t, spaceChangedSSEFrame, frame)
-		assert.NotEqual(t, memoChangedSSEFrame, frame)
+		assert.NotEqual(t, noteChangedSSEFrame, frame)
 	}
 }
 
@@ -105,7 +105,7 @@ func TestSSEHubSlowClientIsDisconnected(t *testing.T) {
 	defer hub.Unsubscribe(slow)
 
 	for range sseClientEventBufferSize + 1 {
-		hub.publishMemoChanged()
+		hub.publishNoteChanged()
 	}
 
 	select {
@@ -133,7 +133,7 @@ func TestSSEHubConcurrentAccess(t *testing.T) {
 		wg.Go(func() {
 			for range iterations {
 				client := hub.Subscribe()
-				hub.publishMemoChanged()
+				hub.publishNoteChanged()
 				select {
 				case <-client.events:
 				default:

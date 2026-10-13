@@ -14,7 +14,7 @@ export interface ThemeOption {
   label: string;
 }
 
-const STORAGE_KEY = "memos-theme";
+const STORAGE_KEY = "notes-theme";
 const STYLE_ELEMENT_ID = "instance-theme";
 
 const THEME_CONTENT: Record<ResolvedTheme, string | null> = {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 )
 
 func TestCreatePersonalAccessTokenExpiration(t *testing.T) {
@@ -27,7 +27,7 @@ func TestCreatePersonalAccessTokenExpiration(t *testing.T) {
 			Description: "non-expiring token",
 		})
 		require.NoError(t, err)
-		require.True(t, strings.HasPrefix(response.Token, "memos_pat_"))
+		require.True(t, strings.HasPrefix(response.Token, "roster_pat_"))
 		require.Nil(t, response.PersonalAccessToken.ExpireTime)
 
 		listed, err := ts.Service.ListPersonalAccessTokens(userCtx, &apipb.ListPersonalAccessTokensRequest{Parent: parent})

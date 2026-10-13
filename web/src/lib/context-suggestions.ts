@@ -1,7 +1,7 @@
-import type { MemoFilter } from "@/contexts/MemoFilterContext";
-import type { Visibility } from "@/types/proto/api/memo_service_pb";
-import { VISIBILITY_OPTIONS } from "@/utils/memo";
-import type { MemoSuggestion, SuggestionSource } from "./memo-suggestions";
+import type { NoteFilter } from "@/contexts/NoteFilterContext";
+import type { Visibility } from "@/types/proto/api/note_service_pb";
+import { VISIBILITY_OPTIONS } from "@/utils/note";
+import type { NoteSuggestion, SuggestionSource } from "./note-suggestions";
 import { parseSuggestionExpression, readStringList, type SuggestionExpression, type SuggestionToken } from "./suggestion-expression";
 
 interface ContextConditions {
@@ -80,7 +80,7 @@ function readConditions(source: string): ContextConditions {
 }
 
 /** Checklist and audience providers share the same Boolean reader as tags. */
-export function getContextSuggestionCandidates(filters: MemoFilter[], viewFilter?: string): MemoSuggestion[] {
+export function getContextSuggestionCandidates(filters: NoteFilter[], viewFilter?: string): NoteSuggestion[] {
   const conditions = filters.flatMap<ContextConditions & { source: SuggestionSource }>((filter) => {
     if (filter.factor === "celSearch") return [{ ...readConditions(filter.value), source: "search" as const }];
     if (filter.factor === "visibility") {
@@ -90,7 +90,7 @@ export function getContextSuggestionCandidates(filters: MemoFilter[], viewFilter
     return [];
   });
   if (viewFilter) conditions.push({ ...readConditions(viewFilter), source: "view" });
-  const candidates: MemoSuggestion[] = [];
+  const candidates: NoteSuggestion[] = [];
   if (!conditions.some((condition) => condition.excludesChecklist)) {
     for (const condition of conditions) {
       if (condition.checklist) candidates.push({ id: "checklist", kind: "checklist", source: condition.source });

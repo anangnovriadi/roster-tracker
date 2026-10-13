@@ -12,14 +12,14 @@ export const ROUTES = {
   AUTH_ADMIN: "/auth/admin",
   AUTH_CALLBACK: "/auth/callback",
   NOTE: "/notes",
-  SHARED_MEMO: "/notes/shares",
+  SHARED_NOTE: "/notes/shares",
 } as const;
 
 /**
- * The page of a note. Notes are named `memos/{uid}` by the API but live under `/notes/` in
- * the app's URLs; `/memos/...` links from before the rename redirect here.
+ * The page of a note. Notes are named `notes/{uid}` by the API and live under `/notes/` in
+ * the app's URLs.
  */
-export const buildNotePath = (memoName: string): string => `${ROUTES.NOTE}/${memoName.replace(/^memos\//, "")}`;
+export const buildNotePath = (noteName: string): string => `${ROUTES.NOTE}/${noteName.replace(/^notes\//, "")}`;
 
 /** Router pattern for the calendar: month and day are optional so `/calendar` can redirect. */
 export const CALENDAR_ROUTE_PATTERN = `${ROUTES.CALENDAR}/:year?/:month?/:day?`;
@@ -27,7 +27,7 @@ export const CALENDAR_ROUTE_PATTERN = `${ROUTES.CALENDAR}/:year?/:month?/:day?`;
 export type RouteKey = keyof typeof ROUTES;
 export type RoutePath = (typeof ROUTES)[RouteKey];
 
-/** Pages that list a memo collection and carry its creator filter. */
+/** Pages that list a note collection and carry its creator filter. */
 const COLLECTION_ROUTE_PATTERNS = [ROUTES.HOME, ROUTES.EXPLORE, ROUTES.ATTACHMENTS, CALENDAR_ROUTE_PATTERN];
 
 const isCollectionPathname = (pathname: string): boolean =>
@@ -84,7 +84,7 @@ export const collectionNavigationPath = (
         (!route.isCollection || route.pathname === ROUTES.HOME ? currentUsername : undefined));
   const filter = route.isCollection ? new URLSearchParams(location.search).get("filter") : null;
   const search = filter ? new URLSearchParams({ filter }).toString() : "";
-  // A memo list without a creator is Explore; this also sends guests there from any page.
+  // A note list without a creator is Explore; this also sends guests there from any page.
   if (pathname === ROUTES.HOME) {
     const home = creator ? ROUTES.HOME : ROUTES.EXPLORE;
     return `${home}${withCollectionCreator(search, creator === currentUsername ? undefined : creator)}`;
@@ -99,8 +99,8 @@ export const getCreatorSwitchPath = (
   currentUsername?: string,
 ): string => {
   const route = resolveCollectionRoute(location.pathname);
-  const isMemoList = route.pathname === ROUTES.HOME || route.pathname === ROUTES.EXPLORE || !route.isCollection;
-  const pathname = isMemoList ? (username ? ROUTES.HOME : ROUTES.EXPLORE) : location.pathname;
-  const creator = username === currentUsername && isMemoList ? undefined : username;
+  const isNoteList = route.pathname === ROUTES.HOME || route.pathname === ROUTES.EXPLORE || !route.isCollection;
+  const pathname = isNoteList ? (username ? ROUTES.HOME : ROUTES.EXPLORE) : location.pathname;
+  const creator = username === currentUsername && isNoteList ? undefined : username;
   return `${pathname}${withCollectionCreator(location.search, creator)}${location.hash || ""}`;
 };

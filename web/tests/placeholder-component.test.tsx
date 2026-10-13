@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import Placeholder from "@/components/Placeholder";
 
 describe("<Placeholder>", () => {
-  it.each(["memo", "search", "inbox"] as const)("renders the %s scene as decorative artwork", (scene) => {
+  it.each(["note", "search", "inbox"] as const)("renders the %s scene as decorative artwork", (scene) => {
     render(<Placeholder scene={scene} message="No data found." />);
 
     const illustration = screen.getByTestId("placeholder-illustration");
@@ -14,7 +14,7 @@ describe("<Placeholder>", () => {
   });
 
   it("merges layout classes from its caller", () => {
-    const { container } = render(<Placeholder scene="memo" message="Nothing here" className="w-full" />);
+    const { container } = render(<Placeholder scene="note" message="Nothing here" className="w-full" />);
     expect(container.firstChild).toHaveClass("w-full");
   });
 });

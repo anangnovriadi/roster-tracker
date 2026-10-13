@@ -79,7 +79,7 @@ type IdentityProvider struct {
 	// Format: identity-providers/{idp}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The type of the identity provider.
-	Type IdentityProvider_Type `protobuf:"varint,2,opt,name=type,proto3,enum=memos.api.IdentityProvider_Type" json:"type,omitempty"`
+	Type IdentityProvider_Type `protobuf:"varint,2,opt,name=type,proto3,enum=roster.api.IdentityProvider_Type" json:"type,omitempty"`
 	// Required. The display title of the identity provider.
 	Title string `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	// Optional. A regular expression the user identifier must match to sign in. Empty allows every identifier.
@@ -693,45 +693,46 @@ var File_api_idp_service_proto protoreflect.FileDescriptor
 
 const file_api_idp_service_proto_rawDesc = "" +
 	"\n" +
-	"\x15api/idp_service.proto\x12\tmemos.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xfd\x02\n" +
+	"\x15api/idp_service.proto\x12\n" +
+	"roster.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x80\x03\n" +
 	"\x10IdentityProvider\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x129\n" +
-	"\x04type\x18\x02 \x01(\x0e2 .memos.api.IdentityProvider.TypeB\x03\xe0A\x02R\x04type\x12\x19\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12:\n" +
+	"\x04type\x18\x02 \x01(\x0e2!.roster.api.IdentityProvider.TypeB\x03\xe0A\x02R\x04type\x12\x19\n" +
 	"\x05title\x18\x03 \x01(\tB\x03\xe0A\x02R\x05title\x120\n" +
-	"\x11identifier_filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x10identifierFilter\x12>\n" +
-	"\x06config\x18\x05 \x01(\v2!.memos.api.IdentityProviderConfigB\x03\xe0A\x02R\x06config\"(\n" +
+	"\x11identifier_filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x10identifierFilter\x12?\n" +
+	"\x06config\x18\x05 \x01(\v2\".roster.api.IdentityProviderConfigB\x03\xe0A\x02R\x06config\"(\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06OAUTH2\x10\x01:^\xeaA[\n" +
-	"\x1amemos.api/IdentityProvider\x12\x18identity-providers/{idp}*\x11identityProviders2\x10identityProvider\"\x1e\n" +
-	"\x1cListIdentityProvidersRequest\"k\n" +
-	"\x1dListIdentityProvidersResponse\x12J\n" +
-	"\x12identity_providers\x18\x01 \x03(\v2\x1b.memos.api.IdentityProviderR\x11identityProviders\"T\n" +
-	"\x1aGetIdentityProviderRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1amemos.api/IdentityProviderR\x04name\"\xa5\x01\n" +
-	"\x1dCreateIdentityProviderRequest\x12M\n" +
-	"\x11identity_provider\x18\x01 \x01(\v2\x1b.memos.api.IdentityProviderB\x03\xe0A\x02R\x10identityProvider\x125\n" +
-	"\x14identity_provider_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x12identityProviderId\"\xb0\x01\n" +
-	"\x1dUpdateIdentityProviderRequest\x12M\n" +
-	"\x11identity_provider\x18\x01 \x01(\v2\x1b.memos.api.IdentityProviderB\x03\xe0A\x02R\x10identityProvider\x12@\n" +
+	"\x06OAUTH2\x10\x01:_\xeaA\\\n" +
+	"\x1broster.api/IdentityProvider\x12\x18identity-providers/{idp}*\x11identityProviders2\x10identityProvider\"\x1e\n" +
+	"\x1cListIdentityProvidersRequest\"l\n" +
+	"\x1dListIdentityProvidersResponse\x12K\n" +
+	"\x12identity_providers\x18\x01 \x03(\v2\x1c.roster.api.IdentityProviderR\x11identityProviders\"U\n" +
+	"\x1aGetIdentityProviderRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"\x1broster.api/IdentityProviderR\x04name\"\xa6\x01\n" +
+	"\x1dCreateIdentityProviderRequest\x12N\n" +
+	"\x11identity_provider\x18\x01 \x01(\v2\x1c.roster.api.IdentityProviderB\x03\xe0A\x02R\x10identityProvider\x125\n" +
+	"\x14identity_provider_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x12identityProviderId\"\xb1\x01\n" +
+	"\x1dUpdateIdentityProviderRequest\x12N\n" +
+	"\x11identity_provider\x18\x01 \x01(\v2\x1c.roster.api.IdentityProviderB\x03\xe0A\x02R\x10identityProvider\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"W\n" +
-	"\x1dDeleteIdentityProviderRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1amemos.api/IdentityProviderR\x04name\"b\n" +
-	"\x16IdentityProviderConfig\x12>\n" +
-	"\roauth2_config\x18\x01 \x01(\v2\x17.memos.api.OAuth2ConfigH\x00R\foauth2ConfigB\b\n" +
-	"\x06config\"\x82\x02\n" +
+	"updateMask\"X\n" +
+	"\x1dDeleteIdentityProviderRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"\x1broster.api/IdentityProviderR\x04name\"c\n" +
+	"\x16IdentityProviderConfig\x12?\n" +
+	"\roauth2_config\x18\x01 \x01(\v2\x18.roster.api.OAuth2ConfigH\x00R\foauth2ConfigB\b\n" +
+	"\x06config\"\x83\x02\n" +
 	"\fOAuth2Config\x12\x1b\n" +
 	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12#\n" +
 	"\rclient_secret\x18\x02 \x01(\tR\fclientSecret\x12\x19\n" +
 	"\bauth_url\x18\x03 \x01(\tR\aauthUrl\x12\x1b\n" +
 	"\ttoken_url\x18\x04 \x01(\tR\btokenUrl\x12\"\n" +
 	"\ruser_info_url\x18\x05 \x01(\tR\vuserInfoUrl\x12\x16\n" +
-	"\x06scopes\x18\x06 \x03(\tR\x06scopes\x12<\n" +
-	"\rfield_mapping\x18\a \x01(\v2\x17.memos.api.FieldMappingR\ffieldMapping\"\x86\x01\n" +
+	"\x06scopes\x18\x06 \x03(\tR\x06scopes\x12=\n" +
+	"\rfield_mapping\x18\a \x01(\v2\x18.roster.api.FieldMappingR\ffieldMapping\"\x86\x01\n" +
 	"\fFieldMapping\x12\x1e\n" +
 	"\n" +
 	"identifier\x18\x01 \x01(\tR\n" +
@@ -739,15 +740,16 @@ const file_api_idp_service_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1d\n" +
 	"\n" +
-	"avatar_url\x18\x04 \x01(\tR\tavatarUrl2\xbd\x06\n" +
-	"\x17IdentityProviderService\x12\x8b\x01\n" +
-	"\x15ListIdentityProviders\x12'.memos.api.ListIdentityProvidersRequest\x1a(.memos.api.ListIdentityProvidersResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/api/identity-providers\x12\x8a\x01\n" +
-	"\x13GetIdentityProvider\x12%.memos.api.GetIdentityProviderRequest\x1a\x1b.memos.api.IdentityProvider\"/\xdaA\x04name\x82\xd3\xe4\x93\x02\"\x12 /api/{name=identity-providers/*}\x12\xa7\x01\n" +
-	"\x16CreateIdentityProvider\x12(.memos.api.CreateIdentityProviderRequest\x1a\x1b.memos.api.IdentityProvider\"F\xdaA\x11identity_provider\x82\xd3\xe4\x93\x02,:\x11identity_provider\"\x17/api/identity-providers\x12\xce\x01\n" +
-	"\x16UpdateIdentityProvider\x12(.memos.api.UpdateIdentityProviderRequest\x1a\x1b.memos.api.IdentityProvider\"m\xdaA\x1didentity_provider,update_mask\x82\xd3\xe4\x93\x02G:\x11identity_provider22/api/{identity_provider.name=identity-providers/*}\x12\x8b\x01\n" +
-	"\x16DeleteIdentityProvider\x12(.memos.api.DeleteIdentityProviderRequest\x1a\x16.google.protobuf.Empty\"/\xdaA\x04name\x82\xd3\xe4\x93\x02\"* /api/{name=identity-providers/*}B\x8e\x01\n" +
-	"\rcom.memos.apiB\x0fIdpServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
-	"Memos::Apib\x06proto3"
+	"avatar_url\x18\x04 \x01(\tR\tavatarUrl2\xc6\x06\n" +
+	"\x17IdentityProviderService\x12\x8d\x01\n" +
+	"\x15ListIdentityProviders\x12(.roster.api.ListIdentityProvidersRequest\x1a).roster.api.ListIdentityProvidersResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/api/identity-providers\x12\x8c\x01\n" +
+	"\x13GetIdentityProvider\x12&.roster.api.GetIdentityProviderRequest\x1a\x1c.roster.api.IdentityProvider\"/\xdaA\x04name\x82\xd3\xe4\x93\x02\"\x12 /api/{name=identity-providers/*}\x12\xa9\x01\n" +
+	"\x16CreateIdentityProvider\x12).roster.api.CreateIdentityProviderRequest\x1a\x1c.roster.api.IdentityProvider\"F\xdaA\x11identity_provider\x82\xd3\xe4\x93\x02,:\x11identity_provider\"\x17/api/identity-providers\x12\xd0\x01\n" +
+	"\x16UpdateIdentityProvider\x12).roster.api.UpdateIdentityProviderRequest\x1a\x1c.roster.api.IdentityProvider\"m\xdaA\x1didentity_provider,update_mask\x82\xd3\xe4\x93\x02G:\x11identity_provider22/api/{identity_provider.name=identity-providers/*}\x12\x8c\x01\n" +
+	"\x16DeleteIdentityProvider\x12).roster.api.DeleteIdentityProviderRequest\x1a\x16.google.protobuf.Empty\"/\xdaA\x04name\x82\xd3\xe4\x93\x02\"* /api/{name=identity-providers/*}B\xa1\x01\n" +
+	"\x0ecom.roster.apiB\x0fIdpServiceProtoP\x01Z5github.com/anangnovriadi/roster-tracker/proto/gen/api\xa2\x02\x03RAX\xaa\x02\n" +
+	"Roster.Api\xca\x02\n" +
+	"Roster\\Api\xe2\x02\x16Roster\\Api\\GPBMetadata\xea\x02\vRoster::Apib\x06proto3"
 
 var (
 	file_api_idp_service_proto_rawDescOnce sync.Once
@@ -764,39 +766,39 @@ func file_api_idp_service_proto_rawDescGZIP() []byte {
 var file_api_idp_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_api_idp_service_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_api_idp_service_proto_goTypes = []any{
-	(IdentityProvider_Type)(0),            // 0: memos.api.IdentityProvider.Type
-	(*IdentityProvider)(nil),              // 1: memos.api.IdentityProvider
-	(*ListIdentityProvidersRequest)(nil),  // 2: memos.api.ListIdentityProvidersRequest
-	(*ListIdentityProvidersResponse)(nil), // 3: memos.api.ListIdentityProvidersResponse
-	(*GetIdentityProviderRequest)(nil),    // 4: memos.api.GetIdentityProviderRequest
-	(*CreateIdentityProviderRequest)(nil), // 5: memos.api.CreateIdentityProviderRequest
-	(*UpdateIdentityProviderRequest)(nil), // 6: memos.api.UpdateIdentityProviderRequest
-	(*DeleteIdentityProviderRequest)(nil), // 7: memos.api.DeleteIdentityProviderRequest
-	(*IdentityProviderConfig)(nil),        // 8: memos.api.IdentityProviderConfig
-	(*OAuth2Config)(nil),                  // 9: memos.api.OAuth2Config
-	(*FieldMapping)(nil),                  // 10: memos.api.FieldMapping
+	(IdentityProvider_Type)(0),            // 0: roster.api.IdentityProvider.Type
+	(*IdentityProvider)(nil),              // 1: roster.api.IdentityProvider
+	(*ListIdentityProvidersRequest)(nil),  // 2: roster.api.ListIdentityProvidersRequest
+	(*ListIdentityProvidersResponse)(nil), // 3: roster.api.ListIdentityProvidersResponse
+	(*GetIdentityProviderRequest)(nil),    // 4: roster.api.GetIdentityProviderRequest
+	(*CreateIdentityProviderRequest)(nil), // 5: roster.api.CreateIdentityProviderRequest
+	(*UpdateIdentityProviderRequest)(nil), // 6: roster.api.UpdateIdentityProviderRequest
+	(*DeleteIdentityProviderRequest)(nil), // 7: roster.api.DeleteIdentityProviderRequest
+	(*IdentityProviderConfig)(nil),        // 8: roster.api.IdentityProviderConfig
+	(*OAuth2Config)(nil),                  // 9: roster.api.OAuth2Config
+	(*FieldMapping)(nil),                  // 10: roster.api.FieldMapping
 	(*fieldmaskpb.FieldMask)(nil),         // 11: google.protobuf.FieldMask
 	(*emptypb.Empty)(nil),                 // 12: google.protobuf.Empty
 }
 var file_api_idp_service_proto_depIdxs = []int32{
-	0,  // 0: memos.api.IdentityProvider.type:type_name -> memos.api.IdentityProvider.Type
-	8,  // 1: memos.api.IdentityProvider.config:type_name -> memos.api.IdentityProviderConfig
-	1,  // 2: memos.api.ListIdentityProvidersResponse.identity_providers:type_name -> memos.api.IdentityProvider
-	1,  // 3: memos.api.CreateIdentityProviderRequest.identity_provider:type_name -> memos.api.IdentityProvider
-	1,  // 4: memos.api.UpdateIdentityProviderRequest.identity_provider:type_name -> memos.api.IdentityProvider
-	11, // 5: memos.api.UpdateIdentityProviderRequest.update_mask:type_name -> google.protobuf.FieldMask
-	9,  // 6: memos.api.IdentityProviderConfig.oauth2_config:type_name -> memos.api.OAuth2Config
-	10, // 7: memos.api.OAuth2Config.field_mapping:type_name -> memos.api.FieldMapping
-	2,  // 8: memos.api.IdentityProviderService.ListIdentityProviders:input_type -> memos.api.ListIdentityProvidersRequest
-	4,  // 9: memos.api.IdentityProviderService.GetIdentityProvider:input_type -> memos.api.GetIdentityProviderRequest
-	5,  // 10: memos.api.IdentityProviderService.CreateIdentityProvider:input_type -> memos.api.CreateIdentityProviderRequest
-	6,  // 11: memos.api.IdentityProviderService.UpdateIdentityProvider:input_type -> memos.api.UpdateIdentityProviderRequest
-	7,  // 12: memos.api.IdentityProviderService.DeleteIdentityProvider:input_type -> memos.api.DeleteIdentityProviderRequest
-	3,  // 13: memos.api.IdentityProviderService.ListIdentityProviders:output_type -> memos.api.ListIdentityProvidersResponse
-	1,  // 14: memos.api.IdentityProviderService.GetIdentityProvider:output_type -> memos.api.IdentityProvider
-	1,  // 15: memos.api.IdentityProviderService.CreateIdentityProvider:output_type -> memos.api.IdentityProvider
-	1,  // 16: memos.api.IdentityProviderService.UpdateIdentityProvider:output_type -> memos.api.IdentityProvider
-	12, // 17: memos.api.IdentityProviderService.DeleteIdentityProvider:output_type -> google.protobuf.Empty
+	0,  // 0: roster.api.IdentityProvider.type:type_name -> roster.api.IdentityProvider.Type
+	8,  // 1: roster.api.IdentityProvider.config:type_name -> roster.api.IdentityProviderConfig
+	1,  // 2: roster.api.ListIdentityProvidersResponse.identity_providers:type_name -> roster.api.IdentityProvider
+	1,  // 3: roster.api.CreateIdentityProviderRequest.identity_provider:type_name -> roster.api.IdentityProvider
+	1,  // 4: roster.api.UpdateIdentityProviderRequest.identity_provider:type_name -> roster.api.IdentityProvider
+	11, // 5: roster.api.UpdateIdentityProviderRequest.update_mask:type_name -> google.protobuf.FieldMask
+	9,  // 6: roster.api.IdentityProviderConfig.oauth2_config:type_name -> roster.api.OAuth2Config
+	10, // 7: roster.api.OAuth2Config.field_mapping:type_name -> roster.api.FieldMapping
+	2,  // 8: roster.api.IdentityProviderService.ListIdentityProviders:input_type -> roster.api.ListIdentityProvidersRequest
+	4,  // 9: roster.api.IdentityProviderService.GetIdentityProvider:input_type -> roster.api.GetIdentityProviderRequest
+	5,  // 10: roster.api.IdentityProviderService.CreateIdentityProvider:input_type -> roster.api.CreateIdentityProviderRequest
+	6,  // 11: roster.api.IdentityProviderService.UpdateIdentityProvider:input_type -> roster.api.UpdateIdentityProviderRequest
+	7,  // 12: roster.api.IdentityProviderService.DeleteIdentityProvider:input_type -> roster.api.DeleteIdentityProviderRequest
+	3,  // 13: roster.api.IdentityProviderService.ListIdentityProviders:output_type -> roster.api.ListIdentityProvidersResponse
+	1,  // 14: roster.api.IdentityProviderService.GetIdentityProvider:output_type -> roster.api.IdentityProvider
+	1,  // 15: roster.api.IdentityProviderService.CreateIdentityProvider:output_type -> roster.api.IdentityProvider
+	1,  // 16: roster.api.IdentityProviderService.UpdateIdentityProvider:output_type -> roster.api.IdentityProvider
+	12, // 17: roster.api.IdentityProviderService.DeleteIdentityProvider:output_type -> google.protobuf.Empty
 	13, // [13:18] is the sub-list for method output_type
 	8,  // [8:13] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name

@@ -30,13 +30,13 @@ describe("guest theme preferences", () => {
     dark = true;
     changes.dispatchEvent(new Event("change"));
     expect(document.documentElement).toHaveAttribute("data-theme", "default");
-    expect(localStorage.getItem("memos-theme")).toBe("default");
+    expect(localStorage.getItem("notes-theme")).toBe("default");
 
     loadTheme("system");
     expect(document.documentElement).toHaveAttribute("data-theme", "default-dark");
     dark = false;
     changes.dispatchEvent(new Event("change"));
     expect(document.documentElement).toHaveAttribute("data-theme", "default");
-    expect(localStorage.getItem("memos-theme")).toBe("system");
+    expect(localStorage.getItem("notes-theme")).toBe("system");
   });
 });

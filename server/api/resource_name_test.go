@@ -12,11 +12,11 @@ func TestValidateAndGenerateUIDValidatesUserProvidedResourceIDs(t *testing.T) {
 		provided  string
 		wantError bool
 	}{
-		{name: "lowercase", provided: "memo-1"},
+		{name: "lowercase", provided: "note-1"},
 		{name: "UUID", provided: "21ec98aa-9a8f-458c-a2a3-c7dc69b6f591"},
 		{name: "maximum length", provided: "a" + strings.Repeat("b", 35)},
-		{name: "digit first", provided: "1-memo"},
-		{name: "uppercase", provided: "Memo"},
+		{name: "digit first", provided: "1-note"},
+		{name: "uppercase", provided: "Note"},
 		{name: "too long", provided: "a" + strings.Repeat("b", 36), wantError: true},
 	}
 
@@ -78,7 +78,7 @@ func TestExtractSpaceUIDFromName(t *testing.T) {
 	if uid != "team-notes" {
 		t.Fatalf("ExtractSpaceUIDFromName() = %q, want %q", uid, "team-notes")
 	}
-	for _, name := range []string{"", "spaces/", "memos/team-notes", "spaces/team/members/alice"} {
+	for _, name := range []string{"", "spaces/", "notes/team-notes", "spaces/team/members/alice"} {
 		if _, err := ExtractSpaceUIDFromName(name); err == nil {
 			t.Errorf("ExtractSpaceUIDFromName(%q) succeeded, want error", name)
 		}

@@ -150,18 +150,18 @@ export function findAnchorTarget(root: ParentNode, fragment: string): Element | 
   return null;
 }
 
-/** Find the rendered content container for a specific memo resource. */
-export function findMemoContentRoot(root: ParentNode, memoName: string): Element | null {
-  for (const memoContent of root.querySelectorAll("[data-memo-content]")) {
-    if (memoContent.getAttribute("data-memo-name") === memoName) return memoContent;
+/** Find the rendered content container for a specific note resource. */
+export function findNoteContentRoot(root: ParentNode, noteName: string): Element | null {
+  for (const noteContent of root.querySelectorAll("[data-note-content]")) {
+    if (noteContent.getAttribute("data-note-name") === noteName) return noteContent;
   }
   return null;
 }
 
-/** Resolve a fragment inside one memo before falling back to page-level targets such as comments. */
-export function findMemoAnchorTarget(root: ParentNode, memoName: string, fragment: string): Element | null {
-  const memoContent = findMemoContentRoot(root, memoName);
-  return (memoContent && findAnchorTarget(memoContent, fragment)) ?? findAnchorTarget(root, fragment);
+/** Resolve a fragment inside one note before falling back to page-level targets such as comments. */
+export function findNoteAnchorTarget(root: ParentNode, noteName: string, fragment: string): Element | null {
+  const noteContent = findNoteContentRoot(root, noteName);
+  return (noteContent && findAnchorTarget(noteContent, fragment)) ?? findAnchorTarget(root, fragment);
 }
 
 /** Create a document-scoped generator that prevents generated suffixes from colliding with reserved or literal slugs. */

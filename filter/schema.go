@@ -87,14 +87,14 @@ func (s Schema) ResolveAlias(name string) (Field, bool) {
 	return field, true
 }
 
-// NewSchema constructs the memo filter schema and CEL environment.
+// NewSchema constructs the note filter schema and CEL environment.
 func NewSchema() Schema {
 	fields := map[string]Field{
 		"content": {
 			Name:             "content",
 			Kind:             FieldKindScalar,
 			Type:             FieldTypeString,
-			Column:           Column{Table: "memo", Name: "content"},
+			Column:           Column{Table: "note", Name: "content"},
 			SupportsContains: true,
 			Expressions:      map[DialectName]string{},
 		},
@@ -102,7 +102,7 @@ func NewSchema() Schema {
 			Name:   "creator",
 			Kind:   FieldKindScalar,
 			Type:   FieldTypeString,
-			Column: Column{Table: "memo_creator", Name: "username"},
+			Column: Column{Table: "note_creator", Name: "username"},
 			Expressions: map[DialectName]string{
 				DialectSQLite:   "('users/' || %s)",
 				DialectMySQL:    "CONCAT('users/', %s)",
@@ -117,7 +117,7 @@ func NewSchema() Schema {
 			Name:        "creator_id",
 			Kind:        FieldKindScalar,
 			Type:        FieldTypeInt,
-			Column:      Column{Table: "memo", Name: "creator_id"},
+			Column:      Column{Table: "note", Name: "creator_id"},
 			Expressions: map[DialectName]string{},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,
@@ -128,7 +128,7 @@ func NewSchema() Schema {
 			Name:   "created_ts",
 			Kind:   FieldKindScalar,
 			Type:   FieldTypeTimestamp,
-			Column: Column{Table: "memo", Name: "created_ts"},
+			Column: Column{Table: "note", Name: "created_ts"},
 			Expressions: map[DialectName]string{
 				// MySQL stores created_ts as TIMESTAMP, needs conversion to epoch
 				DialectMySQL: "UNIX_TIMESTAMP(%s)",
@@ -141,7 +141,7 @@ func NewSchema() Schema {
 			Name:   "updated_ts",
 			Kind:   FieldKindScalar,
 			Type:   FieldTypeTimestamp,
-			Column: Column{Table: "memo", Name: "updated_ts"},
+			Column: Column{Table: "note", Name: "updated_ts"},
 			Expressions: map[DialectName]string{
 				// MySQL stores updated_ts as TIMESTAMP, needs conversion to epoch
 				DialectMySQL: "UNIX_TIMESTAMP(%s)",
@@ -154,7 +154,7 @@ func NewSchema() Schema {
 			Name:        "pinned",
 			Kind:        FieldKindBoolColumn,
 			Type:        FieldTypeBool,
-			Column:      Column{Table: "memo", Name: "pinned"},
+			Column:      Column{Table: "note", Name: "pinned"},
 			Expressions: map[DialectName]string{},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,
@@ -165,7 +165,7 @@ func NewSchema() Schema {
 			Name:        "visibility",
 			Kind:        FieldKindScalar,
 			Type:        FieldTypeString,
-			Column:      Column{Table: "memo", Name: "visibility"},
+			Column:      Column{Table: "note", Name: "visibility"},
 			Expressions: map[DialectName]string{},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,
@@ -176,11 +176,11 @@ func NewSchema() Schema {
 			Name:   "space",
 			Kind:   FieldKindScalar,
 			Type:   FieldTypeString,
-			Column: Column{Table: "memo_space", Name: "uid"},
+			Column: Column{Table: "note_space", Name: "uid"},
 			Expressions: map[DialectName]string{
-				DialectSQLite:   "CASE WHEN `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
-				DialectMySQL:    "CASE WHEN `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE CONCAT('spaces/', %[1]s) END",
-				DialectPostgres: "CASE WHEN memo.space_id IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
+				DialectSQLite:   "CASE WHEN `note`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
+				DialectMySQL:    "CASE WHEN `note`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE CONCAT('spaces/', %[1]s) END",
+				DialectPostgres: "CASE WHEN note.space_id IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
 			},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq: true,
@@ -190,7 +190,7 @@ func NewSchema() Schema {
 			Name:     "tags",
 			Kind:     FieldKindJSONList,
 			Type:     FieldTypeString,
-			Column:   Column{Table: "memo", Name: "payload"},
+			Column:   Column{Table: "note", Name: "payload"},
 			JSONPath: []string{"tags"},
 		},
 		"tag": {
@@ -203,7 +203,7 @@ func NewSchema() Schema {
 			Name:     "has_task_list",
 			Kind:     FieldKindJSONBool,
 			Type:     FieldTypeBool,
-			Column:   Column{Table: "memo", Name: "payload"},
+			Column:   Column{Table: "note", Name: "payload"},
 			JSONPath: []string{"property", "hasTaskList"},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,
@@ -214,7 +214,7 @@ func NewSchema() Schema {
 			Name:     "has_link",
 			Kind:     FieldKindJSONBool,
 			Type:     FieldTypeBool,
-			Column:   Column{Table: "memo", Name: "payload"},
+			Column:   Column{Table: "note", Name: "payload"},
 			JSONPath: []string{"property", "hasLink"},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,
@@ -225,7 +225,7 @@ func NewSchema() Schema {
 			Name:     "has_code",
 			Kind:     FieldKindJSONBool,
 			Type:     FieldTypeBool,
-			Column:   Column{Table: "memo", Name: "payload"},
+			Column:   Column{Table: "note", Name: "payload"},
 			JSONPath: []string{"property", "hasCode"},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,
@@ -236,7 +236,7 @@ func NewSchema() Schema {
 			Name:     "has_incomplete_tasks",
 			Kind:     FieldKindJSONBool,
 			Type:     FieldTypeBool,
-			Column:   Column{Table: "memo", Name: "payload"},
+			Column:   Column{Table: "note", Name: "payload"},
 			JSONPath: []string{"property", "hasIncompleteTasks"},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,
@@ -247,7 +247,7 @@ func NewSchema() Schema {
 			Name:     "has_location",
 			Kind:     FieldKindJSONExists,
 			Type:     FieldTypeBool,
-			Column:   Column{Table: "memo", Name: "payload"},
+			Column:   Column{Table: "note", Name: "payload"},
 			JSONPath: []string{"location"},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,
@@ -266,7 +266,7 @@ func NewSchema() Schema {
 		cel.Variable("tag", cel.StringType),
 		cel.Variable("tags", cel.ListType(cel.StringType)),
 		cel.Variable("visibility", cel.StringType),
-		// Dyn permits the explicit null comparison used for memos without a space.
+		// Dyn permits the explicit null comparison used for notes without a space.
 		cel.Variable("space", cel.DynType),
 		cel.Variable("has_task_list", cel.BoolType),
 		cel.Variable("has_link", cel.BoolType),
@@ -279,7 +279,7 @@ func NewSchema() Schema {
 	}
 
 	return Schema{
-		Name:       "memo",
+		Name:       "note",
 		Fields:     fields,
 		EnvOptions: envOptions,
 	}
@@ -292,11 +292,11 @@ func NewAttachmentSchema() Schema {
 			Name:   "creator",
 			Kind:   FieldKindScalar,
 			Type:   FieldTypeString,
-			Column: Column{Table: "memo", Name: "creator_id"},
+			Column: Column{Table: "note", Name: "creator_id"},
 			Expressions: map[DialectName]string{
-				DialectSQLite:   "('users/' || (SELECT username FROM user WHERE id = CASE WHEN attachment.memo_id IS NULL THEN attachment.creator_id ELSE %[1]s END))",
-				DialectMySQL:    "CONCAT('users/', (SELECT username FROM `user` WHERE id = CASE WHEN `attachment`.`memo_id` IS NULL THEN `attachment`.`creator_id` ELSE %[1]s END))",
-				DialectPostgres: "('users/' || (SELECT username FROM \"user\" WHERE id = CASE WHEN attachment.memo_id IS NULL THEN attachment.creator_id ELSE %[1]s END))",
+				DialectSQLite:   "('users/' || (SELECT username FROM user WHERE id = CASE WHEN attachment.note_id IS NULL THEN attachment.creator_id ELSE %[1]s END))",
+				DialectMySQL:    "CONCAT('users/', (SELECT username FROM `user` WHERE id = CASE WHEN `attachment`.`note_id` IS NULL THEN `attachment`.`creator_id` ELSE %[1]s END))",
+				DialectPostgres: "('users/' || (SELECT username FROM \"user\" WHERE id = CASE WHEN attachment.note_id IS NULL THEN attachment.creator_id ELSE %[1]s END))",
 			},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq: true,
@@ -331,11 +331,11 @@ func NewAttachmentSchema() Schema {
 				DialectSQLite:   "%s",
 			},
 		},
-		"memo_id": {
-			Name:        "memo_id",
+		"note_id": {
+			Name:        "note_id",
 			Kind:        FieldKindScalar,
 			Type:        FieldTypeInt,
-			Column:      Column{Table: "attachment", Name: "memo_id"},
+			Column:      Column{Table: "attachment", Name: "note_id"},
 			Expressions: map[DialectName]string{},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,
@@ -348,9 +348,9 @@ func NewAttachmentSchema() Schema {
 			Type:   FieldTypeString,
 			Column: Column{Table: "attachment_space", Name: "uid"},
 			Expressions: map[DialectName]string{
-				DialectSQLite:   "CASE WHEN `attachment`.`memo_id` IS NULL OR `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
-				DialectMySQL:    "CASE WHEN `attachment`.`memo_id` IS NULL OR `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE CONCAT('spaces/', %[1]s) END",
-				DialectPostgres: "CASE WHEN attachment.memo_id IS NULL OR memo.space_id IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
+				DialectSQLite:   "CASE WHEN `attachment`.`note_id` IS NULL OR `note`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
+				DialectMySQL:    "CASE WHEN `attachment`.`note_id` IS NULL OR `note`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE CONCAT('spaces/', %[1]s) END",
+				DialectPostgres: "CASE WHEN attachment.note_id IS NULL OR note.space_id IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
 			},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq: true,
@@ -363,7 +363,7 @@ func NewAttachmentSchema() Schema {
 		cel.Variable("filename", cel.StringType),
 		cel.Variable("mime_type", cel.StringType),
 		cel.Variable("create_time", cel.TimestampType),
-		cel.Variable("memo_id", cel.AnyType),
+		cel.Variable("note_id", cel.AnyType),
 		cel.Variable("space", cel.DynType),
 		cel.Variable("now", cel.TimestampType),
 		cel.ASTValidators(cel.ValidateRegexLiterals()),

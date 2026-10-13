@@ -703,7 +703,7 @@ func foldNowAccessor(accessor string, now time.Time) int64 {
 // buildSetCondition desugars ext.Sets() operations over a JSON list field into
 // existing IR: membership reduces to ElementInCondition, and equivalence adds a
 // length check. This relies on the list field being a set (no duplicates), which
-// holds for memo tags.
+// holds for note tags.
 func buildSetCondition(call *exprv1.Expr_Call, pc parseContext) (Condition, error) {
 	if len(call.Args) != 2 {
 		return nil, errors.Errorf("%s expects two arguments", call.Function)

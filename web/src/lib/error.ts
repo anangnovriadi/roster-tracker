@@ -93,8 +93,8 @@ export function getQuotaExceededMessage(error: unknown): string | undefined {
   const limit = Number(info.metadata.limit ?? "");
   const usage = Number(info.metadata.usage ?? "");
   switch (info.metadata.metric) {
-    case "MEMOS":
-      return `You have reached your limit of ${limit} memos. Delete memos to create new ones.`;
+    case "NOTES":
+      return `You have reached your limit of ${limit} notes. Delete notes to create new ones.`;
     case "STORAGE_BYTES":
       return `This upload would exceed your storage limit of ${formatFileSize(limit)}. You are using ${formatFileSize(usage)}.`;
     case "UPLOAD_BYTES":

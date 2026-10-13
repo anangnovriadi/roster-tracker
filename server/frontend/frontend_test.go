@@ -9,10 +9,10 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/internal/profile"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
-	teststore "github.com/usememos/memos/store/test"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
+	teststore "github.com/anangnovriadi/roster-tracker/store/test"
 )
 
 func TestFrontendService_CacheHeaderRules(t *testing.T) {
@@ -39,7 +39,7 @@ func TestFrontendService_CacheHeaderRules(t *testing.T) {
 		},
 		{
 			name:         "spa fallback html is not stored",
-			path:         "/notes/publicmemo",
+			path:         "/notes/publicnote",
 			cacheControl: frontendHTMLCacheControl,
 			pragma:       "no-cache",
 			expires:      "0",
@@ -102,7 +102,7 @@ func TestFrontendService_StaticCacheHeaders(t *testing.T) {
 		},
 		{
 			name:         "spa fallback html is not stored",
-			path:         "/notes/publicmemo",
+			path:         "/notes/publicnote",
 			cacheControl: frontendHTMLCacheControl,
 			pragma:       "no-cache",
 			expires:      "0",
@@ -160,7 +160,7 @@ func TestFrontendService_RobotsTXT(t *testing.T) {
 	testStore := teststore.NewTestingStore(ctx, t)
 	setFrontendAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 	profile := &profile.Profile{
-		InstanceURL: "https://demo.usememos.com/",
+		InstanceURL: "https://demo.example.com/",
 	}
 
 	e := echo.New()
@@ -172,7 +172,7 @@ func TestFrontendService_RobotsTXT(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Equal(t, "text/plain; charset=UTF-8", rec.Header().Get("Content-Type"))
-	require.Equal(t, "User-agent: *\nAllow: /\nHost: https://demo.usememos.com\nSitemap: https://demo.usememos.com/sitemap.xml", rec.Body.String())
+	require.Equal(t, "User-agent: *\nAllow: /\nHost: https://demo.example.com\nSitemap: https://demo.example.com/sitemap.xml", rec.Body.String())
 }
 
 func TestFrontendService_SitemapXML(t *testing.T) {
@@ -180,7 +180,7 @@ func TestFrontendService_SitemapXML(t *testing.T) {
 	testStore := teststore.NewTestingStore(ctx, t)
 	setFrontendAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 	profile := &profile.Profile{
-		InstanceURL: "https://demo.usememos.com",
+		InstanceURL: "https://demo.example.com",
 	}
 
 	user, err := testStore.CreateUser(ctx, &store.User{
@@ -190,18 +190,18 @@ func TestFrontendService_SitemapXML(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = testStore.CreateMemo(ctx, &store.Memo{
-		UID:        "publicmemo",
+	_, err = testStore.CreateNote(ctx, &store.Note{
+		UID:        "publicnote",
 		CreatorID:  user.ID,
-		Content:    "public memo",
+		Content:    "public note",
 		Visibility: store.Public,
 	})
 	require.NoError(t, err)
 
-	_, err = testStore.CreateMemo(ctx, &store.Memo{
-		UID:        "privatememo",
+	_, err = testStore.CreateNote(ctx, &store.Note{
+		UID:        "privatenote",
 		CreatorID:  user.ID,
-		Content:    "private memo",
+		Content:    "private note",
 		Visibility: store.Private,
 	})
 	require.NoError(t, err)
@@ -216,8 +216,8 @@ func TestFrontendService_SitemapXML(t *testing.T) {
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Contains(t, rec.Header().Get("Content-Type"), "application/xml")
 	require.Equal(t, "public, no-cache", rec.Header().Get(echo.HeaderCacheControl))
-	require.Contains(t, rec.Body.String(), `<loc>https://demo.usememos.com/notes/publicmemo</loc>`)
-	require.NotContains(t, rec.Body.String(), "privatememo")
+	require.Contains(t, rec.Body.String(), `<loc>https://demo.example.com/notes/publicnote</loc>`)
+	require.NotContains(t, rec.Body.String(), "privatenote")
 }
 
 func TestFrontendService_SitemapRoutesRequireInstanceURL(t *testing.T) {

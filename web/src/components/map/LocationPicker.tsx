@@ -210,7 +210,7 @@ const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnL
   return (
     <div
       className={cn(
-        "memo-location-map relative isolate h-72 w-full overflow-hidden rounded-xl border border-border bg-background shadow-sm",
+        "note-location-map relative isolate h-72 w-full overflow-hidden rounded-xl border border-border bg-background shadow-sm",
         className,
       )}
     >

@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestInstanceSettingV1Store(t *testing.T) {
@@ -241,24 +241,24 @@ func TestCreateInstanceSettingIfNotExistsIsFirstWriterWins(t *testing.T) {
 	require.Equal(t, winner, settings[0].Value, "a later insert attempt must not overwrite the persisted value")
 }
 
-func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
+func TestInstanceSettingNoteRelatedSetting(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
-	// Get default memo related setting (should have defaults)
-	memoSetting, err := ts.GetInstanceMemoRelatedSetting(ctx)
+	// Get default note related setting (should have defaults)
+	noteSetting, err := ts.GetInstanceNoteRelatedSetting(ctx)
 	require.NoError(t, err)
-	require.NotNil(t, memoSetting)
-	require.GreaterOrEqual(t, memoSetting.ContentLengthLimit, int32(store.DefaultContentLengthLimit))
-	require.NotEmpty(t, memoSetting.Reactions)
+	require.NotNil(t, noteSetting)
+	require.GreaterOrEqual(t, noteSetting.ContentLengthLimit, int32(store.DefaultContentLengthLimit))
+	require.NotEmpty(t, noteSetting.Reactions)
 
-	// Set custom memo related setting
+	// Set custom note related setting
 	customReactions := []string{"👍", "👎", "🚀"}
 	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key: storepb.InstanceSettingKey_MEMO_RELATED,
-		Value: &storepb.InstanceSetting_MemoRelatedSetting{
-			MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
+		Key: storepb.InstanceSettingKey_NOTE_RELATED,
+		Value: &storepb.InstanceSetting_NoteRelatedSetting{
+			NoteRelatedSetting: &storepb.InstanceNoteRelatedSetting{
 				ContentLengthLimit: 16384,
 				Reactions:          customReactions,
 			},
@@ -267,10 +267,10 @@ func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify
-	memoSetting, err = ts.GetInstanceMemoRelatedSetting(ctx)
+	noteSetting, err = ts.GetInstanceNoteRelatedSetting(ctx)
 	require.NoError(t, err)
-	require.Equal(t, int32(16384), memoSetting.ContentLengthLimit)
-	require.Equal(t, customReactions, memoSetting.Reactions)
+	require.Equal(t, int32(16384), noteSetting.ContentLengthLimit)
+	require.Equal(t, customReactions, noteSetting.Reactions)
 
 	ts.Close()
 }
@@ -328,7 +328,7 @@ func TestDeleteInstanceStorageSettingInvalidatesCaches(t *testing.T) {
 							AccessKeySecret: "secret",
 							Endpoint:        "https://s3.example.com",
 							Region:          "us-east-1",
-							Bucket:          "memos",
+							Bucket:          "notes",
 						}},
 					},
 				},
@@ -491,7 +491,7 @@ func TestInstanceSettingNotificationSetting(t *testing.T) {
 					SmtpUsername: "bot@example.com",
 					SmtpPassword: "secret",
 					FromEmail:    "bot@example.com",
-					FromName:     "Memos Bot",
+					FromName:     "Roster Tracker Bot",
 					ReplyTo:      "support@example.com",
 					UseTls:       true,
 				},
@@ -622,12 +622,12 @@ func TestInstanceSettingEdgeCases(t *testing.T) {
 	require.Equal(t, specialScript, generalSetting.AdditionalScript)
 	require.Equal(t, specialStyle, generalSetting.AdditionalStyle)
 
-	// Case 2: Memo Related Setting with Unicode reactions
+	// Case 2: Note Related Setting with Unicode reactions
 	unicodeReactions := []string{"🐱", "🐶", "🦊", "🦄"}
 	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key: storepb.InstanceSettingKey_MEMO_RELATED,
-		Value: &storepb.InstanceSetting_MemoRelatedSetting{
-			MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
+		Key: storepb.InstanceSettingKey_NOTE_RELATED,
+		Value: &storepb.InstanceSetting_NoteRelatedSetting{
+			NoteRelatedSetting: &storepb.InstanceNoteRelatedSetting{
 				ContentLengthLimit: 1000,
 				Reactions:          unicodeReactions,
 			},
@@ -635,9 +635,9 @@ func TestInstanceSettingEdgeCases(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	memoSetting, err := ts.GetInstanceMemoRelatedSetting(ctx)
+	noteSetting, err := ts.GetInstanceNoteRelatedSetting(ctx)
 	require.NoError(t, err)
-	require.Equal(t, unicodeReactions, memoSetting.Reactions)
+	require.Equal(t, unicodeReactions, noteSetting.Reactions)
 
 	ts.Close()
 }

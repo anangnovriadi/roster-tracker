@@ -8,9 +8,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestUserServiceWithEmailLikeUsername(t *testing.T) {

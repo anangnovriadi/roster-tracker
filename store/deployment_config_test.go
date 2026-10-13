@@ -13,17 +13,17 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/usememos/memos/internal/profile"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db/sqlite"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
+	"github.com/anangnovriadi/roster-tracker/store/db/sqlite"
 )
 
 func TestLoadDeploymentConfigurationPublishesRuntimeOnlyIdentityProvider(t *testing.T) {
 	ctx := context.Background()
 	stores := newDeploymentConfigurationTestStore(t)
 	dir := t.TempDir()
-	writeDeploymentIdentityProvider(t, filepath.Join(dir, "memos-idp-primary.json"), "primary-sso", "File SSO", "file-secret")
+	writeDeploymentIdentityProvider(t, filepath.Join(dir, "roster-tracker-idp-primary.json"), "primary-sso", "File SSO", "file-secret")
 
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 
@@ -55,8 +55,8 @@ func TestLoadDeploymentConfigurationShadowsWithoutChangingStoredResources(t *tes
 	require.NoError(t, err)
 
 	dir := t.TempDir()
-	writeDeploymentIdentityProvider(t, filepath.Join(dir, "memos-idp-primary.json"), "primary-sso", "File SSO", "file-secret")
-	writeDeploymentGeneralSetting(t, filepath.Join(dir, "memos-instance-setting-general.json"), 4, true)
+	writeDeploymentIdentityProvider(t, filepath.Join(dir, "roster-tracker-idp-primary.json"), "primary-sso", "File SSO", "file-secret")
+	writeDeploymentGeneralSetting(t, filepath.Join(dir, "roster-tracker-instance-setting-general.json"), 4, true)
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 
 	effectiveProvider, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: new("primary-sso")})
@@ -81,8 +81,8 @@ func TestLoadDeploymentConfigurationReturnsDefensiveClones(t *testing.T) {
 	ctx := context.Background()
 	stores := newDeploymentConfigurationTestStore(t)
 	dir := t.TempDir()
-	writeDeploymentIdentityProvider(t, filepath.Join(dir, "memos-idp-primary.json"), "primary-sso", "File SSO", "file-secret")
-	writeDeploymentGeneralSetting(t, filepath.Join(dir, "memos-instance-setting-general.json"), 2, false)
+	writeDeploymentIdentityProvider(t, filepath.Join(dir, "roster-tracker-idp-primary.json"), "primary-sso", "File SSO", "file-secret")
+	writeDeploymentGeneralSetting(t, filepath.Join(dir, "roster-tracker-instance-setting-general.json"), 2, false)
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 
 	provider, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: new("primary-sso")})
@@ -106,12 +106,12 @@ func TestLoadDeploymentConfigurationPublishesAtomically(t *testing.T) {
 	ctx := context.Background()
 	stores := newDeploymentConfigurationTestStore(t)
 	validDir := t.TempDir()
-	writeDeploymentIdentityProvider(t, filepath.Join(validDir, "memos-idp-primary.json"), "primary-sso", "File SSO", "file-secret")
+	writeDeploymentIdentityProvider(t, filepath.Join(validDir, "roster-tracker-idp-primary.json"), "primary-sso", "File SSO", "file-secret")
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, validDir))
 
 	invalidDir := t.TempDir()
-	writeDeploymentIdentityProvider(t, filepath.Join(invalidDir, "memos-idp-primary.json"), "primary-sso", "Changed SSO", "changed-secret")
-	require.NoError(t, os.WriteFile(filepath.Join(invalidDir, "memos-instance-setting-invalid.json"), []byte(`{"key":"GENERAL","unknown":true}`), 0600))
+	writeDeploymentIdentityProvider(t, filepath.Join(invalidDir, "roster-tracker-idp-primary.json"), "primary-sso", "Changed SSO", "changed-secret")
+	require.NoError(t, os.WriteFile(filepath.Join(invalidDir, "roster-tracker-instance-setting-invalid.json"), []byte(`{"key":"GENERAL","unknown":true}`), 0600))
 	err := stores.LoadDeploymentConfigurationDir(ctx, invalidDir)
 	require.Error(t, err)
 	assert.ErrorContains(t, err, `unknown field "unknown"`)
@@ -124,8 +124,8 @@ func TestLoadDeploymentConfigurationPublishesAtomically(t *testing.T) {
 func TestLoadDeploymentConfigurationRejectsDuplicateResources(t *testing.T) {
 	stores := newDeploymentConfigurationTestStore(t)
 	dir := t.TempDir()
-	writeDeploymentIdentityProvider(t, filepath.Join(dir, "memos-idp-first.json"), "primary-sso", "First", "first-secret")
-	writeDeploymentIdentityProvider(t, filepath.Join(dir, "memos-idp-second.json"), "primary-sso", "Second", "second-secret")
+	writeDeploymentIdentityProvider(t, filepath.Join(dir, "roster-tracker-idp-first.json"), "primary-sso", "First", "first-secret")
+	writeDeploymentIdentityProvider(t, filepath.Join(dir, "roster-tracker-idp-second.json"), "primary-sso", "Second", "second-secret")
 
 	err := stores.LoadDeploymentConfigurationDir(context.Background(), dir)
 	require.Error(t, err)
@@ -138,7 +138,7 @@ func TestLoadDeploymentConfigurationValidatesAffectedAuthState(t *testing.T) {
 	t.Run("managed GENERAL cannot disable regular password auth without SSO", func(t *testing.T) {
 		stores := newDeploymentConfigurationTestStore(t)
 		dir := t.TempDir()
-		writeDeploymentGeneralSetting(t, filepath.Join(dir, "memos-instance-setting-general.json"), 0, true)
+		writeDeploymentGeneralSetting(t, filepath.Join(dir, "roster-tracker-instance-setting-general.json"), 0, true)
 		err := stores.LoadDeploymentConfigurationDir(ctx, dir)
 		require.Error(t, err)
 		assert.ErrorContains(t, err, "has no effective identity provider")
@@ -154,7 +154,7 @@ func TestLoadDeploymentConfigurationValidatesAffectedAuthState(t *testing.T) {
 		})
 		require.NoError(t, err)
 		dir := t.TempDir()
-		require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-instance-setting-storage.json"), []byte(`{
+		require.NoError(t, os.WriteFile(filepath.Join(dir, "roster-tracker-instance-setting-storage.json"), []byte(`{
   "key": "STORAGE",
   "storageSetting": {"storageType": "LOCAL"}
 }`), 0600))
@@ -175,20 +175,20 @@ func TestLoadDeploymentConfigurationSupportsLegacyIdentityProviderFilenames(t *t
 	ctx := context.Background()
 	stores := newDeploymentConfigurationTestStore(t)
 	dir := t.TempDir()
-	writeDeploymentIdentityProvider(t, filepath.Join(dir, "memos-idp-Primary_SSO.json"), "primary-sso", "Primary", "secret")
+	writeDeploymentIdentityProvider(t, filepath.Join(dir, "roster-tracker-idp-Primary_SSO.json"), "primary-sso", "Primary", "secret")
 
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 	assert.True(t, stores.IsIdentityProviderDeploymentConfigured("primary-sso"))
 
 	invalidDir := t.TempDir()
-	require.NoError(t, os.WriteFile(filepath.Join(invalidDir, "memos-idp-Bad.json"), []byte("not-json"), 0600))
+	require.NoError(t, os.WriteFile(filepath.Join(invalidDir, "roster-tracker-idp-Bad.json"), []byte("not-json"), 0600))
 	require.Error(t, stores.LoadDeploymentConfigurationDir(ctx, invalidDir))
 }
 
 func TestLoadDeploymentConfigurationAcceptsSaturdayWeekStart(t *testing.T) {
 	stores := newDeploymentConfigurationTestStore(t)
 	dir := t.TempDir()
-	writeDeploymentGeneralSetting(t, filepath.Join(dir, "memos-instance-setting-general.json"), -1, false)
+	writeDeploymentGeneralSetting(t, filepath.Join(dir, "roster-tracker-instance-setting-general.json"), -1, false)
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(context.Background(), dir))
 
 	general, err := stores.GetInstanceGeneralSetting(context.Background())
@@ -202,7 +202,7 @@ func TestLoadDeploymentConfigurationAcceptsRegularFileSymlink(t *testing.T) {
 	dir := t.TempDir()
 	target := filepath.Join(t.TempDir(), "provider.json")
 	writeDeploymentIdentityProvider(t, target, "primary-sso", "Primary", "secret")
-	require.NoError(t, os.Symlink(target, filepath.Join(dir, "memos-idp-primary.json")))
+	require.NoError(t, os.Symlink(target, filepath.Join(dir, "roster-tracker-idp-primary.json")))
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 	assert.True(t, stores.IsIdentityProviderDeploymentConfigured("primary-sso"))
 }
@@ -212,32 +212,32 @@ func TestLoadDeploymentConfigurationSupportsEveryProvisionableSettingGroup(t *te
 	stores := newDeploymentConfigurationTestStore(t)
 	dir := t.TempDir()
 	settings := map[string]*storepb.InstanceSetting{
-		"memos-instance-setting-general.json": {
+		"roster-tracker-instance-setting-general.json": {
 			Key:   storepb.InstanceSettingKey_GENERAL,
 			Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: &storepb.InstanceGeneralSetting{WeekStartDayOffset: 1}},
 		},
-		"memos-instance-setting-storage.json": {
+		"roster-tracker-instance-setting-storage.json": {
 			Key:   storepb.InstanceSettingKey_STORAGE,
 			Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{StorageType: storepb.InstanceStorageSetting_LOCAL}},
 		},
-		"memos-instance-setting-memo-related.json": {
-			Key: storepb.InstanceSettingKey_MEMO_RELATED,
-			Value: &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
+		"roster-tracker-instance-setting-note-related.json": {
+			Key: storepb.InstanceSettingKey_NOTE_RELATED,
+			Value: &storepb.InstanceSetting_NoteRelatedSetting{NoteRelatedSetting: &storepb.InstanceNoteRelatedSetting{
 				ContentLengthLimit: store.DefaultContentLengthLimit,
 				Reactions:          []string{"👍"},
 			}},
 		},
-		"memos-instance-setting-notification.json": {
+		"roster-tracker-instance-setting-notification.json": {
 			Key:   storepb.InstanceSettingKey_NOTIFICATION,
 			Value: &storepb.InstanceSetting_NotificationSetting{NotificationSetting: &storepb.InstanceNotificationSetting{}},
 		},
-		"memos-instance-setting-ai.json": {
+		"roster-tracker-instance-setting-ai.json": {
 			Key: storepb.InstanceSettingKey_AI,
 			Value: &storepb.InstanceSetting_AiSetting{AiSetting: &storepb.InstanceAISetting{Providers: []*storepb.AIProviderConfig{
 				{Id: "primary", Title: "Primary", Type: storepb.AIProviderType_OPENAI, ApiKey: "ai-secret"},
 			}}},
 		},
-		"memos-instance-setting-access.json": {
+		"roster-tracker-instance-setting-access.json": {
 			Key: storepb.InstanceSettingKey_ACCESS,
 			Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
 				AccessMode: storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC,
@@ -278,7 +278,7 @@ func TestLoadDeploymentConfigurationRejectsInvalidSettingResources(t *testing.T)
 		t.Run(test.name, func(t *testing.T) {
 			stores := newDeploymentConfigurationTestStore(t)
 			dir := t.TempDir()
-			require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-instance-setting-invalid.json"), []byte(test.content), 0600))
+			require.NoError(t, os.WriteFile(filepath.Join(dir, "roster-tracker-instance-setting-invalid.json"), []byte(test.content), 0600))
 			err := stores.LoadDeploymentConfigurationDir(context.Background(), dir)
 			require.Error(t, err)
 			assert.ErrorContains(t, err, test.errorString)
@@ -290,7 +290,7 @@ func TestLoadDeploymentConfigurationBoundsFilesAndRedactsDecodeErrors(t *testing
 	t.Run("oversized file", func(t *testing.T) {
 		stores := newDeploymentConfigurationTestStore(t)
 		dir := t.TempDir()
-		require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-idp-oversized.json"), []byte(strings.Repeat("x", (1<<20)+1)), 0600))
+		require.NoError(t, os.WriteFile(filepath.Join(dir, "roster-tracker-idp-oversized.json"), []byte(strings.Repeat("x", (1<<20)+1)), 0600))
 		err := stores.LoadDeploymentConfigurationDir(context.Background(), dir)
 		require.Error(t, err)
 		assert.ErrorContains(t, err, "exceeds 1048576 bytes")
@@ -305,7 +305,7 @@ func TestLoadDeploymentConfigurationBoundsFilesAndRedactsDecodeErrors(t *testing
   "type":"OAUTH2",
   "config":{"oauth2Config":{"clientSecret":{"value":"must-not-appear"}}}
 }`
-		require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-idp-primary.json"), []byte(content), 0600))
+		require.NoError(t, os.WriteFile(filepath.Join(dir, "roster-tracker-idp-primary.json"), []byte(content), 0600))
 		err := stores.LoadDeploymentConfigurationDir(context.Background(), dir)
 		require.Error(t, err)
 		assert.NotContains(t, err.Error(), "must-not-appear")
@@ -350,7 +350,7 @@ func TestAuthenticationConfigurationMutationsAreSafe(t *testing.T) {
 	t.Run("file-backed IdP satisfies the invariant", func(t *testing.T) {
 		stores := newDeploymentConfigurationTestStore(t)
 		dir := t.TempDir()
-		writeDeploymentIdentityProvider(t, filepath.Join(dir, "memos-idp-primary.json"), "primary-sso", "Primary", "secret")
+		writeDeploymentIdentityProvider(t, filepath.Join(dir, "roster-tracker-idp-primary.json"), "primary-sso", "Primary", "secret")
 		require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 		_, err := stores.UpsertInstanceGeneralSettingSafely(ctx, &storepb.InstanceSetting{
 			Key: storepb.InstanceSettingKey_GENERAL,
@@ -384,7 +384,7 @@ func TestAuthenticationConfigurationMutationsAreSafe(t *testing.T) {
 	t.Run("rejects making the stored fallback unsafe under deployment GENERAL", func(t *testing.T) {
 		stores := newDeploymentConfigurationTestStore(t)
 		dir := t.TempDir()
-		writeDeploymentGeneralSetting(t, filepath.Join(dir, "memos-instance-setting-general.json"), 0, false)
+		writeDeploymentGeneralSetting(t, filepath.Join(dir, "roster-tracker-instance-setting-general.json"), 0, false)
 		require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 
 		_, err := stores.UpsertInstanceGeneralSettingSafely(ctx, &storepb.InstanceSetting{
@@ -406,8 +406,8 @@ func TestListIdentityProvidersPreservesStoredOrder(t *testing.T) {
 	require.NoError(t, err)
 
 	dir := t.TempDir()
-	writeDeploymentIdentityProvider(t, filepath.Join(dir, "memos-idp-zeta.json"), "zeta-sso", "File Zeta", "file-secret")
-	writeDeploymentIdentityProvider(t, filepath.Join(dir, "memos-idp-beta.json"), "beta-file", "File Beta", "file-secret")
+	writeDeploymentIdentityProvider(t, filepath.Join(dir, "roster-tracker-idp-zeta.json"), "zeta-sso", "File Zeta", "file-secret")
+	writeDeploymentIdentityProvider(t, filepath.Join(dir, "roster-tracker-idp-beta.json"), "beta-file", "File Beta", "file-secret")
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 
 	providers, err := stores.ListIdentityProviders(ctx, &store.FindIdentityProvider{})

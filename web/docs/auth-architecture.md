@@ -39,7 +39,7 @@ Consider migrating auth to React Query if:
 - Multiple tabs need instant sync
 - User data changes frequently during a session
 
-For Memos (a notes app where user profile rarely changes), AuthContext is the right choice.
+For Roster Tracker (an app where user profile rarely changes), AuthContext is the right choice.
 
 ### Future Considerations
 

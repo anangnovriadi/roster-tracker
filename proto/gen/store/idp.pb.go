@@ -71,7 +71,7 @@ type IdentityProvider struct {
 	state            protoimpl.MessageState  `protogen:"open.v1"`
 	Id               int32                   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name             string                  `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Type             IdentityProvider_Type   `protobuf:"varint,3,opt,name=type,proto3,enum=memos.store.IdentityProvider_Type" json:"type,omitempty"`
+	Type             IdentityProvider_Type   `protobuf:"varint,3,opt,name=type,proto3,enum=roster.store.IdentityProvider_Type" json:"type,omitempty"`
 	IdentifierFilter string                  `protobuf:"bytes,4,opt,name=identifier_filter,json=identifierFilter,proto3" json:"identifier_filter,omitempty"`
 	Config           *IdentityProviderConfig `protobuf:"bytes,5,opt,name=config,proto3" json:"config,omitempty"`
 	Uid              string                  `protobuf:"bytes,6,opt,name=uid,proto3" json:"uid,omitempty"`
@@ -381,20 +381,20 @@ var File_store_idp_proto protoreflect.FileDescriptor
 
 const file_store_idp_proto_rawDesc = "" +
 	"\n" +
-	"\x0fstore/idp.proto\x12\vmemos.store\"\x94\x02\n" +
+	"\x0fstore/idp.proto\x12\froster.store\"\x96\x02\n" +
 	"\x10IdentityProvider\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x126\n" +
-	"\x04type\x18\x03 \x01(\x0e2\".memos.store.IdentityProvider.TypeR\x04type\x12+\n" +
-	"\x11identifier_filter\x18\x04 \x01(\tR\x10identifierFilter\x12;\n" +
-	"\x06config\x18\x05 \x01(\v2#.memos.store.IdentityProviderConfigR\x06config\x12\x10\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x127\n" +
+	"\x04type\x18\x03 \x01(\x0e2#.roster.store.IdentityProvider.TypeR\x04type\x12+\n" +
+	"\x11identifier_filter\x18\x04 \x01(\tR\x10identifierFilter\x12<\n" +
+	"\x06config\x18\x05 \x01(\v2$.roster.store.IdentityProviderConfigR\x06config\x12\x10\n" +
 	"\x03uid\x18\x06 \x01(\tR\x03uid\"(\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06OAUTH2\x10\x01\"d\n" +
-	"\x16IdentityProviderConfig\x12@\n" +
-	"\roauth2_config\x18\x01 \x01(\v2\x19.memos.store.OAuth2ConfigH\x00R\foauth2ConfigB\b\n" +
+	"\x06OAUTH2\x10\x01\"e\n" +
+	"\x16IdentityProviderConfig\x12A\n" +
+	"\roauth2_config\x18\x01 \x01(\v2\x1a.roster.store.OAuth2ConfigH\x00R\foauth2ConfigB\b\n" +
 	"\x06config\"\x86\x01\n" +
 	"\fFieldMapping\x12\x1e\n" +
 	"\n" +
@@ -403,16 +403,16 @@ const file_store_idp_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1d\n" +
 	"\n" +
-	"avatar_url\x18\x04 \x01(\tR\tavatarUrl\"\x84\x02\n" +
+	"avatar_url\x18\x04 \x01(\tR\tavatarUrl\"\x85\x02\n" +
 	"\fOAuth2Config\x12\x1b\n" +
 	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12#\n" +
 	"\rclient_secret\x18\x02 \x01(\tR\fclientSecret\x12\x19\n" +
 	"\bauth_url\x18\x03 \x01(\tR\aauthUrl\x12\x1b\n" +
 	"\ttoken_url\x18\x04 \x01(\tR\btokenUrl\x12\"\n" +
 	"\ruser_info_url\x18\x05 \x01(\tR\vuserInfoUrl\x12\x16\n" +
-	"\x06scopes\x18\x06 \x03(\tR\x06scopes\x12>\n" +
-	"\rfield_mapping\x18\a \x01(\v2\x19.memos.store.FieldMappingR\ffieldMappingB\x93\x01\n" +
-	"\x0fcom.memos.storeB\bIdpProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
+	"\x06scopes\x18\x06 \x03(\tR\x06scopes\x12?\n" +
+	"\rfield_mapping\x18\a \x01(\v2\x1a.roster.store.FieldMappingR\ffieldMappingB\xa6\x01\n" +
+	"\x10com.roster.storeB\bIdpProtoP\x01Z7github.com/anangnovriadi/roster-tracker/proto/gen/store\xa2\x02\x03RSX\xaa\x02\fRoster.Store\xca\x02\fRoster\\Store\xe2\x02\x18Roster\\Store\\GPBMetadata\xea\x02\rRoster::Storeb\x06proto3"
 
 var (
 	file_store_idp_proto_rawDescOnce sync.Once
@@ -429,17 +429,17 @@ func file_store_idp_proto_rawDescGZIP() []byte {
 var file_store_idp_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_store_idp_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_store_idp_proto_goTypes = []any{
-	(IdentityProvider_Type)(0),     // 0: memos.store.IdentityProvider.Type
-	(*IdentityProvider)(nil),       // 1: memos.store.IdentityProvider
-	(*IdentityProviderConfig)(nil), // 2: memos.store.IdentityProviderConfig
-	(*FieldMapping)(nil),           // 3: memos.store.FieldMapping
-	(*OAuth2Config)(nil),           // 4: memos.store.OAuth2Config
+	(IdentityProvider_Type)(0),     // 0: roster.store.IdentityProvider.Type
+	(*IdentityProvider)(nil),       // 1: roster.store.IdentityProvider
+	(*IdentityProviderConfig)(nil), // 2: roster.store.IdentityProviderConfig
+	(*FieldMapping)(nil),           // 3: roster.store.FieldMapping
+	(*OAuth2Config)(nil),           // 4: roster.store.OAuth2Config
 }
 var file_store_idp_proto_depIdxs = []int32{
-	0, // 0: memos.store.IdentityProvider.type:type_name -> memos.store.IdentityProvider.Type
-	2, // 1: memos.store.IdentityProvider.config:type_name -> memos.store.IdentityProviderConfig
-	4, // 2: memos.store.IdentityProviderConfig.oauth2_config:type_name -> memos.store.OAuth2Config
-	3, // 3: memos.store.OAuth2Config.field_mapping:type_name -> memos.store.FieldMapping
+	0, // 0: roster.store.IdentityProvider.type:type_name -> roster.store.IdentityProvider.Type
+	2, // 1: roster.store.IdentityProvider.config:type_name -> roster.store.IdentityProviderConfig
+	4, // 2: roster.store.IdentityProviderConfig.oauth2_config:type_name -> roster.store.OAuth2Config
+	3, // 3: roster.store.OAuth2Config.field_mapping:type_name -> roster.store.FieldMapping
 	4, // [4:4] is the sub-list for method output_type
 	4, // [4:4] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name

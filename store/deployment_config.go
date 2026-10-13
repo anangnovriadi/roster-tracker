@@ -15,8 +15,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/usememos/memos/internal/identifier"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/internal/identifier"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 const (
@@ -29,8 +29,8 @@ const (
 )
 
 var (
-	idpDeploymentFilenameMatcher             = regexp.MustCompile(`^memos-idp-[a-z0-9]+(?:-[a-z0-9]+)*\.json$`)
-	instanceSettingDeploymentFilenameMatcher = regexp.MustCompile(`^memos-instance-setting-[a-z0-9]+(?:-[a-z0-9]+)*\.json$`)
+	idpDeploymentFilenameMatcher             = regexp.MustCompile(`^roster-tracker-idp-[a-z0-9]+(?:-[a-z0-9]+)*\.json$`)
+	instanceSettingDeploymentFilenameMatcher = regexp.MustCompile(`^roster-tracker-instance-setting-[a-z0-9]+(?:-[a-z0-9]+)*\.json$`)
 	protoJSONUnknownFieldMatcher             = regexp.MustCompile(`unknown field "([^"]+)"`)
 )
 
@@ -86,8 +86,8 @@ func (s *Store) LoadDeploymentConfigurationDir(ctx context.Context, dir string) 
 			}
 			settingFiles[setting.Key] = name
 			config.instanceSettings[setting.Key] = cloneInstanceSetting(setting)
-		case strings.HasPrefix(name, "memos-"):
-			slog.Warn("ignoring unrecognized Memos deployment configuration filename", "filename", name)
+		case strings.HasPrefix(name, "roster-tracker-"):
+			slog.Warn("ignoring unrecognized Roster Tracker deployment configuration filename", "filename", name)
 		default:
 			// The directory may contain unrelated platform secret files.
 		}
@@ -116,7 +116,7 @@ func isIdentityProviderDeploymentFilename(name string) bool {
 	// The original database-writing bootstrap accepted every filename with this
 	// prefix and suffix. Continue loading those names so an upgrade cannot
 	// silently fall back to stale credentials stored in the database.
-	return strings.HasPrefix(name, "memos-idp-") && strings.HasSuffix(name, ".json")
+	return strings.HasPrefix(name, "roster-tracker-idp-") && strings.HasSuffix(name, ".json")
 }
 
 func readDeploymentProtoJSON(path string, message proto.Message) error {
@@ -260,9 +260,9 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 				}
 			}
 		}
-	case storepb.InstanceSettingKey_MEMO_RELATED:
-		if setting.GetMemoRelatedSetting() == nil {
-			return errors.New("memoRelatedSetting must be populated for key MEMO_RELATED")
+	case storepb.InstanceSettingKey_NOTE_RELATED:
+		if setting.GetNoteRelatedSetting() == nil {
+			return errors.New("noteRelatedSetting must be populated for key NOTE_RELATED")
 		}
 	case storepb.InstanceSettingKey_NOTIFICATION:
 		notification := setting.GetNotificationSetting()

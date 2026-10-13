@@ -55,9 +55,9 @@ describe("managed attachment Markdown", () => {
   // The API matches absolute URLs against the configured instance URL, not the
   // browsing origin, and rejects them outright when no instance URL is set.
   it("resolves absolute images against the configured instance URL", () => {
-    setManagedAttachmentInstanceUrl("https://memos.example.com");
+    setManagedAttachmentInstanceUrl("https://notes.example.com");
     const content = [
-      "![configured](https://memos.example.com/file/attachments/image-one)",
+      "![configured](https://notes.example.com/file/attachments/image-one)",
       `![browsing-host](${window.location.origin}/file/attachments/image-two)`,
       "![elsewhere](https://example.com/file/attachments/image-three)",
     ].join("\n\n");

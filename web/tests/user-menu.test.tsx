@@ -22,7 +22,7 @@ vi.mock("@/contexts/AppSidebarContext", () => ({ useAppSidebar: () => ({ setMobi
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({ userGeneralSetting: undefined, refetchSettings: mocks.refetchSettings, logout: mocks.logout }),
 }));
-vi.mock("@/hooks/useLiveMemoRefresh", () => ({ useSSEConnectionStatus: () => "connected" }));
+vi.mock("@/hooks/useLiveNoteRefresh", () => ({ useSSEConnectionStatus: () => "connected" }));
 vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => mocks.currentUser,
 }));
@@ -52,8 +52,8 @@ describe("User menu panel", () => {
   beforeEach(() => {
     mocks.currentUser = { name: "users/steven", username: "steven", displayName: "Steven" };
     localStorage.clear();
-    localStorage.setItem("memos-locale", "en");
-    localStorage.setItem("memos-theme", "system");
+    localStorage.setItem("notes-locale", "en");
+    localStorage.setItem("notes-theme", "system");
     vi.mocked(loadTheme).mockClear();
     vi.mocked(loadLocale).mockClear();
     mocks.navigateTo.mockReset();
@@ -145,11 +145,11 @@ describe("User menu panel", () => {
     {
       row: /setting.preference.theme/,
       choice: "Dark",
-      storageKey: "memos-theme",
+      storageKey: "notes-theme",
       value: "default-dark",
       label: /setting.preference.theme.*Dark/,
     },
-    { row: /common.language/, choice: "Malaysia", storageKey: "memos-locale", value: "ms", label: /common.language.*Malaysia/ },
+    { row: /common.language/, choice: "Malaysia", storageKey: "notes-locale", value: "ms", label: /common.language.*Malaysia/ },
   ] as const)("persists a guest's choice of $storageKey locally without updating an account", async ({
     row,
     choice,

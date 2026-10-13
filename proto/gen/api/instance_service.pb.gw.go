@@ -498,7 +498,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/GetInstanceProfile", runtime.WithHTTPPathPattern("/api/instance/profile"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/GetInstanceProfile", runtime.WithHTTPPathPattern("/api/instance/profile"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -518,7 +518,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/GetInstanceSetting", runtime.WithHTTPPathPattern("/api/{name=instance/settings/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/GetInstanceSetting", runtime.WithHTTPPathPattern("/api/{name=instance/settings/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -538,7 +538,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/BatchGetInstanceSettings", runtime.WithHTTPPathPattern("/api/instance/settings:batchGet"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/BatchGetInstanceSettings", runtime.WithHTTPPathPattern("/api/instance/settings:batchGet"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -558,7 +558,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/UpdateInstanceSetting", runtime.WithHTTPPathPattern("/api/{instance_setting.name=instance/settings/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/UpdateInstanceSetting", runtime.WithHTTPPathPattern("/api/{instance_setting.name=instance/settings/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -578,7 +578,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/TestInstanceEmailSetting", runtime.WithHTTPPathPattern("/api/instance/settings/notification:testEmail"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/TestInstanceEmailSetting", runtime.WithHTTPPathPattern("/api/instance/settings/notification:testEmail"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -598,7 +598,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/GetInstanceStats", runtime.WithHTTPPathPattern("/api/instance/stats"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/GetInstanceStats", runtime.WithHTTPPathPattern("/api/instance/stats"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -618,7 +618,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/ListUsageLimits", runtime.WithHTTPPathPattern("/api/usageLimits"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/ListUsageLimits", runtime.WithHTTPPathPattern("/api/usageLimits"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -638,7 +638,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/GetUsageLimit", runtime.WithHTTPPathPattern("/api/{name=usageLimits/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/GetUsageLimit", runtime.WithHTTPPathPattern("/api/{name=usageLimits/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -658,7 +658,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/CreateUsageLimit", runtime.WithHTTPPathPattern("/api/usageLimits"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/CreateUsageLimit", runtime.WithHTTPPathPattern("/api/usageLimits"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -678,7 +678,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/UpdateUsageLimit", runtime.WithHTTPPathPattern("/api/{usage_limit.name=usageLimits/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/UpdateUsageLimit", runtime.WithHTTPPathPattern("/api/{usage_limit.name=usageLimits/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -698,7 +698,7 @@ func RegisterInstanceServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.InstanceService/DeleteUsageLimit", runtime.WithHTTPPathPattern("/api/{name=usageLimits/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.InstanceService/DeleteUsageLimit", runtime.WithHTTPPathPattern("/api/{name=usageLimits/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -756,7 +756,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/GetInstanceProfile", runtime.WithHTTPPathPattern("/api/instance/profile"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/GetInstanceProfile", runtime.WithHTTPPathPattern("/api/instance/profile"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -773,7 +773,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/GetInstanceSetting", runtime.WithHTTPPathPattern("/api/{name=instance/settings/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/GetInstanceSetting", runtime.WithHTTPPathPattern("/api/{name=instance/settings/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -790,7 +790,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/BatchGetInstanceSettings", runtime.WithHTTPPathPattern("/api/instance/settings:batchGet"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/BatchGetInstanceSettings", runtime.WithHTTPPathPattern("/api/instance/settings:batchGet"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -807,7 +807,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/UpdateInstanceSetting", runtime.WithHTTPPathPattern("/api/{instance_setting.name=instance/settings/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/UpdateInstanceSetting", runtime.WithHTTPPathPattern("/api/{instance_setting.name=instance/settings/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -824,7 +824,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/TestInstanceEmailSetting", runtime.WithHTTPPathPattern("/api/instance/settings/notification:testEmail"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/TestInstanceEmailSetting", runtime.WithHTTPPathPattern("/api/instance/settings/notification:testEmail"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -841,7 +841,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/GetInstanceStats", runtime.WithHTTPPathPattern("/api/instance/stats"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/GetInstanceStats", runtime.WithHTTPPathPattern("/api/instance/stats"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -858,7 +858,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/ListUsageLimits", runtime.WithHTTPPathPattern("/api/usageLimits"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/ListUsageLimits", runtime.WithHTTPPathPattern("/api/usageLimits"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -875,7 +875,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/GetUsageLimit", runtime.WithHTTPPathPattern("/api/{name=usageLimits/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/GetUsageLimit", runtime.WithHTTPPathPattern("/api/{name=usageLimits/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -892,7 +892,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/CreateUsageLimit", runtime.WithHTTPPathPattern("/api/usageLimits"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/CreateUsageLimit", runtime.WithHTTPPathPattern("/api/usageLimits"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -909,7 +909,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/UpdateUsageLimit", runtime.WithHTTPPathPattern("/api/{usage_limit.name=usageLimits/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/UpdateUsageLimit", runtime.WithHTTPPathPattern("/api/{usage_limit.name=usageLimits/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -926,7 +926,7 @@ func RegisterInstanceServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.InstanceService/DeleteUsageLimit", runtime.WithHTTPPathPattern("/api/{name=usageLimits/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.InstanceService/DeleteUsageLimit", runtime.WithHTTPPathPattern("/api/{name=usageLimits/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

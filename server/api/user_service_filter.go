@@ -111,4 +111,4 @@ func extractUsernameFromComparison(left, right ast.Expr) (string, bool) {
 
 // ListUserNotifications lists all notifications for a user.
 // Notifications are backed by the inbox storage layer and represent activities
-// that require user attention (e.g., memo comments).
+// that require user attention (e.g., note comments).

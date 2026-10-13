@@ -11,9 +11,9 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (s *APIService) requireCurrentSpaceUser(ctx context.Context) (*store.User, error) {
@@ -233,8 +233,8 @@ func (s *APIService) UpdateSpace(ctx context.Context, request *apipb.UpdateSpace
 	return convertSpaceFromStore(updated), nil
 }
 
-// DeleteSpace permanently deletes the Space and every memo directly placed
-// in it. The result deliberately exposes no memo inventory to the administrator.
+// DeleteSpace permanently deletes the Space and every note directly placed
+// in it. The result deliberately exposes no note inventory to the administrator.
 func (s *APIService) DeleteSpace(ctx context.Context, request *apipb.DeleteSpaceRequest) (*emptypb.Empty, error) {
 	currentUser, err := s.requireCurrentSpaceUser(ctx)
 	if err != nil {

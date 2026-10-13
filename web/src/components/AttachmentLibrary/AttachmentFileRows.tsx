@@ -63,7 +63,7 @@ export const AttachmentDocumentRows = ({ items, creators }: { items: AttachmentL
             <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
               <AttachmentMetadataLine className="min-w-0 max-w-full" items={[item.fileTypeLabel, item.fileSizeLabel, item.createdLabel]} />
               <AttachmentCreator creatorName={item.attachment.creator} user={creators?.get(item.attachment.creator)} />
-              <AttachmentSourceChip memoName={item.memoName} />
+              <AttachmentSourceChip noteName={item.noteName} />
             </div>
           </div>
 

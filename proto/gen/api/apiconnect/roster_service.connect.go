@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	api "github.com/usememos/memos/proto/gen/api"
+	api "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
@@ -23,7 +23,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// RosterServiceName is the fully-qualified name of the RosterService service.
-	RosterServiceName = "memos.api.RosterService"
+	RosterServiceName = "roster.api.RosterService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -36,16 +36,16 @@ const (
 const (
 	// RosterServiceListRosterAssignmentsProcedure is the fully-qualified name of the RosterService's
 	// ListRosterAssignments RPC.
-	RosterServiceListRosterAssignmentsProcedure = "/memos.api.RosterService/ListRosterAssignments"
+	RosterServiceListRosterAssignmentsProcedure = "/roster.api.RosterService/ListRosterAssignments"
 	// RosterServiceCreateRosterAssignmentProcedure is the fully-qualified name of the RosterService's
 	// CreateRosterAssignment RPC.
-	RosterServiceCreateRosterAssignmentProcedure = "/memos.api.RosterService/CreateRosterAssignment"
+	RosterServiceCreateRosterAssignmentProcedure = "/roster.api.RosterService/CreateRosterAssignment"
 	// RosterServiceDeleteRosterAssignmentProcedure is the fully-qualified name of the RosterService's
 	// DeleteRosterAssignment RPC.
-	RosterServiceDeleteRosterAssignmentProcedure = "/memos.api.RosterService/DeleteRosterAssignment"
+	RosterServiceDeleteRosterAssignmentProcedure = "/roster.api.RosterService/DeleteRosterAssignment"
 )
 
-// RosterServiceClient is a client for the memos.api.RosterService service.
+// RosterServiceClient is a client for the roster.api.RosterService service.
 type RosterServiceClient interface {
 	// ListRosterAssignments lists the assignments between two dates, inclusive.
 	// Public, so signed-out visitors can see who is on duty.
@@ -58,7 +58,7 @@ type RosterServiceClient interface {
 	DeleteRosterAssignment(context.Context, *connect.Request[api.DeleteRosterAssignmentRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
-// NewRosterServiceClient constructs a client for the memos.api.RosterService service. By default,
+// NewRosterServiceClient constructs a client for the roster.api.RosterService service. By default,
 // it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
 // sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
 // or connect.WithGRPCWeb() options.
@@ -97,22 +97,22 @@ type rosterServiceClient struct {
 	deleteRosterAssignment *connect.Client[api.DeleteRosterAssignmentRequest, emptypb.Empty]
 }
 
-// ListRosterAssignments calls memos.api.RosterService.ListRosterAssignments.
+// ListRosterAssignments calls roster.api.RosterService.ListRosterAssignments.
 func (c *rosterServiceClient) ListRosterAssignments(ctx context.Context, req *connect.Request[api.ListRosterAssignmentsRequest]) (*connect.Response[api.ListRosterAssignmentsResponse], error) {
 	return c.listRosterAssignments.CallUnary(ctx, req)
 }
 
-// CreateRosterAssignment calls memos.api.RosterService.CreateRosterAssignment.
+// CreateRosterAssignment calls roster.api.RosterService.CreateRosterAssignment.
 func (c *rosterServiceClient) CreateRosterAssignment(ctx context.Context, req *connect.Request[api.CreateRosterAssignmentRequest]) (*connect.Response[api.RosterAssignment], error) {
 	return c.createRosterAssignment.CallUnary(ctx, req)
 }
 
-// DeleteRosterAssignment calls memos.api.RosterService.DeleteRosterAssignment.
+// DeleteRosterAssignment calls roster.api.RosterService.DeleteRosterAssignment.
 func (c *rosterServiceClient) DeleteRosterAssignment(ctx context.Context, req *connect.Request[api.DeleteRosterAssignmentRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteRosterAssignment.CallUnary(ctx, req)
 }
 
-// RosterServiceHandler is an implementation of the memos.api.RosterService service.
+// RosterServiceHandler is an implementation of the roster.api.RosterService service.
 type RosterServiceHandler interface {
 	// ListRosterAssignments lists the assignments between two dates, inclusive.
 	// Public, so signed-out visitors can see who is on duty.
@@ -150,7 +150,7 @@ func NewRosterServiceHandler(svc RosterServiceHandler, opts ...connect.HandlerOp
 		connect.WithSchema(rosterServiceMethods.ByName("DeleteRosterAssignment")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/memos.api.RosterService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/roster.api.RosterService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case RosterServiceListRosterAssignmentsProcedure:
 			rosterServiceListRosterAssignmentsHandler.ServeHTTP(w, r)
@@ -168,13 +168,13 @@ func NewRosterServiceHandler(svc RosterServiceHandler, opts ...connect.HandlerOp
 type UnimplementedRosterServiceHandler struct{}
 
 func (UnimplementedRosterServiceHandler) ListRosterAssignments(context.Context, *connect.Request[api.ListRosterAssignmentsRequest]) (*connect.Response[api.ListRosterAssignmentsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.RosterService.ListRosterAssignments is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.RosterService.ListRosterAssignments is not implemented"))
 }
 
 func (UnimplementedRosterServiceHandler) CreateRosterAssignment(context.Context, *connect.Request[api.CreateRosterAssignmentRequest]) (*connect.Response[api.RosterAssignment], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.RosterService.CreateRosterAssignment is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.RosterService.CreateRosterAssignment is not implemented"))
 }
 
 func (UnimplementedRosterServiceHandler) DeleteRosterAssignment(context.Context, *connect.Request[api.DeleteRosterAssignmentRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.RosterService.DeleteRosterAssignment is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.RosterService.DeleteRosterAssignment is not implemented"))
 }

@@ -4,23 +4,23 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { CalendarDayCell, layoutForCellSize } from "@/components/CalendarView/CalendarDayCell";
 import type { CalendarDaySummary } from "@/components/CalendarView/dayModel";
-import { MemoSchema } from "@/types/proto/api/memo_service_pb";
+import { NoteSchema } from "@/types/proto/api/note_service_pb";
 
 const users: Record<string, { name: string; username: string; displayName: string; avatarUrl: string }> = {
   "users/bob": { name: "users/bob", username: "bob", displayName: "Bob Martin", avatarUrl: "/bob.png" },
   "users/carol": { name: "users/carol", username: "carol", displayName: "Carol Diaz", avatarUrl: "/carol.png" },
   "users/dan": { name: "users/dan", username: "dan", displayName: "Dan Okafor", avatarUrl: "/dan.png" },
 };
-vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
+vi.mock("@/components/NoteContent/MentionResolutionContext", () => ({
   useResolvedUser: (name: string, options?: { enabled?: boolean }) => (options?.enabled ? users[name] : undefined),
   useResolvedUsersByNames: (names: string[]) => new Map(names.map((name) => [name, users[name]])),
 }));
 
 const summary: CalendarDaySummary = {
-  memos: [create(MemoSchema), create(MemoSchema)],
-  excerpt: { memoName: "memos/a", creator: "users/bob", text: "A memorable afternoon", isCode: false },
+  notes: [create(NoteSchema), create(NoteSchema)],
+  excerpt: { noteName: "notes/a", creator: "users/bob", text: "A memorable afternoon", isCode: false },
   creators: ["users/bob", "users/carol", "users/dan"],
-  images: [{ memoName: "memos/b", thumbnailUrl: "/photo.jpg" }],
+  images: [{ noteName: "notes/b", thumbnailUrl: "/photo.jpg" }],
 };
 const textOnly: CalendarDaySummary = { ...summary, images: [] };
 interface CellOptions {
@@ -69,7 +69,7 @@ describe("calendar daily snapshot cell", () => {
     cell();
     expect(screen.getByRole("link")).toHaveAttribute("tabindex", "0");
     expect(screen.queryByText("0")).toBeNull();
-    expect(screen.queryByText(/memos/)).toBeNull();
+    expect(screen.queryByText(/notes/)).toBeNull();
     expect(document.querySelector("img")).toBeNull();
   });
   it("says how many notes the day holds instead of tinting the cell", () => {

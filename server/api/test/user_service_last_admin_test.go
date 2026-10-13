@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/server/api"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/server/api"
 )
 
 func TestLastInstanceAdminCannotRemoveThemselves(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	api "github.com/usememos/memos/proto/gen/api"
+	api "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
@@ -23,7 +23,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// InstanceServiceName is the fully-qualified name of the InstanceService service.
-	InstanceServiceName = "memos.api.InstanceService"
+	InstanceServiceName = "roster.api.InstanceService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -36,40 +36,40 @@ const (
 const (
 	// InstanceServiceGetInstanceProfileProcedure is the fully-qualified name of the InstanceService's
 	// GetInstanceProfile RPC.
-	InstanceServiceGetInstanceProfileProcedure = "/memos.api.InstanceService/GetInstanceProfile"
+	InstanceServiceGetInstanceProfileProcedure = "/roster.api.InstanceService/GetInstanceProfile"
 	// InstanceServiceGetInstanceSettingProcedure is the fully-qualified name of the InstanceService's
 	// GetInstanceSetting RPC.
-	InstanceServiceGetInstanceSettingProcedure = "/memos.api.InstanceService/GetInstanceSetting"
+	InstanceServiceGetInstanceSettingProcedure = "/roster.api.InstanceService/GetInstanceSetting"
 	// InstanceServiceBatchGetInstanceSettingsProcedure is the fully-qualified name of the
 	// InstanceService's BatchGetInstanceSettings RPC.
-	InstanceServiceBatchGetInstanceSettingsProcedure = "/memos.api.InstanceService/BatchGetInstanceSettings"
+	InstanceServiceBatchGetInstanceSettingsProcedure = "/roster.api.InstanceService/BatchGetInstanceSettings"
 	// InstanceServiceUpdateInstanceSettingProcedure is the fully-qualified name of the
 	// InstanceService's UpdateInstanceSetting RPC.
-	InstanceServiceUpdateInstanceSettingProcedure = "/memos.api.InstanceService/UpdateInstanceSetting"
+	InstanceServiceUpdateInstanceSettingProcedure = "/roster.api.InstanceService/UpdateInstanceSetting"
 	// InstanceServiceTestInstanceEmailSettingProcedure is the fully-qualified name of the
 	// InstanceService's TestInstanceEmailSetting RPC.
-	InstanceServiceTestInstanceEmailSettingProcedure = "/memos.api.InstanceService/TestInstanceEmailSetting"
+	InstanceServiceTestInstanceEmailSettingProcedure = "/roster.api.InstanceService/TestInstanceEmailSetting"
 	// InstanceServiceGetInstanceStatsProcedure is the fully-qualified name of the InstanceService's
 	// GetInstanceStats RPC.
-	InstanceServiceGetInstanceStatsProcedure = "/memos.api.InstanceService/GetInstanceStats"
+	InstanceServiceGetInstanceStatsProcedure = "/roster.api.InstanceService/GetInstanceStats"
 	// InstanceServiceListUsageLimitsProcedure is the fully-qualified name of the InstanceService's
 	// ListUsageLimits RPC.
-	InstanceServiceListUsageLimitsProcedure = "/memos.api.InstanceService/ListUsageLimits"
+	InstanceServiceListUsageLimitsProcedure = "/roster.api.InstanceService/ListUsageLimits"
 	// InstanceServiceGetUsageLimitProcedure is the fully-qualified name of the InstanceService's
 	// GetUsageLimit RPC.
-	InstanceServiceGetUsageLimitProcedure = "/memos.api.InstanceService/GetUsageLimit"
+	InstanceServiceGetUsageLimitProcedure = "/roster.api.InstanceService/GetUsageLimit"
 	// InstanceServiceCreateUsageLimitProcedure is the fully-qualified name of the InstanceService's
 	// CreateUsageLimit RPC.
-	InstanceServiceCreateUsageLimitProcedure = "/memos.api.InstanceService/CreateUsageLimit"
+	InstanceServiceCreateUsageLimitProcedure = "/roster.api.InstanceService/CreateUsageLimit"
 	// InstanceServiceUpdateUsageLimitProcedure is the fully-qualified name of the InstanceService's
 	// UpdateUsageLimit RPC.
-	InstanceServiceUpdateUsageLimitProcedure = "/memos.api.InstanceService/UpdateUsageLimit"
+	InstanceServiceUpdateUsageLimitProcedure = "/roster.api.InstanceService/UpdateUsageLimit"
 	// InstanceServiceDeleteUsageLimitProcedure is the fully-qualified name of the InstanceService's
 	// DeleteUsageLimit RPC.
-	InstanceServiceDeleteUsageLimitProcedure = "/memos.api.InstanceService/DeleteUsageLimit"
+	InstanceServiceDeleteUsageLimitProcedure = "/roster.api.InstanceService/DeleteUsageLimit"
 )
 
-// InstanceServiceClient is a client for the memos.api.InstanceService service.
+// InstanceServiceClient is a client for the roster.api.InstanceService service.
 type InstanceServiceClient interface {
 	// GetInstanceProfile gets the instance profile. Available without authentication, including on a private instance.
 	GetInstanceProfile(context.Context, *connect.Request[api.GetInstanceProfileRequest]) (*connect.Response[api.InstanceProfile], error)
@@ -104,7 +104,7 @@ type InstanceServiceClient interface {
 	DeleteUsageLimit(context.Context, *connect.Request[api.DeleteUsageLimitRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
-// NewInstanceServiceClient constructs a client for the memos.api.InstanceService service. By
+// NewInstanceServiceClient constructs a client for the roster.api.InstanceService service. By
 // default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
 // and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
 // connect.WithGRPC() or connect.WithGRPCWeb() options.
@@ -199,62 +199,62 @@ type instanceServiceClient struct {
 	deleteUsageLimit         *connect.Client[api.DeleteUsageLimitRequest, emptypb.Empty]
 }
 
-// GetInstanceProfile calls memos.api.InstanceService.GetInstanceProfile.
+// GetInstanceProfile calls roster.api.InstanceService.GetInstanceProfile.
 func (c *instanceServiceClient) GetInstanceProfile(ctx context.Context, req *connect.Request[api.GetInstanceProfileRequest]) (*connect.Response[api.InstanceProfile], error) {
 	return c.getInstanceProfile.CallUnary(ctx, req)
 }
 
-// GetInstanceSetting calls memos.api.InstanceService.GetInstanceSetting.
+// GetInstanceSetting calls roster.api.InstanceService.GetInstanceSetting.
 func (c *instanceServiceClient) GetInstanceSetting(ctx context.Context, req *connect.Request[api.GetInstanceSettingRequest]) (*connect.Response[api.InstanceSetting], error) {
 	return c.getInstanceSetting.CallUnary(ctx, req)
 }
 
-// BatchGetInstanceSettings calls memos.api.InstanceService.BatchGetInstanceSettings.
+// BatchGetInstanceSettings calls roster.api.InstanceService.BatchGetInstanceSettings.
 func (c *instanceServiceClient) BatchGetInstanceSettings(ctx context.Context, req *connect.Request[api.BatchGetInstanceSettingsRequest]) (*connect.Response[api.BatchGetInstanceSettingsResponse], error) {
 	return c.batchGetInstanceSettings.CallUnary(ctx, req)
 }
 
-// UpdateInstanceSetting calls memos.api.InstanceService.UpdateInstanceSetting.
+// UpdateInstanceSetting calls roster.api.InstanceService.UpdateInstanceSetting.
 func (c *instanceServiceClient) UpdateInstanceSetting(ctx context.Context, req *connect.Request[api.UpdateInstanceSettingRequest]) (*connect.Response[api.InstanceSetting], error) {
 	return c.updateInstanceSetting.CallUnary(ctx, req)
 }
 
-// TestInstanceEmailSetting calls memos.api.InstanceService.TestInstanceEmailSetting.
+// TestInstanceEmailSetting calls roster.api.InstanceService.TestInstanceEmailSetting.
 func (c *instanceServiceClient) TestInstanceEmailSetting(ctx context.Context, req *connect.Request[api.TestInstanceEmailSettingRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.testInstanceEmailSetting.CallUnary(ctx, req)
 }
 
-// GetInstanceStats calls memos.api.InstanceService.GetInstanceStats.
+// GetInstanceStats calls roster.api.InstanceService.GetInstanceStats.
 func (c *instanceServiceClient) GetInstanceStats(ctx context.Context, req *connect.Request[api.GetInstanceStatsRequest]) (*connect.Response[api.InstanceStats], error) {
 	return c.getInstanceStats.CallUnary(ctx, req)
 }
 
-// ListUsageLimits calls memos.api.InstanceService.ListUsageLimits.
+// ListUsageLimits calls roster.api.InstanceService.ListUsageLimits.
 func (c *instanceServiceClient) ListUsageLimits(ctx context.Context, req *connect.Request[api.ListUsageLimitsRequest]) (*connect.Response[api.ListUsageLimitsResponse], error) {
 	return c.listUsageLimits.CallUnary(ctx, req)
 }
 
-// GetUsageLimit calls memos.api.InstanceService.GetUsageLimit.
+// GetUsageLimit calls roster.api.InstanceService.GetUsageLimit.
 func (c *instanceServiceClient) GetUsageLimit(ctx context.Context, req *connect.Request[api.GetUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
 	return c.getUsageLimit.CallUnary(ctx, req)
 }
 
-// CreateUsageLimit calls memos.api.InstanceService.CreateUsageLimit.
+// CreateUsageLimit calls roster.api.InstanceService.CreateUsageLimit.
 func (c *instanceServiceClient) CreateUsageLimit(ctx context.Context, req *connect.Request[api.CreateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
 	return c.createUsageLimit.CallUnary(ctx, req)
 }
 
-// UpdateUsageLimit calls memos.api.InstanceService.UpdateUsageLimit.
+// UpdateUsageLimit calls roster.api.InstanceService.UpdateUsageLimit.
 func (c *instanceServiceClient) UpdateUsageLimit(ctx context.Context, req *connect.Request[api.UpdateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
 	return c.updateUsageLimit.CallUnary(ctx, req)
 }
 
-// DeleteUsageLimit calls memos.api.InstanceService.DeleteUsageLimit.
+// DeleteUsageLimit calls roster.api.InstanceService.DeleteUsageLimit.
 func (c *instanceServiceClient) DeleteUsageLimit(ctx context.Context, req *connect.Request[api.DeleteUsageLimitRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteUsageLimit.CallUnary(ctx, req)
 }
 
-// InstanceServiceHandler is an implementation of the memos.api.InstanceService service.
+// InstanceServiceHandler is an implementation of the roster.api.InstanceService service.
 type InstanceServiceHandler interface {
 	// GetInstanceProfile gets the instance profile. Available without authentication, including on a private instance.
 	GetInstanceProfile(context.Context, *connect.Request[api.GetInstanceProfileRequest]) (*connect.Response[api.InstanceProfile], error)
@@ -362,7 +362,7 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 		connect.WithSchema(instanceServiceMethods.ByName("DeleteUsageLimit")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/memos.api.InstanceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/roster.api.InstanceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case InstanceServiceGetInstanceProfileProcedure:
 			instanceServiceGetInstanceProfileHandler.ServeHTTP(w, r)
@@ -396,45 +396,45 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 type UnimplementedInstanceServiceHandler struct{}
 
 func (UnimplementedInstanceServiceHandler) GetInstanceProfile(context.Context, *connect.Request[api.GetInstanceProfileRequest]) (*connect.Response[api.InstanceProfile], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.GetInstanceProfile is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.GetInstanceProfile is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) GetInstanceSetting(context.Context, *connect.Request[api.GetInstanceSettingRequest]) (*connect.Response[api.InstanceSetting], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.GetInstanceSetting is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.GetInstanceSetting is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) BatchGetInstanceSettings(context.Context, *connect.Request[api.BatchGetInstanceSettingsRequest]) (*connect.Response[api.BatchGetInstanceSettingsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.BatchGetInstanceSettings is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.BatchGetInstanceSettings is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) UpdateInstanceSetting(context.Context, *connect.Request[api.UpdateInstanceSettingRequest]) (*connect.Response[api.InstanceSetting], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.UpdateInstanceSetting is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.UpdateInstanceSetting is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) TestInstanceEmailSetting(context.Context, *connect.Request[api.TestInstanceEmailSettingRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.TestInstanceEmailSetting is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.TestInstanceEmailSetting is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) GetInstanceStats(context.Context, *connect.Request[api.GetInstanceStatsRequest]) (*connect.Response[api.InstanceStats], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.GetInstanceStats is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.GetInstanceStats is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) ListUsageLimits(context.Context, *connect.Request[api.ListUsageLimitsRequest]) (*connect.Response[api.ListUsageLimitsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.ListUsageLimits is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.ListUsageLimits is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) GetUsageLimit(context.Context, *connect.Request[api.GetUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.GetUsageLimit is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.GetUsageLimit is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) CreateUsageLimit(context.Context, *connect.Request[api.CreateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.CreateUsageLimit is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.CreateUsageLimit is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) UpdateUsageLimit(context.Context, *connect.Request[api.UpdateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.UpdateUsageLimit is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.UpdateUsageLimit is not implemented"))
 }
 
 func (UnimplementedInstanceServiceHandler) DeleteUsageLimit(context.Context, *connect.Request[api.DeleteUsageLimitRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.DeleteUsageLimit is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.InstanceService.DeleteUsageLimit is not implemented"))
 }

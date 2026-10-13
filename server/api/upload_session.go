@@ -260,5 +260,5 @@ func (m *uploadSessions[T]) close() {
 // Call it after draining HTTP requests during server shutdown.
 func (s *APIService) CloseUploads() {
 	s.attachmentUploads.close()
-	s.memoImports.close()
+	s.noteImports.close()
 }

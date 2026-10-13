@@ -24,7 +24,7 @@ type Profile struct {
 	UNIXSock string
 	// Data is the data directory
 	Data string
-	// DSN points to where memos stores its own data
+	// DSN points to where notes stores its own data
 	DSN string
 	// Driver is the database driver: sqlite, mysql, or postgres.
 	Driver string
@@ -32,7 +32,7 @@ type Profile struct {
 	Version string
 	// Commit is the current build commit of server
 	Commit string
-	// InstanceURL is the canonical external URL of the Memos instance.
+	// InstanceURL is the canonical external URL of the Roster Tracker instance.
 	InstanceURL string
 	// RateLimit enables the request rate limiter. Off restores unbounded behavior.
 	RateLimit bool
@@ -75,22 +75,22 @@ func (p *Profile) Validate() error {
 	// Set default data directory if not specified
 	if p.Data == "" {
 		if runtime.GOOS == "windows" {
-			p.Data = filepath.Join(os.Getenv("ProgramData"), "memos")
+			p.Data = filepath.Join(os.Getenv("ProgramData"), "roster-tracker")
 		} else {
-			// On Linux/macOS, check if /var/opt/memos exists and is writable (Docker scenario)
-			if info, err := os.Stat("/var/opt/memos"); err == nil && info.IsDir() {
+			// On Linux/macOS, check if /var/opt/roster-tracker exists and is writable (Docker scenario)
+			if info, err := os.Stat("/var/opt/roster-tracker"); err == nil && info.IsDir() {
 				// Check if we can write to this directory
-				testFile := filepath.Join("/var/opt/memos", ".write-test")
+				testFile := filepath.Join("/var/opt/roster-tracker", ".write-test")
 				if err := os.WriteFile(testFile, []byte("test"), 0600); err == nil {
 					os.Remove(testFile)
-					p.Data = "/var/opt/memos"
+					p.Data = "/var/opt/roster-tracker"
 				} else {
-					// /var/opt/memos exists but is not writable, use current directory
-					slog.Warn("/var/opt/memos is not writable, using current directory")
+					// /var/opt/roster-tracker exists but is not writable, use current directory
+					slog.Warn("/var/opt/roster-tracker is not writable, using current directory")
 					p.Data = "."
 				}
 			} else {
-				// /var/opt/memos doesn't exist, use current directory (local development)
+				// /var/opt/roster-tracker doesn't exist, use current directory (local development)
 				p.Data = "."
 			}
 		}
@@ -116,7 +116,7 @@ func (p *Profile) Validate() error {
 		if p.Demo {
 			mode = "demo"
 		}
-		dbFile := fmt.Sprintf("memos_%s.db", mode)
+		dbFile := fmt.Sprintf("roster_%s.db", mode)
 		p.DSN = filepath.Join(dataDir, dbFile)
 	}
 

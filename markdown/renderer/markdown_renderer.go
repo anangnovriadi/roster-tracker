@@ -8,7 +8,7 @@ import (
 	gast "github.com/yuin/goldmark/ast"
 	east "github.com/yuin/goldmark/extension/ast"
 
-	mast "github.com/usememos/memos/markdown/ast"
+	mast "github.com/anangnovriadi/roster-tracker/markdown/ast"
 )
 
 // MarkdownRenderer renders goldmark AST back to markdown text.
@@ -170,7 +170,7 @@ func (r *MarkdownRenderer) renderNode(node gast.Node, source []byte, depth int) 
 			r.buf.WriteString("\n\n")
 		}
 
-	// Custom Memos nodes
+	// Custom Roster Tracker nodes
 	case *mast.TagNode:
 		if len(n.Source) > 0 {
 			r.buf.Write(n.Source)

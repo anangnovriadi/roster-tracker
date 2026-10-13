@@ -133,13 +133,13 @@ func (MotionMediaRole) EnumDescriptor() ([]byte, []int) {
 	return file_api_attachment_service_proto_rawDescGZIP(), []int{1}
 }
 
-// Attachment is a file uploaded by a user, optionally linked to a memo.
+// Attachment is a file uploaded by a user, optionally linked to a note.
 type Attachment struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Identifier. The resource name of the attachment.
 	// Format: attachments/{attachment}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Output only. The user who uploaded the attachment, which may differ from the creator of the linked memo.
+	// Output only. The user who uploaded the attachment, which may differ from the creator of the linked note.
 	// Format: users/{user}
 	Creator string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
 	// Required. The filename of the attachment.
@@ -156,9 +156,9 @@ type Attachment struct {
 	MotionMedia *MotionMedia `protobuf:"bytes,7,opt,name=motion_media,json=motionMedia,proto3" json:"motion_media,omitempty"`
 	// Optional. Normalized media metadata supplied by the client at creation time. Immutable after creation.
 	MediaMetadata *MediaMetadata `protobuf:"bytes,8,opt,name=media_metadata,json=mediaMetadata,proto3" json:"media_metadata,omitempty"`
-	// Optional. The memo the attachment is linked to. On create, the caller must be able to manage the memo.
-	// Format: memos/{memo}
-	Memo *string `protobuf:"bytes,9,opt,name=memo,proto3,oneof" json:"memo,omitempty"`
+	// Optional. The note the attachment is linked to. On create, the caller must be able to manage the note.
+	// Format: notes/{note}
+	Note *string `protobuf:"bytes,9,opt,name=note,proto3,oneof" json:"note,omitempty"`
 	// Output only. The size of the stored content in bytes.
 	Size int64 `protobuf:"varint,10,opt,name=size,proto3" json:"size,omitempty"`
 	// Output only. The creation time.
@@ -253,9 +253,9 @@ func (x *Attachment) GetMediaMetadata() *MediaMetadata {
 	return nil
 }
 
-func (x *Attachment) GetMemo() string {
-	if x != nil && x.Memo != nil {
-		return *x.Memo
+func (x *Attachment) GetNote() string {
+	if x != nil && x.Note != nil {
+		return *x.Note
 	}
 	return ""
 }
@@ -285,10 +285,10 @@ type ListAttachmentsRequest struct {
 	// Optional. A CEL filter over the results.
 	// Example: `mime_type == "image/png"` or `filename.contains("test")`.
 	// Supported operators: ==, !=, <, <=, >, >=, : (contains), in.
-	// Supported fields: creator, filename, mime_type, create_time, memo_id, space.
-	// `creator` is the linked memo's creator, or the uploader for an unlinked attachment. It supports equality with a
+	// Supported fields: creator, filename, mime_type, create_time, note_id, space.
+	// `creator` is the linked note's creator, or the uploader for an unlinked attachment. It supports equality with a
 	// User resource name.
-	// `space` is the linked memo's Space resource name, or null when the attachment is unlinked or its memo has no
+	// `space` is the linked note's Space resource name, or null when the attachment is unlinked or its note has no
 	// space. It supports only a non-negated `==` comparison with a Space resource name or null.
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. The order to sort results by, such as "create_time desc" or "filename asc". The service does not apply
@@ -922,9 +922,9 @@ func (x *UploadAttachmentSpec) GetTotalSize() int64 {
 type MotionMedia struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The motion photo format.
-	Family MotionMediaFamily `protobuf:"varint,1,opt,name=family,proto3,enum=memos.api.MotionMediaFamily" json:"family,omitempty"`
+	Family MotionMediaFamily `protobuf:"varint,1,opt,name=family,proto3,enum=roster.api.MotionMediaFamily" json:"family,omitempty"`
 	// The part this attachment plays in the motion photo.
-	Role MotionMediaRole `protobuf:"varint,2,opt,name=role,proto3,enum=memos.api.MotionMediaRole" json:"role,omitempty"`
+	Role MotionMediaRole `protobuf:"varint,2,opt,name=role,proto3,enum=roster.api.MotionMediaRole" json:"role,omitempty"`
 	// Groups the attachments that belong to one motion photo. Required for client-supplied Apple Live Photo metadata;
 	// for an Android motion photo it is the attachment's own ID.
 	GroupId string `protobuf:"bytes,3,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
@@ -1405,92 +1405,93 @@ var File_api_attachment_service_proto protoreflect.FileDescriptor
 
 const file_api_attachment_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1capi/attachment_service.proto\x12\tmemos.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb3\x04\n" +
+	"\x1capi/attachment_service.proto\x12\n" +
+	"roster.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\x04\n" +
 	"\n" +
 	"Attachment\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x120\n" +
-	"\acreator\x18\x02 \x01(\tB\x16\xe0A\x03\xfaA\x10\n" +
-	"\x0ememos.api/UserR\acreator\x12\x1f\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x121\n" +
+	"\acreator\x18\x02 \x01(\tB\x17\xe0A\x03\xfaA\x11\n" +
+	"\x0froster.api/UserR\acreator\x12\x1f\n" +
 	"\bfilename\x18\x03 \x01(\tB\x03\xe0A\x02R\bfilename\x12\x17\n" +
 	"\x04type\x18\x04 \x01(\tB\x03\xe0A\x02R\x04type\x12\x1d\n" +
 	"\acontent\x18\x05 \x01(\fB\x03\xe0A\x04R\acontent\x12(\n" +
-	"\rexternal_link\x18\x06 \x01(\tB\x03\xe0A\x01R\fexternalLink\x12>\n" +
-	"\fmotion_media\x18\a \x01(\v2\x16.memos.api.MotionMediaB\x03\xe0A\x01R\vmotionMedia\x12G\n" +
-	"\x0emedia_metadata\x18\b \x01(\v2\x18.memos.api.MediaMetadataB\x06\xe0A\x01\xe0A\x05R\rmediaMetadata\x12\x1c\n" +
-	"\x04memo\x18\t \x01(\tB\x03\xe0A\x01H\x00R\x04memo\x88\x01\x01\x12\x17\n" +
+	"\rexternal_link\x18\x06 \x01(\tB\x03\xe0A\x01R\fexternalLink\x12?\n" +
+	"\fmotion_media\x18\a \x01(\v2\x17.roster.api.MotionMediaB\x03\xe0A\x01R\vmotionMedia\x12H\n" +
+	"\x0emedia_metadata\x18\b \x01(\v2\x19.roster.api.MediaMetadataB\x06\xe0A\x01\xe0A\x05R\rmediaMetadata\x12\x1c\n" +
+	"\x04note\x18\t \x01(\tB\x03\xe0A\x01H\x00R\x04note\x88\x01\x01\x12\x17\n" +
 	"\x04size\x18\n" +
 	" \x01(\x03B\x03\xe0A\x03R\x04size\x12@\n" +
 	"\vcreate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime:L\xeaAI\n" +
-	"\x14memos.api/Attachment\x12\x18attachments/{attachment}*\vattachments2\n" +
+	"createTime:M\xeaAJ\n" +
+	"\x15roster.api/Attachment\x12\x18attachments/{attachment}*\vattachments2\n" +
 	"attachmentB\a\n" +
-	"\x05_memo\"\x9b\x01\n" +
+	"\x05_note\"\x9b\x01\n" +
 	"\x16ListAttachmentsRequest\x12 \n" +
 	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
 	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\"z\n" +
-	"\x17ListAttachmentsResponse\x127\n" +
-	"\vattachments\x18\x01 \x03(\v2\x15.memos.api.AttachmentR\vattachments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"H\n" +
-	"\x14GetAttachmentRequest\x120\n" +
-	"\x04name\x18\x01 \x01(\tB\x1c\xe0A\x02\xfaA\x16\n" +
-	"\x14memos.api/AttachmentR\x04name\"\x7f\n" +
-	"\x17CreateAttachmentRequest\x12:\n" +
+	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\"{\n" +
+	"\x17ListAttachmentsResponse\x128\n" +
+	"\vattachments\x18\x01 \x03(\v2\x16.roster.api.AttachmentR\vattachments\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"I\n" +
+	"\x14GetAttachmentRequest\x121\n" +
+	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
+	"\x15roster.api/AttachmentR\x04name\"\x80\x01\n" +
+	"\x17CreateAttachmentRequest\x12;\n" +
 	"\n" +
-	"attachment\x18\x01 \x01(\v2\x15.memos.api.AttachmentB\x03\xe0A\x02R\n" +
+	"attachment\x18\x01 \x01(\v2\x16.roster.api.AttachmentB\x03\xe0A\x02R\n" +
 	"attachment\x12(\n" +
-	"\rattachment_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fattachmentId\"\x97\x01\n" +
-	"\x17UpdateAttachmentRequest\x12:\n" +
+	"\rattachment_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fattachmentId\"\x98\x01\n" +
+	"\x17UpdateAttachmentRequest\x12;\n" +
 	"\n" +
-	"attachment\x18\x01 \x01(\v2\x15.memos.api.AttachmentB\x03\xe0A\x02R\n" +
+	"attachment\x18\x01 \x01(\v2\x16.roster.api.AttachmentB\x03\xe0A\x02R\n" +
 	"attachment\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"K\n" +
-	"\x17DeleteAttachmentRequest\x120\n" +
-	"\x04name\x18\x01 \x01(\tB\x1c\xe0A\x02\xfaA\x16\n" +
-	"\x14memos.api/AttachmentR\x04name\":\n" +
+	"updateMask\"L\n" +
+	"\x17DeleteAttachmentRequest\x121\n" +
+	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
+	"\x15roster.api/AttachmentR\x04name\":\n" +
 	"\x1dBatchDeleteAttachmentsRequest\x12\x19\n" +
-	"\x05names\x18\x01 \x03(\tB\x03\xe0A\x02R\x05names\"\xe2\x01\n" +
-	"\x17UploadAttachmentRequest\x125\n" +
-	"\x04spec\x18\x01 \x01(\v2\x1f.memos.api.UploadAttachmentSpecH\x00R\x04spec\x12\x1d\n" +
+	"\x05names\x18\x01 \x03(\tB\x03\xe0A\x02R\x05names\"\xe3\x01\n" +
+	"\x17UploadAttachmentRequest\x126\n" +
+	"\x04spec\x18\x01 \x01(\v2 .roster.api.UploadAttachmentSpecH\x00R\x04spec\x12\x1d\n" +
 	"\tupload_id\x18\x02 \x01(\tH\x00R\buploadId\x12&\n" +
 	"\fwrite_offset\x18\x03 \x01(\x03B\x03\xe0A\x02R\vwriteOffset\x12\x17\n" +
 	"\x04data\x18\x04 \x01(\fB\x03\xe0A\x01R\x04data\x12&\n" +
 	"\ffinish_write\x18\x05 \x01(\bB\x03\xe0A\x01R\vfinishWriteB\b\n" +
-	"\x06upload\"\xbb\x01\n" +
+	"\x06upload\"\xbc\x01\n" +
 	"\x18UploadAttachmentResponse\x12\x1b\n" +
 	"\tupload_id\x18\x01 \x01(\tR\buploadId\x12%\n" +
 	"\x0ecommitted_size\x18\x02 \x01(\x03R\rcommittedSize\x12$\n" +
-	"\x0emax_chunk_size\x18\x03 \x01(\x05R\fmaxChunkSize\x125\n" +
+	"\x0emax_chunk_size\x18\x03 \x01(\x05R\fmaxChunkSize\x126\n" +
 	"\n" +
-	"attachment\x18\x04 \x01(\v2\x15.memos.api.AttachmentR\n" +
-	"attachment\"\xa0\x01\n" +
-	"\x14UploadAttachmentSpec\x12:\n" +
+	"attachment\x18\x04 \x01(\v2\x16.roster.api.AttachmentR\n" +
+	"attachment\"\xa1\x01\n" +
+	"\x14UploadAttachmentSpec\x12;\n" +
 	"\n" +
-	"attachment\x18\x01 \x01(\v2\x15.memos.api.AttachmentB\x03\xe0A\x02R\n" +
+	"attachment\x18\x01 \x01(\v2\x16.roster.api.AttachmentB\x03\xe0A\x02R\n" +
 	"attachment\x12(\n" +
 	"\rattachment_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fattachmentId\x12\"\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x03B\x03\xe0A\x01R\ttotalSize\"\xf8\x01\n" +
-	"\vMotionMedia\x124\n" +
-	"\x06family\x18\x01 \x01(\x0e2\x1c.memos.api.MotionMediaFamilyR\x06family\x12.\n" +
-	"\x04role\x18\x02 \x01(\x0e2\x1a.memos.api.MotionMediaRoleR\x04role\x12\x19\n" +
+	"total_size\x18\x03 \x01(\x03B\x03\xe0A\x01R\ttotalSize\"\xfa\x01\n" +
+	"\vMotionMedia\x125\n" +
+	"\x06family\x18\x01 \x01(\x0e2\x1d.roster.api.MotionMediaFamilyR\x06family\x12/\n" +
+	"\x04role\x18\x02 \x01(\x0e2\x1b.roster.api.MotionMediaRoleR\x04role\x12\x19\n" +
 	"\bgroup_id\x18\x03 \x01(\tR\agroupId\x12:\n" +
 	"\x19presentation_timestamp_us\x18\x04 \x01(\x03R\x17presentationTimestampUs\x12,\n" +
-	"\x12has_embedded_video\x18\x05 \x01(\bR\x10hasEmbeddedVideo\"\xcb\x01\n" +
+	"\x12has_embedded_video\x18\x05 \x01(\bR\x10hasEmbeddedVideo\"\xcd\x01\n" +
 	"\rMediaMetadata\x12\x19\n" +
 	"\x05width\x18\x01 \x01(\x05H\x01R\x05width\x88\x01\x01\x12\x1b\n" +
-	"\x06height\x18\x02 \x01(\x05H\x02R\x06height\x88\x01\x01\x120\n" +
-	"\x05photo\x18\x03 \x01(\v2\x18.memos.api.PhotoMetadataH\x00R\x05photo\x120\n" +
-	"\x05video\x18\x04 \x01(\v2\x18.memos.api.VideoMetadataH\x00R\x05videoB\t\n" +
+	"\x06height\x18\x02 \x01(\x05H\x02R\x06height\x88\x01\x01\x121\n" +
+	"\x05photo\x18\x03 \x01(\v2\x19.roster.api.PhotoMetadataH\x00R\x05photo\x121\n" +
+	"\x05video\x18\x04 \x01(\v2\x19.roster.api.VideoMetadataH\x00R\x05videoB\t\n" +
 	"\adetailsB\b\n" +
 	"\x06_widthB\t\n" +
-	"\a_height\"\xa1\x04\n" +
-	"\rPhotoMetadata\x12>\n" +
-	"\fcapture_time\x18\x01 \x01(\v2\x1b.memos.api.MediaCaptureTimeR\vcaptureTime\x124\n" +
-	"\blocation\x18\x02 \x01(\v2\x18.memos.api.MediaLocationR\blocation\x12;\n" +
+	"\a_height\"\xa3\x04\n" +
+	"\rPhotoMetadata\x12?\n" +
+	"\fcapture_time\x18\x01 \x01(\v2\x1c.roster.api.MediaCaptureTimeR\vcaptureTime\x125\n" +
+	"\blocation\x18\x02 \x01(\v2\x19.roster.api.MediaLocationR\blocation\x12;\n" +
 	"\x17source_exif_orientation\x18\x03 \x01(\x05H\x00R\x15sourceExifOrientation\x88\x01\x01\x12\x1f\n" +
 	"\vcamera_make\x18\x04 \x01(\tR\n" +
 	"cameraMake\x12!\n" +
@@ -1531,20 +1532,21 @@ const file_api_attachment_service_proto_rawDesc = "" +
 	"\x1dMOTION_MEDIA_ROLE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05STILL\x10\x01\x12\t\n" +
 	"\x05VIDEO\x10\x02\x12\r\n" +
-	"\tCONTAINER\x10\x032\xa1\a\n" +
-	"\x11AttachmentService\x12r\n" +
-	"\x0fListAttachments\x12!.memos.api.ListAttachmentsRequest\x1a\".memos.api.ListAttachmentsResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/attachments\x12q\n" +
-	"\rGetAttachment\x12\x1f.memos.api.GetAttachmentRequest\x1a\x15.memos.api.Attachment\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/{name=attachments/*}\x12\x80\x01\n" +
-	"\x10CreateAttachment\x12\".memos.api.CreateAttachmentRequest\x1a\x15.memos.api.Attachment\"1\xdaA\n" +
+	"\tCONTAINER\x10\x032\xae\a\n" +
+	"\x11AttachmentService\x12t\n" +
+	"\x0fListAttachments\x12\".roster.api.ListAttachmentsRequest\x1a#.roster.api.ListAttachmentsResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/attachments\x12s\n" +
+	"\rGetAttachment\x12 .roster.api.GetAttachmentRequest\x1a\x16.roster.api.Attachment\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/{name=attachments/*}\x12\x82\x01\n" +
+	"\x10CreateAttachment\x12#.roster.api.CreateAttachmentRequest\x1a\x16.roster.api.Attachment\"1\xdaA\n" +
 	"attachment\x82\xd3\xe4\x93\x02\x1e:\n" +
-	"attachment\"\x10/api/attachments\x12\xa0\x01\n" +
-	"\x10UpdateAttachment\x12\".memos.api.UpdateAttachmentRequest\x1a\x15.memos.api.Attachment\"Q\xdaA\x16attachment,update_mask\x82\xd3\xe4\x93\x022:\n" +
-	"attachment2$/api/{attachment.name=attachments/*}\x12x\n" +
-	"\x10DeleteAttachment\x12\".memos.api.DeleteAttachmentRequest\x1a\x16.google.protobuf.Empty\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b*\x19/api/{name=attachments/*}\x12\x83\x01\n" +
-	"\x16BatchDeleteAttachments\x12(.memos.api.BatchDeleteAttachmentsRequest\x1a\x16.google.protobuf.Empty\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/api/attachments:batchDelete\x12\x7f\n" +
-	"\x10UploadAttachment\x12\".memos.api.UploadAttachmentRequest\x1a#.memos.api.UploadAttachmentResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/attachments:uploadB\x95\x01\n" +
-	"\rcom.memos.apiB\x16AttachmentServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
-	"Memos::Apib\x06proto3"
+	"attachment\"\x10/api/attachments\x12\xa2\x01\n" +
+	"\x10UpdateAttachment\x12#.roster.api.UpdateAttachmentRequest\x1a\x16.roster.api.Attachment\"Q\xdaA\x16attachment,update_mask\x82\xd3\xe4\x93\x022:\n" +
+	"attachment2$/api/{attachment.name=attachments/*}\x12y\n" +
+	"\x10DeleteAttachment\x12#.roster.api.DeleteAttachmentRequest\x1a\x16.google.protobuf.Empty\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b*\x19/api/{name=attachments/*}\x12\x84\x01\n" +
+	"\x16BatchDeleteAttachments\x12).roster.api.BatchDeleteAttachmentsRequest\x1a\x16.google.protobuf.Empty\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/api/attachments:batchDelete\x12\x81\x01\n" +
+	"\x10UploadAttachment\x12#.roster.api.UploadAttachmentRequest\x1a$.roster.api.UploadAttachmentResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/attachments:uploadB\xa8\x01\n" +
+	"\x0ecom.roster.apiB\x16AttachmentServiceProtoP\x01Z5github.com/anangnovriadi/roster-tracker/proto/gen/api\xa2\x02\x03RAX\xaa\x02\n" +
+	"Roster.Api\xca\x02\n" +
+	"Roster\\Api\xe2\x02\x16Roster\\Api\\GPBMetadata\xea\x02\vRoster::Apib\x06proto3"
 
 var (
 	file_api_attachment_service_proto_rawDescOnce sync.Once
@@ -1561,60 +1563,60 @@ func file_api_attachment_service_proto_rawDescGZIP() []byte {
 var file_api_attachment_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_api_attachment_service_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_api_attachment_service_proto_goTypes = []any{
-	(MotionMediaFamily)(0),                // 0: memos.api.MotionMediaFamily
-	(MotionMediaRole)(0),                  // 1: memos.api.MotionMediaRole
-	(*Attachment)(nil),                    // 2: memos.api.Attachment
-	(*ListAttachmentsRequest)(nil),        // 3: memos.api.ListAttachmentsRequest
-	(*ListAttachmentsResponse)(nil),       // 4: memos.api.ListAttachmentsResponse
-	(*GetAttachmentRequest)(nil),          // 5: memos.api.GetAttachmentRequest
-	(*CreateAttachmentRequest)(nil),       // 6: memos.api.CreateAttachmentRequest
-	(*UpdateAttachmentRequest)(nil),       // 7: memos.api.UpdateAttachmentRequest
-	(*DeleteAttachmentRequest)(nil),       // 8: memos.api.DeleteAttachmentRequest
-	(*BatchDeleteAttachmentsRequest)(nil), // 9: memos.api.BatchDeleteAttachmentsRequest
-	(*UploadAttachmentRequest)(nil),       // 10: memos.api.UploadAttachmentRequest
-	(*UploadAttachmentResponse)(nil),      // 11: memos.api.UploadAttachmentResponse
-	(*UploadAttachmentSpec)(nil),          // 12: memos.api.UploadAttachmentSpec
-	(*MotionMedia)(nil),                   // 13: memos.api.MotionMedia
-	(*MediaMetadata)(nil),                 // 14: memos.api.MediaMetadata
-	(*PhotoMetadata)(nil),                 // 15: memos.api.PhotoMetadata
-	(*MediaCaptureTime)(nil),              // 16: memos.api.MediaCaptureTime
-	(*MediaLocation)(nil),                 // 17: memos.api.MediaLocation
-	(*VideoMetadata)(nil),                 // 18: memos.api.VideoMetadata
+	(MotionMediaFamily)(0),                // 0: roster.api.MotionMediaFamily
+	(MotionMediaRole)(0),                  // 1: roster.api.MotionMediaRole
+	(*Attachment)(nil),                    // 2: roster.api.Attachment
+	(*ListAttachmentsRequest)(nil),        // 3: roster.api.ListAttachmentsRequest
+	(*ListAttachmentsResponse)(nil),       // 4: roster.api.ListAttachmentsResponse
+	(*GetAttachmentRequest)(nil),          // 5: roster.api.GetAttachmentRequest
+	(*CreateAttachmentRequest)(nil),       // 6: roster.api.CreateAttachmentRequest
+	(*UpdateAttachmentRequest)(nil),       // 7: roster.api.UpdateAttachmentRequest
+	(*DeleteAttachmentRequest)(nil),       // 8: roster.api.DeleteAttachmentRequest
+	(*BatchDeleteAttachmentsRequest)(nil), // 9: roster.api.BatchDeleteAttachmentsRequest
+	(*UploadAttachmentRequest)(nil),       // 10: roster.api.UploadAttachmentRequest
+	(*UploadAttachmentResponse)(nil),      // 11: roster.api.UploadAttachmentResponse
+	(*UploadAttachmentSpec)(nil),          // 12: roster.api.UploadAttachmentSpec
+	(*MotionMedia)(nil),                   // 13: roster.api.MotionMedia
+	(*MediaMetadata)(nil),                 // 14: roster.api.MediaMetadata
+	(*PhotoMetadata)(nil),                 // 15: roster.api.PhotoMetadata
+	(*MediaCaptureTime)(nil),              // 16: roster.api.MediaCaptureTime
+	(*MediaLocation)(nil),                 // 17: roster.api.MediaLocation
+	(*VideoMetadata)(nil),                 // 18: roster.api.VideoMetadata
 	(*timestamppb.Timestamp)(nil),         // 19: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),         // 20: google.protobuf.FieldMask
 	(*emptypb.Empty)(nil),                 // 21: google.protobuf.Empty
 }
 var file_api_attachment_service_proto_depIdxs = []int32{
-	13, // 0: memos.api.Attachment.motion_media:type_name -> memos.api.MotionMedia
-	14, // 1: memos.api.Attachment.media_metadata:type_name -> memos.api.MediaMetadata
-	19, // 2: memos.api.Attachment.create_time:type_name -> google.protobuf.Timestamp
-	2,  // 3: memos.api.ListAttachmentsResponse.attachments:type_name -> memos.api.Attachment
-	2,  // 4: memos.api.CreateAttachmentRequest.attachment:type_name -> memos.api.Attachment
-	2,  // 5: memos.api.UpdateAttachmentRequest.attachment:type_name -> memos.api.Attachment
-	20, // 6: memos.api.UpdateAttachmentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	12, // 7: memos.api.UploadAttachmentRequest.spec:type_name -> memos.api.UploadAttachmentSpec
-	2,  // 8: memos.api.UploadAttachmentResponse.attachment:type_name -> memos.api.Attachment
-	2,  // 9: memos.api.UploadAttachmentSpec.attachment:type_name -> memos.api.Attachment
-	0,  // 10: memos.api.MotionMedia.family:type_name -> memos.api.MotionMediaFamily
-	1,  // 11: memos.api.MotionMedia.role:type_name -> memos.api.MotionMediaRole
-	15, // 12: memos.api.MediaMetadata.photo:type_name -> memos.api.PhotoMetadata
-	18, // 13: memos.api.MediaMetadata.video:type_name -> memos.api.VideoMetadata
-	16, // 14: memos.api.PhotoMetadata.capture_time:type_name -> memos.api.MediaCaptureTime
-	17, // 15: memos.api.PhotoMetadata.location:type_name -> memos.api.MediaLocation
-	3,  // 16: memos.api.AttachmentService.ListAttachments:input_type -> memos.api.ListAttachmentsRequest
-	5,  // 17: memos.api.AttachmentService.GetAttachment:input_type -> memos.api.GetAttachmentRequest
-	6,  // 18: memos.api.AttachmentService.CreateAttachment:input_type -> memos.api.CreateAttachmentRequest
-	7,  // 19: memos.api.AttachmentService.UpdateAttachment:input_type -> memos.api.UpdateAttachmentRequest
-	8,  // 20: memos.api.AttachmentService.DeleteAttachment:input_type -> memos.api.DeleteAttachmentRequest
-	9,  // 21: memos.api.AttachmentService.BatchDeleteAttachments:input_type -> memos.api.BatchDeleteAttachmentsRequest
-	10, // 22: memos.api.AttachmentService.UploadAttachment:input_type -> memos.api.UploadAttachmentRequest
-	4,  // 23: memos.api.AttachmentService.ListAttachments:output_type -> memos.api.ListAttachmentsResponse
-	2,  // 24: memos.api.AttachmentService.GetAttachment:output_type -> memos.api.Attachment
-	2,  // 25: memos.api.AttachmentService.CreateAttachment:output_type -> memos.api.Attachment
-	2,  // 26: memos.api.AttachmentService.UpdateAttachment:output_type -> memos.api.Attachment
-	21, // 27: memos.api.AttachmentService.DeleteAttachment:output_type -> google.protobuf.Empty
-	21, // 28: memos.api.AttachmentService.BatchDeleteAttachments:output_type -> google.protobuf.Empty
-	11, // 29: memos.api.AttachmentService.UploadAttachment:output_type -> memos.api.UploadAttachmentResponse
+	13, // 0: roster.api.Attachment.motion_media:type_name -> roster.api.MotionMedia
+	14, // 1: roster.api.Attachment.media_metadata:type_name -> roster.api.MediaMetadata
+	19, // 2: roster.api.Attachment.create_time:type_name -> google.protobuf.Timestamp
+	2,  // 3: roster.api.ListAttachmentsResponse.attachments:type_name -> roster.api.Attachment
+	2,  // 4: roster.api.CreateAttachmentRequest.attachment:type_name -> roster.api.Attachment
+	2,  // 5: roster.api.UpdateAttachmentRequest.attachment:type_name -> roster.api.Attachment
+	20, // 6: roster.api.UpdateAttachmentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	12, // 7: roster.api.UploadAttachmentRequest.spec:type_name -> roster.api.UploadAttachmentSpec
+	2,  // 8: roster.api.UploadAttachmentResponse.attachment:type_name -> roster.api.Attachment
+	2,  // 9: roster.api.UploadAttachmentSpec.attachment:type_name -> roster.api.Attachment
+	0,  // 10: roster.api.MotionMedia.family:type_name -> roster.api.MotionMediaFamily
+	1,  // 11: roster.api.MotionMedia.role:type_name -> roster.api.MotionMediaRole
+	15, // 12: roster.api.MediaMetadata.photo:type_name -> roster.api.PhotoMetadata
+	18, // 13: roster.api.MediaMetadata.video:type_name -> roster.api.VideoMetadata
+	16, // 14: roster.api.PhotoMetadata.capture_time:type_name -> roster.api.MediaCaptureTime
+	17, // 15: roster.api.PhotoMetadata.location:type_name -> roster.api.MediaLocation
+	3,  // 16: roster.api.AttachmentService.ListAttachments:input_type -> roster.api.ListAttachmentsRequest
+	5,  // 17: roster.api.AttachmentService.GetAttachment:input_type -> roster.api.GetAttachmentRequest
+	6,  // 18: roster.api.AttachmentService.CreateAttachment:input_type -> roster.api.CreateAttachmentRequest
+	7,  // 19: roster.api.AttachmentService.UpdateAttachment:input_type -> roster.api.UpdateAttachmentRequest
+	8,  // 20: roster.api.AttachmentService.DeleteAttachment:input_type -> roster.api.DeleteAttachmentRequest
+	9,  // 21: roster.api.AttachmentService.BatchDeleteAttachments:input_type -> roster.api.BatchDeleteAttachmentsRequest
+	10, // 22: roster.api.AttachmentService.UploadAttachment:input_type -> roster.api.UploadAttachmentRequest
+	4,  // 23: roster.api.AttachmentService.ListAttachments:output_type -> roster.api.ListAttachmentsResponse
+	2,  // 24: roster.api.AttachmentService.GetAttachment:output_type -> roster.api.Attachment
+	2,  // 25: roster.api.AttachmentService.CreateAttachment:output_type -> roster.api.Attachment
+	2,  // 26: roster.api.AttachmentService.UpdateAttachment:output_type -> roster.api.Attachment
+	21, // 27: roster.api.AttachmentService.DeleteAttachment:output_type -> google.protobuf.Empty
+	21, // 28: roster.api.AttachmentService.BatchDeleteAttachments:output_type -> google.protobuf.Empty
+	11, // 29: roster.api.AttachmentService.UploadAttachment:output_type -> roster.api.UploadAttachmentResponse
 	23, // [23:30] is the sub-list for method output_type
 	16, // [16:23] is the sub-list for method input_type
 	16, // [16:16] is the sub-list for extension type_name

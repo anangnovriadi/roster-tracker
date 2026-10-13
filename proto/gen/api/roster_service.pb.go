@@ -300,32 +300,34 @@ var File_api_roster_service_proto protoreflect.FileDescriptor
 
 const file_api_roster_service_proto_rawDesc = "" +
 	"\n" +
-	"\x18api/roster_service.proto\x12\tmemos.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\x02\n" +
+	"\x18api/roster_service.proto\x12\n" +
+	"roster.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa2\x02\n" +
 	"\x10RosterAssignment\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x17\n" +
-	"\x04date\x18\x02 \x01(\tB\x03\xe0A\x02R\x04date\x12*\n" +
-	"\x04user\x18\x03 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x04user\x12@\n" +
+	"\x04date\x18\x02 \x01(\tB\x03\xe0A\x02R\x04date\x12+\n" +
+	"\x04user\x18\x03 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x04user\x12@\n" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime:l\xeaAi\n" +
-	"\x1amemos.api/RosterAssignment\x12&roster-assignments/{roster_assignment}*\x11rosterAssignments2\x10rosterAssignment\"b\n" +
+	"createTime:m\xeaAj\n" +
+	"\x1broster.api/RosterAssignment\x12&roster-assignments/{roster_assignment}*\x11rosterAssignments2\x10rosterAssignment\"b\n" +
 	"\x1cListRosterAssignmentsRequest\x12\"\n" +
 	"\n" +
 	"start_date\x18\x01 \x01(\tB\x03\xe0A\x02R\tstartDate\x12\x1e\n" +
-	"\bend_date\x18\x02 \x01(\tB\x03\xe0A\x02R\aendDate\"k\n" +
-	"\x1dListRosterAssignmentsResponse\x12J\n" +
-	"\x12roster_assignments\x18\x01 \x03(\v2\x1b.memos.api.RosterAssignmentR\x11rosterAssignments\"n\n" +
-	"\x1dCreateRosterAssignmentRequest\x12M\n" +
-	"\x11roster_assignment\x18\x01 \x01(\v2\x1b.memos.api.RosterAssignmentB\x03\xe0A\x02R\x10rosterAssignment\"W\n" +
-	"\x1dDeleteRosterAssignmentRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1amemos.api/RosterAssignmentR\x04name2\xd5\x03\n" +
-	"\rRosterService\x12\x8b\x01\n" +
-	"\x15ListRosterAssignments\x12'.memos.api.ListRosterAssignmentsRequest\x1a(.memos.api.ListRosterAssignmentsResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/api/roster-assignments\x12\xa7\x01\n" +
-	"\x16CreateRosterAssignment\x12(.memos.api.CreateRosterAssignmentRequest\x1a\x1b.memos.api.RosterAssignment\"F\xdaA\x11roster_assignment\x82\xd3\xe4\x93\x02,:\x11roster_assignment\"\x17/api/roster-assignments\x12\x8b\x01\n" +
-	"\x16DeleteRosterAssignment\x12(.memos.api.DeleteRosterAssignmentRequest\x1a\x16.google.protobuf.Empty\"/\xdaA\x04name\x82\xd3\xe4\x93\x02\"* /api/{name=roster-assignments/*}B\x91\x01\n" +
-	"\rcom.memos.apiB\x12RosterServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
-	"Memos::Apib\x06proto3"
+	"\bend_date\x18\x02 \x01(\tB\x03\xe0A\x02R\aendDate\"l\n" +
+	"\x1dListRosterAssignmentsResponse\x12K\n" +
+	"\x12roster_assignments\x18\x01 \x03(\v2\x1c.roster.api.RosterAssignmentR\x11rosterAssignments\"o\n" +
+	"\x1dCreateRosterAssignmentRequest\x12N\n" +
+	"\x11roster_assignment\x18\x01 \x01(\v2\x1c.roster.api.RosterAssignmentB\x03\xe0A\x02R\x10rosterAssignment\"X\n" +
+	"\x1dDeleteRosterAssignmentRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"\x1broster.api/RosterAssignmentR\x04name2\xda\x03\n" +
+	"\rRosterService\x12\x8d\x01\n" +
+	"\x15ListRosterAssignments\x12(.roster.api.ListRosterAssignmentsRequest\x1a).roster.api.ListRosterAssignmentsResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/api/roster-assignments\x12\xa9\x01\n" +
+	"\x16CreateRosterAssignment\x12).roster.api.CreateRosterAssignmentRequest\x1a\x1c.roster.api.RosterAssignment\"F\xdaA\x11roster_assignment\x82\xd3\xe4\x93\x02,:\x11roster_assignment\"\x17/api/roster-assignments\x12\x8c\x01\n" +
+	"\x16DeleteRosterAssignment\x12).roster.api.DeleteRosterAssignmentRequest\x1a\x16.google.protobuf.Empty\"/\xdaA\x04name\x82\xd3\xe4\x93\x02\"* /api/{name=roster-assignments/*}B\xa4\x01\n" +
+	"\x0ecom.roster.apiB\x12RosterServiceProtoP\x01Z5github.com/anangnovriadi/roster-tracker/proto/gen/api\xa2\x02\x03RAX\xaa\x02\n" +
+	"Roster.Api\xca\x02\n" +
+	"Roster\\Api\xe2\x02\x16Roster\\Api\\GPBMetadata\xea\x02\vRoster::Apib\x06proto3"
 
 var (
 	file_api_roster_service_proto_rawDescOnce sync.Once
@@ -341,24 +343,24 @@ func file_api_roster_service_proto_rawDescGZIP() []byte {
 
 var file_api_roster_service_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_api_roster_service_proto_goTypes = []any{
-	(*RosterAssignment)(nil),              // 0: memos.api.RosterAssignment
-	(*ListRosterAssignmentsRequest)(nil),  // 1: memos.api.ListRosterAssignmentsRequest
-	(*ListRosterAssignmentsResponse)(nil), // 2: memos.api.ListRosterAssignmentsResponse
-	(*CreateRosterAssignmentRequest)(nil), // 3: memos.api.CreateRosterAssignmentRequest
-	(*DeleteRosterAssignmentRequest)(nil), // 4: memos.api.DeleteRosterAssignmentRequest
+	(*RosterAssignment)(nil),              // 0: roster.api.RosterAssignment
+	(*ListRosterAssignmentsRequest)(nil),  // 1: roster.api.ListRosterAssignmentsRequest
+	(*ListRosterAssignmentsResponse)(nil), // 2: roster.api.ListRosterAssignmentsResponse
+	(*CreateRosterAssignmentRequest)(nil), // 3: roster.api.CreateRosterAssignmentRequest
+	(*DeleteRosterAssignmentRequest)(nil), // 4: roster.api.DeleteRosterAssignmentRequest
 	(*timestamppb.Timestamp)(nil),         // 5: google.protobuf.Timestamp
 	(*emptypb.Empty)(nil),                 // 6: google.protobuf.Empty
 }
 var file_api_roster_service_proto_depIdxs = []int32{
-	5, // 0: memos.api.RosterAssignment.create_time:type_name -> google.protobuf.Timestamp
-	0, // 1: memos.api.ListRosterAssignmentsResponse.roster_assignments:type_name -> memos.api.RosterAssignment
-	0, // 2: memos.api.CreateRosterAssignmentRequest.roster_assignment:type_name -> memos.api.RosterAssignment
-	1, // 3: memos.api.RosterService.ListRosterAssignments:input_type -> memos.api.ListRosterAssignmentsRequest
-	3, // 4: memos.api.RosterService.CreateRosterAssignment:input_type -> memos.api.CreateRosterAssignmentRequest
-	4, // 5: memos.api.RosterService.DeleteRosterAssignment:input_type -> memos.api.DeleteRosterAssignmentRequest
-	2, // 6: memos.api.RosterService.ListRosterAssignments:output_type -> memos.api.ListRosterAssignmentsResponse
-	0, // 7: memos.api.RosterService.CreateRosterAssignment:output_type -> memos.api.RosterAssignment
-	6, // 8: memos.api.RosterService.DeleteRosterAssignment:output_type -> google.protobuf.Empty
+	5, // 0: roster.api.RosterAssignment.create_time:type_name -> google.protobuf.Timestamp
+	0, // 1: roster.api.ListRosterAssignmentsResponse.roster_assignments:type_name -> roster.api.RosterAssignment
+	0, // 2: roster.api.CreateRosterAssignmentRequest.roster_assignment:type_name -> roster.api.RosterAssignment
+	1, // 3: roster.api.RosterService.ListRosterAssignments:input_type -> roster.api.ListRosterAssignmentsRequest
+	3, // 4: roster.api.RosterService.CreateRosterAssignment:input_type -> roster.api.CreateRosterAssignmentRequest
+	4, // 5: roster.api.RosterService.DeleteRosterAssignment:input_type -> roster.api.DeleteRosterAssignmentRequest
+	2, // 6: roster.api.RosterService.ListRosterAssignments:output_type -> roster.api.ListRosterAssignmentsResponse
+	0, // 7: roster.api.RosterService.CreateRosterAssignment:output_type -> roster.api.RosterAssignment
+	6, // 8: roster.api.RosterService.DeleteRosterAssignment:output_type -> google.protobuf.Empty
 	6, // [6:9] is the sub-list for method output_type
 	3, // [3:6] is the sub-list for method input_type
 	3, // [3:3] is the sub-list for extension type_name

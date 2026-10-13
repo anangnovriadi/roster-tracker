@@ -1,10 +1,10 @@
-# Maintaining the Memo Filter Engine
+# Maintaining the Note Filter Engine
 
-The engine is memo-specific; any future field or behavior changes must stay
-consistent with the memo schema and store implementations. Use this guide when
+The engine is note-specific; any future field or behavior changes must stay
+consistent with the note schema and store implementations. Use this guide when
 extending or debugging the package.
 
-## Adding a New Memo Field
+## Adding a New Note Field
 
 1. **Update the schema**  
    - Add the field entry in `schema.go`.  

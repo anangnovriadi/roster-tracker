@@ -13,12 +13,12 @@ import (
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
 )
 
 func TestNormalizeStructuredContentKeepsObjects(t *testing.T) {
-	result := normalizeStructuredContent(map[string]any{"memos": []any{map[string]any{"name": "memos/a"}}})
-	require.Equal(t, map[string]any{"memos": []any{map[string]any{"name": "memos/a"}}}, result)
+	result := normalizeStructuredContent(map[string]any{"notes": []any{map[string]any{"name": "notes/a"}}})
+	require.Equal(t, map[string]any{"notes": []any{map[string]any{"name": "notes/a"}}}, result)
 }
 
 func TestNormalizeStructuredContentWrapsArrays(t *testing.T) {
@@ -90,19 +90,19 @@ func errorsIsJSONSyntax(err error) bool {
 func TestBuildAPIRequestMapsPathQueryAndBody(t *testing.T) {
 	operation := &openAPIOperation{
 		Method: "PATCH",
-		Path:   "/api/memos/{memo}",
+		Path:   "/api/notes/{note}",
 		Parameters: []openAPIParameter{
-			{Name: "memo", In: "path", Required: true, Schema: jsonSchema{"type": "string"}},
+			{Name: "note", In: "path", Required: true, Schema: jsonSchema{"type": "string"}},
 			{Name: "updateMask", In: "query", Schema: jsonSchema{"type": "string"}},
 		},
 		RequestBody: &openAPIRequestBody{Required: true},
 	}
 	arguments := map[string]any{
-		"memo":       "abc123",
+		"note":       "abc123",
 		"updateMask": "content",
 		"body": map[string]any{
-			"memo": map[string]any{
-				"name":    "memos/abc123",
+			"note": map[string]any{
+				"name":    "notes/abc123",
 				"content": "updated",
 			},
 		},
@@ -111,17 +111,17 @@ func TestBuildAPIRequestMapsPathQueryAndBody(t *testing.T) {
 	req, err := buildAPIRequest(context.Background(), operation, arguments, "Bearer pat")
 	require.NoError(t, err)
 	require.Equal(t, "PATCH", req.Method)
-	require.Equal(t, "/api/memos/abc123", req.URL.Path)
+	require.Equal(t, "/api/notes/abc123", req.URL.Path)
 	require.Equal(t, "content", req.URL.Query().Get("updateMask"))
 	require.Equal(t, "Bearer pat", req.Header.Get("Authorization"))
 
 	body, err := io.ReadAll(req.Body)
 	require.NoError(t, err)
-	require.JSONEq(t, `{"memo":{"name":"memos/abc123","content":"updated"}}`, string(body))
+	require.JSONEq(t, `{"note":{"name":"notes/abc123","content":"updated"}}`, string(body))
 }
 
 func TestBuildAPIRequestPresentsResolvedClientAddressAsPeer(t *testing.T) {
-	operation := &openAPIOperation{Method: "GET", Path: "/api/memos"}
+	operation := &openAPIOperation{Method: "GET", Path: "/api/notes"}
 
 	req, err := buildAPIRequest(context.Background(), operation, map[string]any{}, "")
 	require.NoError(t, err)
@@ -165,12 +165,12 @@ func TestBuildAPIRequestAcceptsResourceNamesForPathParameters(t *testing.T) {
 		value    string
 		wantPath string
 	}{
-		{name: "canonical memo name", path: "/api/memos/{memo}", value: "memos/abc123", wantPath: "/api/memos/abc123"},
-		{name: "bare memo id", path: "/api/memos/{memo}", value: "abc123", wantPath: "/api/memos/abc123"},
-		{name: "canonical name on nested route", path: "/api/memos/{memo}/comments", value: "memos/abc123", wantPath: "/api/memos/abc123/comments"},
+		{name: "canonical note name", path: "/api/notes/{note}", value: "notes/abc123", wantPath: "/api/notes/abc123"},
+		{name: "bare note id", path: "/api/notes/{note}", value: "abc123", wantPath: "/api/notes/abc123"},
+		{name: "canonical name on nested route", path: "/api/notes/{note}/comments", value: "notes/abc123", wantPath: "/api/notes/abc123/comments"},
 		{name: "canonical attachment name", path: "/api/attachments/{attachment}", value: "attachments/att42", wantPath: "/api/attachments/att42"},
-		{name: "foreign prefix left untouched", path: "/api/memos/{memo}", value: "attachments/att42", wantPath: "/api/memos/attachments%2Fatt42"},
-		{name: "multi-segment value left untouched", path: "/api/memos/{memo}", value: "memos/abc/extra", wantPath: "/api/memos/memos%2Fabc%2Fextra"},
+		{name: "foreign prefix left untouched", path: "/api/notes/{note}", value: "attachments/att42", wantPath: "/api/notes/attachments%2Fatt42"},
+		{name: "multi-segment value left untouched", path: "/api/notes/{note}", value: "notes/abc/extra", wantPath: "/api/notes/notes%2Fabc%2Fextra"},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -197,23 +197,23 @@ func TestBuildAPIRequestAcceptsHierarchicalResourceNamesForPathParameters(t *tes
 	}{
 		{
 			name:       "canonical reaction name",
-			path:       "/api/memos/{memo}/reactions/{reaction}",
-			parameters: []string{"memo", "reaction"},
+			path:       "/api/notes/{note}/reactions/{reaction}",
+			parameters: []string{"note", "reaction"},
 			arguments: map[string]any{
-				"memo":     "memos/abc123",
-				"reaction": "memos/abc123/reactions/reaction456",
+				"note":     "notes/abc123",
+				"reaction": "notes/abc123/reactions/reaction456",
 			},
-			wantPath: "/api/memos/abc123/reactions/reaction456",
+			wantPath: "/api/notes/abc123/reactions/reaction456",
 		},
 		{
 			name:       "canonical nested name with bare parent id",
-			path:       "/api/memos/{memo}/reactions/{reaction}",
-			parameters: []string{"memo", "reaction"},
+			path:       "/api/notes/{note}/reactions/{reaction}",
+			parameters: []string{"note", "reaction"},
 			arguments: map[string]any{
-				"memo":     "abc123",
-				"reaction": "memos/abc123/reactions/reaction456",
+				"note":     "abc123",
+				"reaction": "notes/abc123/reactions/reaction456",
 			},
-			wantPath: "/api/memos/abc123/reactions/reaction456",
+			wantPath: "/api/notes/abc123/reactions/reaction456",
 		},
 		{
 			name:       "parameter declaration order does not matter",
@@ -237,23 +237,23 @@ func TestBuildAPIRequestAcceptsHierarchicalResourceNamesForPathParameters(t *tes
 		},
 		{
 			name:       "mismatched parent is left untouched",
-			path:       "/api/memos/{memo}/reactions/{reaction}",
-			parameters: []string{"memo", "reaction"},
+			path:       "/api/notes/{note}/reactions/{reaction}",
+			parameters: []string{"note", "reaction"},
 			arguments: map[string]any{
-				"memo":     "memos/abc123",
-				"reaction": "memos/other/reactions/reaction456",
+				"note":     "notes/abc123",
+				"reaction": "notes/other/reactions/reaction456",
 			},
-			wantPath: "/api/memos/abc123/reactions/memos%2Fother%2Freactions%2Freaction456",
+			wantPath: "/api/notes/abc123/reactions/notes%2Fother%2Freactions%2Freaction456",
 		},
 		{
 			name:       "extra nested segment is left untouched",
-			path:       "/api/memos/{memo}/reactions/{reaction}",
-			parameters: []string{"memo", "reaction"},
+			path:       "/api/notes/{note}/reactions/{reaction}",
+			parameters: []string{"note", "reaction"},
 			arguments: map[string]any{
-				"memo":     "memos/abc123",
-				"reaction": "memos/abc123/reactions/reaction456/extra",
+				"note":     "notes/abc123",
+				"reaction": "notes/abc123/reactions/reaction456/extra",
 			},
-			wantPath: "/api/memos/abc123/reactions/memos%2Fabc123%2Freactions%2Freaction456%2Fextra",
+			wantPath: "/api/notes/abc123/reactions/notes%2Fabc123%2Freactions%2Freaction456%2Fextra",
 		},
 	}
 
@@ -280,32 +280,32 @@ func TestBuildAPIRequestAcceptsCanonicalReactionNameForCuratedOperation(t *testi
 	require.NoError(t, err)
 	registry, err := buildOperationRegistry(spec)
 	require.NoError(t, err)
-	operation := registry["MemoService_DeleteMemoReaction"]
+	operation := registry["NoteService_DeleteNoteReaction"]
 	require.NotNil(t, operation)
 
 	req, err := buildAPIRequest(context.Background(), operation, map[string]any{
-		"memo":     "memos/abc123",
-		"reaction": "memos/abc123/reactions/reaction456",
+		"note":     "notes/abc123",
+		"reaction": "notes/abc123/reactions/reaction456",
 	}, "")
 	require.NoError(t, err)
-	require.Equal(t, "/api/memos/abc123/reactions/reaction456", req.URL.EscapedPath())
+	require.Equal(t, "/api/notes/abc123/reactions/reaction456", req.URL.EscapedPath())
 }
 
 func TestBuildAPIRequestRequiresPathParameters(t *testing.T) {
 	operation := &openAPIOperation{
 		Method:     "GET",
-		Path:       "/api/memos/{memo}",
-		Parameters: []openAPIParameter{{Name: "memo", In: "path", Required: true}},
+		Path:       "/api/notes/{note}",
+		Parameters: []openAPIParameter{{Name: "note", In: "path", Required: true}},
 	}
 
 	_, err := buildAPIRequest(context.Background(), operation, map[string]any{}, "")
-	require.ErrorContains(t, err, `missing required path parameter "memo"`)
+	require.ErrorContains(t, err, `missing required path parameter "note"`)
 }
 
 func TestBuildAPIRequestRequiresRequestBody(t *testing.T) {
 	operation := &openAPIOperation{
 		Method:      "POST",
-		Path:        "/api/memos",
+		Path:        "/api/notes",
 		RequestBody: &openAPIRequestBody{Required: true},
 	}
 
@@ -316,37 +316,37 @@ func TestBuildAPIRequestRequiresRequestBody(t *testing.T) {
 func TestBuildAPIRequestEscapesPathAndStringifiesPrimitiveQueryParameters(t *testing.T) {
 	operation := &openAPIOperation{
 		Method: "DELETE",
-		Path:   "/api/memos/{memo}",
+		Path:   "/api/notes/{note}",
 		Parameters: []openAPIParameter{
-			{Name: "memo", In: "path", Required: true, Schema: jsonSchema{"type": "string"}},
+			{Name: "note", In: "path", Required: true, Schema: jsonSchema{"type": "string"}},
 			{Name: "force", In: "query", Schema: jsonSchema{"type": "boolean"}},
 			{Name: "limit", In: "query", Schema: jsonSchema{"type": "integer"}},
 		},
 	}
 
 	req, err := buildAPIRequest(context.Background(), operation, map[string]any{
-		"memo":  "abc 123",
+		"note":  "abc 123",
 		"force": true,
 		"limit": 10,
 	}, "")
 	require.NoError(t, err)
-	require.Equal(t, "/api/memos/abc%20123", req.URL.EscapedPath())
+	require.Equal(t, "/api/notes/abc%20123", req.URL.EscapedPath())
 	require.Equal(t, "true", req.URL.Query().Get("force"))
 	require.Equal(t, "10", req.URL.Query().Get("limit"))
 }
 
 func TestExecuteOperationReturnsObjectStructuredContent(t *testing.T) {
 	echoServer := echo.New()
-	echoServer.GET("/api/memos", func(c *echo.Context) error {
+	echoServer.GET("/api/notes", func(c *echo.Context) error {
 		require.Equal(t, "Bearer token", c.Request().Header.Get("Authorization"))
 		return c.JSON(http.StatusOK, map[string]any{
-			"memos": []any{map[string]any{"name": "memos/abc123"}},
+			"notes": []any{map[string]any{"name": "notes/abc123"}},
 		})
 	})
 
 	operation := &openAPIOperation{
 		Method: "GET",
-		Path:   "/api/memos",
+		Path:   "/api/notes",
 	}
 	adapter := newAPIAdapter(echoServer)
 
@@ -354,29 +354,29 @@ func TestExecuteOperationReturnsObjectStructuredContent(t *testing.T) {
 	require.NoError(t, err)
 	require.False(t, result.IsError)
 	require.Equal(t, map[string]any{
-		"memos": []any{map[string]any{"name": "memos/abc123"}},
+		"notes": []any{map[string]any{"name": "notes/abc123"}},
 	}, result.StructuredContent)
 }
 
 func TestExecuteOperationConvertsAPIErrorsToToolErrors(t *testing.T) {
 	echoServer := echo.New()
-	echoServer.GET("/api/memos/:memo", func(c *echo.Context) error {
-		return c.JSON(http.StatusNotFound, map[string]any{"message": "missing memo"})
+	echoServer.GET("/api/notes/:note", func(c *echo.Context) error {
+		return c.JSON(http.StatusNotFound, map[string]any{"message": "missing note"})
 	})
 
 	operation := &openAPIOperation{
 		Method:     "GET",
-		Path:       "/api/memos/{memo}",
-		Parameters: []openAPIParameter{{Name: "memo", In: "path", Required: true}},
+		Path:       "/api/notes/{note}",
+		Parameters: []openAPIParameter{{Name: "note", In: "path", Required: true}},
 	}
 	adapter := newAPIAdapter(echoServer)
 
-	result, err := adapter.execute(context.Background(), operation, map[string]any{"memo": "missing"}, "")
+	result, err := adapter.execute(context.Background(), operation, map[string]any{"note": "missing"}, "")
 	require.NoError(t, err)
 	require.True(t, result.IsError)
 	require.Nil(t, result.StructuredContent)
 	text, ok := result.Content[0].(*sdkmcp.TextContent)
 	require.True(t, ok)
 	require.Contains(t, text.Text, "404")
-	require.Contains(t, text.Text, "missing memo")
+	require.Contains(t, text.Text, "missing note")
 }

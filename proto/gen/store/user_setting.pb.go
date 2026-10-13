@@ -29,8 +29,8 @@ const (
 	UserSetting_KEY_UNSPECIFIED UserSetting_Key = 0
 	// General user settings.
 	UserSetting_GENERAL UserSetting_Key = 1
-	// The memo views of the user.
-	UserSetting_MEMO_VIEWS UserSetting_Key = 4
+	// The note views of the user.
+	UserSetting_NOTE_VIEWS UserSetting_Key = 4
 	// The webhooks of the user.
 	UserSetting_WEBHOOKS UserSetting_Key = 5
 	// Refresh tokens for the user.
@@ -46,7 +46,7 @@ var (
 	UserSetting_Key_name = map[int32]string{
 		0: "KEY_UNSPECIFIED",
 		1: "GENERAL",
-		4: "MEMO_VIEWS",
+		4: "NOTE_VIEWS",
 		5: "WEBHOOKS",
 		6: "REFRESH_TOKENS",
 		7: "PERSONAL_ACCESS_TOKENS",
@@ -55,7 +55,7 @@ var (
 	UserSetting_Key_value = map[string]int32{
 		"KEY_UNSPECIFIED":        0,
 		"GENERAL":                1,
-		"MEMO_VIEWS":             4,
+		"NOTE_VIEWS":             4,
 		"WEBHOOKS":               5,
 		"REFRESH_TOKENS":         6,
 		"PERSONAL_ACCESS_TOKENS": 7,
@@ -93,11 +93,11 @@ func (UserSetting_Key) EnumDescriptor() ([]byte, []int) {
 type UserSetting struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	UserId int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Key    UserSetting_Key        `protobuf:"varint,2,opt,name=key,proto3,enum=memos.store.UserSetting_Key" json:"key,omitempty"`
+	Key    UserSetting_Key        `protobuf:"varint,2,opt,name=key,proto3,enum=roster.store.UserSetting_Key" json:"key,omitempty"`
 	// Types that are valid to be assigned to Value:
 	//
 	//	*UserSetting_General
-	//	*UserSetting_MemoViews
+	//	*UserSetting_NoteViews
 	//	*UserSetting_Webhooks
 	//	*UserSetting_RefreshTokens
 	//	*UserSetting_PersonalAccessTokens
@@ -167,10 +167,10 @@ func (x *UserSetting) GetGeneral() *GeneralUserSetting {
 	return nil
 }
 
-func (x *UserSetting) GetMemoViews() *MemoViewsUserSetting {
+func (x *UserSetting) GetNoteViews() *NoteViewsUserSetting {
 	if x != nil {
-		if x, ok := x.Value.(*UserSetting_MemoViews); ok {
-			return x.MemoViews
+		if x, ok := x.Value.(*UserSetting_NoteViews); ok {
+			return x.NoteViews
 		}
 	}
 	return nil
@@ -220,8 +220,8 @@ type UserSetting_General struct {
 	General *GeneralUserSetting `protobuf:"bytes,3,opt,name=general,proto3,oneof"`
 }
 
-type UserSetting_MemoViews struct {
-	MemoViews *MemoViewsUserSetting `protobuf:"bytes,6,opt,name=memo_views,json=memoViews,proto3,oneof"`
+type UserSetting_NoteViews struct {
+	NoteViews *NoteViewsUserSetting `protobuf:"bytes,6,opt,name=note_views,json=noteViews,proto3,oneof"`
 }
 
 type UserSetting_Webhooks struct {
@@ -242,7 +242,7 @@ type UserSetting_Tags struct {
 
 func (*UserSetting_General) isUserSetting_Value() {}
 
-func (*UserSetting_MemoViews) isUserSetting_Value() {}
+func (*UserSetting_NoteViews) isUserSetting_Value() {}
 
 func (*UserSetting_Webhooks) isUserSetting_Value() {}
 
@@ -256,8 +256,8 @@ type GeneralUserSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The user's locale.
 	Locale string `protobuf:"bytes,1,opt,name=locale,proto3" json:"locale,omitempty"`
-	// The user's memo visibility setting.
-	MemoVisibility string `protobuf:"bytes,2,opt,name=memo_visibility,json=memoVisibility,proto3" json:"memo_visibility,omitempty"`
+	// The user's note visibility setting.
+	NoteVisibility string `protobuf:"bytes,2,opt,name=note_visibility,json=noteVisibility,proto3" json:"note_visibility,omitempty"`
 	// The user's theme preference.
 	// This references a CSS file in the web/public/themes/ directory.
 	Theme string `protobuf:"bytes,3,opt,name=theme,proto3" json:"theme,omitempty"`
@@ -304,9 +304,9 @@ func (x *GeneralUserSetting) GetLocale() string {
 	return ""
 }
 
-func (x *GeneralUserSetting) GetMemoVisibility() string {
+func (x *GeneralUserSetting) GetNoteVisibility() string {
 	if x != nil {
-		return x.MemoVisibility
+		return x.NoteVisibility
 	}
 	return ""
 }
@@ -330,7 +330,7 @@ type UserTagMetadata struct {
 	// Optional background color for the tag label.
 	// When unset, the default tag color is used.
 	BackgroundColor *color.Color `protobuf:"bytes,1,opt,name=background_color,json=backgroundColor,proto3" json:"background_color,omitempty"`
-	// Whether memos with this tag should have their content blurred.
+	// Whether notes with this tag should have their content blurred.
 	BlurContent   bool `protobuf:"varint,2,opt,name=blur_content,json=blurContent,proto3" json:"blur_content,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -516,27 +516,27 @@ func (x *PersonalAccessTokensUserSetting) GetTokens() []*PersonalAccessTokensUse
 	return nil
 }
 
-type MemoViewsUserSetting struct {
+type NoteViewsUserSetting struct {
 	state         protoimpl.MessageState           `protogen:"open.v1"`
-	MemoViews     []*MemoViewsUserSetting_MemoView `protobuf:"bytes,1,rep,name=memo_views,json=memoViews,proto3" json:"memo_views,omitempty"`
+	NoteViews     []*NoteViewsUserSetting_NoteView `protobuf:"bytes,1,rep,name=note_views,json=noteViews,proto3" json:"note_views,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *MemoViewsUserSetting) Reset() {
-	*x = MemoViewsUserSetting{}
+func (x *NoteViewsUserSetting) Reset() {
+	*x = NoteViewsUserSetting{}
 	mi := &file_store_user_setting_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *MemoViewsUserSetting) String() string {
+func (x *NoteViewsUserSetting) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MemoViewsUserSetting) ProtoMessage() {}
+func (*NoteViewsUserSetting) ProtoMessage() {}
 
-func (x *MemoViewsUserSetting) ProtoReflect() protoreflect.Message {
+func (x *NoteViewsUserSetting) ProtoReflect() protoreflect.Message {
 	mi := &file_store_user_setting_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -548,14 +548,14 @@ func (x *MemoViewsUserSetting) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use MemoViewsUserSetting.ProtoReflect.Descriptor instead.
-func (*MemoViewsUserSetting) Descriptor() ([]byte, []int) {
+// Deprecated: Use NoteViewsUserSetting.ProtoReflect.Descriptor instead.
+func (*NoteViewsUserSetting) Descriptor() ([]byte, []int) {
 	return file_store_user_setting_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *MemoViewsUserSetting) GetMemoViews() []*MemoViewsUserSetting_MemoView {
+func (x *NoteViewsUserSetting) GetNoteViews() []*NoteViewsUserSetting_NoteView {
 	if x != nil {
-		return x.MemoViews
+		return x.NoteViews
 	}
 	return nil
 }
@@ -856,30 +856,30 @@ func (x *PersonalAccessTokensUserSetting_PersonalAccessToken) GetLastUsedAt() *t
 	return nil
 }
 
-type MemoViewsUserSetting_MemoView struct {
+type NoteViewsUserSetting_NoteView struct {
 	state         protoimpl.MessageState              `protogen:"open.v1"`
 	Id            string                              `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                              `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Filter        string                              `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
-	Icon          *MemoViewsUserSetting_MemoView_Icon `protobuf:"bytes,4,opt,name=icon,proto3" json:"icon,omitempty"`
+	Icon          *NoteViewsUserSetting_NoteView_Icon `protobuf:"bytes,4,opt,name=icon,proto3" json:"icon,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *MemoViewsUserSetting_MemoView) Reset() {
-	*x = MemoViewsUserSetting_MemoView{}
+func (x *NoteViewsUserSetting_NoteView) Reset() {
+	*x = NoteViewsUserSetting_NoteView{}
 	mi := &file_store_user_setting_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *MemoViewsUserSetting_MemoView) String() string {
+func (x *NoteViewsUserSetting_NoteView) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MemoViewsUserSetting_MemoView) ProtoMessage() {}
+func (*NoteViewsUserSetting_NoteView) ProtoMessage() {}
 
-func (x *MemoViewsUserSetting_MemoView) ProtoReflect() protoreflect.Message {
+func (x *NoteViewsUserSetting_NoteView) ProtoReflect() protoreflect.Message {
 	mi := &file_store_user_setting_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -891,64 +891,64 @@ func (x *MemoViewsUserSetting_MemoView) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use MemoViewsUserSetting_MemoView.ProtoReflect.Descriptor instead.
-func (*MemoViewsUserSetting_MemoView) Descriptor() ([]byte, []int) {
+// Deprecated: Use NoteViewsUserSetting_NoteView.ProtoReflect.Descriptor instead.
+func (*NoteViewsUserSetting_NoteView) Descriptor() ([]byte, []int) {
 	return file_store_user_setting_proto_rawDescGZIP(), []int{6, 0}
 }
 
-func (x *MemoViewsUserSetting_MemoView) GetId() string {
+func (x *NoteViewsUserSetting_NoteView) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *MemoViewsUserSetting_MemoView) GetTitle() string {
+func (x *NoteViewsUserSetting_NoteView) GetTitle() string {
 	if x != nil {
 		return x.Title
 	}
 	return ""
 }
 
-func (x *MemoViewsUserSetting_MemoView) GetFilter() string {
+func (x *NoteViewsUserSetting_NoteView) GetFilter() string {
 	if x != nil {
 		return x.Filter
 	}
 	return ""
 }
 
-func (x *MemoViewsUserSetting_MemoView) GetIcon() *MemoViewsUserSetting_MemoView_Icon {
+func (x *NoteViewsUserSetting_NoteView) GetIcon() *NoteViewsUserSetting_NoteView_Icon {
 	if x != nil {
 		return x.Icon
 	}
 	return nil
 }
 
-type MemoViewsUserSetting_MemoView_Icon struct {
+type NoteViewsUserSetting_NoteView_Icon struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
 	//
-	//	*MemoViewsUserSetting_MemoView_Icon_Emoji
-	//	*MemoViewsUserSetting_MemoView_Icon_Lucide
-	Value         isMemoViewsUserSetting_MemoView_Icon_Value `protobuf_oneof:"value"`
+	//	*NoteViewsUserSetting_NoteView_Icon_Emoji
+	//	*NoteViewsUserSetting_NoteView_Icon_Lucide
+	Value         isNoteViewsUserSetting_NoteView_Icon_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *MemoViewsUserSetting_MemoView_Icon) Reset() {
-	*x = MemoViewsUserSetting_MemoView_Icon{}
+func (x *NoteViewsUserSetting_NoteView_Icon) Reset() {
+	*x = NoteViewsUserSetting_NoteView_Icon{}
 	mi := &file_store_user_setting_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *MemoViewsUserSetting_MemoView_Icon) String() string {
+func (x *NoteViewsUserSetting_NoteView_Icon) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MemoViewsUserSetting_MemoView_Icon) ProtoMessage() {}
+func (*NoteViewsUserSetting_NoteView_Icon) ProtoMessage() {}
 
-func (x *MemoViewsUserSetting_MemoView_Icon) ProtoReflect() protoreflect.Message {
+func (x *NoteViewsUserSetting_NoteView_Icon) ProtoReflect() protoreflect.Message {
 	mi := &file_store_user_setting_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -960,53 +960,53 @@ func (x *MemoViewsUserSetting_MemoView_Icon) ProtoReflect() protoreflect.Message
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use MemoViewsUserSetting_MemoView_Icon.ProtoReflect.Descriptor instead.
-func (*MemoViewsUserSetting_MemoView_Icon) Descriptor() ([]byte, []int) {
+// Deprecated: Use NoteViewsUserSetting_NoteView_Icon.ProtoReflect.Descriptor instead.
+func (*NoteViewsUserSetting_NoteView_Icon) Descriptor() ([]byte, []int) {
 	return file_store_user_setting_proto_rawDescGZIP(), []int{6, 0, 0}
 }
 
-func (x *MemoViewsUserSetting_MemoView_Icon) GetValue() isMemoViewsUserSetting_MemoView_Icon_Value {
+func (x *NoteViewsUserSetting_NoteView_Icon) GetValue() isNoteViewsUserSetting_NoteView_Icon_Value {
 	if x != nil {
 		return x.Value
 	}
 	return nil
 }
 
-func (x *MemoViewsUserSetting_MemoView_Icon) GetEmoji() string {
+func (x *NoteViewsUserSetting_NoteView_Icon) GetEmoji() string {
 	if x != nil {
-		if x, ok := x.Value.(*MemoViewsUserSetting_MemoView_Icon_Emoji); ok {
+		if x, ok := x.Value.(*NoteViewsUserSetting_NoteView_Icon_Emoji); ok {
 			return x.Emoji
 		}
 	}
 	return ""
 }
 
-func (x *MemoViewsUserSetting_MemoView_Icon) GetLucide() string {
+func (x *NoteViewsUserSetting_NoteView_Icon) GetLucide() string {
 	if x != nil {
-		if x, ok := x.Value.(*MemoViewsUserSetting_MemoView_Icon_Lucide); ok {
+		if x, ok := x.Value.(*NoteViewsUserSetting_NoteView_Icon_Lucide); ok {
 			return x.Lucide
 		}
 	}
 	return ""
 }
 
-type isMemoViewsUserSetting_MemoView_Icon_Value interface {
-	isMemoViewsUserSetting_MemoView_Icon_Value()
+type isNoteViewsUserSetting_NoteView_Icon_Value interface {
+	isNoteViewsUserSetting_NoteView_Icon_Value()
 }
 
-type MemoViewsUserSetting_MemoView_Icon_Emoji struct {
+type NoteViewsUserSetting_NoteView_Icon_Emoji struct {
 	// A Unicode emoji sequence.
 	Emoji string `protobuf:"bytes,1,opt,name=emoji,proto3,oneof"`
 }
 
-type MemoViewsUserSetting_MemoView_Icon_Lucide struct {
+type NoteViewsUserSetting_NoteView_Icon_Lucide struct {
 	// A canonical Lucide icon name, such as "leaf".
 	Lucide string `protobuf:"bytes,2,opt,name=lucide,proto3,oneof"`
 }
 
-func (*MemoViewsUserSetting_MemoView_Icon_Emoji) isMemoViewsUserSetting_MemoView_Icon_Value() {}
+func (*NoteViewsUserSetting_NoteView_Icon_Emoji) isNoteViewsUserSetting_NoteView_Icon_Value() {}
 
-func (*MemoViewsUserSetting_MemoView_Icon_Lucide) isMemoViewsUserSetting_MemoView_Icon_Value() {}
+func (*NoteViewsUserSetting_NoteView_Icon_Lucide) isNoteViewsUserSetting_NoteView_Icon_Value() {}
 
 type WebhooksUserSetting_Webhook struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1084,23 +1084,23 @@ var File_store_user_setting_proto protoreflect.FileDescriptor
 
 const file_store_user_setting_proto_rawDesc = "" +
 	"\n" +
-	"\x18store/user_setting.proto\x12\vmemos.store\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\x8b\x05\n" +
+	"\x18store/user_setting.proto\x12\froster.store\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\x92\x05\n" +
 	"\vUserSetting\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12.\n" +
-	"\x03key\x18\x02 \x01(\x0e2\x1c.memos.store.UserSetting.KeyR\x03key\x12;\n" +
-	"\ageneral\x18\x03 \x01(\v2\x1f.memos.store.GeneralUserSettingH\x00R\ageneral\x12B\n" +
+	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12/\n" +
+	"\x03key\x18\x02 \x01(\x0e2\x1d.roster.store.UserSetting.KeyR\x03key\x12<\n" +
+	"\ageneral\x18\x03 \x01(\v2 .roster.store.GeneralUserSettingH\x00R\ageneral\x12C\n" +
 	"\n" +
-	"memo_views\x18\x06 \x01(\v2!.memos.store.MemoViewsUserSettingH\x00R\tmemoViews\x12>\n" +
-	"\bwebhooks\x18\a \x01(\v2 .memos.store.WebhooksUserSettingH\x00R\bwebhooks\x12N\n" +
-	"\x0erefresh_tokens\x18\b \x01(\v2%.memos.store.RefreshTokensUserSettingH\x00R\rrefreshTokens\x12d\n" +
-	"\x16personal_access_tokens\x18\t \x01(\v2,.memos.store.PersonalAccessTokensUserSettingH\x00R\x14personalAccessTokens\x122\n" +
+	"note_views\x18\x06 \x01(\v2\".roster.store.NoteViewsUserSettingH\x00R\tnoteViews\x12?\n" +
+	"\bwebhooks\x18\a \x01(\v2!.roster.store.WebhooksUserSettingH\x00R\bwebhooks\x12O\n" +
+	"\x0erefresh_tokens\x18\b \x01(\v2&.roster.store.RefreshTokensUserSettingH\x00R\rrefreshTokens\x12e\n" +
+	"\x16personal_access_tokens\x18\t \x01(\v2-.roster.store.PersonalAccessTokensUserSettingH\x00R\x14personalAccessTokens\x123\n" +
 	"\x04tags\x18\n" +
-	" \x01(\v2\x1c.memos.store.TagsUserSettingH\x00R\x04tags\"\x7f\n" +
+	" \x01(\v2\x1d.roster.store.TagsUserSettingH\x00R\x04tags\"\x7f\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\x0e\n" +
 	"\n" +
-	"MEMO_VIEWS\x10\x04\x12\f\n" +
+	"NOTE_VIEWS\x10\x04\x12\f\n" +
 	"\bWEBHOOKS\x10\x05\x12\x12\n" +
 	"\x0eREFRESH_TOKENS\x10\x06\x12\x1a\n" +
 	"\x16PERSONAL_ACCESS_TOKENS\x10\a\x12\b\n" +
@@ -1108,26 +1108,26 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\x05value\"\x9b\x01\n" +
 	"\x12GeneralUserSetting\x12\x16\n" +
 	"\x06locale\x18\x01 \x01(\tR\x06locale\x12'\n" +
-	"\x0fmemo_visibility\x18\x02 \x01(\tR\x0ememoVisibility\x12\x14\n" +
+	"\x0fnote_visibility\x18\x02 \x01(\tR\x0enoteVisibility\x12\x14\n" +
 	"\x05theme\x18\x03 \x01(\tR\x05theme\x12.\n" +
 	"\x13save_media_metadata\x18\x04 \x01(\bR\x11saveMediaMetadata\"s\n" +
 	"\x0fUserTagMetadata\x12=\n" +
 	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorR\x0fbackgroundColor\x12!\n" +
-	"\fblur_content\x18\x02 \x01(\bR\vblurContent\"\xa4\x01\n" +
-	"\x0fTagsUserSetting\x12:\n" +
-	"\x04tags\x18\x01 \x03(\v2&.memos.store.TagsUserSetting.TagsEntryR\x04tags\x1aU\n" +
+	"\fblur_content\x18\x02 \x01(\bR\vblurContent\"\xa6\x01\n" +
+	"\x0fTagsUserSetting\x12;\n" +
+	"\x04tags\x18\x01 \x03(\v2'.roster.store.TagsUserSetting.TagsEntryR\x04tags\x1aV\n" +
 	"\tTagsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x122\n" +
-	"\x05value\x18\x02 \x01(\v2\x1c.memos.store.UserTagMetadataR\x05value:\x028\x01\"\xa4\x04\n" +
-	"\x18RefreshTokensUserSetting\x12Y\n" +
-	"\x0erefresh_tokens\x18\x01 \x03(\v22.memos.store.RefreshTokensUserSetting.RefreshTokenR\rrefreshTokens\x1a\x94\x02\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x123\n" +
+	"\x05value\x18\x02 \x01(\v2\x1d.roster.store.UserTagMetadataR\x05value:\x028\x01\"\xa6\x04\n" +
+	"\x18RefreshTokensUserSetting\x12Z\n" +
+	"\x0erefresh_tokens\x18\x01 \x03(\v23.roster.store.RefreshTokensUserSetting.RefreshTokenR\rrefreshTokens\x1a\x95\x02\n" +
 	"\fRefreshToken\x12\x19\n" +
 	"\btoken_id\x18\x01 \x01(\tR\atokenId\x129\n" +
 	"\n" +
 	"expires_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\x129\n" +
 	"\n" +
-	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12Q\n" +
-	"\vclient_info\x18\x04 \x01(\v20.memos.store.RefreshTokensUserSetting.ClientInfoR\n" +
+	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12R\n" +
+	"\vclient_info\x18\x04 \x01(\v21.roster.store.RefreshTokensUserSetting.ClientInfoR\n" +
 	"clientInfo\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\x1a\x95\x01\n" +
 	"\n" +
@@ -1139,9 +1139,9 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\vdevice_type\x18\x03 \x01(\tR\n" +
 	"deviceType\x12\x0e\n" +
 	"\x02os\x18\x04 \x01(\tR\x02os\x12\x18\n" +
-	"\abrowser\x18\x05 \x01(\tR\abrowser\"\xa3\x03\n" +
-	"\x1fPersonalAccessTokensUserSetting\x12X\n" +
-	"\x06tokens\x18\x01 \x03(\v2@.memos.store.PersonalAccessTokensUserSetting.PersonalAccessTokenR\x06tokens\x1a\xa5\x02\n" +
+	"\abrowser\x18\x05 \x01(\tR\abrowser\"\xa4\x03\n" +
+	"\x1fPersonalAccessTokensUserSetting\x12Y\n" +
+	"\x06tokens\x18\x01 \x03(\v2A.roster.store.PersonalAccessTokensUserSetting.PersonalAccessTokenR\x06tokens\x1a\xa5\x02\n" +
 	"\x13PersonalAccessToken\x12\x19\n" +
 	"\btoken_id\x18\x01 \x01(\tR\atokenId\x12\x1d\n" +
 	"\n" +
@@ -1152,27 +1152,27 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12<\n" +
 	"\flast_used_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"lastUsedAt\"\xb4\x02\n" +
-	"\x14MemoViewsUserSetting\x12I\n" +
+	"lastUsedAt\"\xb6\x02\n" +
+	"\x14NoteViewsUserSetting\x12J\n" +
 	"\n" +
-	"memo_views\x18\x01 \x03(\v2*.memos.store.MemoViewsUserSetting.MemoViewR\tmemoViews\x1a\xd0\x01\n" +
-	"\bMemoView\x12\x0e\n" +
+	"note_views\x18\x01 \x03(\v2+.roster.store.NoteViewsUserSetting.NoteViewR\tnoteViews\x1a\xd1\x01\n" +
+	"\bNoteView\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
-	"\x06filter\x18\x03 \x01(\tR\x06filter\x12C\n" +
-	"\x04icon\x18\x04 \x01(\v2/.memos.store.MemoViewsUserSetting.MemoView.IconR\x04icon\x1aA\n" +
+	"\x06filter\x18\x03 \x01(\tR\x06filter\x12D\n" +
+	"\x04icon\x18\x04 \x01(\v20.roster.store.NoteViewsUserSetting.NoteView.IconR\x04icon\x1aA\n" +
 	"\x04Icon\x12\x16\n" +
 	"\x05emoji\x18\x01 \x01(\tH\x00R\x05emoji\x12\x18\n" +
 	"\x06lucide\x18\x02 \x01(\tH\x00R\x06lucideB\a\n" +
-	"\x05value\"\xc5\x01\n" +
-	"\x13WebhooksUserSetting\x12D\n" +
-	"\bwebhooks\x18\x01 \x03(\v2(.memos.store.WebhooksUserSetting.WebhookR\bwebhooks\x1ah\n" +
+	"\x05value\"\xc6\x01\n" +
+	"\x13WebhooksUserSetting\x12E\n" +
+	"\bwebhooks\x18\x01 \x03(\v2).roster.store.WebhooksUserSetting.WebhookR\bwebhooks\x1ah\n" +
 	"\aWebhook\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x10\n" +
 	"\x03url\x18\x03 \x01(\tR\x03url\x12%\n" +
-	"\x0esigning_secret\x18\x04 \x01(\tR\rsigningSecretB\x9b\x01\n" +
-	"\x0fcom.memos.storeB\x10UserSettingProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
+	"\x0esigning_secret\x18\x04 \x01(\tR\rsigningSecretB\xae\x01\n" +
+	"\x10com.roster.storeB\x10UserSettingProtoP\x01Z7github.com/anangnovriadi/roster-tracker/proto/gen/store\xa2\x02\x03RSX\xaa\x02\fRoster.Store\xca\x02\fRoster\\Store\xe2\x02\x18Roster\\Store\\GPBMetadata\xea\x02\rRoster::Storeb\x06proto3"
 
 var (
 	file_store_user_setting_proto_rawDescOnce sync.Once
@@ -1189,47 +1189,47 @@ func file_store_user_setting_proto_rawDescGZIP() []byte {
 var file_store_user_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_store_user_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_store_user_setting_proto_goTypes = []any{
-	(UserSetting_Key)(0),                          // 0: memos.store.UserSetting.Key
-	(*UserSetting)(nil),                           // 1: memos.store.UserSetting
-	(*GeneralUserSetting)(nil),                    // 2: memos.store.GeneralUserSetting
-	(*UserTagMetadata)(nil),                       // 3: memos.store.UserTagMetadata
-	(*TagsUserSetting)(nil),                       // 4: memos.store.TagsUserSetting
-	(*RefreshTokensUserSetting)(nil),              // 5: memos.store.RefreshTokensUserSetting
-	(*PersonalAccessTokensUserSetting)(nil),       // 6: memos.store.PersonalAccessTokensUserSetting
-	(*MemoViewsUserSetting)(nil),                  // 7: memos.store.MemoViewsUserSetting
-	(*WebhooksUserSetting)(nil),                   // 8: memos.store.WebhooksUserSetting
-	nil,                                           // 9: memos.store.TagsUserSetting.TagsEntry
-	(*RefreshTokensUserSetting_RefreshToken)(nil), // 10: memos.store.RefreshTokensUserSetting.RefreshToken
-	(*RefreshTokensUserSetting_ClientInfo)(nil),   // 11: memos.store.RefreshTokensUserSetting.ClientInfo
-	(*PersonalAccessTokensUserSetting_PersonalAccessToken)(nil), // 12: memos.store.PersonalAccessTokensUserSetting.PersonalAccessToken
-	(*MemoViewsUserSetting_MemoView)(nil),                       // 13: memos.store.MemoViewsUserSetting.MemoView
-	(*MemoViewsUserSetting_MemoView_Icon)(nil),                  // 14: memos.store.MemoViewsUserSetting.MemoView.Icon
-	(*WebhooksUserSetting_Webhook)(nil),                         // 15: memos.store.WebhooksUserSetting.Webhook
+	(UserSetting_Key)(0),                          // 0: roster.store.UserSetting.Key
+	(*UserSetting)(nil),                           // 1: roster.store.UserSetting
+	(*GeneralUserSetting)(nil),                    // 2: roster.store.GeneralUserSetting
+	(*UserTagMetadata)(nil),                       // 3: roster.store.UserTagMetadata
+	(*TagsUserSetting)(nil),                       // 4: roster.store.TagsUserSetting
+	(*RefreshTokensUserSetting)(nil),              // 5: roster.store.RefreshTokensUserSetting
+	(*PersonalAccessTokensUserSetting)(nil),       // 6: roster.store.PersonalAccessTokensUserSetting
+	(*NoteViewsUserSetting)(nil),                  // 7: roster.store.NoteViewsUserSetting
+	(*WebhooksUserSetting)(nil),                   // 8: roster.store.WebhooksUserSetting
+	nil,                                           // 9: roster.store.TagsUserSetting.TagsEntry
+	(*RefreshTokensUserSetting_RefreshToken)(nil), // 10: roster.store.RefreshTokensUserSetting.RefreshToken
+	(*RefreshTokensUserSetting_ClientInfo)(nil),   // 11: roster.store.RefreshTokensUserSetting.ClientInfo
+	(*PersonalAccessTokensUserSetting_PersonalAccessToken)(nil), // 12: roster.store.PersonalAccessTokensUserSetting.PersonalAccessToken
+	(*NoteViewsUserSetting_NoteView)(nil),                       // 13: roster.store.NoteViewsUserSetting.NoteView
+	(*NoteViewsUserSetting_NoteView_Icon)(nil),                  // 14: roster.store.NoteViewsUserSetting.NoteView.Icon
+	(*WebhooksUserSetting_Webhook)(nil),                         // 15: roster.store.WebhooksUserSetting.Webhook
 	(*color.Color)(nil),                                         // 16: google.type.Color
 	(*timestamppb.Timestamp)(nil),                               // 17: google.protobuf.Timestamp
 }
 var file_store_user_setting_proto_depIdxs = []int32{
-	0,  // 0: memos.store.UserSetting.key:type_name -> memos.store.UserSetting.Key
-	2,  // 1: memos.store.UserSetting.general:type_name -> memos.store.GeneralUserSetting
-	7,  // 2: memos.store.UserSetting.memo_views:type_name -> memos.store.MemoViewsUserSetting
-	8,  // 3: memos.store.UserSetting.webhooks:type_name -> memos.store.WebhooksUserSetting
-	5,  // 4: memos.store.UserSetting.refresh_tokens:type_name -> memos.store.RefreshTokensUserSetting
-	6,  // 5: memos.store.UserSetting.personal_access_tokens:type_name -> memos.store.PersonalAccessTokensUserSetting
-	4,  // 6: memos.store.UserSetting.tags:type_name -> memos.store.TagsUserSetting
-	16, // 7: memos.store.UserTagMetadata.background_color:type_name -> google.type.Color
-	9,  // 8: memos.store.TagsUserSetting.tags:type_name -> memos.store.TagsUserSetting.TagsEntry
-	10, // 9: memos.store.RefreshTokensUserSetting.refresh_tokens:type_name -> memos.store.RefreshTokensUserSetting.RefreshToken
-	12, // 10: memos.store.PersonalAccessTokensUserSetting.tokens:type_name -> memos.store.PersonalAccessTokensUserSetting.PersonalAccessToken
-	13, // 11: memos.store.MemoViewsUserSetting.memo_views:type_name -> memos.store.MemoViewsUserSetting.MemoView
-	15, // 12: memos.store.WebhooksUserSetting.webhooks:type_name -> memos.store.WebhooksUserSetting.Webhook
-	3,  // 13: memos.store.TagsUserSetting.TagsEntry.value:type_name -> memos.store.UserTagMetadata
-	17, // 14: memos.store.RefreshTokensUserSetting.RefreshToken.expires_at:type_name -> google.protobuf.Timestamp
-	17, // 15: memos.store.RefreshTokensUserSetting.RefreshToken.created_at:type_name -> google.protobuf.Timestamp
-	11, // 16: memos.store.RefreshTokensUserSetting.RefreshToken.client_info:type_name -> memos.store.RefreshTokensUserSetting.ClientInfo
-	17, // 17: memos.store.PersonalAccessTokensUserSetting.PersonalAccessToken.expires_at:type_name -> google.protobuf.Timestamp
-	17, // 18: memos.store.PersonalAccessTokensUserSetting.PersonalAccessToken.created_at:type_name -> google.protobuf.Timestamp
-	17, // 19: memos.store.PersonalAccessTokensUserSetting.PersonalAccessToken.last_used_at:type_name -> google.protobuf.Timestamp
-	14, // 20: memos.store.MemoViewsUserSetting.MemoView.icon:type_name -> memos.store.MemoViewsUserSetting.MemoView.Icon
+	0,  // 0: roster.store.UserSetting.key:type_name -> roster.store.UserSetting.Key
+	2,  // 1: roster.store.UserSetting.general:type_name -> roster.store.GeneralUserSetting
+	7,  // 2: roster.store.UserSetting.note_views:type_name -> roster.store.NoteViewsUserSetting
+	8,  // 3: roster.store.UserSetting.webhooks:type_name -> roster.store.WebhooksUserSetting
+	5,  // 4: roster.store.UserSetting.refresh_tokens:type_name -> roster.store.RefreshTokensUserSetting
+	6,  // 5: roster.store.UserSetting.personal_access_tokens:type_name -> roster.store.PersonalAccessTokensUserSetting
+	4,  // 6: roster.store.UserSetting.tags:type_name -> roster.store.TagsUserSetting
+	16, // 7: roster.store.UserTagMetadata.background_color:type_name -> google.type.Color
+	9,  // 8: roster.store.TagsUserSetting.tags:type_name -> roster.store.TagsUserSetting.TagsEntry
+	10, // 9: roster.store.RefreshTokensUserSetting.refresh_tokens:type_name -> roster.store.RefreshTokensUserSetting.RefreshToken
+	12, // 10: roster.store.PersonalAccessTokensUserSetting.tokens:type_name -> roster.store.PersonalAccessTokensUserSetting.PersonalAccessToken
+	13, // 11: roster.store.NoteViewsUserSetting.note_views:type_name -> roster.store.NoteViewsUserSetting.NoteView
+	15, // 12: roster.store.WebhooksUserSetting.webhooks:type_name -> roster.store.WebhooksUserSetting.Webhook
+	3,  // 13: roster.store.TagsUserSetting.TagsEntry.value:type_name -> roster.store.UserTagMetadata
+	17, // 14: roster.store.RefreshTokensUserSetting.RefreshToken.expires_at:type_name -> google.protobuf.Timestamp
+	17, // 15: roster.store.RefreshTokensUserSetting.RefreshToken.created_at:type_name -> google.protobuf.Timestamp
+	11, // 16: roster.store.RefreshTokensUserSetting.RefreshToken.client_info:type_name -> roster.store.RefreshTokensUserSetting.ClientInfo
+	17, // 17: roster.store.PersonalAccessTokensUserSetting.PersonalAccessToken.expires_at:type_name -> google.protobuf.Timestamp
+	17, // 18: roster.store.PersonalAccessTokensUserSetting.PersonalAccessToken.created_at:type_name -> google.protobuf.Timestamp
+	17, // 19: roster.store.PersonalAccessTokensUserSetting.PersonalAccessToken.last_used_at:type_name -> google.protobuf.Timestamp
+	14, // 20: roster.store.NoteViewsUserSetting.NoteView.icon:type_name -> roster.store.NoteViewsUserSetting.NoteView.Icon
 	21, // [21:21] is the sub-list for method output_type
 	21, // [21:21] is the sub-list for method input_type
 	21, // [21:21] is the sub-list for extension type_name
@@ -1244,15 +1244,15 @@ func file_store_user_setting_proto_init() {
 	}
 	file_store_user_setting_proto_msgTypes[0].OneofWrappers = []any{
 		(*UserSetting_General)(nil),
-		(*UserSetting_MemoViews)(nil),
+		(*UserSetting_NoteViews)(nil),
 		(*UserSetting_Webhooks)(nil),
 		(*UserSetting_RefreshTokens)(nil),
 		(*UserSetting_PersonalAccessTokens)(nil),
 		(*UserSetting_Tags)(nil),
 	}
 	file_store_user_setting_proto_msgTypes[13].OneofWrappers = []any{
-		(*MemoViewsUserSetting_MemoView_Icon_Emoji)(nil),
-		(*MemoViewsUserSetting_MemoView_Icon_Lucide)(nil),
+		(*NoteViewsUserSetting_NoteView_Icon_Emoji)(nil),
+		(*NoteViewsUserSetting_NoteView_Icon_Lucide)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

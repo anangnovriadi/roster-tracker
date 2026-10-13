@@ -206,7 +206,7 @@ func TestMessageFormatFoldsLongHeaders(t *testing.T) {
 		Body:    "Test Body",
 	}
 
-	formatted := msg.Format("sender@example.com", strings.Repeat("Zoë ", 20)+"Memos")
+	formatted := msg.Format("sender@example.com", strings.Repeat("Zoë ", 20)+"Roster Tracker")
 	headers, _, _ := strings.Cut(formatted, "\r\n\r\n")
 	for line := range strings.SplitSeq(headers, "\r\n") {
 		if len(line) <= maxHeaderLineLength {
@@ -229,14 +229,14 @@ func TestMessageFormatFoldsLongHeaders(t *testing.T) {
 		t.Errorf("folded subject decodes to %q, err %v", decoded, err)
 	}
 	from, err := mail.ParseAddress(parsed.Header.Get("From"))
-	if err != nil || from.Name != strings.Repeat("Zoë ", 20)+"Memos" {
+	if err != nil || from.Name != strings.Repeat("Zoë ", 20)+"Roster Tracker" {
 		t.Errorf("folded From decodes to %v, err %v", from, err)
 	}
 }
 
 func TestMessageFormatEncodesNonASCIIFromNameWithSpecials(t *testing.T) {
 	msg := Message{To: []string{"user@example.com"}, Subject: "Test", Body: "Test"}
-	for _, name := range []string{"Zoë <ops>", "Zoë, Team", "Zoë (Memos)"} {
+	for _, name := range []string{"Zoë <ops>", "Zoë, Team", "Zoë (Notes)"} {
 		formatted := msg.Format("sender@example.com", name)
 		parsed, err := mail.ReadMessage(strings.NewReader(formatted))
 		if err != nil {
@@ -256,8 +256,8 @@ func TestMessageFormatEncodesNonASCIIFromNameWithSpecials(t *testing.T) {
 
 func TestMessageFormatQuotesSpecialsInFromName(t *testing.T) {
 	msg := Message{To: []string{"user@example.com"}, Subject: "Test", Body: "Test"}
-	formatted := msg.Format("sender@example.com", `Memos, "Team"`)
-	if !strings.Contains(formatted, `From: "Memos, \"Team\"" <sender@example.com>`) {
+	formatted := msg.Format("sender@example.com", `Notes, "Team"`)
+	if !strings.Contains(formatted, `From: "Notes, \"Team\"" <sender@example.com>`) {
 		t.Errorf("from name with specials was not quoted:\n%s", formatted)
 	}
 }

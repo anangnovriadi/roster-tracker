@@ -1,4 +1,4 @@
-// Package auth provides authentication and authorization for the Memos server.
+// Package auth provides authentication and authorization for the Roster Tracker server.
 //
 // This package is used by:
 // - server/api: gRPC and Connect API interceptors
@@ -19,13 +19,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/random"
+	"github.com/anangnovriadi/roster-tracker/internal/random"
 )
 
 const (
 	// Issuer is the issuer claim in JWT tokens.
-	// This identifies tokens as issued by Memos.
-	Issuer = "memos"
+	// This identifies tokens as issued by Roster Tracker.
+	Issuer = "roster-tracker"
 
 	// KeyID is the key identifier used in JWT header.
 	// Version "v1" allows for future key rotation while maintaining backward compatibility.
@@ -46,17 +46,17 @@ const (
 	RefreshTokenAudienceName = "user.refresh-token"
 
 	// RefreshTokenCookieName is the cookie name for refresh tokens.
-	RefreshTokenCookieName = "memos_refresh"
+	RefreshTokenCookieName = "roster_refresh"
 
 	// PersonalAccessTokenPrefix is the prefix for PAT tokens.
-	PersonalAccessTokenPrefix = "memos_pat_"
+	PersonalAccessTokenPrefix = "roster_pat_"
 )
 
 // ClaimsMessage represents the claims structure in a JWT token.
 //
 // JWT Claims include:
 // - name: Username (custom claim)
-// - iss: Issuer = "memos"
+// - iss: Issuer = "roster-tracker"
 // - aud: Audience = "user.access-token"
 // - sub: Subject = user ID
 // - iat: Issued at time
@@ -101,7 +101,7 @@ func GenerateAccessToken(username string, userID int32, expirationTime time.Time
 //
 // Token structure:
 // Header: {"alg": "HS256", "kid": "v1", "typ": "JWT"}
-// Claims: {"name": username, "iss": "memos", "aud": [audience], "sub": userID, "iat": now, "exp": expiry}
+// Claims: {"name": username, "iss": "roster-tracker", "aud": [audience], "sub": userID, "iat": now, "exp": expiry}
 // Signature: HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload), secret).
 func generateToken(username string, userID int32, audience string, expirationTime time.Time, secret []byte) (string, error) {
 	registeredClaims := jwt.RegisteredClaims{

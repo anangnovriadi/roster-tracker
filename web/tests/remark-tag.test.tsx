@@ -4,23 +4,23 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { describe, expect, it } from "vitest";
 import { remarkCurrencySafeMath } from "@/utils/remark-plugins/remark-currency-safe-math";
-import { remarkMemoSyntax } from "@/utils/remark-plugins/remark-tag";
+import { remarkNoteSyntax } from "@/utils/remark-plugins/remark-tag";
 
 const renderMarkdown = (content: string): string =>
   renderToStaticMarkup(
-    <ReactMarkdown remarkPlugins={[remarkCurrencySafeMath, remarkGfm, remarkMemoSyntax, remarkBreaks]}>{content}</ReactMarkdown>,
+    <ReactMarkdown remarkPlugins={[remarkCurrencySafeMath, remarkGfm, remarkNoteSyntax, remarkBreaks]}>{content}</ReactMarkdown>,
   );
 
 const renderMarkdownWithoutMath = (content: string): string =>
-  renderToStaticMarkup(<ReactMarkdown remarkPlugins={[remarkGfm, remarkMemoSyntax, remarkBreaks]}>{content}</ReactMarkdown>);
+  renderToStaticMarkup(<ReactMarkdown remarkPlugins={[remarkGfm, remarkNoteSyntax, remarkBreaks]}>{content}</ReactMarkdown>);
 
-describe("remarkMemoSyntax", () => {
+describe("remarkNoteSyntax", () => {
   it("does not turn URL fragments inside autolinks into tags", () => {
-    const html = renderMarkdown("https://github.com/dmtrKovalenko/fff#pi-agent-extension\n\nProject #memo-tag");
+    const html = renderMarkdown("https://github.com/dmtrKovalenko/fff#pi-agent-extension\n\nProject #note-tag");
 
     expect(html).toContain('href="https://github.com/dmtrKovalenko/fff#pi-agent-extension"');
     expect(html).not.toContain('data-tag="pi-agent-extension"');
-    expect(html).toContain('data-tag="memo-tag"');
+    expect(html).toContain('data-tag="note-tag"');
   });
 
   it("uses written GFM URL nodes as the opaque boundary", () => {
@@ -366,7 +366,7 @@ describe("remarkMemoSyntax", () => {
         "",
         "[docs]: https://example.com/docs#reference-anchor",
         "",
-        "Outside #memo-tag",
+        "Outside #note-tag",
       ].join("\n"),
     );
 
@@ -378,7 +378,7 @@ describe("remarkMemoSyntax", () => {
     expect(html).not.toContain('data-tag="section-heading"');
     expect(html).not.toContain('data-tag="preview"');
     expect(html).not.toContain('data-tag="reference-anchor"');
-    expect(html).toContain('data-tag="memo-tag"');
+    expect(html).toContain('data-tag="note-tag"');
   });
 
   it.each([

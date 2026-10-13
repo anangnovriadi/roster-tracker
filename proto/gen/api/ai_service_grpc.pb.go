@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AIService_Transcribe_FullMethodName = "/memos.api.AIService/Transcribe"
+	AIService_Transcribe_FullMethodName = "/roster.api.AIService/Transcribe"
 )
 
 // AIServiceClient is the client API for AIService service.
@@ -116,7 +116,7 @@ func _AIService_Transcribe_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AIService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "memos.api.AIService",
+	ServiceName: "roster.api.AIService",
 	HandlerType: (*AIServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

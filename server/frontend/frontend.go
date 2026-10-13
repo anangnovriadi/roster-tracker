@@ -13,8 +13,8 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 //go:embed dist/*
@@ -85,8 +85,8 @@ func shouldSkipFrontendStatic(requestPath string) bool {
 	}
 	return hasPathPrefix(requestPath, "/api") ||
 		hasPathPrefix(requestPath, "/file") ||
-		requestPath == "/memos.api" ||
-		strings.HasPrefix(requestPath, "/memos.api.")
+		requestPath == "/roster.api" ||
+		strings.HasPrefix(requestPath, "/roster.api.")
 }
 
 func setFrontendCacheHeaders(c *echo.Context, requestPath string) {
@@ -153,23 +153,23 @@ func (s *FrontendService) getSitemapXML(c *echo.Context) error {
 	}
 
 	normal := store.Normal
-	memos, err := s.Store.ListMemos(c.Request().Context(), &store.FindMemo{
+	notes, err := s.Store.ListNotes(c.Request().Context(), &store.FindNote{
 		RowStatus:       &normal,
 		VisibilityList:  []store.Visibility{store.Public},
-		Access:          &store.MemoAccessScope{AllowPublic: true},
+		Access:          &store.NoteAccessScope{AllowPublic: true},
 		ExcludeComments: true,
 	})
 	if err != nil {
-		return errors.Wrap(err, "failed to list public memos for sitemap")
+		return errors.Wrap(err, "failed to list public notes for sitemap")
 	}
-	// The set of public memo URLs changes with audience updates. Require
+	// The set of public note URLs changes with audience updates. Require
 	// revalidation so a revoked URL is not retained by an intermediary cache.
 	c.Response().Header().Set(echo.HeaderCacheControl, "public, no-cache")
 
-	urls := make([]sitemapURL, 0, len(memos))
-	for _, memo := range memos {
+	urls := make([]sitemapURL, 0, len(notes))
+	for _, note := range notes {
 		urls = append(urls, sitemapURL{
-			Loc: instanceURL + "/notes/" + memo.UID,
+			Loc: instanceURL + "/notes/" + note.UID,
 		})
 	}
 

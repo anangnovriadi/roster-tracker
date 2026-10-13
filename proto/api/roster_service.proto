@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package memos.api;
+package roster.api;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
@@ -40,7 +40,7 @@ service RosterService {
 // RosterAssignment puts one member on duty for one day.
 message RosterAssignment {
   option (google.api.resource) = {
-    type: "memos.api/RosterAssignment"
+    type: "roster.api/RosterAssignment"
     pattern: "roster-assignments/{roster_assignment}"
     singular: "rosterAssignment"
     plural: "rosterAssignments"
@@ -58,7 +58,7 @@ message RosterAssignment {
   // Format: users/{user}
   string user = 3 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Output only. The creation timestamp.
@@ -94,6 +94,6 @@ message DeleteRosterAssignmentRequest {
   // Format: roster-assignments/{roster_assignment}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/RosterAssignment"}
+    (google.api.resource_reference) = {type: "roster.api/RosterAssignment"}
   ];
 }

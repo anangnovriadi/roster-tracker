@@ -268,7 +268,7 @@ func RegisterIdentityProviderServiceHandlerServer(ctx context.Context, mux *runt
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.IdentityProviderService/ListIdentityProviders", runtime.WithHTTPPathPattern("/api/identity-providers"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.IdentityProviderService/ListIdentityProviders", runtime.WithHTTPPathPattern("/api/identity-providers"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -288,7 +288,7 @@ func RegisterIdentityProviderServiceHandlerServer(ctx context.Context, mux *runt
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.IdentityProviderService/GetIdentityProvider", runtime.WithHTTPPathPattern("/api/{name=identity-providers/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.IdentityProviderService/GetIdentityProvider", runtime.WithHTTPPathPattern("/api/{name=identity-providers/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -308,7 +308,7 @@ func RegisterIdentityProviderServiceHandlerServer(ctx context.Context, mux *runt
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.IdentityProviderService/CreateIdentityProvider", runtime.WithHTTPPathPattern("/api/identity-providers"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.IdentityProviderService/CreateIdentityProvider", runtime.WithHTTPPathPattern("/api/identity-providers"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -328,7 +328,7 @@ func RegisterIdentityProviderServiceHandlerServer(ctx context.Context, mux *runt
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.IdentityProviderService/UpdateIdentityProvider", runtime.WithHTTPPathPattern("/api/{identity_provider.name=identity-providers/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.IdentityProviderService/UpdateIdentityProvider", runtime.WithHTTPPathPattern("/api/{identity_provider.name=identity-providers/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -348,7 +348,7 @@ func RegisterIdentityProviderServiceHandlerServer(ctx context.Context, mux *runt
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.IdentityProviderService/DeleteIdentityProvider", runtime.WithHTTPPathPattern("/api/{name=identity-providers/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.IdentityProviderService/DeleteIdentityProvider", runtime.WithHTTPPathPattern("/api/{name=identity-providers/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -406,7 +406,7 @@ func RegisterIdentityProviderServiceHandlerClient(ctx context.Context, mux *runt
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.IdentityProviderService/ListIdentityProviders", runtime.WithHTTPPathPattern("/api/identity-providers"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.IdentityProviderService/ListIdentityProviders", runtime.WithHTTPPathPattern("/api/identity-providers"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -423,7 +423,7 @@ func RegisterIdentityProviderServiceHandlerClient(ctx context.Context, mux *runt
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.IdentityProviderService/GetIdentityProvider", runtime.WithHTTPPathPattern("/api/{name=identity-providers/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.IdentityProviderService/GetIdentityProvider", runtime.WithHTTPPathPattern("/api/{name=identity-providers/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -440,7 +440,7 @@ func RegisterIdentityProviderServiceHandlerClient(ctx context.Context, mux *runt
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.IdentityProviderService/CreateIdentityProvider", runtime.WithHTTPPathPattern("/api/identity-providers"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.IdentityProviderService/CreateIdentityProvider", runtime.WithHTTPPathPattern("/api/identity-providers"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -457,7 +457,7 @@ func RegisterIdentityProviderServiceHandlerClient(ctx context.Context, mux *runt
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.IdentityProviderService/UpdateIdentityProvider", runtime.WithHTTPPathPattern("/api/{identity_provider.name=identity-providers/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.IdentityProviderService/UpdateIdentityProvider", runtime.WithHTTPPathPattern("/api/{identity_provider.name=identity-providers/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -474,7 +474,7 @@ func RegisterIdentityProviderServiceHandlerClient(ctx context.Context, mux *runt
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.IdentityProviderService/DeleteIdentityProvider", runtime.WithHTTPPathPattern("/api/{name=identity-providers/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.IdentityProviderService/DeleteIdentityProvider", runtime.WithHTTPPathPattern("/api/{name=identity-providers/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

@@ -7,7 +7,7 @@
     "admin-sign-in-tip": "Masuk dengan kata sandi tetap tersedia untuk administrator.",
     "back-to-sign-in": "Kembali ke halaman masuk",
     "continue-with": "Lanjutkan dengan {{provider}}",
-    "explore-public-memos": "Jelajahi catatan publik pada instance ini",
+    "explore-public-notes": "Jelajahi catatan publik pada instance ini",
     "signin-unavailable-description": "Masuk dengan kata sandi dimatikan dan tidak ada penyedia identitas yang dikonfigurasi. Minta administrator Anda untuk mengaktifkan metode masuk.",
     "signin-unavailable-title": "Masuk tidak tersedia",
     "welcome-back": "Selamat datang kembali."
@@ -43,8 +43,8 @@
     "language": "Bahasa",
     "last-updated-at": "Terakhir diperbarui pada",
     "learn-more": "Pelajari lebih lanjut",
-    "memo": "Catatan",
-    "memos": "Catatan",
+    "note": "Catatan",
+    "notes": "Catatan",
     "more": "Lainnya",
     "name": "Nama",
     "or": "atau",
@@ -65,6 +65,7 @@
     "update": "Perbarui",
     "user": "Pengguna",
     "username": "Nama pengguna",
+    "username-or-email": "Nama pengguna atau email",
     "visibility": "Visibilitas",
     "yourself": "Anda sendiri",
     "actions": "Tindakan",
@@ -75,7 +76,7 @@
     "previous-month": "Bulan sebelumnya",
     "resize-panel": "Ubah ukuran panel",
     "resize-sidebar": "Ubah ukuran sidebar",
-    "sign-in-to-memos": "Masuk ke Roster Tracker",
+    "sign-in-to-notes": "Masuk ke Roster Tracker",
     "view-all": "Lihat semua",
     "collapse-sidebar": "Tutup sidebar",
     "expand-sidebar": "Buka sidebar",
@@ -128,7 +129,7 @@
     },
     "comment": "Komentar",
     "formatting-toolbar": "Toolbar pemformatan",
-    "new-memo": "Catatan baru",
+    "new-note": "Catatan baru",
     "saved": "Tersimpan",
     "validation": {
       "cannot-save": "Tidak dapat menyimpan",
@@ -140,14 +141,14 @@
       "wait-for-upload": "Tunggu hingga unggahan selesai"
     }
   },
-  "memo": {
+  "note": {
     "pinned": "Disematkan",
     "click-to-show-sensitive-content": "Klik untuk menampilkan konten NSFW",
     "comment": {
       "self": "Komentar",
       "write-a-comment": "Tulis komentar"
     },
-    "count-memos-in-date": "{{count}} {{memos}} di {{date}}",
+    "count-notes-in-date": "{{count}} {{notes}} di {{date}}",
     "delete-confirm": "Apakah Anda yakin ingin menghapus catatan ini? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
     "delete-confirm-description": "Tindakan ini tidak dapat dibatalkan. Lampiran, tautan, dan referensi juga akan dihapus.",
     "filters": {
@@ -175,10 +176,10 @@
     "parent-unavailable": "Catatan asli tidak tersedia",
     "parent-unavailable-description": "Catatan tersebut mungkin telah dihapus atau Anda mungkin tidak lagi memiliki akses.",
     "moved": "Catatan dipindahkan",
-    "count-memos-updated-in-date": "{{count}} {{memos}} diperbarui pada {{date}}",
+    "count-notes-updated-in-date": "{{count}} {{notes}} diperbarui pada {{date}}",
     "connections": "Koneksi",
-    "on-this-memo": "Pada catatan ini",
-    "parent-memo": "Catatan induk",
+    "on-this-note": "Pada catatan ini",
+    "parent-note": "Catatan induk",
     "task-actions": {
       "check-all": "Centang semua tugas",
       "uncheck-all": "Hapus centang semua tugas",
@@ -319,7 +320,7 @@
       "attachment-storage": "Penyimpanan objek saat ini",
       "usage-description": "Batas yang ditetapkan admin instance ini. Komentar dan catatan yang diarsipkan ikut dihitung sebagai catatan.",
       "usage-file-size": "Largest file",
-      "usage-memos": "Catatan",
+      "usage-notes": "Catatan",
       "usage-of": "{{usage}} of {{limit}}",
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
@@ -331,7 +332,7 @@
       "email-in-use": "Email ini sudah digunakan oleh akun lain.",
       "username-required": "Username wajib diisi."
     },
-    "memo": {
+    "note": {
       "add-reaction": "Tambahkan reaksi"
     },
     "webhook": {
@@ -409,7 +410,7 @@
   },
   "attachment-library": {
     "labels": {
-      "memo": "Catatan",
+      "note": "Catatan",
       "live": "Langsung",
       "live-photo": "Foto Langsung",
       "not-linked": "Tidak terhubung",
@@ -439,9 +440,9 @@
     }
   },
   "calendar": {
-    "new-memo-on-day": "Catatan atau laporan baru pada hari ini",
+    "new-note-on-day": "Catatan atau laporan baru pada hari ini",
     "next-year": "Tahun depan",
-    "no-memos-on-day": "Tidak ada catatan atau laporan pada hari ini",
+    "no-notes-on-day": "Tidak ada catatan atau laporan pada hari ini",
     "previous-year": "Tahun sebelumnya",
     "select-month": "Pilih bulan",
     "note-count_one": "{{count}} catatan",

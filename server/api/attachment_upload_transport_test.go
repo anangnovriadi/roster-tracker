@@ -15,9 +15,9 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/proto/gen/api/apiconnect"
-	"github.com/usememos/memos/server/auth"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/proto/gen/api/apiconnect"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
 )
 
 type uploadCountingReader struct {

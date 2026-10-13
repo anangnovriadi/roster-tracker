@@ -9,8 +9,8 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 type DB struct {
@@ -49,7 +49,7 @@ func (d *DB) Close() error {
 
 func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
 	var exists bool
-	err := d.db.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_catalog = current_database() AND table_name = 'memo' AND table_type = 'BASE TABLE')").Scan(&exists)
+	err := d.db.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_catalog = current_database() AND table_name = 'note' AND table_type = 'BASE TABLE')").Scan(&exists)
 	if err != nil {
 		return false, errors.Wrap(err, "failed to check if database is initialized")
 	}

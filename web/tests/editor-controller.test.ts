@@ -3,8 +3,8 @@ import { markdown } from "@codemirror/lang-markdown";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { describe, expect, it } from "vitest";
-import { createController } from "@/components/MemoEditor/Editor/controller";
-import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
+import { createController } from "@/components/NoteEditor/Editor/controller";
+import { noteMarkdownExtensions } from "@/utils/note-markdown-extension";
 
 function view(doc = "") {
   return new EditorView({ state: EditorState.create({ doc }) });
@@ -47,7 +47,7 @@ describe("source editor controller", () => {
 
 function setup(doc: string) {
   const v = new EditorView({
-    state: EditorState.create({ doc, extensions: [markdown({ extensions: memoMarkdownExtensions }), history()] }),
+    state: EditorState.create({ doc, extensions: [markdown({ extensions: noteMarkdownExtensions }), history()] }),
   });
   return { v, c: createController(v, {} as never) };
 }

@@ -75,7 +75,7 @@ export const setManagedAttachmentInstanceUrl = (instanceUrl: string | undefined)
 const hasScheme = (raw: string): boolean => /^[a-z][a-z0-9+.-]*:/i.test(raw);
 
 /**
- * Classifies an image destination the way the memo API does. Stored Markdown is
+ * Classifies an image destination the way the note API does. Stored Markdown is
  * expected to be origin-independent; an absolute URL is only a managed reference
  * when it matches the configured instance URL, and is rejected outright when no
  * instance URL is configured.
@@ -119,8 +119,8 @@ export const parseManagedAttachmentImageURL = (raw: string): string | undefined 
 
 const EMPTY_INDEX: ManagedImageIndex = { nodes: [], uids: new Set(), invalidReferences: [] };
 /**
- * Memo bodies are re-scanned on hot paths (every editor keystroke, every card
- * relayout, every render of a memo view), so the mdast parse is cached by source
+ * Note bodies are re-scanned on hot paths (every editor keystroke, every card
+ * relayout, every render of a note view), so the mdast parse is cached by source
  * text. The cache is bounded and also keeps the derived `uids` set referentially
  * stable, which is what lets callers memoize on it.
  */

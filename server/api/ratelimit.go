@@ -15,19 +15,19 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	"github.com/usememos/memos/core/usagelimit"
-	"github.com/usememos/memos/internal/clientip"
-	"github.com/usememos/memos/internal/identifier"
-	"github.com/usememos/memos/internal/ratelimit"
-	"github.com/usememos/memos/server/auth"
+	"github.com/anangnovriadi/roster-tracker/core/usagelimit"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/identifier"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
 )
 
 const (
 	// errorInfoDomain is the google.rpc.ErrorInfo domain for every reason this
 	// service emits. AIP-193 asks for a stable, globally unique namespace, not a
 	// host: this is the service name the API already uses in every resource
-	// type ("memos.api/Memo"), so reasons and resources share one name.
-	errorInfoDomain = "memos.api"
+	// type ("roster.api/Note"), so reasons and resources share one name.
+	errorInfoDomain = "roster.api"
 	// reasonRateLimited marks a refusal that recovers on its own after the
 	// advertised delay.
 	reasonRateLimited = "RATE_LIMITED"
@@ -104,8 +104,8 @@ func newQuotaExceededError(username string, refusal *usagelimit.Refusal) error {
 
 func quotaExceededDescription(refusal *usagelimit.Refusal) string {
 	switch refusal.Metric {
-	case usagelimit.MetricMemos:
-		return "You have reached the limit of " + strconv.FormatInt(refusal.Limit, 10) + " memos."
+	case usagelimit.MetricNotes:
+		return "You have reached the limit of " + strconv.FormatInt(refusal.Limit, 10) + " notes."
 	case usagelimit.MetricStorageBytes:
 		return "This upload would exceed your storage limit of " + strconv.FormatInt(refusal.Limit, 10) + " bytes."
 	case usagelimit.MetricUploadBytes:

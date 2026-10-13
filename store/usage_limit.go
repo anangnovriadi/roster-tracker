@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 // MaxUsageLimits is the most usage limits an instance can hold. All limits
@@ -67,7 +67,7 @@ func ValidateInstanceUsageLimitsSetting(setting *storepb.InstanceUsageLimitsSett
 			return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].uid %q must be lowercase kebab case, start with a letter, and have at most %d characters", i, limit.Uid, maxUsageLimitUIDLength)
 		}
 		if !IsValidUsageLimitMetric(limit.Metric) {
-			return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].metric must be MEMOS, STORAGE_BYTES, or UPLOAD_BYTES", i)
+			return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].metric must be NOTES, STORAGE_BYTES, or UPLOAD_BYTES", i)
 		}
 		if limit.UserId < 0 {
 			return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].userId must not be negative", i)
@@ -91,7 +91,7 @@ func ValidateInstanceUsageLimitsSetting(setting *storepb.InstanceUsageLimitsSett
 // IsValidUsageLimitMetric reports whether metric is one that limits can be set for.
 func IsValidUsageLimitMetric(metric storepb.InstanceUsageLimitsSetting_Metric) bool {
 	switch metric {
-	case storepb.InstanceUsageLimitsSetting_MEMOS,
+	case storepb.InstanceUsageLimitsSetting_NOTES,
 		storepb.InstanceUsageLimitsSetting_STORAGE_BYTES,
 		storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES:
 		return true

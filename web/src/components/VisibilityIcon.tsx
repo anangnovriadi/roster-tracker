@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import type { Visibility } from "@/types/proto/api/memo_service_pb";
-import { getVisibilityOption } from "@/utils/memo";
+import type { Visibility } from "@/types/proto/api/note_service_pb";
+import { getVisibilityOption } from "@/utils/note";
 
 interface Props {
   visibility: Visibility;

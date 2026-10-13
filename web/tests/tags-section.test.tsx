@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SIDEBAR_ROW_BOX_CLASSES, SIDEBAR_ROW_COUNT_RAIL_CLASSES, SIDEBAR_ROW_SLOT_CLASSES } from "@/components/AppSidebar/SidebarRow";
 import { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import TagsSection from "@/components/AppSidebar/TagsSection";
-import { MemoFilterProvider } from "@/contexts/MemoFilterContext";
+import { NoteFilterProvider } from "@/contexts/NoteFilterContext";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
@@ -16,9 +16,9 @@ describe("TagsSection", () => {
   it("keeps the title count-free and uses the shared section action grammar", () => {
     render(
       <MemoryRouter>
-        <MemoFilterProvider>
+        <NoteFilterProvider>
           <TagsSection tagCount={{ a: 2, "a/b": 1 }} scope="home" />
-        </MemoFilterProvider>
+        </NoteFilterProvider>
       </MemoryRouter>,
     );
 
@@ -28,7 +28,7 @@ describe("TagsSection", () => {
     const trigger = screen.getByRole("button", { name: "common.tags: common.more" });
     expect(trigger).toHaveClass("size-6", "rounded-md", "text-muted-foreground/70", "hover:bg-muted/60", "hover:text-foreground");
     expect(trigger.querySelector("svg")).toHaveClass(SIDEBAR_SECTION_ACTION_ICON_CLASSES);
-    expect(screen.queryByRole("button", { name: "common.tags: memo.layout-list" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "common.tags: note.layout-list" })).not.toBeInTheDocument();
     expect(screen.queryByRole("menuitemcheckbox")).not.toBeInTheDocument();
   });
 
@@ -36,9 +36,9 @@ describe("TagsSection", () => {
     const onSelect = vi.fn();
     render(
       <MemoryRouter>
-        <MemoFilterProvider>
+        <NoteFilterProvider>
           <TagsSection tagCount={{ a: 2, "a/b": 1 }} scope="home" onSelect={onSelect} />
-        </MemoFilterProvider>
+        </NoteFilterProvider>
       </MemoryRouter>,
     );
 
@@ -68,9 +68,9 @@ describe("TagsSection", () => {
     localStorage.setItem("tag-view-as-tree", "true");
     render(
       <MemoryRouter>
-        <MemoFilterProvider>
+        <NoteFilterProvider>
           <TagsSection tagCount={{ a: 2, "a/b": 1 }} scope="home" />
-        </MemoFilterProvider>
+        </NoteFilterProvider>
       </MemoryRouter>,
     );
 
@@ -82,9 +82,9 @@ describe("TagsSection", () => {
   it("keeps flat rows on the shared row grammar with a trailing count rail", () => {
     render(
       <MemoryRouter>
-        <MemoFilterProvider>
+        <NoteFilterProvider>
           <TagsSection tagCount={{ alpha: 2, "a/very-long-tag-path": 1 }} scope="home" />
-        </MemoFilterProvider>
+        </NoteFilterProvider>
       </MemoryRouter>,
     );
 

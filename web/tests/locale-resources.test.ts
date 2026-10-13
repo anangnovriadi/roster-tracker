@@ -118,7 +118,7 @@ describe("locale key usage", () => {
       "fixture.ts": `
         t(\`attachment-library.tabs.\${tab}\`);
         i18n.t(\`space.icon.\${kind}\` as Translations);
-        const unrelated = \`memo.\${name}\`;
+        const unrelated = \`note.\${name}\`;
       `,
     });
 
@@ -132,10 +132,10 @@ describe("locale key usage", () => {
   });
 
   it("flags unreviewed computed keys instead of allowing a whole namespace", () => {
-    const references = collectReferences({ "fixture.ts": "t(`memo.${kind}.${state}`);" });
+    const references = collectReferences({ "fixture.ts": "t(`note.${kind}.${state}`);" });
 
     expect(references.keys.size).toBe(0);
-    expect(references.unreviewedPatterns).toEqual(["fixture.ts:1: memo.${}.${}"]);
+    expect(references.unreviewedPatterns).toEqual(["fixture.ts:1: note.${}.${}"]);
   });
 });
 

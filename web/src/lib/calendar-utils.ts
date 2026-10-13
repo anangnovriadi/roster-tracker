@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import type { MemoTimeBasis } from "@/contexts/ViewContext";
+import type { NoteTimeBasis } from "@/contexts/ViewContext";
 import { combineCELFilters } from "@/lib/cel-filter";
 
 export const MONTH_DATE_FORMAT = "YYYY-MM" as const;
@@ -57,16 +57,16 @@ export const getLocalMonthTimestampRange = (value: string): LocalTimestampRange 
 };
 
 /** The CEL timestamp field a time basis is stored under. */
-export const getTimeBasisField = (timeBasis: MemoTimeBasis): "created_ts" | "updated_ts" =>
+export const getTimeBasisField = (timeBasis: NoteTimeBasis): "created_ts" | "updated_ts" =>
   timeBasis === "update_time" ? "updated_ts" : "created_ts";
 
-/** A CEL clause selecting memos whose `field` falls inside `range`. */
+/** A CEL clause selecting notes whose `field` falls inside `range`. */
 export const buildTimestampRangeFilter = (field: "created_ts" | "updated_ts", range: LocalTimestampRange): string =>
   `${field} >= timestamp(${range.startTimestamp}) && ${field} < timestamp(${range.endTimestamp})`;
 
-/** `filter` narrowed to memos whose `timeBasis` timestamp falls inside `range`; unchanged when there is no range. */
+/** `filter` narrowed to notes whose `timeBasis` timestamp falls inside `range`; unchanged when there is no range. */
 export const withTimestampRange = (
   filter: string | undefined,
   range: LocalTimestampRange | undefined,
-  timeBasis: MemoTimeBasis,
+  timeBasis: NoteTimeBasis,
 ): string | undefined => (range ? combineCELFilters(filter, buildTimestampRangeFilter(getTimeBasisField(timeBasis), range)) : filter);

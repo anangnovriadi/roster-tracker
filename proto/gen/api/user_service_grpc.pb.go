@@ -21,40 +21,40 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_ListUsers_FullMethodName                   = "/memos.api.UserService/ListUsers"
-	UserService_GetUser_FullMethodName                     = "/memos.api.UserService/GetUser"
-	UserService_BatchGetUsers_FullMethodName               = "/memos.api.UserService/BatchGetUsers"
-	UserService_CreateUser_FullMethodName                  = "/memos.api.UserService/CreateUser"
-	UserService_UpdateUser_FullMethodName                  = "/memos.api.UserService/UpdateUser"
-	UserService_DeleteUser_FullMethodName                  = "/memos.api.UserService/DeleteUser"
-	UserService_ListUserSettings_FullMethodName            = "/memos.api.UserService/ListUserSettings"
-	UserService_GetUserSetting_FullMethodName              = "/memos.api.UserService/GetUserSetting"
-	UserService_UpdateUserSetting_FullMethodName           = "/memos.api.UserService/UpdateUserSetting"
-	UserService_ListUserStats_FullMethodName               = "/memos.api.UserService/ListUserStats"
-	UserService_GetUserStats_FullMethodName                = "/memos.api.UserService/GetUserStats"
-	UserService_GetUserUsage_FullMethodName                = "/memos.api.UserService/GetUserUsage"
-	UserService_ListMemoViews_FullMethodName               = "/memos.api.UserService/ListMemoViews"
-	UserService_GetMemoView_FullMethodName                 = "/memos.api.UserService/GetMemoView"
-	UserService_CreateMemoView_FullMethodName              = "/memos.api.UserService/CreateMemoView"
-	UserService_UpdateMemoView_FullMethodName              = "/memos.api.UserService/UpdateMemoView"
-	UserService_DeleteMemoView_FullMethodName              = "/memos.api.UserService/DeleteMemoView"
-	UserService_ListUserNotifications_FullMethodName       = "/memos.api.UserService/ListUserNotifications"
-	UserService_UpdateUserNotification_FullMethodName      = "/memos.api.UserService/UpdateUserNotification"
-	UserService_DeleteUserNotification_FullMethodName      = "/memos.api.UserService/DeleteUserNotification"
-	UserService_ListUserWebhooks_FullMethodName            = "/memos.api.UserService/ListUserWebhooks"
-	UserService_CreateUserWebhook_FullMethodName           = "/memos.api.UserService/CreateUserWebhook"
-	UserService_UpdateUserWebhook_FullMethodName           = "/memos.api.UserService/UpdateUserWebhook"
-	UserService_DeleteUserWebhook_FullMethodName           = "/memos.api.UserService/DeleteUserWebhook"
-	UserService_GetUserWebhookSigningSecret_FullMethodName = "/memos.api.UserService/GetUserWebhookSigningSecret"
-	UserService_ListLinkedIdentities_FullMethodName        = "/memos.api.UserService/ListLinkedIdentities"
-	UserService_GetLinkedIdentity_FullMethodName           = "/memos.api.UserService/GetLinkedIdentity"
-	UserService_CreateLinkedIdentity_FullMethodName        = "/memos.api.UserService/CreateLinkedIdentity"
-	UserService_DeleteLinkedIdentity_FullMethodName        = "/memos.api.UserService/DeleteLinkedIdentity"
-	UserService_ListPersonalAccessTokens_FullMethodName    = "/memos.api.UserService/ListPersonalAccessTokens"
-	UserService_CreatePersonalAccessToken_FullMethodName   = "/memos.api.UserService/CreatePersonalAccessToken"
-	UserService_DeletePersonalAccessToken_FullMethodName   = "/memos.api.UserService/DeletePersonalAccessToken"
-	UserService_ExportMemos_FullMethodName                 = "/memos.api.UserService/ExportMemos"
-	UserService_ImportMemos_FullMethodName                 = "/memos.api.UserService/ImportMemos"
+	UserService_ListUsers_FullMethodName                   = "/roster.api.UserService/ListUsers"
+	UserService_GetUser_FullMethodName                     = "/roster.api.UserService/GetUser"
+	UserService_BatchGetUsers_FullMethodName               = "/roster.api.UserService/BatchGetUsers"
+	UserService_CreateUser_FullMethodName                  = "/roster.api.UserService/CreateUser"
+	UserService_UpdateUser_FullMethodName                  = "/roster.api.UserService/UpdateUser"
+	UserService_DeleteUser_FullMethodName                  = "/roster.api.UserService/DeleteUser"
+	UserService_ListUserSettings_FullMethodName            = "/roster.api.UserService/ListUserSettings"
+	UserService_GetUserSetting_FullMethodName              = "/roster.api.UserService/GetUserSetting"
+	UserService_UpdateUserSetting_FullMethodName           = "/roster.api.UserService/UpdateUserSetting"
+	UserService_ListUserStats_FullMethodName               = "/roster.api.UserService/ListUserStats"
+	UserService_GetUserStats_FullMethodName                = "/roster.api.UserService/GetUserStats"
+	UserService_GetUserUsage_FullMethodName                = "/roster.api.UserService/GetUserUsage"
+	UserService_ListNoteViews_FullMethodName               = "/roster.api.UserService/ListNoteViews"
+	UserService_GetNoteView_FullMethodName                 = "/roster.api.UserService/GetNoteView"
+	UserService_CreateNoteView_FullMethodName              = "/roster.api.UserService/CreateNoteView"
+	UserService_UpdateNoteView_FullMethodName              = "/roster.api.UserService/UpdateNoteView"
+	UserService_DeleteNoteView_FullMethodName              = "/roster.api.UserService/DeleteNoteView"
+	UserService_ListUserNotifications_FullMethodName       = "/roster.api.UserService/ListUserNotifications"
+	UserService_UpdateUserNotification_FullMethodName      = "/roster.api.UserService/UpdateUserNotification"
+	UserService_DeleteUserNotification_FullMethodName      = "/roster.api.UserService/DeleteUserNotification"
+	UserService_ListUserWebhooks_FullMethodName            = "/roster.api.UserService/ListUserWebhooks"
+	UserService_CreateUserWebhook_FullMethodName           = "/roster.api.UserService/CreateUserWebhook"
+	UserService_UpdateUserWebhook_FullMethodName           = "/roster.api.UserService/UpdateUserWebhook"
+	UserService_DeleteUserWebhook_FullMethodName           = "/roster.api.UserService/DeleteUserWebhook"
+	UserService_GetUserWebhookSigningSecret_FullMethodName = "/roster.api.UserService/GetUserWebhookSigningSecret"
+	UserService_ListLinkedIdentities_FullMethodName        = "/roster.api.UserService/ListLinkedIdentities"
+	UserService_GetLinkedIdentity_FullMethodName           = "/roster.api.UserService/GetLinkedIdentity"
+	UserService_CreateLinkedIdentity_FullMethodName        = "/roster.api.UserService/CreateLinkedIdentity"
+	UserService_DeleteLinkedIdentity_FullMethodName        = "/roster.api.UserService/DeleteLinkedIdentity"
+	UserService_ListPersonalAccessTokens_FullMethodName    = "/roster.api.UserService/ListPersonalAccessTokens"
+	UserService_CreatePersonalAccessToken_FullMethodName   = "/roster.api.UserService/CreatePersonalAccessToken"
+	UserService_DeletePersonalAccessToken_FullMethodName   = "/roster.api.UserService/DeletePersonalAccessToken"
+	UserService_ExportNotes_FullMethodName                 = "/roster.api.UserService/ExportNotes"
+	UserService_ImportNotes_FullMethodName                 = "/roster.api.UserService/ImportNotes"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -62,8 +62,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // UserService manages users and the resources they own: settings, statistics,
-// memo views, notifications, webhooks, linked identities, personal access
-// tokens, and memo export files.
+// note views, notifications, webhooks, linked identities, personal access
+// tokens, and note export files.
 type UserServiceClient interface {
 	// ListUsers lists users in every state. Only admins may call it.
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
@@ -91,30 +91,30 @@ type UserServiceClient interface {
 	// UpdateUserSetting updates a user setting. Only the user may call it, and
 	// only the GENERAL and TAGS settings can be updated.
 	UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
-	// ListUserStats returns memo statistics for every user who created at least
-	// one matching memo the caller can read. Use the parent users/- for all
+	// ListUserStats returns note statistics for every user who created at least
+	// one matching note the caller can read. Use the parent users/- for all
 	// users, or users/{user} for one user.
 	ListUserStats(ctx context.Context, in *ListUserStatsRequest, opts ...grpc.CallOption) (*ListUserStatsResponse, error)
-	// GetUserStats returns memo statistics for one user, counting the user's
-	// memos that the caller can read.
+	// GetUserStats returns note statistics for one user, counting the user's
+	// notes that the caller can read.
 	GetUserStats(ctx context.Context, in *GetUserStatsRequest, opts ...grpc.CallOption) (*UserStats, error)
 	// GetUserUsage returns a user's usage and the usage limits in effect for the
 	// user. Only the user or an admin may call it.
 	GetUserUsage(ctx context.Context, in *GetUserUsageRequest, opts ...grpc.CallOption) (*UserUsage, error)
-	// ListMemoViews lists a user's memo views. Each view is a named, reusable
-	// CEL filter (see MemoView.filter); pass its filter string directly to the
-	// ListMemos `filter` argument. Only the user may call it.
-	ListMemoViews(ctx context.Context, in *ListMemoViewsRequest, opts ...grpc.CallOption) (*ListMemoViewsResponse, error)
-	// GetMemoView gets a memo view. Only the owner may call it.
-	GetMemoView(ctx context.Context, in *GetMemoViewRequest, opts ...grpc.CallOption) (*MemoView, error)
-	// CreateMemoView creates a memo view for a user. Only the user may call it.
-	CreateMemoView(ctx context.Context, in *CreateMemoViewRequest, opts ...grpc.CallOption) (*MemoView, error)
-	// UpdateMemoView updates a memo view. Only the owner may call it.
-	UpdateMemoView(ctx context.Context, in *UpdateMemoViewRequest, opts ...grpc.CallOption) (*MemoView, error)
-	// DeleteMemoView deletes a memo view. Only the owner may call it.
-	DeleteMemoView(ctx context.Context, in *DeleteMemoViewRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// ListNoteViews lists a user's note views. Each view is a named, reusable
+	// CEL filter (see NoteView.filter); pass its filter string directly to the
+	// ListNotes `filter` argument. Only the user may call it.
+	ListNoteViews(ctx context.Context, in *ListNoteViewsRequest, opts ...grpc.CallOption) (*ListNoteViewsResponse, error)
+	// GetNoteView gets a note view. Only the owner may call it.
+	GetNoteView(ctx context.Context, in *GetNoteViewRequest, opts ...grpc.CallOption) (*NoteView, error)
+	// CreateNoteView creates a note view for a user. Only the user may call it.
+	CreateNoteView(ctx context.Context, in *CreateNoteViewRequest, opts ...grpc.CallOption) (*NoteView, error)
+	// UpdateNoteView updates a note view. Only the owner may call it.
+	UpdateNoteView(ctx context.Context, in *UpdateNoteViewRequest, opts ...grpc.CallOption) (*NoteView, error)
+	// DeleteNoteView deletes a note view. Only the owner may call it.
+	DeleteNoteView(ctx context.Context, in *DeleteNoteViewRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListUserNotifications lists a user's notifications. Only the user may call
-	// it. Notifications whose memos or space invitation the user can no longer
+	// it. Notifications whose notes or space invitation the user can no longer
 	// read are left out.
 	ListUserNotifications(ctx context.Context, in *ListUserNotificationsRequest, opts ...grpc.CallOption) (*ListUserNotificationsResponse, error)
 	// UpdateUserNotification updates a notification's status. Only the receiver
@@ -160,19 +160,19 @@ type UserServiceClient interface {
 	// DeletePersonalAccessToken deletes a personal access token, which stops
 	// working immediately. Only the owner may call it.
 	DeletePersonalAccessToken(ctx context.Context, in *DeletePersonalAccessTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memos export file (a ZIP file, see
-	// docs/design/memos-export-format.md). Only the user may export their own
-	// memos. The body is the archive; content_type is its media type.
-	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
-	// ImportMemos uploads a Memos export file in bounded chunks and imports it
-	// into the user's memos. The first call carries the spec and returns an
+	// ExportNotes writes every note the user created, with comments, archived
+	// notes, and attachment files, as a Roster Tracker export file (a ZIP file, see
+	// docs/design/notes-export-format.md). Only the user may export their own
+	// notes. The body is the archive; content_type is its media type.
+	ExportNotes(ctx context.Context, in *ExportNotesRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
+	// ImportNotes uploads a Roster Tracker export file in bounded chunks and imports it
+	// into the user's notes. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
 	// validate_only returns the plan and keeps the archive staged; a finishing
 	// call without it imports and returns the report. Uploads are bound to the
 	// authenticated user, expire after 30 minutes of inactivity, and do not
 	// survive a server restart.
-	ImportMemos(ctx context.Context, in *ImportMemosRequest, opts ...grpc.CallOption) (*ImportMemosResponse, error)
+	ImportNotes(ctx context.Context, in *ImportNotesRequest, opts ...grpc.CallOption) (*ImportNotesResponse, error)
 }
 
 type userServiceClient struct {
@@ -303,50 +303,50 @@ func (c *userServiceClient) GetUserUsage(ctx context.Context, in *GetUserUsageRe
 	return out, nil
 }
 
-func (c *userServiceClient) ListMemoViews(ctx context.Context, in *ListMemoViewsRequest, opts ...grpc.CallOption) (*ListMemoViewsResponse, error) {
+func (c *userServiceClient) ListNoteViews(ctx context.Context, in *ListNoteViewsRequest, opts ...grpc.CallOption) (*ListNoteViewsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListMemoViewsResponse)
-	err := c.cc.Invoke(ctx, UserService_ListMemoViews_FullMethodName, in, out, cOpts...)
+	out := new(ListNoteViewsResponse)
+	err := c.cc.Invoke(ctx, UserService_ListNoteViews_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) GetMemoView(ctx context.Context, in *GetMemoViewRequest, opts ...grpc.CallOption) (*MemoView, error) {
+func (c *userServiceClient) GetNoteView(ctx context.Context, in *GetNoteViewRequest, opts ...grpc.CallOption) (*NoteView, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MemoView)
-	err := c.cc.Invoke(ctx, UserService_GetMemoView_FullMethodName, in, out, cOpts...)
+	out := new(NoteView)
+	err := c.cc.Invoke(ctx, UserService_GetNoteView_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) CreateMemoView(ctx context.Context, in *CreateMemoViewRequest, opts ...grpc.CallOption) (*MemoView, error) {
+func (c *userServiceClient) CreateNoteView(ctx context.Context, in *CreateNoteViewRequest, opts ...grpc.CallOption) (*NoteView, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MemoView)
-	err := c.cc.Invoke(ctx, UserService_CreateMemoView_FullMethodName, in, out, cOpts...)
+	out := new(NoteView)
+	err := c.cc.Invoke(ctx, UserService_CreateNoteView_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateMemoView(ctx context.Context, in *UpdateMemoViewRequest, opts ...grpc.CallOption) (*MemoView, error) {
+func (c *userServiceClient) UpdateNoteView(ctx context.Context, in *UpdateNoteViewRequest, opts ...grpc.CallOption) (*NoteView, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MemoView)
-	err := c.cc.Invoke(ctx, UserService_UpdateMemoView_FullMethodName, in, out, cOpts...)
+	out := new(NoteView)
+	err := c.cc.Invoke(ctx, UserService_UpdateNoteView_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) DeleteMemoView(ctx context.Context, in *DeleteMemoViewRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *userServiceClient) DeleteNoteView(ctx context.Context, in *DeleteNoteViewRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, UserService_DeleteMemoView_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, UserService_DeleteNoteView_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -503,20 +503,20 @@ func (c *userServiceClient) DeletePersonalAccessToken(ctx context.Context, in *D
 	return out, nil
 }
 
-func (c *userServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+func (c *userServiceClient) ExportNotes(ctx context.Context, in *ExportNotesRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(httpbody.HttpBody)
-	err := c.cc.Invoke(ctx, UserService_ExportMemos_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, UserService_ExportNotes_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) ImportMemos(ctx context.Context, in *ImportMemosRequest, opts ...grpc.CallOption) (*ImportMemosResponse, error) {
+func (c *userServiceClient) ImportNotes(ctx context.Context, in *ImportNotesRequest, opts ...grpc.CallOption) (*ImportNotesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ImportMemosResponse)
-	err := c.cc.Invoke(ctx, UserService_ImportMemos_FullMethodName, in, out, cOpts...)
+	out := new(ImportNotesResponse)
+	err := c.cc.Invoke(ctx, UserService_ImportNotes_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -528,8 +528,8 @@ func (c *userServiceClient) ImportMemos(ctx context.Context, in *ImportMemosRequ
 // for forward compatibility.
 //
 // UserService manages users and the resources they own: settings, statistics,
-// memo views, notifications, webhooks, linked identities, personal access
-// tokens, and memo export files.
+// note views, notifications, webhooks, linked identities, personal access
+// tokens, and note export files.
 type UserServiceServer interface {
 	// ListUsers lists users in every state. Only admins may call it.
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
@@ -557,30 +557,30 @@ type UserServiceServer interface {
 	// UpdateUserSetting updates a user setting. Only the user may call it, and
 	// only the GENERAL and TAGS settings can be updated.
 	UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UserSetting, error)
-	// ListUserStats returns memo statistics for every user who created at least
-	// one matching memo the caller can read. Use the parent users/- for all
+	// ListUserStats returns note statistics for every user who created at least
+	// one matching note the caller can read. Use the parent users/- for all
 	// users, or users/{user} for one user.
 	ListUserStats(context.Context, *ListUserStatsRequest) (*ListUserStatsResponse, error)
-	// GetUserStats returns memo statistics for one user, counting the user's
-	// memos that the caller can read.
+	// GetUserStats returns note statistics for one user, counting the user's
+	// notes that the caller can read.
 	GetUserStats(context.Context, *GetUserStatsRequest) (*UserStats, error)
 	// GetUserUsage returns a user's usage and the usage limits in effect for the
 	// user. Only the user or an admin may call it.
 	GetUserUsage(context.Context, *GetUserUsageRequest) (*UserUsage, error)
-	// ListMemoViews lists a user's memo views. Each view is a named, reusable
-	// CEL filter (see MemoView.filter); pass its filter string directly to the
-	// ListMemos `filter` argument. Only the user may call it.
-	ListMemoViews(context.Context, *ListMemoViewsRequest) (*ListMemoViewsResponse, error)
-	// GetMemoView gets a memo view. Only the owner may call it.
-	GetMemoView(context.Context, *GetMemoViewRequest) (*MemoView, error)
-	// CreateMemoView creates a memo view for a user. Only the user may call it.
-	CreateMemoView(context.Context, *CreateMemoViewRequest) (*MemoView, error)
-	// UpdateMemoView updates a memo view. Only the owner may call it.
-	UpdateMemoView(context.Context, *UpdateMemoViewRequest) (*MemoView, error)
-	// DeleteMemoView deletes a memo view. Only the owner may call it.
-	DeleteMemoView(context.Context, *DeleteMemoViewRequest) (*emptypb.Empty, error)
+	// ListNoteViews lists a user's note views. Each view is a named, reusable
+	// CEL filter (see NoteView.filter); pass its filter string directly to the
+	// ListNotes `filter` argument. Only the user may call it.
+	ListNoteViews(context.Context, *ListNoteViewsRequest) (*ListNoteViewsResponse, error)
+	// GetNoteView gets a note view. Only the owner may call it.
+	GetNoteView(context.Context, *GetNoteViewRequest) (*NoteView, error)
+	// CreateNoteView creates a note view for a user. Only the user may call it.
+	CreateNoteView(context.Context, *CreateNoteViewRequest) (*NoteView, error)
+	// UpdateNoteView updates a note view. Only the owner may call it.
+	UpdateNoteView(context.Context, *UpdateNoteViewRequest) (*NoteView, error)
+	// DeleteNoteView deletes a note view. Only the owner may call it.
+	DeleteNoteView(context.Context, *DeleteNoteViewRequest) (*emptypb.Empty, error)
 	// ListUserNotifications lists a user's notifications. Only the user may call
-	// it. Notifications whose memos or space invitation the user can no longer
+	// it. Notifications whose notes or space invitation the user can no longer
 	// read are left out.
 	ListUserNotifications(context.Context, *ListUserNotificationsRequest) (*ListUserNotificationsResponse, error)
 	// UpdateUserNotification updates a notification's status. Only the receiver
@@ -626,19 +626,19 @@ type UserServiceServer interface {
 	// DeletePersonalAccessToken deletes a personal access token, which stops
 	// working immediately. Only the owner may call it.
 	DeletePersonalAccessToken(context.Context, *DeletePersonalAccessTokenRequest) (*emptypb.Empty, error)
-	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memos export file (a ZIP file, see
-	// docs/design/memos-export-format.md). Only the user may export their own
-	// memos. The body is the archive; content_type is its media type.
-	ExportMemos(context.Context, *ExportMemosRequest) (*httpbody.HttpBody, error)
-	// ImportMemos uploads a Memos export file in bounded chunks and imports it
-	// into the user's memos. The first call carries the spec and returns an
+	// ExportNotes writes every note the user created, with comments, archived
+	// notes, and attachment files, as a Roster Tracker export file (a ZIP file, see
+	// docs/design/notes-export-format.md). Only the user may export their own
+	// notes. The body is the archive; content_type is its media type.
+	ExportNotes(context.Context, *ExportNotesRequest) (*httpbody.HttpBody, error)
+	// ImportNotes uploads a Roster Tracker export file in bounded chunks and imports it
+	// into the user's notes. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
 	// validate_only returns the plan and keeps the archive staged; a finishing
 	// call without it imports and returns the report. Uploads are bound to the
 	// authenticated user, expire after 30 minutes of inactivity, and do not
 	// survive a server restart.
-	ImportMemos(context.Context, *ImportMemosRequest) (*ImportMemosResponse, error)
+	ImportNotes(context.Context, *ImportNotesRequest) (*ImportNotesResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -685,20 +685,20 @@ func (UnimplementedUserServiceServer) GetUserStats(context.Context, *GetUserStat
 func (UnimplementedUserServiceServer) GetUserUsage(context.Context, *GetUserUsageRequest) (*UserUsage, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetUserUsage not implemented")
 }
-func (UnimplementedUserServiceServer) ListMemoViews(context.Context, *ListMemoViewsRequest) (*ListMemoViewsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListMemoViews not implemented")
+func (UnimplementedUserServiceServer) ListNoteViews(context.Context, *ListNoteViewsRequest) (*ListNoteViewsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListNoteViews not implemented")
 }
-func (UnimplementedUserServiceServer) GetMemoView(context.Context, *GetMemoViewRequest) (*MemoView, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetMemoView not implemented")
+func (UnimplementedUserServiceServer) GetNoteView(context.Context, *GetNoteViewRequest) (*NoteView, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetNoteView not implemented")
 }
-func (UnimplementedUserServiceServer) CreateMemoView(context.Context, *CreateMemoViewRequest) (*MemoView, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateMemoView not implemented")
+func (UnimplementedUserServiceServer) CreateNoteView(context.Context, *CreateNoteViewRequest) (*NoteView, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateNoteView not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateMemoView(context.Context, *UpdateMemoViewRequest) (*MemoView, error) {
-	return nil, status.Error(codes.Unimplemented, "method UpdateMemoView not implemented")
+func (UnimplementedUserServiceServer) UpdateNoteView(context.Context, *UpdateNoteViewRequest) (*NoteView, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateNoteView not implemented")
 }
-func (UnimplementedUserServiceServer) DeleteMemoView(context.Context, *DeleteMemoViewRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteMemoView not implemented")
+func (UnimplementedUserServiceServer) DeleteNoteView(context.Context, *DeleteNoteViewRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteNoteView not implemented")
 }
 func (UnimplementedUserServiceServer) ListUserNotifications(context.Context, *ListUserNotificationsRequest) (*ListUserNotificationsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUserNotifications not implemented")
@@ -745,11 +745,11 @@ func (UnimplementedUserServiceServer) CreatePersonalAccessToken(context.Context,
 func (UnimplementedUserServiceServer) DeletePersonalAccessToken(context.Context, *DeletePersonalAccessTokenRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeletePersonalAccessToken not implemented")
 }
-func (UnimplementedUserServiceServer) ExportMemos(context.Context, *ExportMemosRequest) (*httpbody.HttpBody, error) {
-	return nil, status.Error(codes.Unimplemented, "method ExportMemos not implemented")
+func (UnimplementedUserServiceServer) ExportNotes(context.Context, *ExportNotesRequest) (*httpbody.HttpBody, error) {
+	return nil, status.Error(codes.Unimplemented, "method ExportNotes not implemented")
 }
-func (UnimplementedUserServiceServer) ImportMemos(context.Context, *ImportMemosRequest) (*ImportMemosResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ImportMemos not implemented")
+func (UnimplementedUserServiceServer) ImportNotes(context.Context, *ImportNotesRequest) (*ImportNotesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ImportNotes not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -988,92 +988,92 @@ func _UserService_GetUserUsage_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_ListMemoViews_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListMemoViewsRequest)
+func _UserService_ListNoteViews_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListNoteViewsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).ListMemoViews(ctx, in)
+		return srv.(UserServiceServer).ListNoteViews(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_ListMemoViews_FullMethodName,
+		FullMethod: UserService_ListNoteViews_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ListMemoViews(ctx, req.(*ListMemoViewsRequest))
+		return srv.(UserServiceServer).ListNoteViews(ctx, req.(*ListNoteViewsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GetMemoView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMemoViewRequest)
+func _UserService_GetNoteView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNoteViewRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetMemoView(ctx, in)
+		return srv.(UserServiceServer).GetNoteView(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_GetMemoView_FullMethodName,
+		FullMethod: UserService_GetNoteView_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetMemoView(ctx, req.(*GetMemoViewRequest))
+		return srv.(UserServiceServer).GetNoteView(ctx, req.(*GetNoteViewRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_CreateMemoView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateMemoViewRequest)
+func _UserService_CreateNoteView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateNoteViewRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).CreateMemoView(ctx, in)
+		return srv.(UserServiceServer).CreateNoteView(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_CreateMemoView_FullMethodName,
+		FullMethod: UserService_CreateNoteView_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).CreateMemoView(ctx, req.(*CreateMemoViewRequest))
+		return srv.(UserServiceServer).CreateNoteView(ctx, req.(*CreateNoteViewRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_UpdateMemoView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateMemoViewRequest)
+func _UserService_UpdateNoteView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateNoteViewRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).UpdateMemoView(ctx, in)
+		return srv.(UserServiceServer).UpdateNoteView(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_UpdateMemoView_FullMethodName,
+		FullMethod: UserService_UpdateNoteView_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).UpdateMemoView(ctx, req.(*UpdateMemoViewRequest))
+		return srv.(UserServiceServer).UpdateNoteView(ctx, req.(*UpdateNoteViewRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_DeleteMemoView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteMemoViewRequest)
+func _UserService_DeleteNoteView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteNoteViewRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).DeleteMemoView(ctx, in)
+		return srv.(UserServiceServer).DeleteNoteView(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_DeleteMemoView_FullMethodName,
+		FullMethod: UserService_DeleteNoteView_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).DeleteMemoView(ctx, req.(*DeleteMemoViewRequest))
+		return srv.(UserServiceServer).DeleteNoteView(ctx, req.(*DeleteNoteViewRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1348,38 +1348,38 @@ func _UserService_DeletePersonalAccessToken_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_ExportMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ExportMemosRequest)
+func _UserService_ExportNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportNotesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).ExportMemos(ctx, in)
+		return srv.(UserServiceServer).ExportNotes(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_ExportMemos_FullMethodName,
+		FullMethod: UserService_ExportNotes_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ExportMemos(ctx, req.(*ExportMemosRequest))
+		return srv.(UserServiceServer).ExportNotes(ctx, req.(*ExportNotesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_ImportMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ImportMemosRequest)
+func _UserService_ImportNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ImportNotesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).ImportMemos(ctx, in)
+		return srv.(UserServiceServer).ImportNotes(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_ImportMemos_FullMethodName,
+		FullMethod: UserService_ImportNotes_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ImportMemos(ctx, req.(*ImportMemosRequest))
+		return srv.(UserServiceServer).ImportNotes(ctx, req.(*ImportNotesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1388,7 +1388,7 @@ func _UserService_ImportMemos_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "memos.api.UserService",
+	ServiceName: "roster.api.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -1440,24 +1440,24 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_GetUserUsage_Handler,
 		},
 		{
-			MethodName: "ListMemoViews",
-			Handler:    _UserService_ListMemoViews_Handler,
+			MethodName: "ListNoteViews",
+			Handler:    _UserService_ListNoteViews_Handler,
 		},
 		{
-			MethodName: "GetMemoView",
-			Handler:    _UserService_GetMemoView_Handler,
+			MethodName: "GetNoteView",
+			Handler:    _UserService_GetNoteView_Handler,
 		},
 		{
-			MethodName: "CreateMemoView",
-			Handler:    _UserService_CreateMemoView_Handler,
+			MethodName: "CreateNoteView",
+			Handler:    _UserService_CreateNoteView_Handler,
 		},
 		{
-			MethodName: "UpdateMemoView",
-			Handler:    _UserService_UpdateMemoView_Handler,
+			MethodName: "UpdateNoteView",
+			Handler:    _UserService_UpdateNoteView_Handler,
 		},
 		{
-			MethodName: "DeleteMemoView",
-			Handler:    _UserService_DeleteMemoView_Handler,
+			MethodName: "DeleteNoteView",
+			Handler:    _UserService_DeleteNoteView_Handler,
 		},
 		{
 			MethodName: "ListUserNotifications",
@@ -1520,12 +1520,12 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_DeletePersonalAccessToken_Handler,
 		},
 		{
-			MethodName: "ExportMemos",
-			Handler:    _UserService_ExportMemos_Handler,
+			MethodName: "ExportNotes",
+			Handler:    _UserService_ExportNotes_Handler,
 		},
 		{
-			MethodName: "ImportMemos",
-			Handler:    _UserService_ImportMemos_Handler,
+			MethodName: "ImportNotes",
+			Handler:    _UserService_ImportNotes_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

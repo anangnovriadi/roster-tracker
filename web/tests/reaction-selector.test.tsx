@@ -1,10 +1,10 @@
 import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import ReactionSelector from "@/components/MemoReactionListView/ReactionSelector";
-import { MemoSchema } from "@/types/proto/api/memo_service_pb";
+import ReactionSelector from "@/components/NoteReactionListView/ReactionSelector";
+import { NoteSchema } from "@/types/proto/api/note_service_pb";
 
-vi.mock("@/components/MemoReactionListView/hooks", () => ({
+vi.mock("@/components/NoteReactionListView/hooks", () => ({
   useReactionActions: () => ({
     hasReacted: () => false,
     handleReactionClick: vi.fn(),
@@ -12,7 +12,7 @@ vi.mock("@/components/MemoReactionListView/hooks", () => ({
 }));
 
 vi.mock("@/contexts/InstanceContext", () => ({
-  useInstance: () => ({ memoRelatedSetting: { reactions: ["👍"] } }),
+  useInstance: () => ({ noteRelatedSetting: { reactions: ["👍"] } }),
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -21,10 +21,10 @@ vi.mock("@/utils/i18n", () => ({
 
 describe("ReactionSelector", () => {
   it("uses a named native trigger with a visible focus state", async () => {
-    const memo = create(MemoSchema, { name: "memos/1", reactions: [] });
-    render(<ReactionSelector memo={memo} />);
+    const note = create(NoteSchema, { name: "notes/1", reactions: [] });
+    render(<ReactionSelector note={note} />);
 
-    const trigger = screen.getByRole("button", { name: "setting.memo.add-reaction" });
+    const trigger = screen.getByRole("button", { name: "setting.note.add-reaction" });
     // The default trigger is a round quiet 28px face, closing the strip of reaction pills it follows.
     expect(trigger).toHaveClass("size-7", "rounded-full", "focus-visible:outline-2");
     expect(trigger.className).not.toMatch(/ring-/);

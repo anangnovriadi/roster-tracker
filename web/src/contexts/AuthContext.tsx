@@ -17,7 +17,7 @@ interface AuthState {
   userTagsSetting: UserSetting_TagsSetting | undefined;
   /** Authentication identity has settled, while user settings may still be loading. */
   isIdentityInitialized: boolean;
-  /** User settings that affect memo presentation are safe to consume. */
+  /** User settings that affect note presentation are safe to consume. */
   isUserSettingsInitialized: boolean;
   isInitialized: boolean;
   isLoading: boolean;
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     // Tag settings control sensitive-content blurring. Publish them as soon as
-    // this request settles; memo views are managed separately by React Query.
+    // this request settles; note views are managed separately by React Query.
     setState((prev) =>
       prev.currentUser?.name === userName
         ? {

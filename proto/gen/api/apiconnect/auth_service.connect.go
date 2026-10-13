@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	api "github.com/usememos/memos/proto/gen/api"
+	api "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
@@ -23,7 +23,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// AuthServiceName is the fully-qualified name of the AuthService service.
-	AuthServiceName = "memos.api.AuthService"
+	AuthServiceName = "roster.api.AuthService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -35,18 +35,18 @@ const (
 // period.
 const (
 	// AuthServiceSignInProcedure is the fully-qualified name of the AuthService's SignIn RPC.
-	AuthServiceSignInProcedure = "/memos.api.AuthService/SignIn"
+	AuthServiceSignInProcedure = "/roster.api.AuthService/SignIn"
 	// AuthServiceRefreshTokenProcedure is the fully-qualified name of the AuthService's RefreshToken
 	// RPC.
-	AuthServiceRefreshTokenProcedure = "/memos.api.AuthService/RefreshToken"
+	AuthServiceRefreshTokenProcedure = "/roster.api.AuthService/RefreshToken"
 	// AuthServiceGetCurrentUserProcedure is the fully-qualified name of the AuthService's
 	// GetCurrentUser RPC.
-	AuthServiceGetCurrentUserProcedure = "/memos.api.AuthService/GetCurrentUser"
+	AuthServiceGetCurrentUserProcedure = "/roster.api.AuthService/GetCurrentUser"
 	// AuthServiceSignOutProcedure is the fully-qualified name of the AuthService's SignOut RPC.
-	AuthServiceSignOutProcedure = "/memos.api.AuthService/SignOut"
+	AuthServiceSignOutProcedure = "/roster.api.AuthService/SignOut"
 )
 
-// AuthServiceClient is a client for the memos.api.AuthService service.
+// AuthServiceClient is a client for the roster.api.AuthService service.
 type AuthServiceClient interface {
 	// SignIn authenticates a user with password or SSO credentials.
 	// On success, returns a short-lived access token and sets a refresh token in an HttpOnly cookie.
@@ -66,7 +66,7 @@ type AuthServiceClient interface {
 	SignOut(context.Context, *connect.Request[api.SignOutRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
-// NewAuthServiceClient constructs a client for the memos.api.AuthService service. By default, it
+// NewAuthServiceClient constructs a client for the roster.api.AuthService service. By default, it
 // uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
@@ -112,27 +112,27 @@ type authServiceClient struct {
 	signOut        *connect.Client[api.SignOutRequest, emptypb.Empty]
 }
 
-// SignIn calls memos.api.AuthService.SignIn.
+// SignIn calls roster.api.AuthService.SignIn.
 func (c *authServiceClient) SignIn(ctx context.Context, req *connect.Request[api.SignInRequest]) (*connect.Response[api.SignInResponse], error) {
 	return c.signIn.CallUnary(ctx, req)
 }
 
-// RefreshToken calls memos.api.AuthService.RefreshToken.
+// RefreshToken calls roster.api.AuthService.RefreshToken.
 func (c *authServiceClient) RefreshToken(ctx context.Context, req *connect.Request[api.RefreshTokenRequest]) (*connect.Response[api.RefreshTokenResponse], error) {
 	return c.refreshToken.CallUnary(ctx, req)
 }
 
-// GetCurrentUser calls memos.api.AuthService.GetCurrentUser.
+// GetCurrentUser calls roster.api.AuthService.GetCurrentUser.
 func (c *authServiceClient) GetCurrentUser(ctx context.Context, req *connect.Request[api.GetCurrentUserRequest]) (*connect.Response[api.GetCurrentUserResponse], error) {
 	return c.getCurrentUser.CallUnary(ctx, req)
 }
 
-// SignOut calls memos.api.AuthService.SignOut.
+// SignOut calls roster.api.AuthService.SignOut.
 func (c *authServiceClient) SignOut(ctx context.Context, req *connect.Request[api.SignOutRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.signOut.CallUnary(ctx, req)
 }
 
-// AuthServiceHandler is an implementation of the memos.api.AuthService service.
+// AuthServiceHandler is an implementation of the roster.api.AuthService service.
 type AuthServiceHandler interface {
 	// SignIn authenticates a user with password or SSO credentials.
 	// On success, returns a short-lived access token and sets a refresh token in an HttpOnly cookie.
@@ -183,7 +183,7 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(authServiceMethods.ByName("SignOut")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/memos.api.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/roster.api.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AuthServiceSignInProcedure:
 			authServiceSignInHandler.ServeHTTP(w, r)
@@ -203,17 +203,17 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 type UnimplementedAuthServiceHandler struct{}
 
 func (UnimplementedAuthServiceHandler) SignIn(context.Context, *connect.Request[api.SignInRequest]) (*connect.Response[api.SignInResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AuthService.SignIn is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AuthService.SignIn is not implemented"))
 }
 
 func (UnimplementedAuthServiceHandler) RefreshToken(context.Context, *connect.Request[api.RefreshTokenRequest]) (*connect.Response[api.RefreshTokenResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AuthService.RefreshToken is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AuthService.RefreshToken is not implemented"))
 }
 
 func (UnimplementedAuthServiceHandler) GetCurrentUser(context.Context, *connect.Request[api.GetCurrentUserRequest]) (*connect.Response[api.GetCurrentUserResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AuthService.GetCurrentUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AuthService.GetCurrentUser is not implemented"))
 }
 
 func (UnimplementedAuthServiceHandler) SignOut(context.Context, *connect.Request[api.SignOutRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.AuthService.SignOut is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.AuthService.SignOut is not implemented"))
 }

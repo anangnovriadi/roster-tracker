@@ -43,8 +43,8 @@ const t = useTranslate();
 <ConfirmDialog
   open={open}
   onOpenChange={setOpen}
-  title={t("memo.delete-confirm")}
-  description={t("memo.delete-confirm-description")}
+  title={t("note.delete-confirm")}
+  description={t("note.delete-confirm-description")}
   confirmLabel={t("common.delete")}
   cancelLabel={t("common.cancel")}
   onConfirm={handleDelete}

@@ -15,20 +15,20 @@ func TestLoadOpenAPIOperationsIncludesCuratedIDs(t *testing.T) {
 	require.NoError(t, err)
 
 	curatedIDs := []string{
-		"MemoService_ListMemos",
-		"MemoService_CreateMemo",
-		"MemoService_GetMemo",
-		"MemoService_UpdateMemo",
-		"MemoService_DeleteMemo",
-		"MemoService_ListMemoComments",
-		"MemoService_CreateMemoComment",
-		"MemoService_ListMemoAttachments",
-		"MemoService_SetMemoAttachments",
-		"MemoService_ListMemoReactions",
-		"MemoService_UpsertMemoReaction",
-		"MemoService_DeleteMemoReaction",
-		"MemoService_ListMemoRelations",
-		"MemoService_SetMemoRelations",
+		"NoteService_ListNotes",
+		"NoteService_CreateNote",
+		"NoteService_GetNote",
+		"NoteService_UpdateNote",
+		"NoteService_DeleteNote",
+		"NoteService_ListNoteComments",
+		"NoteService_CreateNoteComment",
+		"NoteService_ListNoteAttachments",
+		"NoteService_SetNoteAttachments",
+		"NoteService_ListNoteReactions",
+		"NoteService_UpsertNoteReaction",
+		"NoteService_DeleteNoteReaction",
+		"NoteService_ListNoteRelations",
+		"NoteService_SetNoteRelations",
 		"AttachmentService_ListAttachments",
 		"AttachmentService_GetAttachment",
 		"AttachmentService_DeleteAttachment",
@@ -43,19 +43,19 @@ func TestLoadOpenAPIOperationsIncludesCuratedIDs(t *testing.T) {
 		require.NotNil(t, operation.ResponseSchema, operationID)
 	}
 
-	createMemo := registry["MemoService_CreateMemo"]
-	require.NotNil(t, createMemo.RequestBodySchema)
-	require.Equal(t, "object", createMemo.RequestBodySchema["type"])
+	createNote := registry["NoteService_CreateNote"]
+	require.NotNil(t, createNote.RequestBodySchema)
+	require.Equal(t, "object", createNote.RequestBodySchema["type"])
 }
 
 func TestBuildOperationRegistryRejectsDuplicateOperationIDs(t *testing.T) {
 	spec := &openAPISpec{
 		Paths: map[string]map[string]*openAPIOperation{
 			"/a": {
-				"get": {OperationID: "MemoService_GetMemo", Description: "first"},
+				"get": {OperationID: "NoteService_GetNote", Description: "first"},
 			},
 			"/b": {
-				"get": {OperationID: "MemoService_GetMemo", Description: "second"},
+				"get": {OperationID: "NoteService_GetNote", Description: "second"},
 			},
 		},
 	}
@@ -68,36 +68,36 @@ func TestResolveSchemaRef(t *testing.T) {
 	spec := &openAPISpec{
 		Components: openAPIComponents{
 			Schemas: map[string]jsonSchema{
-				"ListMemosResponse": {
+				"ListNotesResponse": {
 					"type": "object",
 					"properties": map[string]any{
-						"memos": map[string]any{"type": "array"},
+						"notes": map[string]any{"type": "array"},
 					},
 				},
 			},
 		},
 	}
 
-	schema, err := resolveSchemaRef(spec, jsonSchema{"$ref": "#/components/schemas/ListMemosResponse"})
+	schema, err := resolveSchemaRef(spec, jsonSchema{"$ref": "#/components/schemas/ListNotesResponse"})
 	require.NoError(t, err)
 	require.Equal(t, "object", schema["type"])
-	require.Contains(t, schema["properties"], "memos")
+	require.Contains(t, schema["properties"], "notes")
 }
 
 func TestResolveSchemaRefRewritesNestedComponentRefs(t *testing.T) {
 	spec := &openAPISpec{
 		Components: openAPIComponents{
 			Schemas: map[string]jsonSchema{
-				"ListMemosResponse": {
+				"ListNotesResponse": {
 					"type": "object",
 					"properties": map[string]any{
-						"memos": map[string]any{
+						"notes": map[string]any{
 							"type":  "array",
-							"items": map[string]any{"$ref": "#/components/schemas/Memo"},
+							"items": map[string]any{"$ref": "#/components/schemas/Note"},
 						},
 					},
 				},
-				"Memo": {
+				"Note": {
 					"type": "object",
 					"properties": map[string]any{
 						"attachment": map[string]any{"$ref": "#/components/schemas/Attachment"},
@@ -113,31 +113,31 @@ func TestResolveSchemaRefRewritesNestedComponentRefs(t *testing.T) {
 		},
 	}
 
-	schema, err := resolveSchemaRef(spec, jsonSchema{"$ref": "#/components/schemas/ListMemosResponse"})
+	schema, err := resolveSchemaRef(spec, jsonSchema{"$ref": "#/components/schemas/ListNotesResponse"})
 	require.NoError(t, err)
 
 	data, err := json.Marshal(schema)
 	require.NoError(t, err)
 	require.NotContains(t, string(data), "#/components/schemas")
-	require.Contains(t, string(data), `"#/$defs/Memo"`)
+	require.Contains(t, string(data), `"#/$defs/Note"`)
 	require.Contains(t, string(data), `"#/$defs/Attachment"`)
 }
 
 func TestBuildOperationRegistryResolvesRequestBodySchema(t *testing.T) {
 	spec := &openAPISpec{
 		Paths: map[string]map[string]*openAPIOperation{
-			"/memos": {
+			"/notes": {
 				"post": {
-					OperationID: "MemoService_CreateMemo",
+					OperationID: "NoteService_CreateNote",
 					RequestBody: &openAPIRequestBody{
 						Content: map[string]openAPIMediaType{
-							"application/json": {Schema: jsonSchema{"$ref": "#/components/schemas/CreateMemoRequest"}},
+							"application/json": {Schema: jsonSchema{"$ref": "#/components/schemas/CreateNoteRequest"}},
 						},
 					},
 					Responses: map[string]openAPIResponse{
 						"200": {
 							Content: map[string]openAPIMediaType{
-								"application/json": {Schema: jsonSchema{"$ref": "#/components/schemas/Memo"}},
+								"application/json": {Schema: jsonSchema{"$ref": "#/components/schemas/Note"}},
 							},
 						},
 					},
@@ -146,13 +146,13 @@ func TestBuildOperationRegistryResolvesRequestBodySchema(t *testing.T) {
 		},
 		Components: openAPIComponents{
 			Schemas: map[string]jsonSchema{
-				"CreateMemoRequest": {
+				"CreateNoteRequest": {
 					"type": "object",
 					"properties": map[string]any{
 						"content": map[string]any{"type": "string"},
 					},
 				},
-				"Memo": {
+				"Note": {
 					"type": "object",
 				},
 			},
@@ -162,7 +162,7 @@ func TestBuildOperationRegistryResolvesRequestBodySchema(t *testing.T) {
 	registry, err := buildOperationRegistry(spec)
 	require.NoError(t, err)
 
-	requestSchema := registry["MemoService_CreateMemo"].RequestBodySchema
+	requestSchema := registry["NoteService_CreateNote"].RequestBodySchema
 	require.Equal(t, "object", requestSchema["type"])
 	require.Contains(t, requestSchema["properties"], "content")
 }
@@ -170,9 +170,9 @@ func TestBuildOperationRegistryResolvesRequestBodySchema(t *testing.T) {
 func TestBuildOperationRegistryUsesOKSchemaForEmptySuccessResponse(t *testing.T) {
 	spec := &openAPISpec{
 		Paths: map[string]map[string]*openAPIOperation{
-			"/memos/{memo}": {
+			"/notes/{note}": {
 				"delete": {
-					OperationID: "MemoService_DeleteMemo",
+					OperationID: "NoteService_DeleteNote",
 					Responses: map[string]openAPIResponse{
 						"200": {
 							Content: map[string]openAPIMediaType{},
@@ -186,7 +186,7 @@ func TestBuildOperationRegistryUsesOKSchemaForEmptySuccessResponse(t *testing.T)
 	registry, err := buildOperationRegistry(spec)
 	require.NoError(t, err)
 
-	responseSchema := registry["MemoService_DeleteMemo"].ResponseSchema
+	responseSchema := registry["NoteService_DeleteNote"].ResponseSchema
 	require.Equal(t, "object", responseSchema["type"])
 	require.Contains(t, responseSchema["properties"], "ok")
 }

@@ -2,37 +2,37 @@ import { createContext, type ReactNode, useContext, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { ROUTES, resolveCollectionRoute } from "@/router/routes";
 
-export type MemoTimeBasis = "create_time" | "update_time";
+export type NoteTimeBasis = "create_time" | "update_time";
 
 /** Upper bound on feed columns, in display order. 1 = single reading column; 0 = as many as fit. */
 export const MAX_COLUMNS_VALUES = [1, 2, 3, 0] as const;
-export type MemoMaxColumns = (typeof MAX_COLUMNS_VALUES)[number];
+export type NoteMaxColumns = (typeof MAX_COLUMNS_VALUES)[number];
 
 interface ViewState {
   orderByTimeAsc: boolean;
-  timeBasis?: MemoTimeBasis;
-  sortTimeField?: MemoTimeBasis;
+  timeBasis?: NoteTimeBasis;
+  sortTimeField?: NoteTimeBasis;
   compactMode: boolean;
   linkPreview: boolean;
-  maxColumns: MemoMaxColumns;
+  maxColumns: NoteMaxColumns;
 }
 
 interface ViewContextValue {
   orderByTimeAsc: boolean;
-  timeBasis: MemoTimeBasis;
+  timeBasis: NoteTimeBasis;
   compactMode: boolean;
   linkPreview: boolean;
-  maxColumns: MemoMaxColumns;
+  maxColumns: NoteMaxColumns;
   setOrderByTimeAsc: (value: boolean) => void;
-  setTimeBasis: (field: MemoTimeBasis) => void;
+  setTimeBasis: (field: NoteTimeBasis) => void;
   setCompactMode: (value: boolean) => void;
   setLinkPreview: (value: boolean) => void;
-  setMaxColumns: (value: MemoMaxColumns) => void;
+  setMaxColumns: (value: NoteMaxColumns) => void;
 }
 
 const ViewContext = createContext<ViewContextValue | null>(null);
 
-const LOCAL_STORAGE_KEY = "memos-view-setting";
+const LOCAL_STORAGE_KEY = "notes-view-setting";
 
 const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, linkPreview: true, maxColumns: 1 };
 
@@ -44,8 +44,8 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
         const data = JSON.parse(cached) as Partial<ViewState>;
         const cachedTimeBasis = data.timeBasis ?? data.sortTimeField;
         const timeBasis = cachedTimeBasis === "create_time" || cachedTimeBasis === "update_time" ? cachedTimeBasis : undefined;
-        const maxColumns = MAX_COLUMNS_VALUES.includes(data.maxColumns as MemoMaxColumns)
-          ? (data.maxColumns as MemoMaxColumns)
+        const maxColumns = MAX_COLUMNS_VALUES.includes(data.maxColumns as NoteMaxColumns)
+          ? (data.maxColumns as NoteMaxColumns)
           : DEFAULT_VIEW_STATE.maxColumns;
         return {
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? DEFAULT_VIEW_STATE.orderByTimeAsc),
@@ -83,10 +83,10 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
   };
 
   const setOrderByTimeAsc = (value: boolean) => updateState({ orderByTimeAsc: value });
-  const setTimeBasis = (field: MemoTimeBasis) => updateState({ timeBasis: field });
+  const setTimeBasis = (field: NoteTimeBasis) => updateState({ timeBasis: field });
   const setCompactMode = (value: boolean) => updateState({ compactMode: value });
   const setLinkPreview = (value: boolean) => updateState({ linkPreview: value });
-  const setMaxColumns = (value: MemoMaxColumns) => updateState({ maxColumns: value });
+  const setMaxColumns = (value: NoteMaxColumns) => updateState({ maxColumns: value });
 
   return (
     <ViewContext.Provider

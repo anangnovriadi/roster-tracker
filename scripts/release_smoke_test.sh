@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Black-box smoke test for a Memos release image.
+# Black-box smoke test for a Roster Tracker release image.
 #
 # By default, the script builds the current worktree as a local Docker image.
 # Pass --candidate-image to test an image that has already been built.
@@ -10,15 +10,15 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-candidate_image="${MEMOS_SMOKE_CANDIDATE_IMAGE:-}"
-previous_image="${MEMOS_SMOKE_PREVIOUS_IMAGE:-}"
-keep_resources="${MEMOS_SMOKE_KEEP_RESOURCES:-0}"
+candidate_image="${ROSTER_SMOKE_CANDIDATE_IMAGE:-}"
+previous_image="${ROSTER_SMOKE_PREVIOUS_IMAGE:-}"
+keep_resources="${ROSTER_SMOKE_KEEP_RESOURCES:-0}"
 
 usage() {
   cat <<'EOF'
 Usage: ./scripts/release_smoke_test.sh [options]
 
-Runs fresh-install and previous-stable upgrade smoke tests against a Memos
+Runs fresh-install and previous-stable upgrade smoke tests against a Roster Tracker
 Docker image. With no options, the current worktree is built and tested.
 
 Options:
@@ -29,15 +29,15 @@ Options:
   -h, --help               Show this help text.
 
 Environment equivalents:
-  MEMOS_SMOKE_CANDIDATE_IMAGE
-  MEMOS_SMOKE_PREVIOUS_IMAGE
-  MEMOS_SMOKE_KEEP_RESOURCES=1
+  ROSTER_SMOKE_CANDIDATE_IMAGE
+  ROSTER_SMOKE_PREVIOUS_IMAGE
+  ROSTER_SMOKE_KEEP_RESOURCES=1
 
 Examples:
   ./scripts/release_smoke_test.sh
   ./scripts/release_smoke_test.sh \
-    --candidate-image memos-smoke:local \
-    --previous-image neosmemo/memos:0.31.0
+    --candidate-image roster-tracker-smoke:local \
+    --previous-image anangnovriadi/roster-tracker:0.31.0
 EOF
 }
 
@@ -84,11 +84,11 @@ done
 docker info >/dev/null 2>&1 || die "Docker is not running"
 
 run_id="${GITHUB_RUN_ID:-local}-$(date +%s)-$$"
-fresh_container="memos-smoke-fresh-$run_id"
-upgrade_old_container="memos-smoke-upgrade-old-$run_id"
-upgrade_new_container="memos-smoke-upgrade-new-$run_id"
-fresh_volume="memos-smoke-fresh-$run_id"
-upgrade_volume="memos-smoke-upgrade-$run_id"
+fresh_container="roster-tracker-smoke-fresh-$run_id"
+upgrade_old_container="roster-tracker-smoke-upgrade-old-$run_id"
+upgrade_new_container="roster-tracker-smoke-upgrade-new-$run_id"
+fresh_volume="roster-tracker-smoke-fresh-$run_id"
+upgrade_volume="roster-tracker-smoke-upgrade-$run_id"
 temp_dir="$(mktemp -d)"
 frontend_index="$REPO_ROOT/server/frontend/dist/index.html"
 frontend_index_backup="$temp_dir/frontend-index.html"
@@ -151,7 +151,7 @@ build_local_candidate() {
 
   commit_sha="$(git -C "$REPO_ROOT" rev-parse HEAD)"
   build_version="$(bash "$SCRIPT_DIR/release_version.sh" development-version "$REPO_ROOT")"
-  image_tag="memos-smoke:${commit_sha:0:12}-${run_id}"
+  image_tag="roster-tracker-smoke:${commit_sha:0:12}-${run_id}"
 
   mkdir -p "$(dirname "$frontend_index")"
   if [[ -f "$frontend_index" ]]; then
@@ -235,11 +235,11 @@ start_container() {
 
   docker run --detach \
     --name "$container_name" \
-    --label "org.usememos.release-smoke=$run_id" \
+    --label "org.roster-tracker.release-smoke=$run_id" \
     --publish "127.0.0.1::5230" \
-    --env MEMOS_MODE=prod \
-    --env MEMOS_INSTANCE_URL=http://localhost \
-    --mount "type=volume,source=$volume,target=/var/opt/memos" \
+    --env ROSTER_MODE=prod \
+    --env ROSTER_INSTANCE_URL=http://localhost \
+    --mount "type=volume,source=$volume,target=/var/opt/roster-tracker" \
     "$image" >/dev/null
 
   set_current_base_url "$container_name"
@@ -280,9 +280,9 @@ sign_in() {
     "$(api_url)/auth/signin" | jq -er '.accessToken'
 }
 
-create_memo() {
+create_note() {
   local token="$1"
-  local memo_id="$2"
+  local note_id="$2"
   local content="$3"
   local payload response
   payload="$(jq -nc --arg content "$content" '{content:$content,visibility:"PRIVATE"}')"
@@ -290,17 +290,17 @@ create_memo() {
     --header "Authorization: Bearer $token" \
     --header 'Content-Type: application/json' \
     --data "$payload" \
-    "$(api_url)/memos?memoId=$memo_id")"
-  jq -e --arg name "memos/$memo_id" --arg content "$content" '.name == $name and .content == $content' <<<"$response" >/dev/null
+    "$(api_url)/notes?noteId=$note_id")"
+  jq -e --arg name "notes/$note_id" --arg content "$content" '.name == $name and .content == $content' <<<"$response" >/dev/null
 }
 
-assert_memo() {
+assert_note() {
   local token="$1"
-  local memo_id="$2"
+  local note_id="$2"
   local content="$3"
   curl --fail --silent --show-error \
     --header "Authorization: Bearer $token" \
-    "$(api_url)/memos/$memo_id" |
+    "$(api_url)/notes/$note_id" |
     jq -e --arg content "$content" '.content == $content' >/dev/null
 }
 
@@ -325,13 +325,13 @@ start_container "$fresh_container" "$candidate_image" "$fresh_volume"
 assert_frontend_assets
 create_admin
 fresh_token="$(sign_in)"
-create_memo "$fresh_token" "release-smoke" "fresh install smoke sentinel"
+create_note "$fresh_token" "release-smoke" "fresh install smoke sentinel"
 
 docker restart "$fresh_container" >/dev/null
 set_current_base_url "$fresh_container"
 wait_until_ready "$fresh_container" "$current_base_url"
 fresh_token="$(sign_in)"
-assert_memo "$fresh_token" "release-smoke" "fresh install smoke sentinel"
+assert_note "$fresh_token" "release-smoke" "fresh install smoke sentinel"
 docker rm -f "$fresh_container" >/dev/null
 
 log "Running $previous_image to $candidate_image upgrade smoke test"
@@ -339,14 +339,14 @@ docker volume create "$upgrade_volume" >/dev/null
 start_container "$upgrade_old_container" "$previous_image" "$upgrade_volume"
 create_admin
 upgrade_token="$(sign_in)"
-create_memo "$upgrade_token" "pre-upgrade-smoke" "created before release upgrade"
+create_note "$upgrade_token" "pre-upgrade-smoke" "created before release upgrade"
 docker rm -f "$upgrade_old_container" >/dev/null
 
 start_container "$upgrade_new_container" "$candidate_image" "$upgrade_volume"
 assert_frontend_assets
 upgrade_token="$(sign_in)"
-assert_memo "$upgrade_token" "pre-upgrade-smoke" "created before release upgrade"
-create_memo "$upgrade_token" "post-upgrade-smoke" "created after release upgrade"
-assert_memo "$upgrade_token" "post-upgrade-smoke" "created after release upgrade"
+assert_note "$upgrade_token" "pre-upgrade-smoke" "created before release upgrade"
+create_note "$upgrade_token" "post-upgrade-smoke" "created after release upgrade"
+assert_note "$upgrade_token" "post-upgrade-smoke" "created after release upgrade"
 
 log "Release smoke tests passed"

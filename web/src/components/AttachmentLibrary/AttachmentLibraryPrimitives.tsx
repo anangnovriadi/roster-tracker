@@ -1,6 +1,6 @@
 import { ExternalLinkIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { createMemoNavigationState } from "@/components/MemoView/navigation";
+import { createNoteNavigationState } from "@/components/NoteView/navigation";
 import UserAvatar from "@/components/UserAvatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ interface AttachmentMetadataLineProps {
 }
 
 interface AttachmentSourceChipProps {
-  memoName?: string;
+  noteName?: string;
   unlinkedLabelKey?: "attachment-library.labels.not-linked" | "attachment-library.labels.unused";
 }
 
@@ -69,13 +69,13 @@ export const AttachmentMetadataLine = ({ className, items }: AttachmentMetadataL
 };
 
 export const AttachmentSourceChip = ({
-  memoName,
+  noteName,
   unlinkedLabelKey = "attachment-library.labels.not-linked",
 }: AttachmentSourceChipProps) => {
   const location = useLocation();
   const t = useTranslate();
 
-  if (!memoName) {
+  if (!noteName) {
     return (
       <Badge variant="warning" shape="pill" className="px-1.5 py-0.5 text-[11px]">
         {t(unlinkedLabelKey)}
@@ -85,11 +85,11 @@ export const AttachmentSourceChip = ({
 
   return (
     <Link
-      to={buildNotePath(memoName)}
-      state={createMemoNavigationState(`${location.pathname}${location.search}`)}
+      to={buildNotePath(noteName)}
+      state={createNoteNavigationState(`${location.pathname}${location.search}`)}
       className="inline-flex max-w-full items-center truncate rounded-full border border-border/60 bg-muted/30 px-1.5 py-0.5 text-[11px] text-muted-foreground hover:bg-muted/50"
     >
-      <span className="truncate">{t("attachment-library.labels.memo")}</span>
+      <span className="truncate">{t("attachment-library.labels.note")}</span>
     </Link>
   );
 };

@@ -2,7 +2,7 @@ import { render } from "@testing-library/react";
 import { UserLockIcon } from "lucide-react";
 import { describe, expect, it } from "vitest";
 import VisibilityIcon from "@/components/VisibilityIcon";
-import { Visibility } from "@/types/proto/api/memo_service_pb";
+import { Visibility } from "@/types/proto/api/note_service_pb";
 import {
   convertVisibilityFromString,
   convertVisibilityToString,
@@ -10,7 +10,7 @@ import {
   getAssignableVisibilityOptions,
   getVisibilityOption,
   VISIBILITY_OPTIONS,
-} from "@/utils/memo";
+} from "@/utils/note";
 
 const values = (options: readonly { value: Visibility }[]) => options.map((option) => option.value);
 
@@ -47,7 +47,7 @@ describe("Space visibility presentation", () => {
 });
 
 describe("assignable visibility options", () => {
-  it("withholds the Space audience when the memo has no Space placement", () => {
+  it("withholds the Space audience when the note has no Space placement", () => {
     expect(values(getAssignableVisibilityOptions({ hasSpacePlacement: false }))).toEqual([
       Visibility.PRIVATE,
       Visibility.PROTECTED,
@@ -55,7 +55,7 @@ describe("assignable visibility options", () => {
     ]);
   });
 
-  it("offers the Space audience when the memo is placed in a Space", () => {
+  it("offers the Space audience when the note is placed in a Space", () => {
     expect(values(getAssignableVisibilityOptions({ hasSpacePlacement: true }))).toEqual([
       Visibility.PRIVATE,
       Visibility.SPACE,

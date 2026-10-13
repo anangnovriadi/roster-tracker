@@ -11,9 +11,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/internal/imagelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/internal/imagelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 func validateClientMotionMedia(motion *apipb.MotionMedia, attachmentUID string) (*storepb.MotionMedia, error) {

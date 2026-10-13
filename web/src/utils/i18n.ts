@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import i18n, { locales, TLocale } from "@/i18n";
 import enTranslation from "@/locales/en.json";
 
-const LOCALE_STORAGE_KEY = "memos-locale";
-const LOCALE_DIRECTION_CHANGE_EVENT = "memos:locale-direction-change";
+const LOCALE_STORAGE_KEY = "notes-locale";
+const LOCALE_DIRECTION_CHANGE_EVENT = "notes:locale-direction-change";
 
 export type LocaleDirection = "ltr" | "rtl";
 

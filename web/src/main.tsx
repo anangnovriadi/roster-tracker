@@ -12,7 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { refreshAccessToken } from "@/connect";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
-import { useLiveMemoRefresh } from "@/hooks/useLiveMemoRefresh";
+import { useLiveNoteRefresh } from "@/hooks/useLiveNoteRefresh";
 import { useTokenRefreshOnFocus } from "@/hooks/useTokenRefreshOnFocus";
 import { queryClient } from "@/lib/query-client";
 import router from "./router";
@@ -42,15 +42,15 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
 
   // Proactively refresh token on window focus to prevent 401 errors
   // Only enabled when user is authenticated
-  // Related: https://github.com/usememos/memos/issues/5589
+  // Related: https://github.com/anangnovriadi/roster-tracker/issues/5589
   useTokenRefreshOnFocus(refreshAccessToken, !!currentUser);
 
-  // Live refresh: listen for memo changes via SSE and invalidate caches.
-  useLiveMemoRefresh();
+  // Live refresh: listen for note changes via SSE and invalidate caches.
+  useLiveNoteRefresh();
 
   // Route loading and feed requests only need the verified identity and the
   // instance profile. Display-sensitive settings continue in the background;
-  // PagedMemoList keeps memo content hidden until privacy settings have settled.
+  // PagedNoteList keeps note content hidden until privacy settings have settled.
   if (!isIdentityInitialized || !isProfileInitialized) {
     return null;
   }

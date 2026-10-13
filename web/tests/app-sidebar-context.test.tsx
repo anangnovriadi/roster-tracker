@@ -81,7 +81,7 @@ describe("AppSidebarProvider", () => {
     vi.stubGlobal("cancelAnimationFrame", vi.fn());
 
     render(
-      <MemoryRouter initialEntries={["/memos/detail"]}>
+      <MemoryRouter initialEntries={["/notes/detail"]}>
         <AppSidebarProvider>
           <Harness />
         </AppSidebarProvider>
@@ -119,7 +119,7 @@ describe("AppSidebarProvider", () => {
     );
 
     render(
-      <MemoryRouter initialEntries={["/memos/detail"]}>
+      <MemoryRouter initialEntries={["/notes/detail"]}>
         <AppSidebarProvider>
           <Harness />
         </AppSidebarProvider>

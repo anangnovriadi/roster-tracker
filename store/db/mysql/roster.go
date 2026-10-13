@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (d *DB) CreateRosterAssignment(ctx context.Context, create *store.RosterAssignment) (*store.RosterAssignment, error) {

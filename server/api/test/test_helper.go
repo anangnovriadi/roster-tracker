@@ -5,13 +5,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/markdown"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
-	teststore "github.com/usememos/memos/store/test"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/markdown"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
+	teststore "github.com/anangnovriadi/roster-tracker/store/test"
 )
 
 // TestService holds the test service setup for API v1 services.

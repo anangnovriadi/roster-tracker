@@ -50,8 +50,8 @@ CREATE TABLE space_member (
 
 CREATE INDEX idx_space_member_user_id ON space_member(user_id, space_id);
 
--- memo
-CREATE TABLE memo (
+-- note
+CREATE TABLE note (
   id SERIAL PRIMARY KEY,
   uid TEXT NOT NULL UNIQUE,
   creator_id INTEGER NOT NULL,
@@ -65,19 +65,19 @@ CREATE TABLE memo (
   space_id INTEGER DEFAULT NULL
 );
 
-CREATE INDEX idx_memo_space_id ON memo(space_id, row_status, created_ts DESC, id DESC);
-CREATE INDEX idx_memo_creator_id ON memo(creator_id);
+CREATE INDEX idx_note_space_id ON note(space_id, row_status, created_ts DESC, id DESC);
+CREATE INDEX idx_note_creator_id ON note(creator_id);
 
--- memo_relation
-CREATE TABLE memo_relation (
-  memo_id INTEGER NOT NULL,
-  related_memo_id INTEGER NOT NULL,
+-- note_relation
+CREATE TABLE note_relation (
+  note_id INTEGER NOT NULL,
+  related_note_id INTEGER NOT NULL,
   type TEXT NOT NULL,
-  UNIQUE(memo_id, related_memo_id, type)
+  UNIQUE(note_id, related_note_id, type)
 );
 
-CREATE INDEX idx_memo_relation_related_type_memo
-  ON memo_relation(related_memo_id, type, memo_id);
+CREATE INDEX idx_note_relation_related_type_note
+  ON note_relation(related_note_id, type, note_id);
 
 -- attachment
 CREATE TABLE attachment (
@@ -90,7 +90,7 @@ CREATE TABLE attachment (
   blob BYTEA,
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
-  memo_id INTEGER DEFAULT NULL,
+  note_id INTEGER DEFAULT NULL,
   storage_type TEXT NOT NULL DEFAULT '',
   reference TEXT NOT NULL DEFAULT '',
   payload TEXT NOT NULL DEFAULT '{}'
@@ -118,28 +118,28 @@ CREATE TABLE inbox (
   message TEXT NOT NULL
 );
 
--- memo reaction
+-- note reaction
 CREATE TABLE reaction (
   id SERIAL PRIMARY KEY,
   created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
   creator_id INTEGER NOT NULL,
-  memo_id INTEGER NOT NULL,
+  note_id INTEGER NOT NULL,
   reaction_type TEXT NOT NULL,
-  UNIQUE(creator_id, memo_id, reaction_type)
+  UNIQUE(creator_id, note_id, reaction_type)
 );
 
--- memo_share
-CREATE TABLE memo_share (
+-- note_share
+CREATE TABLE note_share (
   id         SERIAL  PRIMARY KEY,
   uid        TEXT    NOT NULL UNIQUE,
-  memo_id    INTEGER NOT NULL,
+  note_id    INTEGER NOT NULL,
   creator_id INTEGER NOT NULL,
   created_ts BIGINT  NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
   expires_ts BIGINT  DEFAULT NULL,
-  FOREIGN KEY (memo_id) REFERENCES memo(id) ON DELETE CASCADE
+  FOREIGN KEY (note_id) REFERENCES note(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_memo_share_memo_id ON memo_share(memo_id);
+CREATE INDEX idx_note_share_note_id ON note_share(note_id);
 
 -- user_identity
 CREATE TABLE user_identity (

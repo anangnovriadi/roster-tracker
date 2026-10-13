@@ -20,17 +20,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	InstanceService_GetInstanceProfile_FullMethodName       = "/memos.api.InstanceService/GetInstanceProfile"
-	InstanceService_GetInstanceSetting_FullMethodName       = "/memos.api.InstanceService/GetInstanceSetting"
-	InstanceService_BatchGetInstanceSettings_FullMethodName = "/memos.api.InstanceService/BatchGetInstanceSettings"
-	InstanceService_UpdateInstanceSetting_FullMethodName    = "/memos.api.InstanceService/UpdateInstanceSetting"
-	InstanceService_TestInstanceEmailSetting_FullMethodName = "/memos.api.InstanceService/TestInstanceEmailSetting"
-	InstanceService_GetInstanceStats_FullMethodName         = "/memos.api.InstanceService/GetInstanceStats"
-	InstanceService_ListUsageLimits_FullMethodName          = "/memos.api.InstanceService/ListUsageLimits"
-	InstanceService_GetUsageLimit_FullMethodName            = "/memos.api.InstanceService/GetUsageLimit"
-	InstanceService_CreateUsageLimit_FullMethodName         = "/memos.api.InstanceService/CreateUsageLimit"
-	InstanceService_UpdateUsageLimit_FullMethodName         = "/memos.api.InstanceService/UpdateUsageLimit"
-	InstanceService_DeleteUsageLimit_FullMethodName         = "/memos.api.InstanceService/DeleteUsageLimit"
+	InstanceService_GetInstanceProfile_FullMethodName       = "/roster.api.InstanceService/GetInstanceProfile"
+	InstanceService_GetInstanceSetting_FullMethodName       = "/roster.api.InstanceService/GetInstanceSetting"
+	InstanceService_BatchGetInstanceSettings_FullMethodName = "/roster.api.InstanceService/BatchGetInstanceSettings"
+	InstanceService_UpdateInstanceSetting_FullMethodName    = "/roster.api.InstanceService/UpdateInstanceSetting"
+	InstanceService_TestInstanceEmailSetting_FullMethodName = "/roster.api.InstanceService/TestInstanceEmailSetting"
+	InstanceService_GetInstanceStats_FullMethodName         = "/roster.api.InstanceService/GetInstanceStats"
+	InstanceService_ListUsageLimits_FullMethodName          = "/roster.api.InstanceService/ListUsageLimits"
+	InstanceService_GetUsageLimit_FullMethodName            = "/roster.api.InstanceService/GetUsageLimit"
+	InstanceService_CreateUsageLimit_FullMethodName         = "/roster.api.InstanceService/CreateUsageLimit"
+	InstanceService_UpdateUsageLimit_FullMethodName         = "/roster.api.InstanceService/UpdateUsageLimit"
+	InstanceService_DeleteUsageLimit_FullMethodName         = "/roster.api.InstanceService/DeleteUsageLimit"
 )
 
 // InstanceServiceClient is the client API for InstanceService service.
@@ -493,7 +493,7 @@ func _InstanceService_DeleteUsageLimit_Handler(srv interface{}, ctx context.Cont
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var InstanceService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "memos.api.InstanceService",
+	ServiceName: "roster.api.InstanceService",
 	HandlerType: (*InstanceServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

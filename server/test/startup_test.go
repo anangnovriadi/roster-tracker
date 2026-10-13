@@ -4,7 +4,7 @@
 // server.NewServer entirely. That leaves route registration, gRPC-gateway
 // wiring, MCP/fileserver/frontend mounting, CORS and the secret bootstrap
 // covered only by the Docker release script. These tests boot the real server
-// the same way cmd/memos/main.go does so a wiring regression fails in CI.
+// the same way cmd/roster-tracker/main.go does so a wiring regression fails in CI.
 package test
 
 import (
@@ -24,12 +24,12 @@ import (
 	// sqlite driver.
 	_ "modernc.org/sqlite"
 
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/internal/version"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server"
-	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/internal/version"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server"
+	"github.com/anangnovriadi/roster-tracker/store"
+	"github.com/anangnovriadi/roster-tracker/store/db"
 )
 
 const (
@@ -62,7 +62,7 @@ type instance struct {
 }
 
 // bootInstance starts a full server following the same sequence as
-// cmd/memos/main.go: validate profile, open the driver, migrate, load
+// cmd/roster-tracker/main.go: validate profile, open the driver, migrate, load
 // deployment configuration, construct the server, then listen.
 //
 // Keep this in lockstep with main.go. The value of these tests comes from
@@ -212,31 +212,31 @@ func (i *instance) signIn(t *testing.T) string {
 	return signedIn.AccessToken
 }
 
-// createMemo writes a memo with a caller-supplied id so it can be re-read by name.
-func (i *instance) createMemo(t *testing.T, token, memoID, content string) {
+// createNote writes a note with a caller-supplied id so it can be re-read by name.
+func (i *instance) createNote(t *testing.T, token, noteID, content string) {
 	t.Helper()
 
-	status, body := i.do(t, http.MethodPost, "/api/memos?memoId="+memoID, token, map[string]any{
+	status, body := i.do(t, http.MethodPost, "/api/notes?noteId="+noteID, token, map[string]any{
 		"content":    content,
 		"visibility": "PRIVATE",
 	})
-	require.Equal(t, http.StatusOK, status, "creating a memo should succeed: %s", body)
+	require.Equal(t, http.StatusOK, status, "creating a note should succeed: %s", body)
 
 	var created struct {
 		Name    string `json:"name"`
 		Content string `json:"content"`
 	}
 	require.NoError(t, json.Unmarshal(body, &created))
-	require.Equal(t, "memos/"+memoID, created.Name)
+	require.Equal(t, "notes/"+noteID, created.Name)
 	require.Equal(t, content, created.Content)
 }
 
-// requireMemo asserts a memo is readable and has the expected content.
-func (i *instance) requireMemo(t *testing.T, token, memoID, content string) {
+// requireNote asserts a note is readable and has the expected content.
+func (i *instance) requireNote(t *testing.T, token, noteID, content string) {
 	t.Helper()
 
-	status, body := i.do(t, http.MethodGet, "/api/memos/"+memoID, token, nil)
-	require.Equal(t, http.StatusOK, status, "reading memo %s should succeed: %s", memoID, body)
+	status, body := i.do(t, http.MethodGet, "/api/notes/"+noteID, token, nil)
+	require.Equal(t, http.StatusOK, status, "reading note %s should succeed: %s", noteID, body)
 
 	var fetched struct {
 		Content string `json:"content"`
@@ -321,7 +321,7 @@ func TestStartupServesEveryRegisteredRouter(t *testing.T) {
 }
 
 // TestStartupFreshInstallRoundTrip covers the new-install path end to end:
-// register the first user, authenticate, then write and read a memo through
+// register the first user, authenticate, then write and read a note through
 // the gRPC gateway.
 func TestStartupFreshInstallRoundTrip(t *testing.T) {
 	ctx := context.Background()
@@ -329,8 +329,8 @@ func TestStartupFreshInstallRoundTrip(t *testing.T) {
 
 	inst.createAdmin(t)
 	token := inst.signIn(t)
-	inst.createMemo(t, token, "startup-fresh", "fresh install sentinel")
-	inst.requireMemo(t, token, "startup-fresh", "fresh install sentinel")
+	inst.createNote(t, token, "startup-fresh", "fresh install sentinel")
+	inst.requireNote(t, token, "startup-fresh", "fresh install sentinel")
 }
 
 // TestStartupRestartPreservesData boots, writes data, shuts down, then boots a
@@ -347,7 +347,7 @@ func TestStartupRestartPreservesData(t *testing.T) {
 	})
 	first.createAdmin(t)
 	token := first.signIn(t)
-	first.createMemo(t, token, "startup-restart", "written before restart")
+	first.createNote(t, token, "startup-restart", "written before restart")
 	firstPort := first.profile.Port
 	first.shutdown(ctx)
 
@@ -359,9 +359,9 @@ func TestStartupRestartPreservesData(t *testing.T) {
 
 	// Tokens are signed with the instance secret, which must survive a restart.
 	restartToken := second.signIn(t)
-	second.requireMemo(t, restartToken, "startup-restart", "written before restart")
-	second.createMemo(t, restartToken, "startup-after-restart", "written after restart")
-	second.requireMemo(t, restartToken, "startup-after-restart", "written after restart")
+	second.requireNote(t, restartToken, "startup-restart", "written before restart")
+	second.createNote(t, restartToken, "startup-after-restart", "written after restart")
+	second.requireNote(t, restartToken, "startup-after-restart", "written after restart")
 }
 
 // TestStartupPrivateInstance verifies a private instance still exposes the auth
@@ -382,17 +382,17 @@ func TestStartupPrivateInstance(t *testing.T) {
 	status, _ = inst.do(t, http.MethodGet, "/api/users", "", nil)
 	require.Equal(t, http.StatusUnauthorized, status, "anonymous ListUsers should be refused")
 
-	// ListMemos is public but not a bootstrap method, so the private-instance
+	// ListNotes is public but not a bootstrap method, so the private-instance
 	// policy must refuse anonymous callers. The Connect transport enforces this.
-	status, _ = inst.do(t, http.MethodPost, "/memos.api.MemoService/ListMemos", "", map[string]any{})
+	status, _ = inst.do(t, http.MethodPost, "/roster.api.NoteService/ListNotes", "", map[string]any{})
 	require.Equal(t, http.StatusUnauthorized, status,
-		"anonymous ListMemos over Connect should be refused on a private instance")
+		"anonymous ListNotes over Connect should be refused on a private instance")
 
 	// Authenticated access is never affected by private mode.
 	inst.createAdmin(t)
 	token := inst.signIn(t)
-	inst.createMemo(t, token, "startup-private", "private instance sentinel")
-	inst.requireMemo(t, token, "startup-private", "private instance sentinel")
+	inst.createNote(t, token, "startup-private", "private instance sentinel")
+	inst.requireNote(t, token, "startup-private", "private instance sentinel")
 }
 
 // TestStartupInitializesLegacyAccessOnce verifies the compatibility bridge from
@@ -403,7 +403,7 @@ func TestStartupInitializesLegacyAccessOnce(t *testing.T) {
 
 	t.Run("public remains public after URL removal", func(t *testing.T) {
 		dataDir := t.TempDir()
-		first := bootInstance(ctx, t, instanceOptions{instanceURL: "https://memos.example.com", dataDir: dataDir})
+		first := bootInstance(ctx, t, instanceOptions{instanceURL: "https://notes.example.com", dataDir: dataDir})
 		accessSetting, err := first.server.Store.GetInstanceAccessSetting(ctx)
 		require.NoError(t, err)
 		require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, accessSetting.AccessMode)
@@ -414,7 +414,7 @@ func TestStartupInitializesLegacyAccessOnce(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, accessSetting.AccessMode)
 
-		status, body := second.do(t, http.MethodGet, "/api/memos", "", nil)
+		status, body := second.do(t, http.MethodGet, "/api/notes", "", nil)
 		require.Equal(t, http.StatusOK, status, "persisted PUBLIC mode should still allow anonymous access: %s", body)
 	})
 
@@ -426,12 +426,12 @@ func TestStartupInitializesLegacyAccessOnce(t *testing.T) {
 		require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, accessSetting.AccessMode)
 		first.shutdown(ctx)
 
-		second := bootInstance(ctx, t, instanceOptions{instanceURL: "https://memos.example.com", dataDir: dataDir})
+		second := bootInstance(ctx, t, instanceOptions{instanceURL: "https://notes.example.com", dataDir: dataDir})
 		accessSetting, err = second.server.Store.GetInstanceAccessSetting(ctx)
 		require.NoError(t, err)
 		require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, accessSetting.AccessMode)
 
-		status, _ := second.do(t, http.MethodGet, "/api/memos", "", nil)
+		status, _ := second.do(t, http.MethodGet, "/api/notes", "", nil)
 		require.Equal(t, http.StatusUnauthorized, status, "canonical URL must not reopen a persisted PRIVATE instance")
 	})
 }
@@ -444,7 +444,7 @@ func TestStartupInitializesLegacyAccessOnce(t *testing.T) {
 // middlewares *around* the generated handler, and it is the generated handler
 // that annotates the context with the RPC method. runtime.RPCMethod therefore
 // always reported "not set", the guard skipped Authorizer.CheckAccess entirely,
-// and anonymous callers could read PUBLIC memos over REST on a private instance.
+// and anonymous callers could read PUBLIC notes over REST on a private instance.
 // The gateway now resolves the procedure from the proto HTTP bindings instead.
 func TestStartupPrivateInstanceGatewayPolicy(t *testing.T) {
 	ctx := context.Background()
@@ -452,20 +452,20 @@ func TestStartupPrivateInstanceGatewayPolicy(t *testing.T) {
 
 	inst.createAdmin(t)
 	token := inst.signIn(t)
-	inst.createMemo(t, token, "startup-private-public", "public on a private instance")
+	inst.createNote(t, token, "startup-private-public", "public on a private instance")
 	status, body := inst.do(t, http.MethodPatch,
-		"/api/memos/startup-private-public?updateMask=visibility", token, map[string]any{
+		"/api/notes/startup-private-public?updateMask=visibility", token, map[string]any{
 			"visibility": "PUBLIC",
 		})
-	require.Equal(t, http.StatusOK, status, "should be able to make the memo public: %s", body)
+	require.Equal(t, http.StatusOK, status, "should be able to make the note public: %s", body)
 
-	status, _ = inst.do(t, http.MethodGet, "/api/memos", "", nil)
+	status, _ = inst.do(t, http.MethodGet, "/api/notes", "", nil)
 	require.Equal(t, http.StatusUnauthorized, status,
-		"anonymous ListMemos over REST should be refused on a private instance")
+		"anonymous ListNotes over REST should be refused on a private instance")
 
-	status, _ = inst.do(t, http.MethodGet, "/api/memos/startup-private-public", "", nil)
+	status, _ = inst.do(t, http.MethodGet, "/api/notes/startup-private-public", "", nil)
 	require.Equal(t, http.StatusUnauthorized, status,
-		"anonymous GetMemo over REST should be refused on a private instance")
+		"anonymous GetNote over REST should be refused on a private instance")
 }
 
 // TestStartupGatewayOmitsNullMessageFields checks the JSON the gateway actually
@@ -473,7 +473,7 @@ func TestStartupPrivateInstanceGatewayPolicy(t *testing.T) {
 // grpc-gateway's stock marshaler emits `"motionMedia": null` for a plain image
 // attachment; the schema types that field as an object, so clients validating
 // responses against it — MCP clients serve that schema as the tool outputSchema
-// — reject every memo carrying an attachment. The marshaler override lives in
+// — reject every note carrying an attachment. The marshaler override lives in
 // RegisterGateway, so only a booted server proves it is wired in.
 func TestStartupGatewayOmitsNullMessageFields(t *testing.T) {
 	ctx := context.Background()
@@ -519,14 +519,14 @@ func TestStartupDemoMode(t *testing.T) {
 		instanceURL: "http://localhost",
 	})
 
-	status, body := inst.do(t, http.MethodGet, "/api/memos", "", nil)
-	require.Equal(t, http.StatusOK, status, "demo instances serve memos anonymously: %s", body)
+	status, body := inst.do(t, http.MethodGet, "/api/notes", "", nil)
+	require.Equal(t, http.StatusOK, status, "demo instances serve notes anonymously: %s", body)
 
 	var listed struct {
-		Memos []struct {
+		Notes []struct {
 			Name string `json:"name"`
-		} `json:"memos"`
+		} `json:"notes"`
 	}
 	require.NoError(t, json.Unmarshal(body, &listed))
-	require.NotEmpty(t, listed.Memos, "demo mode should seed memos")
+	require.NotEmpty(t, listed.Notes, "demo mode should seed notes")
 }

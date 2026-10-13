@@ -14,14 +14,14 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/clientip"
-	"github.com/usememos/memos/internal/profile"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/server/fileserver"
-	"github.com/usememos/memos/server/frontend"
-	"github.com/usememos/memos/server/mcp"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/server/fileserver"
+	"github.com/anangnovriadi/roster-tracker/server/frontend"
+	"github.com/anangnovriadi/roster-tracker/server/mcp"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 const (
@@ -72,7 +72,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		return nil, errors.Wrap(err, "failed to get instance basic setting")
 	}
 
-	secret := "usememos"
+	secret := "roster-tracker"
 	if !profile.Demo {
 		secret = instanceBasicSetting.SecretKey
 	}
@@ -166,7 +166,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 		slog.Error("failed to close database", slog.String("error", err.Error()))
 	}
 
-	slog.Info("memos stopped properly")
+	slog.Info("notes stopped properly")
 }
 
 func (s *Server) closeLongLivedConnections() {

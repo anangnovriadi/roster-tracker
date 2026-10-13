@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // setSchemaVersion overwrites the recorded schema version so upgrade guard rails
@@ -59,11 +59,11 @@ func TestMigrationRejectsUnsupportedSchema(t *testing.T) {
 			defer ts.Close()
 			user, err := createTestingHostUser(ctx, ts)
 			require.NoError(t, err)
-			memo, err := ts.CreateMemo(ctx, &store.Memo{
-				UID: "preserved-memo", CreatorID: user.ID, Content: "preserve on rejected startup", Visibility: store.Private,
+			note, err := ts.CreateNote(ctx, &store.Note{
+				UID: "preserved-note", CreatorID: user.ID, Content: "preserve on rejected startup", Visibility: store.Private,
 			})
 			require.NoError(t, err)
-			memo, err = ts.GetMemo(ctx, &store.FindMemo{UID: &memo.UID})
+			note, err = ts.GetNote(ctx, &store.FindNote{UID: &note.UID})
 			require.NoError(t, err)
 			if tc.missingBasic {
 				require.NoError(t, ts.DeleteInstanceSetting(ctx, &store.DeleteInstanceSetting{Name: "BASIC"}))
@@ -79,9 +79,9 @@ func TestMigrationRejectsUnsupportedSchema(t *testing.T) {
 			after, err := ts.GetDriver().ListInstanceSettings(ctx, &store.FindInstanceSetting{})
 			require.NoError(t, err)
 			require.ElementsMatch(t, before, after, "rejected startup must not write settings")
-			preserved, err := ts.GetMemo(ctx, &store.FindMemo{UID: &memo.UID})
+			preserved, err := ts.GetNote(ctx, &store.FindNote{UID: &note.UID})
 			require.NoError(t, err)
-			require.Equal(t, memo, preserved)
+			require.Equal(t, note, preserved)
 		})
 	}
 }

@@ -185,7 +185,8 @@ var File_api_common_proto protoreflect.FileDescriptor
 
 const file_api_common_proto_rawDesc = "" +
 	"\n" +
-	"\x10api/common.proto\x12\tmemos.api\"9\n" +
+	"\x10api/common.proto\x12\n" +
+	"roster.api\"9\n" +
 	"\tPageToken\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x02 \x01(\x05R\x06offset*8\n" +
@@ -197,9 +198,10 @@ const file_api_common_proto_rawDesc = "" +
 	"\tDirection\x12\x19\n" +
 	"\x15DIRECTION_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ASC\x10\x01\x12\b\n" +
-	"\x04DESC\x10\x02B\x8a\x01\n" +
-	"\rcom.memos.apiB\vCommonProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
-	"Memos::Apib\x06proto3"
+	"\x04DESC\x10\x02B\x9d\x01\n" +
+	"\x0ecom.roster.apiB\vCommonProtoP\x01Z5github.com/anangnovriadi/roster-tracker/proto/gen/api\xa2\x02\x03RAX\xaa\x02\n" +
+	"Roster.Api\xca\x02\n" +
+	"Roster\\Api\xe2\x02\x16Roster\\Api\\GPBMetadata\xea\x02\vRoster::Apib\x06proto3"
 
 var (
 	file_api_common_proto_rawDescOnce sync.Once
@@ -216,9 +218,9 @@ func file_api_common_proto_rawDescGZIP() []byte {
 var file_api_common_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_api_common_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_api_common_proto_goTypes = []any{
-	(State)(0),        // 0: memos.api.State
-	(Direction)(0),    // 1: memos.api.Direction
-	(*PageToken)(nil), // 2: memos.api.PageToken
+	(State)(0),        // 0: roster.api.State
+	(Direction)(0),    // 1: roster.api.Direction
+	(*PageToken)(nil), // 2: roster.api.PageToken
 }
 var file_api_common_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type

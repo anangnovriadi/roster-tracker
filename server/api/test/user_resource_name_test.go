@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestUserResourceName(t *testing.T) {
@@ -66,11 +66,11 @@ func TestUserResourceName(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, settings)
 
-		memoViews, err := ts.Service.ListMemoViews(userCtx, &apipb.ListMemoViewsRequest{
+		noteViews, err := ts.Service.ListNoteViews(userCtx, &apipb.ListNoteViewsRequest{
 			Parent: currentUser.GetUser().Name,
 		})
 		require.NoError(t, err)
-		require.NotNil(t, memoViews)
+		require.NotNil(t, noteViews)
 	})
 
 	t.Run("BatchGetUsers preserves mixed-case usernames", func(t *testing.T) {

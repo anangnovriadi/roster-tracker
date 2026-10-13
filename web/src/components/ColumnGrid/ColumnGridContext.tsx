@@ -9,7 +9,7 @@ interface ColumnGridUntrappedValue {
   clearUntrappedKey: (key: string) => void;
 }
 
-// Defaults keep MemoView working outside a grid (flow list, detail page, comments).
+// Defaults keep NoteView working outside a grid (flow list, detail page, comments).
 const ColumnGridUntrappedContext = createContext<ColumnGridUntrappedValue>({
   untrappedKeys: new Set(),
   setUntrappedKey: () => {},

@@ -13,7 +13,7 @@ import (
 func TestMetadataInterceptorForwardsSecurityHeaders(t *testing.T) {
 	interceptor := NewMetadataInterceptor()
 	req := connect.NewRequest(&emptypb.Empty{})
-	req.Header().Set("Origin", "https://memos.example")
+	req.Header().Set("Origin", "https://notes.example")
 	req.Header().Set("X-Forwarded-Proto", "https")
 	req.Header().Set("Forwarded", "for=203.0.113.1;proto=https")
 
@@ -22,7 +22,7 @@ func TestMetadataInterceptorForwardsSecurityHeaders(t *testing.T) {
 		if !ok {
 			t.Fatal("expected metadata in context")
 		}
-		if got := md.Get("origin"); len(got) != 1 || got[0] != "https://memos.example" {
+		if got := md.Get("origin"); len(got) != 1 || got[0] != "https://notes.example" {
 			t.Fatalf("unexpected origin metadata: %v", got)
 		}
 		if got := md.Get("x-forwarded-proto"); len(got) != 1 || got[0] != "https" {

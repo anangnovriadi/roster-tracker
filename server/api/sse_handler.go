@@ -8,8 +8,8 @@ import (
 
 	"github.com/labstack/echo/v5"
 
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 const (
@@ -31,7 +31,7 @@ func RegisterSSERoutes(router sseRouteRegistrar, hub *SSEHub, storeInstance *sto
 	})
 }
 
-// handleSSE handles the SSE connection for live memo refresh.
+// handleSSE handles the SSE connection for live note refresh.
 // Authentication is done via Bearer token in the Authorization header.
 func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) error {
 	// Authenticate the request.

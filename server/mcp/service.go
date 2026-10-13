@@ -12,9 +12,9 @@ import (
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 
-	"github.com/usememos/memos/internal/profile"
-	memosproto "github.com/usememos/memos/proto"
-	"github.com/usememos/memos/server/api"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	notesproto "github.com/anangnovriadi/roster-tracker/proto"
+	"github.com/anangnovriadi/roster-tracker/server/api"
 )
 
 // maxMCPRequestBytes caps the /mcp request body. It tracks the API limit because
@@ -83,10 +83,10 @@ func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService
 		Stateless:           true,
 		JSONResponse:        true,
 		MaxRequestBodyBytes: maxMCPRequestBytes,
-		// memos is typically served behind a reverse proxy with the app bound to a
+		// notes is typically served behind a reverse proxy with the app bound to a
 		// loopback address while the public Host header is a real domain. The SDK's
 		// DNS-rebinding guard treats that shape as an attack and rejects every
-		// request with 403 ("invalid Host header"). Disable it and rely on memos'
+		// request with 403 ("invalid Host header"). Disable it and rely on notes'
 		// own Origin/Host allowlist (see RegisterRoutes -> isAllowedMCPOrigin) for
 		// CSRF / DNS-rebinding protection instead.
 		DisableLocalhostProtection: true,
@@ -120,7 +120,7 @@ func catalogCacheMiddleware(next sdkmcp.MethodHandler) sdkmcp.MethodHandler {
 
 func loadMCPServiceOpenAPISpec() (*openAPISpec, error) {
 	spec := &openAPISpec{}
-	if err := yaml.Unmarshal(memosproto.OpenAPIYAML(), spec); err != nil {
+	if err := yaml.Unmarshal(notesproto.OpenAPIYAML(), spec); err != nil {
 		return nil, errors.Wrap(err, "failed to parse embedded OpenAPI spec")
 	}
 	if spec.Paths == nil {

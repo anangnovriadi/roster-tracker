@@ -6,11 +6,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
-func TestDeleteSpaceDeletesOnlyDirectlyAssignedMemosAndOwnedResources(t *testing.T) {
+func TestDeleteSpaceDeletesOnlyDirectlyAssignedNotesAndOwnedResources(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
@@ -27,7 +27,7 @@ func TestDeleteSpaceDeletesOnlyDirectlyAssignedMemosAndOwnedResources(t *testing
 	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, admin.ID)
 	require.NoError(t, err)
 
-	assigned, err := ts.CreateMemo(ctx, &store.Memo{
+	assigned, err := ts.CreateNote(ctx, &store.Note{
 		UID:        "delete-space-assigned",
 		CreatorID:  admin.ID,
 		Content:    "assigned content",
@@ -35,36 +35,36 @@ func TestDeleteSpaceDeletesOnlyDirectlyAssignedMemosAndOwnedResources(t *testing
 		SpaceID:    &space.ID,
 	})
 	require.NoError(t, err)
-	survivor, err := ts.CreateMemo(ctx, &store.Memo{UID: "delete-space-survivor", CreatorID: member.ID, Content: "survivor", Visibility: store.Public})
+	survivor, err := ts.CreateNote(ctx, &store.Note{UID: "delete-space-survivor", CreatorID: member.ID, Content: "survivor", Visibility: store.Public})
 	require.NoError(t, err)
-	otherSurvivor, err := ts.CreateMemo(ctx, &store.Memo{UID: "delete-space-other-survivor", CreatorID: member.ID, Content: "other", Visibility: store.Public})
+	otherSurvivor, err := ts.CreateNote(ctx, &store.Note{UID: "delete-space-other-survivor", CreatorID: member.ID, Content: "other", Visibility: store.Public})
 	require.NoError(t, err)
 
-	_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{MemoID: assigned.ID, RelatedMemoID: survivor.ID, Type: store.MemoRelationReference})
+	_, err = ts.UpsertNoteRelation(ctx, &store.NoteRelation{NoteID: assigned.ID, RelatedNoteID: survivor.ID, Type: store.NoteRelationReference})
 	require.NoError(t, err)
-	_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{MemoID: otherSurvivor.ID, RelatedMemoID: assigned.ID, Type: store.MemoRelationReference})
+	_, err = ts.UpsertNoteRelation(ctx, &store.NoteRelation{NoteID: otherSurvivor.ID, RelatedNoteID: assigned.ID, Type: store.NoteRelationReference})
 	require.NoError(t, err)
-	_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{MemoID: survivor.ID, RelatedMemoID: otherSurvivor.ID, Type: store.MemoRelationReference})
+	_, err = ts.UpsertNoteRelation(ctx, &store.NoteRelation{NoteID: survivor.ID, RelatedNoteID: otherSurvivor.ID, Type: store.NoteRelationReference})
 	require.NoError(t, err)
 
 	attachment, err := ts.CreateAttachment(ctx, &store.Attachment{
 		UID:       "delete-space-attachment",
 		CreatorID: admin.ID,
 		Filename:  "assigned.txt",
-		MemoID:    &assigned.ID,
+		NoteID:    &assigned.ID,
 		Payload:   &storepb.AttachmentPayload{},
 	})
 	require.NoError(t, err)
-	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{CreatorID: member.ID, MemoID: assigned.ID, ReactionType: "THUMBS_UP"})
+	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{CreatorID: member.ID, NoteID: assigned.ID, ReactionType: "THUMBS_UP"})
 	require.NoError(t, err)
-	share, err := ts.CreateMemoShare(ctx, &store.MemoShare{UID: "delete-space-share", MemoID: assigned.ID, CreatorID: admin.ID})
+	share, err := ts.CreateNoteShare(ctx, &store.NoteShare{UID: "delete-space-share", NoteID: assigned.ID, CreatorID: admin.ID})
 	require.NoError(t, err)
 	referencingNotification, err := ts.CreateInbox(ctx, &store.Inbox{
 		SenderID: admin.ID, ReceiverID: member.ID, Status: store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Type: storepb.InboxMessage_MEMO_COMMENT,
-			Payload: &storepb.InboxMessage_MemoComment{MemoComment: &storepb.InboxMessage_MemoCommentPayload{
-				MemoId: assigned.ID, RelatedMemoId: survivor.ID,
+			Type: storepb.InboxMessage_NOTE_COMMENT,
+			Payload: &storepb.InboxMessage_NoteComment{NoteComment: &storepb.InboxMessage_NoteCommentPayload{
+				NoteId: assigned.ID, RelatedNoteId: survivor.ID,
 			}},
 		},
 	})
@@ -72,9 +72,9 @@ func TestDeleteSpaceDeletesOnlyDirectlyAssignedMemosAndOwnedResources(t *testing
 	survivingNotification, err := ts.CreateInbox(ctx, &store.Inbox{
 		SenderID: member.ID, ReceiverID: admin.ID, Status: store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Type: storepb.InboxMessage_MEMO_MENTION,
-			Payload: &storepb.InboxMessage_MemoMention{MemoMention: &storepb.InboxMessage_MemoMentionPayload{
-				MemoId: survivor.ID, RelatedMemoId: otherSurvivor.ID,
+			Type: storepb.InboxMessage_NOTE_MENTION,
+			Payload: &storepb.InboxMessage_NoteMention{NoteMention: &storepb.InboxMessage_NoteMentionPayload{
+				NoteId: survivor.ID, RelatedNoteId: otherSurvivor.ID,
 			}},
 		},
 	})
@@ -94,13 +94,13 @@ func TestDeleteSpaceDeletesOnlyDirectlyAssignedMemosAndOwnedResources(t *testing
 	deletedSpace, err := ts.GetSpace(ctx, &store.FindSpace{ID: &space.ID})
 	require.NoError(t, err)
 	require.Nil(t, deletedSpace)
-	deletedMemo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &assigned.ID})
+	deletedNote, err := ts.GetNote(ctx, &store.FindNote{ID: &assigned.ID})
 	require.NoError(t, err)
-	require.Nil(t, deletedMemo)
-	for _, memoID := range []int32{survivor.ID, otherSurvivor.ID} {
-		memo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memoID})
+	require.Nil(t, deletedNote)
+	for _, noteID := range []int32{survivor.ID, otherSurvivor.ID} {
+		note, err := ts.GetNote(ctx, &store.FindNote{ID: &noteID})
 		require.NoError(t, err)
-		require.NotNil(t, memo, "relation traversal must not delete surviving endpoints")
+		require.NotNil(t, note, "relation traversal must not delete surviving endpoints")
 	}
 
 	deletedAttachment, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID})
@@ -109,7 +109,7 @@ func TestDeleteSpaceDeletesOnlyDirectlyAssignedMemosAndOwnedResources(t *testing
 	deletedReaction, err := ts.GetReaction(ctx, &store.FindReaction{ID: &reaction.ID})
 	require.NoError(t, err)
 	require.Nil(t, deletedReaction)
-	deletedShare, err := ts.GetMemoShare(ctx, &store.FindMemoShare{ID: &share.ID})
+	deletedShare, err := ts.GetNoteShare(ctx, &store.FindNoteShare{ID: &share.ID})
 	require.NoError(t, err)
 	require.Nil(t, deletedShare)
 	retainedInboxes, err := ts.ListInboxes(ctx, &store.FindInbox{ID: &referencingNotification.ID})
@@ -119,16 +119,16 @@ func TestDeleteSpaceDeletesOnlyDirectlyAssignedMemosAndOwnedResources(t *testing
 	require.NoError(t, err)
 	require.Len(t, survivingInboxes, 1)
 
-	incidentRelations, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{MemoID: &assigned.ID})
+	incidentRelations, err := ts.ListNoteRelations(ctx, &store.FindNoteRelation{NoteID: &assigned.ID})
 	require.NoError(t, err)
 	require.Empty(t, incidentRelations)
-	incomingIncidentRelations, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{RelatedMemoID: &assigned.ID})
+	incomingIncidentRelations, err := ts.ListNoteRelations(ctx, &store.FindNoteRelation{RelatedNoteID: &assigned.ID})
 	require.NoError(t, err)
 	require.Empty(t, incomingIncidentRelations)
-	survivingRelations, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{MemoID: &survivor.ID})
+	survivingRelations, err := ts.ListNoteRelations(ctx, &store.FindNoteRelation{NoteID: &survivor.ID})
 	require.NoError(t, err)
 	require.Len(t, survivingRelations, 1)
-	require.Equal(t, otherSurvivor.ID, survivingRelations[0].RelatedMemoID)
+	require.Equal(t, otherSurvivor.ID, survivingRelations[0].RelatedNoteID)
 
 	membership, err := ts.GetSpaceMember(ctx, &store.FindSpaceMember{SpaceID: &space.ID, UserID: &member.ID})
 	require.NoError(t, err)

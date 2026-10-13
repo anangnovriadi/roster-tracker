@@ -13,7 +13,7 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { MemoDetailSidebar } from "@/components/MemoDetailSidebar";
+import { NoteDetailSidebar } from "@/components/NoteDetailSidebar";
 import { DEFAULT_SETTING_SECTION, SETTINGS_SECTIONS } from "@/components/Settings/settingSections";
 import StatisticsView from "@/components/StatisticsView";
 import UserAvatar from "@/components/UserAvatar";
@@ -26,7 +26,7 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
+import { useFilteredNoteStats } from "@/hooks/useFilteredNoteStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { cn } from "@/lib/utils";
@@ -56,20 +56,20 @@ const CollectionSidebarContent = ({
 }: {
   context: "home" | "explore" | "archived";
   showStatistics?: boolean;
-  /** A page that can only show part of the collection counts that part, so a tag never promises memos the page cannot show. */
+  /** A page that can only show part of the collection counts that part, so a tag never promises notes the page cannot show. */
   scopeFilter?: string;
 }) => {
   const t = useTranslate();
-  const { memoFilter, creatorUsername } = useSpaceContext();
+  const { noteFilter, creatorUsername } = useSpaceContext();
   const md = useMediaQuery("md");
   const { mobileOpen, setMobileOpen } = useAppSidebar();
   const { isInitialized: authInitialized } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
   // User-level collections stay aligned with their unscoped feeds.
   const isUserLevelCollection = context === "archived";
-  const collectionFilter = isUserLevelCollection ? undefined : memoFilter;
+  const collectionFilter = isUserLevelCollection ? undefined : noteFilter;
   const statsFilter = scopeFilter ? combineCELFilters(collectionFilter, scopeFilter) : collectionFilter;
-  const { statistics, tags } = useFilteredMemoStats({
+  const { statistics, tags } = useFilteredNoteStats({
     context: context === "archived" ? "archived" : "collection",
     filter: statsFilter,
     enabled: authInitialized && instanceInitialized && (md || mobileOpen),
@@ -93,9 +93,9 @@ const CollectionSidebarContent = ({
 const AttachmentsSidebarContent = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const { memoFilter, creatorUsername } = useSpaceContext();
+  const { noteFilter, creatorUsername } = useSpaceContext();
   const { attachmentSection, setAttachmentSection, setMobileOpen } = useAppSidebar();
-  const { isComplete, stats } = useAttachmentLibraryStats(memoFilter);
+  const { isComplete, stats } = useAttachmentLibraryStats(noteFilter);
   const total = stats.media + stats.documents;
   const rows: Array<{ value: AttachmentSection; icon: LucideIcon; label: string; count?: number }> = [
     { value: "all", icon: ListIcon, label: t("common.all"), count: isComplete ? total : undefined },
@@ -164,22 +164,22 @@ const SettingsSidebarContent = () => {
   );
 };
 
-const MemoDetailSidebarContent = () => {
-  const { memoDetail, closeMobileThen } = useAppSidebar();
-  if (!memoDetail) return null;
+const NoteDetailSidebarContent = () => {
+  const { noteDetail, closeMobileThen } = useAppSidebar();
+  if (!noteDetail) return null;
   const runAndClose = (action: (() => void) | undefined) => (action ? () => closeMobileThen(action) : undefined);
   return (
-    <MemoDetailSidebar
-      memo={memoDetail.memo}
-      parentMemo={memoDetail.parentMemo}
-      parentStatus={memoDetail.parentStatus}
-      onParentRetry={memoDetail.onParentRetry}
-      parentPage={memoDetail.from}
-      commentCount={memoDetail.commentCount}
-      forceReadonly={memoDetail.readonly}
-      onEdit={runAndClose(memoDetail.onEdit)}
-      onCommentsOpen={runAndClose(memoDetail.onCommentsOpen)}
-      onCommentCreate={runAndClose(memoDetail.onCommentCreate)}
+    <NoteDetailSidebar
+      note={noteDetail.note}
+      parentNote={noteDetail.parentNote}
+      parentStatus={noteDetail.parentStatus}
+      onParentRetry={noteDetail.onParentRetry}
+      parentPage={noteDetail.from}
+      commentCount={noteDetail.commentCount}
+      forceReadonly={noteDetail.readonly}
+      onEdit={runAndClose(noteDetail.onEdit)}
+      onCommentsOpen={runAndClose(noteDetail.onCommentsOpen)}
+      onCommentCreate={runAndClose(noteDetail.onCommentCreate)}
       className="pb-2"
     />
   );
@@ -202,7 +202,7 @@ const RouteSidebarContent = () => {
   }
   if (kind === "attachments") return <AttachmentsSidebarContent />;
   if (kind === "settings") return <SettingsSidebarContent />;
-  if (kind === "memo") return <MemoDetailSidebarContent />;
+  if (kind === "note") return <NoteDetailSidebarContent />;
   if (kind === "common") return <CommonSidebarContent />;
   return null;
 };
@@ -336,7 +336,7 @@ const AppSidebar = ({ className, collapsible = false }: { className?: string; co
               <UserRoundIcon className="me-auto size-4 text-muted-foreground" strokeWidth={1.8} />
             </span>
             <span data-sidebar-label className="min-w-0 flex-1 truncate">
-              {t("common.sign-in-to-memos")}
+              {t("common.sign-in-to-notes")}
             </span>
             <ArrowRightIcon
               data-sidebar-trailing

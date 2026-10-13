@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/internal/identifier"
+	"github.com/anangnovriadi/roster-tracker/internal/identifier"
 )
 
 func TestNewService(t *testing.T) {
@@ -135,15 +135,15 @@ func TestGenerateSnippet(t *testing.T) {
 		},
 		{
 			name:      "plain URL autolink",
-			content:   "https://usememos.com",
+			content:   "https://github.com/anangnovriadi/roster-tracker#readme",
 			maxLength: 100,
-			expected:  "https://usememos.com",
+			expected:  "https://github.com/anangnovriadi/roster-tracker#readme",
 		},
 		{
 			name:      "text with plain URL",
-			content:   "Check out https://usememos.com for more info.",
+			content:   "Check out https://github.com/anangnovriadi/roster-tracker#readme for more info.",
 			maxLength: 100,
-			expected:  "Check out https://usememos.com for more info.",
+			expected:  "Check out https://github.com/anangnovriadi/roster-tracker#readme for more info.",
 		},
 	}
 
@@ -494,11 +494,11 @@ func TestExtractAllSkipsTagsInsideLinks(t *testing.T) {
 	data, err := svc.ExtractAll([]byte(
 		"[release #notes](https://example.com/releases#release-notes)\n\n" +
 			"![preview #image](https://example.com/image#preview)\n\n" +
-			"Outside #memo-tag",
+			"Outside #note-tag",
 	))
 	require.NoError(t, err)
 
-	assert.ElementsMatch(t, []string{"memo-tag"}, data.Tags)
+	assert.ElementsMatch(t, []string{"note-tag"}, data.Tags)
 	assert.True(t, data.Property.HasLink)
 }
 
@@ -565,27 +565,27 @@ func TestExtractTags(t *testing.T) {
 		},
 		{
 			name:     "autolink URL fragment not tag",
-			content:  "https://github.com/dmtrKovalenko/fff#pi-agent-extension\n\nProject #memo-tag",
+			content:  "https://github.com/dmtrKovalenko/fff#pi-agent-extension\n\nProject #note-tag",
 			withExt:  true,
-			expected: []string{"memo-tag"},
+			expected: []string{"note-tag"},
 		},
 		{
 			name:     "markdown link text and fragment not tags",
-			content:  "[release #notes](https://example.com/releases#release-notes) Outside #memo-tag",
+			content:  "[release #notes](https://example.com/releases#release-notes) Outside #note-tag",
 			withExt:  true,
-			expected: []string{"memo-tag"},
+			expected: []string{"note-tag"},
 		},
 		{
 			name:     "reference link text and fragment not tags",
-			content:  "[reference #anchor][docs]\n\n[docs]: https://example.com/docs#reference-anchor\n\nOutside #memo-tag",
+			content:  "[reference #anchor][docs]\n\n[docs]: https://example.com/docs#reference-anchor\n\nOutside #note-tag",
 			withExt:  true,
-			expected: []string{"memo-tag"},
+			expected: []string{"note-tag"},
 		},
 		{
 			name:     "image alt text and fragment not tags",
-			content:  "![preview #image](https://example.com/image#preview)\n\nOutside #memo-tag",
+			content:  "![preview #image](https://example.com/image#preview)\n\nOutside #note-tag",
 			withExt:  true,
-			expected: []string{"memo-tag"},
+			expected: []string{"note-tag"},
 		},
 		{
 			name:     "no extension enabled",
@@ -647,7 +647,7 @@ func TestExtractTags(t *testing.T) {
 	}
 }
 
-func TestExtractTagsMemosTagV1(t *testing.T) {
+func TestExtractTagsNotesTagV1(t *testing.T) {
 	svc := NewService(WithTagExtension())
 	tests := []struct {
 		name     string

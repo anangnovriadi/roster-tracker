@@ -14,12 +14,12 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/clientip"
-	"github.com/usememos/memos/internal/random"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/random"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (s *APIService) doSignIn(ctx context.Context, user *store.User) (string, time.Time, error) {
@@ -98,7 +98,7 @@ func (s *APIService) SignOut(ctx context.Context, _ *apipb.SignOutRequest) (*emp
 // RefreshToken exchanges a valid refresh token for a new access token.
 //
 // This endpoint implements refresh token rotation with sliding window sessions:
-// 1. Extracts the refresh token from the HttpOnly cookie (memos_refresh)
+// 1. Extracts the refresh token from the HttpOnly cookie (roster_refresh)
 // 2. Validates the refresh token against the database (checking expiry and revocation)
 // 3. Rotates the refresh token: generates a new one with fresh 30-day expiry
 // 4. Generates a new short-lived access token (15 minutes)

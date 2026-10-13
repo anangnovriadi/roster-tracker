@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 func TestTranscribe(t *testing.T) {

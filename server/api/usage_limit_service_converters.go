@@ -1,9 +1,9 @@
 package api
 
 import (
-	"github.com/usememos/memos/core/usagelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/core/usagelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 // convertUsageLimitFromStore converts a stored usage limit. username is the

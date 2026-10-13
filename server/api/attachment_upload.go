@@ -10,15 +10,15 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/usememos/memos/internal/ratelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 const (
 	attachmentUploadMetadataLimit = 64 << 10
-	attachmentUploadTempPrefix    = ".memos-rpc-upload-"
-	attachmentUploadProcedure     = "/memos.api.AttachmentService/UploadAttachment"
+	attachmentUploadTempPrefix    = ".notes-rpc-upload-"
+	attachmentUploadProcedure     = "/roster.api.AttachmentService/UploadAttachment"
 )
 
 // attachmentUploadState is what an attachment upload carries besides its
@@ -174,7 +174,7 @@ func (s *APIService) finishAttachmentUpload(ctx context.Context, upload *attachm
 	if _, err := io.ReadFull(file, metadata.Content); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to read attachment header: %v", err)
 	}
-	// Revalidate memo permissions and media metadata with the actual MIME type.
+	// Revalidate note permissions and media metadata with the actual MIME type.
 	create, err := s.prepareAttachment(ctx, &apipb.CreateAttachmentRequest{Attachment: metadata, AttachmentId: upload.state.uid})
 	if err != nil {
 		return nil, err

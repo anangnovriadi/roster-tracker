@@ -16,9 +16,9 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func createSpaceTestUser(ctx context.Context, t *testing.T, service *APIService, username string, role store.Role) *store.User {
@@ -263,8 +263,8 @@ func TestSpaceServiceHardDeleteLifecycle(t *testing.T) {
 	storedSpace, err := service.Store.GetSpace(ctx, &store.FindSpace{UID: &spaceUID})
 	require.NoError(t, err)
 	require.NotNil(t, storedSpace)
-	assignedMemo, err := service.Store.CreateMemo(ctx, &store.Memo{
-		UID:        "delete-space-memo",
+	assignedNote, err := service.Store.CreateNote(ctx, &store.Note{
+		UID:        "delete-space-note",
 		CreatorID:  owner.ID,
 		Content:    "delete with Space",
 		Visibility: store.Private,
@@ -277,7 +277,7 @@ func TestSpaceServiceHardDeleteLifecycle(t *testing.T) {
 		UID:         "delete-space-attachment",
 		CreatorID:   owner.ID,
 		Filename:    "space-delete-attachment.txt",
-		MemoID:      &assignedMemo.ID,
+		NoteID:      &assignedNote.ID,
 		StorageType: storepb.AttachmentStorageType_LOCAL,
 		Reference:   attachmentPath,
 		Payload:     &storepb.AttachmentPayload{},

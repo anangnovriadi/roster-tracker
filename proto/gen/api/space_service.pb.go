@@ -76,7 +76,7 @@ func (SpaceMember_Role) EnumDescriptor() ([]byte, []int) {
 	return file_api_space_service_proto_rawDescGZIP(), []int{7, 0}
 }
 
-// Space is a collaboration boundary for placed memos.
+// Space is a collaboration boundary for placed notes.
 type Space struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Identifier. The resource name of the space.
@@ -91,7 +91,7 @@ type Space struct {
 	Icon *Space_Icon `protobuf:"bytes,4,opt,name=icon,proto3" json:"icon,omitempty"`
 	// Output only. The authenticated user's membership role in this space.
 	// ROLE_UNSPECIFIED when this space is exposed as metadata only.
-	CurrentUserRole SpaceMember_Role `protobuf:"varint,5,opt,name=current_user_role,json=currentUserRole,proto3,enum=memos.api.SpaceMember_Role" json:"current_user_role,omitempty"`
+	CurrentUserRole SpaceMember_Role `protobuf:"varint,5,opt,name=current_user_role,json=currentUserRole,proto3,enum=roster.api.SpaceMember_Role" json:"current_user_role,omitempty"`
 	// Output only. The number of accepted members in this space. Pending
 	// invitations are excluded. Zero when this space is exposed as metadata only.
 	MemberCount   int32 `protobuf:"varint,6,opt,name=member_count,json=memberCount,proto3" json:"member_count,omitempty"`
@@ -499,7 +499,7 @@ type SpaceMember struct {
 	// Format: users/{user}
 	User string `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
 	// Required. The member's role within this space.
-	Role          SpaceMember_Role `protobuf:"varint,3,opt,name=role,proto3,enum=memos.api.SpaceMember_Role" json:"role,omitempty"`
+	Role          SpaceMember_Role `protobuf:"varint,3,opt,name=role,proto3,enum=roster.api.SpaceMember_Role" json:"role,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -837,7 +837,7 @@ type SpaceInvitation struct {
 	// Format: users/{user}
 	Invitee string `protobuf:"bytes,2,opt,name=invitee,proto3" json:"invitee,omitempty"`
 	// Required. The role the user receives after accepting the invitation.
-	Role SpaceMember_Role `protobuf:"varint,3,opt,name=role,proto3,enum=memos.api.SpaceMember_Role" json:"role,omitempty"`
+	Role SpaceMember_Role `protobuf:"varint,3,opt,name=role,proto3,enum=roster.api.SpaceMember_Role" json:"role,omitempty"`
 	// Output only. The space the user is invited to, as metadata only. This lets
 	// an invitee understand the invitation without membership-based GetSpace
 	// access.
@@ -1480,126 +1480,128 @@ var File_api_space_service_proto protoreflect.FileDescriptor
 
 const file_api_space_service_proto_rawDesc = "" +
 	"\n" +
-	"\x17api/space_service.proto\x12\tmemos.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x80\x03\n" +
+	"\x17api/space_service.proto\x12\n" +
+	"roster.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x83\x03\n" +
 	"\x05Space\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x02R\x05title\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12.\n" +
-	"\x04icon\x18\x04 \x01(\v2\x15.memos.api.Space.IconB\x03\xe0A\x01R\x04icon\x12L\n" +
-	"\x11current_user_role\x18\x05 \x01(\x0e2\x1b.memos.api.SpaceMember.RoleB\x03\xe0A\x03R\x0fcurrentUserRole\x12&\n" +
+	"\vdescription\x18\x03 \x01(\tB\x03\xe0A\x01R\vdescription\x12/\n" +
+	"\x04icon\x18\x04 \x01(\v2\x16.roster.api.Space.IconB\x03\xe0A\x01R\x04icon\x12M\n" +
+	"\x11current_user_role\x18\x05 \x01(\x0e2\x1c.roster.api.SpaceMember.RoleB\x03\xe0A\x03R\x0fcurrentUserRole\x12&\n" +
 	"\fmember_count\x18\x06 \x01(\x05B\x03\xe0A\x03R\vmemberCount\x1aA\n" +
 	"\x04Icon\x12\x16\n" +
 	"\x05emoji\x18\x01 \x01(\tH\x00R\x05emoji\x12\x18\n" +
 	"\x06lucide\x18\x02 \x01(\tH\x00R\x06lucideB\a\n" +
-	"\x05value:3\xeaA0\n" +
-	"\x0fmemos.api/Space\x12\x0espaces/{space}*\x06spaces2\x05space\"Y\n" +
+	"\x05value:4\xeaA1\n" +
+	"\x10roster.api/Space\x12\x0espaces/{space}*\x06spaces2\x05space\"Y\n" +
 	"\x11ListSpacesRequest\x12 \n" +
 	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\"f\n" +
-	"\x12ListSpacesResponse\x12(\n" +
-	"\x06spaces\x18\x01 \x03(\v2\x10.memos.api.SpaceR\x06spaces\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\">\n" +
-	"\x0fGetSpaceRequest\x12+\n" +
-	"\x04name\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
-	"\x0fmemos.api/SpaceR\x04name\"a\n" +
-	"\x12CreateSpaceRequest\x12+\n" +
-	"\x05space\x18\x01 \x01(\v2\x10.memos.api.SpaceB\x03\xe0A\x02R\x05space\x12\x1e\n" +
-	"\bspace_id\x18\x02 \x01(\tB\x03\xe0A\x01R\aspaceId\"\x83\x01\n" +
-	"\x12UpdateSpaceRequest\x12+\n" +
-	"\x05space\x18\x01 \x01(\v2\x10.memos.api.SpaceB\x03\xe0A\x02R\x05space\x12@\n" +
+	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\"g\n" +
+	"\x12ListSpacesResponse\x12)\n" +
+	"\x06spaces\x18\x01 \x03(\v2\x11.roster.api.SpaceR\x06spaces\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"?\n" +
+	"\x0fGetSpaceRequest\x12,\n" +
+	"\x04name\x18\x01 \x01(\tB\x18\xe0A\x02\xfaA\x12\n" +
+	"\x10roster.api/SpaceR\x04name\"b\n" +
+	"\x12CreateSpaceRequest\x12,\n" +
+	"\x05space\x18\x01 \x01(\v2\x11.roster.api.SpaceB\x03\xe0A\x02R\x05space\x12\x1e\n" +
+	"\bspace_id\x18\x02 \x01(\tB\x03\xe0A\x01R\aspaceId\"\x84\x01\n" +
+	"\x12UpdateSpaceRequest\x12,\n" +
+	"\x05space\x18\x01 \x01(\v2\x11.roster.api.SpaceB\x03\xe0A\x02R\x05space\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"A\n" +
-	"\x12DeleteSpaceRequest\x12+\n" +
-	"\x04name\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
-	"\x0fmemos.api/SpaceR\x04name\"\x93\x02\n" +
+	"updateMask\"B\n" +
+	"\x12DeleteSpaceRequest\x12,\n" +
+	"\x04name\x18\x01 \x01(\tB\x18\xe0A\x02\xfaA\x12\n" +
+	"\x10roster.api/SpaceR\x04name\"\x96\x02\n" +
 	"\vSpaceMember\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12*\n" +
-	"\x04user\x18\x02 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x04user\x124\n" +
-	"\x04role\x18\x03 \x01(\x0e2\x1b.memos.api.SpaceMember.RoleB\x03\xe0A\x02R\x04role\"1\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12+\n" +
+	"\x04user\x18\x02 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x04user\x125\n" +
+	"\x04role\x18\x03 \x01(\x0e2\x1c.roster.api.SpaceMember.RoleB\x03\xe0A\x02R\x04role\"1\n" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ADMIN\x10\x01\x12\b\n" +
-	"\x04USER\x10\x02:V\xeaAS\n" +
-	"\x15memos.api/SpaceMember\x12\x1fspaces/{space}/members/{member}*\fspaceMembers2\vspaceMember\"\x96\x01\n" +
-	"\x17ListSpaceMembersRequest\x125\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\x12\x15memos.api/SpaceMemberR\x06parent\x12 \n" +
+	"\x04USER\x10\x02:W\xeaAT\n" +
+	"\x16roster.api/SpaceMember\x12\x1fspaces/{space}/members/{member}*\fspaceMembers2\vspaceMember\"\x97\x01\n" +
+	"\x17ListSpaceMembersRequest\x126\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\x12\x16roster.api/SpaceMemberR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x7f\n" +
-	"\x18ListSpaceMembersResponse\x12;\n" +
-	"\rspace_members\x18\x01 \x03(\v2\x16.memos.api.SpaceMemberR\fspaceMembers\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"J\n" +
-	"\x15GetSpaceMemberRequest\x121\n" +
-	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
-	"\x15memos.api/SpaceMemberR\x04name\"\x9c\x01\n" +
-	"\x18UpdateSpaceMemberRequest\x12>\n" +
-	"\fspace_member\x18\x01 \x01(\v2\x16.memos.api.SpaceMemberB\x03\xe0A\x02R\vspaceMember\x12@\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x80\x01\n" +
+	"\x18ListSpaceMembersResponse\x12<\n" +
+	"\rspace_members\x18\x01 \x03(\v2\x17.roster.api.SpaceMemberR\fspaceMembers\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"K\n" +
+	"\x15GetSpaceMemberRequest\x122\n" +
+	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
+	"\x16roster.api/SpaceMemberR\x04name\"\x9d\x01\n" +
+	"\x18UpdateSpaceMemberRequest\x12?\n" +
+	"\fspace_member\x18\x01 \x01(\v2\x17.roster.api.SpaceMemberB\x03\xe0A\x02R\vspaceMember\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"M\n" +
-	"\x18DeleteSpaceMemberRequest\x121\n" +
-	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
-	"\x15memos.api/SpaceMemberR\x04name\"\xab\x02\n" +
+	"updateMask\"N\n" +
+	"\x18DeleteSpaceMemberRequest\x122\n" +
+	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
+	"\x16roster.api/SpaceMemberR\x04name\"\xaf\x02\n" +
 	"\x0fSpaceInvitation\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x120\n" +
-	"\ainvitee\x18\x02 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\ainvitee\x124\n" +
-	"\x04role\x18\x03 \x01(\x0e2\x1b.memos.api.SpaceMember.RoleB\x03\xe0A\x02R\x04role\x12+\n" +
-	"\x05space\x18\x04 \x01(\v2\x10.memos.api.SpaceB\x03\xe0A\x03R\x05space:j\xeaAg\n" +
-	"\x19memos.api/SpaceInvitation\x12'spaces/{space}/invitations/{invitation}*\x10spaceInvitations2\x0fspaceInvitation\"\x9e\x01\n" +
-	"\x1bListSpaceInvitationsRequest\x129\n" +
-	"\x06parent\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\x12\x19memos.api/SpaceInvitationR\x06parent\x12 \n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x121\n" +
+	"\ainvitee\x18\x02 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\ainvitee\x125\n" +
+	"\x04role\x18\x03 \x01(\x0e2\x1c.roster.api.SpaceMember.RoleB\x03\xe0A\x02R\x04role\x12,\n" +
+	"\x05space\x18\x04 \x01(\v2\x11.roster.api.SpaceB\x03\xe0A\x03R\x05space:k\xeaAh\n" +
+	"\x1aroster.api/SpaceInvitation\x12'spaces/{space}/invitations/{invitation}*\x10spaceInvitations2\x0fspaceInvitation\"\x9f\x01\n" +
+	"\x1bListSpaceInvitationsRequest\x12:\n" +
+	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1aroster.api/SpaceInvitationR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x8f\x01\n" +
-	"\x1cListSpaceInvitationsResponse\x12G\n" +
-	"\x11space_invitations\x18\x01 \x03(\v2\x1a.memos.api.SpaceInvitationR\x10spaceInvitations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x97\x01\n" +
-	"\x1fListUserSpaceInvitationsRequest\x12.\n" +
-	"\x06parent\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x06parent\x12 \n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x90\x01\n" +
+	"\x1cListSpaceInvitationsResponse\x12H\n" +
+	"\x11space_invitations\x18\x01 \x03(\v2\x1b.roster.api.SpaceInvitationR\x10spaceInvitations\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x01\n" +
+	"\x1fListUserSpaceInvitationsRequest\x12/\n" +
+	"\x06parent\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x93\x01\n" +
-	" ListUserSpaceInvitationsResponse\x12G\n" +
-	"\x11space_invitations\x18\x01 \x03(\v2\x1a.memos.api.SpaceInvitationR\x10spaceInvitations\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
-	"\x19GetSpaceInvitationRequest\x125\n" +
-	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
-	"\x19memos.api/SpaceInvitationR\x04name\"\xa5\x01\n" +
-	"\x1cCreateSpaceInvitationRequest\x129\n" +
-	"\x06parent\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\x12\x19memos.api/SpaceInvitationR\x06parent\x12J\n" +
-	"\x10space_invitation\x18\x02 \x01(\v2\x1a.memos.api.SpaceInvitationB\x03\xe0A\x02R\x0fspaceInvitation\"U\n" +
-	"\x1cDeleteSpaceInvitationRequest\x125\n" +
-	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
-	"\x19memos.api/SpaceInvitationR\x04name\"U\n" +
-	"\x1cAcceptSpaceInvitationRequest\x125\n" +
-	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
-	"\x19memos.api/SpaceInvitationR\x04name\"V\n" +
-	"\x1dDeclineSpaceInvitationRequest\x125\n" +
-	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
-	"\x19memos.api/SpaceInvitationR\x04name2\xac\x11\n" +
-	"\fSpaceService\x12a\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x94\x01\n" +
+	" ListUserSpaceInvitationsResponse\x12H\n" +
+	"\x11space_invitations\x18\x01 \x03(\v2\x1b.roster.api.SpaceInvitationR\x10spaceInvitations\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"S\n" +
+	"\x19GetSpaceInvitationRequest\x126\n" +
+	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x1aroster.api/SpaceInvitationR\x04name\"\xa7\x01\n" +
+	"\x1cCreateSpaceInvitationRequest\x12:\n" +
+	"\x06parent\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\x12\x1aroster.api/SpaceInvitationR\x06parent\x12K\n" +
+	"\x10space_invitation\x18\x02 \x01(\v2\x1b.roster.api.SpaceInvitationB\x03\xe0A\x02R\x0fspaceInvitation\"V\n" +
+	"\x1cDeleteSpaceInvitationRequest\x126\n" +
+	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x1aroster.api/SpaceInvitationR\x04name\"V\n" +
+	"\x1cAcceptSpaceInvitationRequest\x126\n" +
+	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x1aroster.api/SpaceInvitationR\x04name\"W\n" +
+	"\x1dDeclineSpaceInvitationRequest\x126\n" +
+	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
+	"\x1aroster.api/SpaceInvitationR\x04name2\xc9\x11\n" +
+	"\fSpaceService\x12c\n" +
 	"\n" +
-	"ListSpaces\x12\x1c.memos.api.ListSpacesRequest\x1a\x1d.memos.api.ListSpacesResponse\"\x16\xdaA\x00\x82\xd3\xe4\x93\x02\r\x12\v/api/spaces\x12]\n" +
-	"\bGetSpace\x12\x1a.memos.api.GetSpaceRequest\x1a\x10.memos.api.Space\"#\xdaA\x04name\x82\xd3\xe4\x93\x02\x16\x12\x14/api/{name=spaces/*}\x12b\n" +
-	"\vCreateSpace\x12\x1d.memos.api.CreateSpaceRequest\x1a\x10.memos.api.Space\"\"\xdaA\x05space\x82\xd3\xe4\x93\x02\x14:\x05space\"\v/api/spaces\x12}\n" +
-	"\vUpdateSpace\x12\x1d.memos.api.UpdateSpaceRequest\x1a\x10.memos.api.Space\"=\xdaA\x11space,update_mask\x82\xd3\xe4\x93\x02#:\x05space2\x1a/api/{space.name=spaces/*}\x12i\n" +
-	"\vDeleteSpace\x12\x1d.memos.api.DeleteSpaceRequest\x1a\x16.google.protobuf.Empty\"#\xdaA\x04name\x82\xd3\xe4\x93\x02\x16*\x14/api/{name=spaces/*}\x12\x8c\x01\n" +
-	"\x10ListSpaceMembers\x12\".memos.api.ListSpaceMembersRequest\x1a#.memos.api.ListSpaceMembersResponse\"/\xdaA\x06parent\x82\xd3\xe4\x93\x02 \x12\x1e/api/{parent=spaces/*}/members\x12y\n" +
-	"\x0eGetSpaceMember\x12 .memos.api.GetSpaceMemberRequest\x1a\x16.memos.api.SpaceMember\"-\xdaA\x04name\x82\xd3\xe4\x93\x02 \x12\x1e/api/{name=spaces/*/members/*}\x12\xae\x01\n" +
-	"\x11UpdateSpaceMember\x12#.memos.api.UpdateSpaceMemberRequest\x1a\x16.memos.api.SpaceMember\"\\\xdaA\x18space_member,update_mask\x82\xd3\xe4\x93\x02;:\fspace_member2+/api/{space_member.name=spaces/*/members/*}\x12\x7f\n" +
-	"\x11DeleteSpaceMember\x12#.memos.api.DeleteSpaceMemberRequest\x1a\x16.google.protobuf.Empty\"-\xdaA\x04name\x82\xd3\xe4\x93\x02 *\x1e/api/{name=spaces/*/members/*}\x12\x9c\x01\n" +
-	"\x14ListSpaceInvitations\x12&.memos.api.ListSpaceInvitationsRequest\x1a'.memos.api.ListSpaceInvitationsResponse\"3\xdaA\x06parent\x82\xd3\xe4\x93\x02$\x12\"/api/{parent=spaces/*}/invitations\x12\xac\x01\n" +
-	"\x18ListUserSpaceInvitations\x12*.memos.api.ListUserSpaceInvitationsRequest\x1a+.memos.api.ListUserSpaceInvitationsResponse\"7\xdaA\x06parent\x82\xd3\xe4\x93\x02(\x12&/api/{parent=users/*}/spaceInvitations\x12\x89\x01\n" +
-	"\x12GetSpaceInvitation\x12$.memos.api.GetSpaceInvitationRequest\x1a\x1a.memos.api.SpaceInvitation\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$\x12\"/api/{name=spaces/*/invitations/*}\x12\xb4\x01\n" +
-	"\x15CreateSpaceInvitation\x12'.memos.api.CreateSpaceInvitationRequest\x1a\x1a.memos.api.SpaceInvitation\"V\xdaA\x17parent,space_invitation\x82\xd3\xe4\x93\x026:\x10space_invitation\"\"/api/{parent=spaces/*}/invitations\x12\x8b\x01\n" +
-	"\x15DeleteSpaceInvitation\x12'.memos.api.DeleteSpaceInvitationRequest\x1a\x16.google.protobuf.Empty\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$*\"/api/{name=spaces/*/invitations/*}\x12\x95\x01\n" +
-	"\x15AcceptSpaceInvitation\x12'.memos.api.AcceptSpaceInvitationRequest\x1a\x16.memos.api.SpaceMember\";\xdaA\x04name\x82\xd3\xe4\x93\x02.:\x01*\")/api/{name=spaces/*/invitations/*}:accept\x12\x98\x01\n" +
-	"\x16DeclineSpaceInvitation\x12(.memos.api.DeclineSpaceInvitationRequest\x1a\x16.google.protobuf.Empty\"<\xdaA\x04name\x82\xd3\xe4\x93\x02/:\x01*\"*/api/{name=spaces/*/invitations/*}:declineB\x90\x01\n" +
-	"\rcom.memos.apiB\x11SpaceServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
-	"Memos::Apib\x06proto3"
+	"ListSpaces\x12\x1d.roster.api.ListSpacesRequest\x1a\x1e.roster.api.ListSpacesResponse\"\x16\xdaA\x00\x82\xd3\xe4\x93\x02\r\x12\v/api/spaces\x12_\n" +
+	"\bGetSpace\x12\x1b.roster.api.GetSpaceRequest\x1a\x11.roster.api.Space\"#\xdaA\x04name\x82\xd3\xe4\x93\x02\x16\x12\x14/api/{name=spaces/*}\x12d\n" +
+	"\vCreateSpace\x12\x1e.roster.api.CreateSpaceRequest\x1a\x11.roster.api.Space\"\"\xdaA\x05space\x82\xd3\xe4\x93\x02\x14:\x05space\"\v/api/spaces\x12\x7f\n" +
+	"\vUpdateSpace\x12\x1e.roster.api.UpdateSpaceRequest\x1a\x11.roster.api.Space\"=\xdaA\x11space,update_mask\x82\xd3\xe4\x93\x02#:\x05space2\x1a/api/{space.name=spaces/*}\x12j\n" +
+	"\vDeleteSpace\x12\x1e.roster.api.DeleteSpaceRequest\x1a\x16.google.protobuf.Empty\"#\xdaA\x04name\x82\xd3\xe4\x93\x02\x16*\x14/api/{name=spaces/*}\x12\x8e\x01\n" +
+	"\x10ListSpaceMembers\x12#.roster.api.ListSpaceMembersRequest\x1a$.roster.api.ListSpaceMembersResponse\"/\xdaA\x06parent\x82\xd3\xe4\x93\x02 \x12\x1e/api/{parent=spaces/*}/members\x12{\n" +
+	"\x0eGetSpaceMember\x12!.roster.api.GetSpaceMemberRequest\x1a\x17.roster.api.SpaceMember\"-\xdaA\x04name\x82\xd3\xe4\x93\x02 \x12\x1e/api/{name=spaces/*/members/*}\x12\xb0\x01\n" +
+	"\x11UpdateSpaceMember\x12$.roster.api.UpdateSpaceMemberRequest\x1a\x17.roster.api.SpaceMember\"\\\xdaA\x18space_member,update_mask\x82\xd3\xe4\x93\x02;:\fspace_member2+/api/{space_member.name=spaces/*/members/*}\x12\x80\x01\n" +
+	"\x11DeleteSpaceMember\x12$.roster.api.DeleteSpaceMemberRequest\x1a\x16.google.protobuf.Empty\"-\xdaA\x04name\x82\xd3\xe4\x93\x02 *\x1e/api/{name=spaces/*/members/*}\x12\x9e\x01\n" +
+	"\x14ListSpaceInvitations\x12'.roster.api.ListSpaceInvitationsRequest\x1a(.roster.api.ListSpaceInvitationsResponse\"3\xdaA\x06parent\x82\xd3\xe4\x93\x02$\x12\"/api/{parent=spaces/*}/invitations\x12\xae\x01\n" +
+	"\x18ListUserSpaceInvitations\x12+.roster.api.ListUserSpaceInvitationsRequest\x1a,.roster.api.ListUserSpaceInvitationsResponse\"7\xdaA\x06parent\x82\xd3\xe4\x93\x02(\x12&/api/{parent=users/*}/spaceInvitations\x12\x8b\x01\n" +
+	"\x12GetSpaceInvitation\x12%.roster.api.GetSpaceInvitationRequest\x1a\x1b.roster.api.SpaceInvitation\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$\x12\"/api/{name=spaces/*/invitations/*}\x12\xb6\x01\n" +
+	"\x15CreateSpaceInvitation\x12(.roster.api.CreateSpaceInvitationRequest\x1a\x1b.roster.api.SpaceInvitation\"V\xdaA\x17parent,space_invitation\x82\xd3\xe4\x93\x026:\x10space_invitation\"\"/api/{parent=spaces/*}/invitations\x12\x8c\x01\n" +
+	"\x15DeleteSpaceInvitation\x12(.roster.api.DeleteSpaceInvitationRequest\x1a\x16.google.protobuf.Empty\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$*\"/api/{name=spaces/*/invitations/*}\x12\x97\x01\n" +
+	"\x15AcceptSpaceInvitation\x12(.roster.api.AcceptSpaceInvitationRequest\x1a\x17.roster.api.SpaceMember\";\xdaA\x04name\x82\xd3\xe4\x93\x02.:\x01*\")/api/{name=spaces/*/invitations/*}:accept\x12\x99\x01\n" +
+	"\x16DeclineSpaceInvitation\x12).roster.api.DeclineSpaceInvitationRequest\x1a\x16.google.protobuf.Empty\"<\xdaA\x04name\x82\xd3\xe4\x93\x02/:\x01*\"*/api/{name=spaces/*/invitations/*}:declineB\xa3\x01\n" +
+	"\x0ecom.roster.apiB\x11SpaceServiceProtoP\x01Z5github.com/anangnovriadi/roster-tracker/proto/gen/api\xa2\x02\x03RAX\xaa\x02\n" +
+	"Roster.Api\xca\x02\n" +
+	"Roster\\Api\xe2\x02\x16Roster\\Api\\GPBMetadata\xea\x02\vRoster::Apib\x06proto3"
 
 var (
 	file_api_space_service_proto_rawDescOnce sync.Once
@@ -1616,82 +1618,82 @@ func file_api_space_service_proto_rawDescGZIP() []byte {
 var file_api_space_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_api_space_service_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_api_space_service_proto_goTypes = []any{
-	(SpaceMember_Role)(0),                    // 0: memos.api.SpaceMember.Role
-	(*Space)(nil),                            // 1: memos.api.Space
-	(*ListSpacesRequest)(nil),                // 2: memos.api.ListSpacesRequest
-	(*ListSpacesResponse)(nil),               // 3: memos.api.ListSpacesResponse
-	(*GetSpaceRequest)(nil),                  // 4: memos.api.GetSpaceRequest
-	(*CreateSpaceRequest)(nil),               // 5: memos.api.CreateSpaceRequest
-	(*UpdateSpaceRequest)(nil),               // 6: memos.api.UpdateSpaceRequest
-	(*DeleteSpaceRequest)(nil),               // 7: memos.api.DeleteSpaceRequest
-	(*SpaceMember)(nil),                      // 8: memos.api.SpaceMember
-	(*ListSpaceMembersRequest)(nil),          // 9: memos.api.ListSpaceMembersRequest
-	(*ListSpaceMembersResponse)(nil),         // 10: memos.api.ListSpaceMembersResponse
-	(*GetSpaceMemberRequest)(nil),            // 11: memos.api.GetSpaceMemberRequest
-	(*UpdateSpaceMemberRequest)(nil),         // 12: memos.api.UpdateSpaceMemberRequest
-	(*DeleteSpaceMemberRequest)(nil),         // 13: memos.api.DeleteSpaceMemberRequest
-	(*SpaceInvitation)(nil),                  // 14: memos.api.SpaceInvitation
-	(*ListSpaceInvitationsRequest)(nil),      // 15: memos.api.ListSpaceInvitationsRequest
-	(*ListSpaceInvitationsResponse)(nil),     // 16: memos.api.ListSpaceInvitationsResponse
-	(*ListUserSpaceInvitationsRequest)(nil),  // 17: memos.api.ListUserSpaceInvitationsRequest
-	(*ListUserSpaceInvitationsResponse)(nil), // 18: memos.api.ListUserSpaceInvitationsResponse
-	(*GetSpaceInvitationRequest)(nil),        // 19: memos.api.GetSpaceInvitationRequest
-	(*CreateSpaceInvitationRequest)(nil),     // 20: memos.api.CreateSpaceInvitationRequest
-	(*DeleteSpaceInvitationRequest)(nil),     // 21: memos.api.DeleteSpaceInvitationRequest
-	(*AcceptSpaceInvitationRequest)(nil),     // 22: memos.api.AcceptSpaceInvitationRequest
-	(*DeclineSpaceInvitationRequest)(nil),    // 23: memos.api.DeclineSpaceInvitationRequest
-	(*Space_Icon)(nil),                       // 24: memos.api.Space.Icon
+	(SpaceMember_Role)(0),                    // 0: roster.api.SpaceMember.Role
+	(*Space)(nil),                            // 1: roster.api.Space
+	(*ListSpacesRequest)(nil),                // 2: roster.api.ListSpacesRequest
+	(*ListSpacesResponse)(nil),               // 3: roster.api.ListSpacesResponse
+	(*GetSpaceRequest)(nil),                  // 4: roster.api.GetSpaceRequest
+	(*CreateSpaceRequest)(nil),               // 5: roster.api.CreateSpaceRequest
+	(*UpdateSpaceRequest)(nil),               // 6: roster.api.UpdateSpaceRequest
+	(*DeleteSpaceRequest)(nil),               // 7: roster.api.DeleteSpaceRequest
+	(*SpaceMember)(nil),                      // 8: roster.api.SpaceMember
+	(*ListSpaceMembersRequest)(nil),          // 9: roster.api.ListSpaceMembersRequest
+	(*ListSpaceMembersResponse)(nil),         // 10: roster.api.ListSpaceMembersResponse
+	(*GetSpaceMemberRequest)(nil),            // 11: roster.api.GetSpaceMemberRequest
+	(*UpdateSpaceMemberRequest)(nil),         // 12: roster.api.UpdateSpaceMemberRequest
+	(*DeleteSpaceMemberRequest)(nil),         // 13: roster.api.DeleteSpaceMemberRequest
+	(*SpaceInvitation)(nil),                  // 14: roster.api.SpaceInvitation
+	(*ListSpaceInvitationsRequest)(nil),      // 15: roster.api.ListSpaceInvitationsRequest
+	(*ListSpaceInvitationsResponse)(nil),     // 16: roster.api.ListSpaceInvitationsResponse
+	(*ListUserSpaceInvitationsRequest)(nil),  // 17: roster.api.ListUserSpaceInvitationsRequest
+	(*ListUserSpaceInvitationsResponse)(nil), // 18: roster.api.ListUserSpaceInvitationsResponse
+	(*GetSpaceInvitationRequest)(nil),        // 19: roster.api.GetSpaceInvitationRequest
+	(*CreateSpaceInvitationRequest)(nil),     // 20: roster.api.CreateSpaceInvitationRequest
+	(*DeleteSpaceInvitationRequest)(nil),     // 21: roster.api.DeleteSpaceInvitationRequest
+	(*AcceptSpaceInvitationRequest)(nil),     // 22: roster.api.AcceptSpaceInvitationRequest
+	(*DeclineSpaceInvitationRequest)(nil),    // 23: roster.api.DeclineSpaceInvitationRequest
+	(*Space_Icon)(nil),                       // 24: roster.api.Space.Icon
 	(*fieldmaskpb.FieldMask)(nil),            // 25: google.protobuf.FieldMask
 	(*emptypb.Empty)(nil),                    // 26: google.protobuf.Empty
 }
 var file_api_space_service_proto_depIdxs = []int32{
-	24, // 0: memos.api.Space.icon:type_name -> memos.api.Space.Icon
-	0,  // 1: memos.api.Space.current_user_role:type_name -> memos.api.SpaceMember.Role
-	1,  // 2: memos.api.ListSpacesResponse.spaces:type_name -> memos.api.Space
-	1,  // 3: memos.api.CreateSpaceRequest.space:type_name -> memos.api.Space
-	1,  // 4: memos.api.UpdateSpaceRequest.space:type_name -> memos.api.Space
-	25, // 5: memos.api.UpdateSpaceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	0,  // 6: memos.api.SpaceMember.role:type_name -> memos.api.SpaceMember.Role
-	8,  // 7: memos.api.ListSpaceMembersResponse.space_members:type_name -> memos.api.SpaceMember
-	8,  // 8: memos.api.UpdateSpaceMemberRequest.space_member:type_name -> memos.api.SpaceMember
-	25, // 9: memos.api.UpdateSpaceMemberRequest.update_mask:type_name -> google.protobuf.FieldMask
-	0,  // 10: memos.api.SpaceInvitation.role:type_name -> memos.api.SpaceMember.Role
-	1,  // 11: memos.api.SpaceInvitation.space:type_name -> memos.api.Space
-	14, // 12: memos.api.ListSpaceInvitationsResponse.space_invitations:type_name -> memos.api.SpaceInvitation
-	14, // 13: memos.api.ListUserSpaceInvitationsResponse.space_invitations:type_name -> memos.api.SpaceInvitation
-	14, // 14: memos.api.CreateSpaceInvitationRequest.space_invitation:type_name -> memos.api.SpaceInvitation
-	2,  // 15: memos.api.SpaceService.ListSpaces:input_type -> memos.api.ListSpacesRequest
-	4,  // 16: memos.api.SpaceService.GetSpace:input_type -> memos.api.GetSpaceRequest
-	5,  // 17: memos.api.SpaceService.CreateSpace:input_type -> memos.api.CreateSpaceRequest
-	6,  // 18: memos.api.SpaceService.UpdateSpace:input_type -> memos.api.UpdateSpaceRequest
-	7,  // 19: memos.api.SpaceService.DeleteSpace:input_type -> memos.api.DeleteSpaceRequest
-	9,  // 20: memos.api.SpaceService.ListSpaceMembers:input_type -> memos.api.ListSpaceMembersRequest
-	11, // 21: memos.api.SpaceService.GetSpaceMember:input_type -> memos.api.GetSpaceMemberRequest
-	12, // 22: memos.api.SpaceService.UpdateSpaceMember:input_type -> memos.api.UpdateSpaceMemberRequest
-	13, // 23: memos.api.SpaceService.DeleteSpaceMember:input_type -> memos.api.DeleteSpaceMemberRequest
-	15, // 24: memos.api.SpaceService.ListSpaceInvitations:input_type -> memos.api.ListSpaceInvitationsRequest
-	17, // 25: memos.api.SpaceService.ListUserSpaceInvitations:input_type -> memos.api.ListUserSpaceInvitationsRequest
-	19, // 26: memos.api.SpaceService.GetSpaceInvitation:input_type -> memos.api.GetSpaceInvitationRequest
-	20, // 27: memos.api.SpaceService.CreateSpaceInvitation:input_type -> memos.api.CreateSpaceInvitationRequest
-	21, // 28: memos.api.SpaceService.DeleteSpaceInvitation:input_type -> memos.api.DeleteSpaceInvitationRequest
-	22, // 29: memos.api.SpaceService.AcceptSpaceInvitation:input_type -> memos.api.AcceptSpaceInvitationRequest
-	23, // 30: memos.api.SpaceService.DeclineSpaceInvitation:input_type -> memos.api.DeclineSpaceInvitationRequest
-	3,  // 31: memos.api.SpaceService.ListSpaces:output_type -> memos.api.ListSpacesResponse
-	1,  // 32: memos.api.SpaceService.GetSpace:output_type -> memos.api.Space
-	1,  // 33: memos.api.SpaceService.CreateSpace:output_type -> memos.api.Space
-	1,  // 34: memos.api.SpaceService.UpdateSpace:output_type -> memos.api.Space
-	26, // 35: memos.api.SpaceService.DeleteSpace:output_type -> google.protobuf.Empty
-	10, // 36: memos.api.SpaceService.ListSpaceMembers:output_type -> memos.api.ListSpaceMembersResponse
-	8,  // 37: memos.api.SpaceService.GetSpaceMember:output_type -> memos.api.SpaceMember
-	8,  // 38: memos.api.SpaceService.UpdateSpaceMember:output_type -> memos.api.SpaceMember
-	26, // 39: memos.api.SpaceService.DeleteSpaceMember:output_type -> google.protobuf.Empty
-	16, // 40: memos.api.SpaceService.ListSpaceInvitations:output_type -> memos.api.ListSpaceInvitationsResponse
-	18, // 41: memos.api.SpaceService.ListUserSpaceInvitations:output_type -> memos.api.ListUserSpaceInvitationsResponse
-	14, // 42: memos.api.SpaceService.GetSpaceInvitation:output_type -> memos.api.SpaceInvitation
-	14, // 43: memos.api.SpaceService.CreateSpaceInvitation:output_type -> memos.api.SpaceInvitation
-	26, // 44: memos.api.SpaceService.DeleteSpaceInvitation:output_type -> google.protobuf.Empty
-	8,  // 45: memos.api.SpaceService.AcceptSpaceInvitation:output_type -> memos.api.SpaceMember
-	26, // 46: memos.api.SpaceService.DeclineSpaceInvitation:output_type -> google.protobuf.Empty
+	24, // 0: roster.api.Space.icon:type_name -> roster.api.Space.Icon
+	0,  // 1: roster.api.Space.current_user_role:type_name -> roster.api.SpaceMember.Role
+	1,  // 2: roster.api.ListSpacesResponse.spaces:type_name -> roster.api.Space
+	1,  // 3: roster.api.CreateSpaceRequest.space:type_name -> roster.api.Space
+	1,  // 4: roster.api.UpdateSpaceRequest.space:type_name -> roster.api.Space
+	25, // 5: roster.api.UpdateSpaceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	0,  // 6: roster.api.SpaceMember.role:type_name -> roster.api.SpaceMember.Role
+	8,  // 7: roster.api.ListSpaceMembersResponse.space_members:type_name -> roster.api.SpaceMember
+	8,  // 8: roster.api.UpdateSpaceMemberRequest.space_member:type_name -> roster.api.SpaceMember
+	25, // 9: roster.api.UpdateSpaceMemberRequest.update_mask:type_name -> google.protobuf.FieldMask
+	0,  // 10: roster.api.SpaceInvitation.role:type_name -> roster.api.SpaceMember.Role
+	1,  // 11: roster.api.SpaceInvitation.space:type_name -> roster.api.Space
+	14, // 12: roster.api.ListSpaceInvitationsResponse.space_invitations:type_name -> roster.api.SpaceInvitation
+	14, // 13: roster.api.ListUserSpaceInvitationsResponse.space_invitations:type_name -> roster.api.SpaceInvitation
+	14, // 14: roster.api.CreateSpaceInvitationRequest.space_invitation:type_name -> roster.api.SpaceInvitation
+	2,  // 15: roster.api.SpaceService.ListSpaces:input_type -> roster.api.ListSpacesRequest
+	4,  // 16: roster.api.SpaceService.GetSpace:input_type -> roster.api.GetSpaceRequest
+	5,  // 17: roster.api.SpaceService.CreateSpace:input_type -> roster.api.CreateSpaceRequest
+	6,  // 18: roster.api.SpaceService.UpdateSpace:input_type -> roster.api.UpdateSpaceRequest
+	7,  // 19: roster.api.SpaceService.DeleteSpace:input_type -> roster.api.DeleteSpaceRequest
+	9,  // 20: roster.api.SpaceService.ListSpaceMembers:input_type -> roster.api.ListSpaceMembersRequest
+	11, // 21: roster.api.SpaceService.GetSpaceMember:input_type -> roster.api.GetSpaceMemberRequest
+	12, // 22: roster.api.SpaceService.UpdateSpaceMember:input_type -> roster.api.UpdateSpaceMemberRequest
+	13, // 23: roster.api.SpaceService.DeleteSpaceMember:input_type -> roster.api.DeleteSpaceMemberRequest
+	15, // 24: roster.api.SpaceService.ListSpaceInvitations:input_type -> roster.api.ListSpaceInvitationsRequest
+	17, // 25: roster.api.SpaceService.ListUserSpaceInvitations:input_type -> roster.api.ListUserSpaceInvitationsRequest
+	19, // 26: roster.api.SpaceService.GetSpaceInvitation:input_type -> roster.api.GetSpaceInvitationRequest
+	20, // 27: roster.api.SpaceService.CreateSpaceInvitation:input_type -> roster.api.CreateSpaceInvitationRequest
+	21, // 28: roster.api.SpaceService.DeleteSpaceInvitation:input_type -> roster.api.DeleteSpaceInvitationRequest
+	22, // 29: roster.api.SpaceService.AcceptSpaceInvitation:input_type -> roster.api.AcceptSpaceInvitationRequest
+	23, // 30: roster.api.SpaceService.DeclineSpaceInvitation:input_type -> roster.api.DeclineSpaceInvitationRequest
+	3,  // 31: roster.api.SpaceService.ListSpaces:output_type -> roster.api.ListSpacesResponse
+	1,  // 32: roster.api.SpaceService.GetSpace:output_type -> roster.api.Space
+	1,  // 33: roster.api.SpaceService.CreateSpace:output_type -> roster.api.Space
+	1,  // 34: roster.api.SpaceService.UpdateSpace:output_type -> roster.api.Space
+	26, // 35: roster.api.SpaceService.DeleteSpace:output_type -> google.protobuf.Empty
+	10, // 36: roster.api.SpaceService.ListSpaceMembers:output_type -> roster.api.ListSpaceMembersResponse
+	8,  // 37: roster.api.SpaceService.GetSpaceMember:output_type -> roster.api.SpaceMember
+	8,  // 38: roster.api.SpaceService.UpdateSpaceMember:output_type -> roster.api.SpaceMember
+	26, // 39: roster.api.SpaceService.DeleteSpaceMember:output_type -> google.protobuf.Empty
+	16, // 40: roster.api.SpaceService.ListSpaceInvitations:output_type -> roster.api.ListSpaceInvitationsResponse
+	18, // 41: roster.api.SpaceService.ListUserSpaceInvitations:output_type -> roster.api.ListUserSpaceInvitationsResponse
+	14, // 42: roster.api.SpaceService.GetSpaceInvitation:output_type -> roster.api.SpaceInvitation
+	14, // 43: roster.api.SpaceService.CreateSpaceInvitation:output_type -> roster.api.SpaceInvitation
+	26, // 44: roster.api.SpaceService.DeleteSpaceInvitation:output_type -> google.protobuf.Empty
+	8,  // 45: roster.api.SpaceService.AcceptSpaceInvitation:output_type -> roster.api.SpaceMember
+	26, // 46: roster.api.SpaceService.DeclineSpaceInvitation:output_type -> google.protobuf.Empty
 	31, // [31:47] is the sub-list for method output_type
 	15, // [15:31] is the sub-list for method input_type
 	15, // [15:15] is the sub-list for extension type_name

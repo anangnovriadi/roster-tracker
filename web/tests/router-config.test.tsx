@@ -65,18 +65,18 @@ describe("router configuration", () => {
     }
   });
 
-  it("does not register a dedicated new memo route", () => {
+  it("does not register a dedicated new note route", () => {
     expect(findByPath(routeConfig, "/new")).toBeUndefined();
   });
 
-  it("leaves memo feeds available for early queries", () => {
-    for (const path of [ROUTES.EXPLORE, CALENDAR_ROUTE_PATTERN, "memos/:uid", "memos/shares/:token", "u/:username"]) {
+  it("leaves note feeds available for early queries", () => {
+    for (const path of [ROUTES.EXPLORE, CALENDAR_ROUTE_PATTERN, "notes/:uid", "notes/shares/:token", "u/:username"]) {
       expect(hasAncestorOfType(routeConfig, path, RequireFullInitializationRoute)).toBe(false);
     }
   });
 
   it("leaves public pages outside RequireAuthRoute", () => {
-    for (const path of [ROUTES.EXPLORE, CALENDAR_ROUTE_PATTERN, "memos/:uid", "memos/shares/:token", "u/:username"]) {
+    for (const path of [ROUTES.EXPLORE, CALENDAR_ROUTE_PATTERN, "notes/:uid", "notes/shares/:token", "u/:username"]) {
       expect(hasAncestorOfType(routeConfig, path, RequireAuthRoute)).toBe(false);
     }
   });

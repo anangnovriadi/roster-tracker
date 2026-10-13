@@ -643,9 +643,9 @@ func local_request_UserService_GetUserUsage_0(ctx context.Context, marshaler run
 	return msg, metadata, err
 }
 
-func request_UserService_ListMemoViews_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_ListNoteViews_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq ListMemoViewsRequest
+		protoReq ListNoteViewsRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -660,13 +660,13 @@ func request_UserService_ListMemoViews_0(ctx context.Context, marshaler runtime.
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	msg, err := client.ListMemoViews(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.ListNoteViews(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_UserService_ListMemoViews_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_ListNoteViews_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq ListMemoViewsRequest
+		protoReq ListNoteViewsRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -678,13 +678,13 @@ func local_request_UserService_ListMemoViews_0(ctx context.Context, marshaler ru
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "parent", err)
 	}
-	msg, err := server.ListMemoViews(ctx, &protoReq)
+	msg, err := server.ListNoteViews(ctx, &protoReq)
 	return msg, metadata, err
 }
 
-func request_UserService_GetMemoView_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_GetNoteView_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetMemoViewRequest
+		protoReq GetNoteViewRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -699,13 +699,13 @@ func request_UserService_GetMemoView_0(ctx context.Context, marshaler runtime.Ma
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	msg, err := client.GetMemoView(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetNoteView(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_UserService_GetMemoView_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_GetNoteView_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetMemoViewRequest
+		protoReq GetNoteViewRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -717,19 +717,19 @@ func local_request_UserService_GetMemoView_0(ctx context.Context, marshaler runt
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
-	msg, err := server.GetMemoView(ctx, &protoReq)
+	msg, err := server.GetNoteView(ctx, &protoReq)
 	return msg, metadata, err
 }
 
-var filter_UserService_CreateMemoView_0 = &utilities.DoubleArray{Encoding: map[string]int{"memo_view": 0, "parent": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
+var filter_UserService_CreateNoteView_0 = &utilities.DoubleArray{Encoding: map[string]int{"note_view": 0, "parent": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
 
-func request_UserService_CreateMemoView_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_CreateNoteView_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq CreateMemoViewRequest
+		protoReq CreateNoteViewRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.MemoView); err != nil && !errors.Is(err, io.EOF) {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.NoteView); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	val, ok := pathParams["parent"]
@@ -743,23 +743,23 @@ func request_UserService_CreateMemoView_0(ctx context.Context, marshaler runtime
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_CreateMemoView_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_CreateNoteView_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	msg, err := client.CreateMemoView(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CreateNoteView(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_UserService_CreateMemoView_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_CreateNoteView_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq CreateMemoViewRequest
+		protoReq CreateNoteViewRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.MemoView); err != nil && !errors.Is(err, io.EOF) {
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.NoteView); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	val, ok := pathParams["parent"]
@@ -773,18 +773,18 @@ func local_request_UserService_CreateMemoView_0(ctx context.Context, marshaler r
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_CreateMemoView_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_CreateNoteView_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	msg, err := server.CreateMemoView(ctx, &protoReq)
+	msg, err := server.CreateNoteView(ctx, &protoReq)
 	return msg, metadata, err
 }
 
-var filter_UserService_UpdateMemoView_0 = &utilities.DoubleArray{Encoding: map[string]int{"memo_view": 0, "name": 1}, Base: []int{1, 2, 1, 0, 0}, Check: []int{0, 1, 2, 3, 2}}
+var filter_UserService_UpdateNoteView_0 = &utilities.DoubleArray{Encoding: map[string]int{"note_view": 0, "name": 1}, Base: []int{1, 2, 1, 0, 0}, Check: []int{0, 1, 2, 3, 2}}
 
-func request_UserService_UpdateMemoView_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_UpdateNoteView_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq UpdateMemoViewRequest
+		protoReq UpdateNoteViewRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -792,40 +792,40 @@ func request_UserService_UpdateMemoView_0(ctx context.Context, marshaler runtime
 	if berr != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
 	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq.MemoView); err != nil && !errors.Is(err, io.EOF) {
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq.NoteView); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	if protoReq.UpdateMask == nil || len(protoReq.UpdateMask.GetPaths()) == 0 {
-		if fieldMask, err := runtime.FieldMaskFromRequestBody(newReader(), protoReq.MemoView); err != nil {
+		if fieldMask, err := runtime.FieldMaskFromRequestBody(newReader(), protoReq.NoteView); err != nil {
 			return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 		} else {
 			protoReq.UpdateMask = fieldMask
 		}
 	}
-	val, ok := pathParams["memo_view.name"]
+	val, ok := pathParams["note_view.name"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "memo_view.name")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "note_view.name")
 	}
-	err = runtime.PopulateFieldFromPath(&protoReq, "memo_view.name", val)
+	err = runtime.PopulateFieldFromPath(&protoReq, "note_view.name", val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "memo_view.name", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "note_view.name", err)
 	}
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_UpdateMemoView_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_UpdateNoteView_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	msg, err := client.UpdateMemoView(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.UpdateNoteView(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_UserService_UpdateMemoView_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_UpdateNoteView_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq UpdateMemoViewRequest
+		protoReq UpdateNoteViewRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -833,37 +833,37 @@ func local_request_UserService_UpdateMemoView_0(ctx context.Context, marshaler r
 	if berr != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", berr)
 	}
-	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq.MemoView); err != nil && !errors.Is(err, io.EOF) {
+	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq.NoteView); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	if protoReq.UpdateMask == nil || len(protoReq.UpdateMask.GetPaths()) == 0 {
-		if fieldMask, err := runtime.FieldMaskFromRequestBody(newReader(), protoReq.MemoView); err != nil {
+		if fieldMask, err := runtime.FieldMaskFromRequestBody(newReader(), protoReq.NoteView); err != nil {
 			return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 		} else {
 			protoReq.UpdateMask = fieldMask
 		}
 	}
-	val, ok := pathParams["memo_view.name"]
+	val, ok := pathParams["note_view.name"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "memo_view.name")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "note_view.name")
 	}
-	err = runtime.PopulateFieldFromPath(&protoReq, "memo_view.name", val)
+	err = runtime.PopulateFieldFromPath(&protoReq, "note_view.name", val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "memo_view.name", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "note_view.name", err)
 	}
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_UpdateMemoView_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UserService_UpdateNoteView_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	msg, err := server.UpdateMemoView(ctx, &protoReq)
+	msg, err := server.UpdateNoteView(ctx, &protoReq)
 	return msg, metadata, err
 }
 
-func request_UserService_DeleteMemoView_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_DeleteNoteView_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq DeleteMemoViewRequest
+		protoReq DeleteNoteViewRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -878,13 +878,13 @@ func request_UserService_DeleteMemoView_0(ctx context.Context, marshaler runtime
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	msg, err := client.DeleteMemoView(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.DeleteNoteView(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_UserService_DeleteMemoView_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_DeleteNoteView_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq DeleteMemoViewRequest
+		protoReq DeleteNoteViewRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -896,7 +896,7 @@ func local_request_UserService_DeleteMemoView_0(ctx context.Context, marshaler r
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
-	msg, err := server.DeleteMemoView(ctx, &protoReq)
+	msg, err := server.DeleteNoteView(ctx, &protoReq)
 	return msg, metadata, err
 }
 
@@ -1615,9 +1615,9 @@ func local_request_UserService_DeletePersonalAccessToken_0(ctx context.Context, 
 	return msg, metadata, err
 }
 
-func request_UserService_ExportMemos_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_ExportNotes_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq ExportMemosRequest
+		protoReq ExportNotesRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -1632,13 +1632,13 @@ func request_UserService_ExportMemos_0(ctx context.Context, marshaler runtime.Ma
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	msg, err := client.ExportMemos(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.ExportNotes(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_UserService_ExportMemos_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_ExportNotes_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq ExportMemosRequest
+		protoReq ExportNotesRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -1650,13 +1650,13 @@ func local_request_UserService_ExportMemos_0(ctx context.Context, marshaler runt
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
-	msg, err := server.ExportMemos(ctx, &protoReq)
+	msg, err := server.ExportNotes(ctx, &protoReq)
 	return msg, metadata, err
 }
 
-func request_UserService_ImportMemos_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_ImportNotes_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq ImportMemosRequest
+		protoReq ImportNotesRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -1674,13 +1674,13 @@ func request_UserService_ImportMemos_0(ctx context.Context, marshaler runtime.Ma
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	msg, err := client.ImportMemos(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.ImportNotes(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_UserService_ImportMemos_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_ImportNotes_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq ImportMemosRequest
+		protoReq ImportNotesRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
@@ -1695,7 +1695,7 @@ func local_request_UserService_ImportMemos_0(ctx context.Context, marshaler runt
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
-	msg, err := server.ImportMemos(ctx, &protoReq)
+	msg, err := server.ImportNotes(ctx, &protoReq)
 	return msg, metadata, err
 }
 
@@ -1711,7 +1711,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListUsers", runtime.WithHTTPPathPattern("/api/users"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/ListUsers", runtime.WithHTTPPathPattern("/api/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1731,7 +1731,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/GetUser", runtime.WithHTTPPathPattern("/api/{name=users/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/GetUser", runtime.WithHTTPPathPattern("/api/{name=users/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1751,7 +1751,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/BatchGetUsers", runtime.WithHTTPPathPattern("/api/users:batchGet"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/BatchGetUsers", runtime.WithHTTPPathPattern("/api/users:batchGet"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1771,7 +1771,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/CreateUser", runtime.WithHTTPPathPattern("/api/users"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/CreateUser", runtime.WithHTTPPathPattern("/api/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1791,7 +1791,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/UpdateUser", runtime.WithHTTPPathPattern("/api/{user.name=users/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/UpdateUser", runtime.WithHTTPPathPattern("/api/{user.name=users/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1811,7 +1811,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/DeleteUser", runtime.WithHTTPPathPattern("/api/{name=users/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/DeleteUser", runtime.WithHTTPPathPattern("/api/{name=users/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1831,7 +1831,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListUserSettings", runtime.WithHTTPPathPattern("/api/{parent=users/*}/settings"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/ListUserSettings", runtime.WithHTTPPathPattern("/api/{parent=users/*}/settings"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1851,7 +1851,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/GetUserSetting", runtime.WithHTTPPathPattern("/api/{name=users/*/settings/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/GetUserSetting", runtime.WithHTTPPathPattern("/api/{name=users/*/settings/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1871,7 +1871,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/UpdateUserSetting", runtime.WithHTTPPathPattern("/api/{user_setting.name=users/*/settings/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/UpdateUserSetting", runtime.WithHTTPPathPattern("/api/{user_setting.name=users/*/settings/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1891,7 +1891,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListUserStats", runtime.WithHTTPPathPattern("/api/{parent=users/*}/stats"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/ListUserStats", runtime.WithHTTPPathPattern("/api/{parent=users/*}/stats"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1911,7 +1911,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/GetUserStats", runtime.WithHTTPPathPattern("/api/{name=users/*}:getStats"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/GetUserStats", runtime.WithHTTPPathPattern("/api/{name=users/*}:getStats"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1931,7 +1931,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/GetUserUsage", runtime.WithHTTPPathPattern("/api/{name=users/*/usage}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/GetUserUsage", runtime.WithHTTPPathPattern("/api/{name=users/*/usage}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1945,105 +1945,105 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		}
 		forward_UserService_GetUserUsage_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_UserService_ListMemoViews_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_UserService_ListNoteViews_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListMemoViews", runtime.WithHTTPPathPattern("/api/{parent=users/*}/views"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/ListNoteViews", runtime.WithHTTPPathPattern("/api/{parent=users/*}/views"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_ListMemoViews_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UserService_ListNoteViews_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_ListMemoViews_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_ListNoteViews_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_UserService_GetMemoView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_UserService_GetNoteView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/GetMemoView", runtime.WithHTTPPathPattern("/api/{name=users/*/views/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/GetNoteView", runtime.WithHTTPPathPattern("/api/{name=users/*/views/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_GetMemoView_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UserService_GetNoteView_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_GetMemoView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_GetNoteView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_UserService_CreateMemoView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_UserService_CreateNoteView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/CreateMemoView", runtime.WithHTTPPathPattern("/api/{parent=users/*}/views"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/CreateNoteView", runtime.WithHTTPPathPattern("/api/{parent=users/*}/views"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_CreateMemoView_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UserService_CreateNoteView_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_CreateMemoView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_CreateNoteView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPatch, pattern_UserService_UpdateMemoView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPatch, pattern_UserService_UpdateNoteView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/UpdateMemoView", runtime.WithHTTPPathPattern("/api/{memo_view.name=users/*/views/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/UpdateNoteView", runtime.WithHTTPPathPattern("/api/{note_view.name=users/*/views/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_UpdateMemoView_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UserService_UpdateNoteView_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_UpdateMemoView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_UpdateNoteView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodDelete, pattern_UserService_DeleteMemoView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodDelete, pattern_UserService_DeleteNoteView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/DeleteMemoView", runtime.WithHTTPPathPattern("/api/{name=users/*/views/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/DeleteNoteView", runtime.WithHTTPPathPattern("/api/{name=users/*/views/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_DeleteMemoView_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UserService_DeleteNoteView_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_DeleteMemoView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_DeleteNoteView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodGet, pattern_UserService_ListUserNotifications_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -2051,7 +2051,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListUserNotifications", runtime.WithHTTPPathPattern("/api/{parent=users/*}/notifications"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/ListUserNotifications", runtime.WithHTTPPathPattern("/api/{parent=users/*}/notifications"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2071,7 +2071,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/UpdateUserNotification", runtime.WithHTTPPathPattern("/api/{notification.name=users/*/notifications/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/UpdateUserNotification", runtime.WithHTTPPathPattern("/api/{notification.name=users/*/notifications/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2091,7 +2091,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/DeleteUserNotification", runtime.WithHTTPPathPattern("/api/{name=users/*/notifications/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/DeleteUserNotification", runtime.WithHTTPPathPattern("/api/{name=users/*/notifications/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2111,7 +2111,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListUserWebhooks", runtime.WithHTTPPathPattern("/api/{parent=users/*}/webhooks"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/ListUserWebhooks", runtime.WithHTTPPathPattern("/api/{parent=users/*}/webhooks"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2131,7 +2131,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/CreateUserWebhook", runtime.WithHTTPPathPattern("/api/{parent=users/*}/webhooks"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/CreateUserWebhook", runtime.WithHTTPPathPattern("/api/{parent=users/*}/webhooks"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2151,7 +2151,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/UpdateUserWebhook", runtime.WithHTTPPathPattern("/api/{webhook.name=users/*/webhooks/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/UpdateUserWebhook", runtime.WithHTTPPathPattern("/api/{webhook.name=users/*/webhooks/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2171,7 +2171,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/DeleteUserWebhook", runtime.WithHTTPPathPattern("/api/{name=users/*/webhooks/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/DeleteUserWebhook", runtime.WithHTTPPathPattern("/api/{name=users/*/webhooks/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2191,7 +2191,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/GetUserWebhookSigningSecret", runtime.WithHTTPPathPattern("/api/{name=users/*/webhooks/*}:getSigningSecret"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/GetUserWebhookSigningSecret", runtime.WithHTTPPathPattern("/api/{name=users/*/webhooks/*}:getSigningSecret"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2211,7 +2211,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListLinkedIdentities", runtime.WithHTTPPathPattern("/api/{parent=users/*}/linkedIdentities"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/ListLinkedIdentities", runtime.WithHTTPPathPattern("/api/{parent=users/*}/linkedIdentities"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2231,7 +2231,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/GetLinkedIdentity", runtime.WithHTTPPathPattern("/api/{name=users/*/linkedIdentities/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/GetLinkedIdentity", runtime.WithHTTPPathPattern("/api/{name=users/*/linkedIdentities/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2251,7 +2251,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/CreateLinkedIdentity", runtime.WithHTTPPathPattern("/api/{parent=users/*}/linkedIdentities"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/CreateLinkedIdentity", runtime.WithHTTPPathPattern("/api/{parent=users/*}/linkedIdentities"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2271,7 +2271,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/DeleteLinkedIdentity", runtime.WithHTTPPathPattern("/api/{name=users/*/linkedIdentities/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/DeleteLinkedIdentity", runtime.WithHTTPPathPattern("/api/{name=users/*/linkedIdentities/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2291,7 +2291,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListPersonalAccessTokens", runtime.WithHTTPPathPattern("/api/{parent=users/*}/personalAccessTokens"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/ListPersonalAccessTokens", runtime.WithHTTPPathPattern("/api/{parent=users/*}/personalAccessTokens"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2311,7 +2311,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/CreatePersonalAccessToken", runtime.WithHTTPPathPattern("/api/{parent=users/*}/personalAccessTokens"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/CreatePersonalAccessToken", runtime.WithHTTPPathPattern("/api/{parent=users/*}/personalAccessTokens"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2331,7 +2331,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/DeletePersonalAccessToken", runtime.WithHTTPPathPattern("/api/{name=users/*/personalAccessTokens/*}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/DeletePersonalAccessToken", runtime.WithHTTPPathPattern("/api/{name=users/*/personalAccessTokens/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2345,45 +2345,45 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		}
 		forward_UserService_DeletePersonalAccessToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_UserService_ExportMemos_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_UserService_ExportNotes_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ExportMemos", runtime.WithHTTPPathPattern("/api/{name=users/*}:exportMemos"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/ExportNotes", runtime.WithHTTPPathPattern("/api/{name=users/*}:exportNotes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_ExportMemos_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UserService_ExportNotes_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_ExportMemos_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_ExportNotes_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_UserService_ImportMemos_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_UserService_ImportNotes_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ImportMemos", runtime.WithHTTPPathPattern("/api/{name=users/*}:importMemos"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/roster.api.UserService/ImportNotes", runtime.WithHTTPPathPattern("/api/{name=users/*}:importNotes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UserService_ImportMemos_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UserService_ImportNotes_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_ImportMemos_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_ImportNotes_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
@@ -2429,7 +2429,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListUsers", runtime.WithHTTPPathPattern("/api/users"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/ListUsers", runtime.WithHTTPPathPattern("/api/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2446,7 +2446,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/GetUser", runtime.WithHTTPPathPattern("/api/{name=users/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/GetUser", runtime.WithHTTPPathPattern("/api/{name=users/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2463,7 +2463,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/BatchGetUsers", runtime.WithHTTPPathPattern("/api/users:batchGet"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/BatchGetUsers", runtime.WithHTTPPathPattern("/api/users:batchGet"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2480,7 +2480,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/CreateUser", runtime.WithHTTPPathPattern("/api/users"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/CreateUser", runtime.WithHTTPPathPattern("/api/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2497,7 +2497,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/UpdateUser", runtime.WithHTTPPathPattern("/api/{user.name=users/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/UpdateUser", runtime.WithHTTPPathPattern("/api/{user.name=users/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2514,7 +2514,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/DeleteUser", runtime.WithHTTPPathPattern("/api/{name=users/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/DeleteUser", runtime.WithHTTPPathPattern("/api/{name=users/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2531,7 +2531,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListUserSettings", runtime.WithHTTPPathPattern("/api/{parent=users/*}/settings"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/ListUserSettings", runtime.WithHTTPPathPattern("/api/{parent=users/*}/settings"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2548,7 +2548,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/GetUserSetting", runtime.WithHTTPPathPattern("/api/{name=users/*/settings/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/GetUserSetting", runtime.WithHTTPPathPattern("/api/{name=users/*/settings/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2565,7 +2565,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/UpdateUserSetting", runtime.WithHTTPPathPattern("/api/{user_setting.name=users/*/settings/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/UpdateUserSetting", runtime.WithHTTPPathPattern("/api/{user_setting.name=users/*/settings/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2582,7 +2582,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListUserStats", runtime.WithHTTPPathPattern("/api/{parent=users/*}/stats"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/ListUserStats", runtime.WithHTTPPathPattern("/api/{parent=users/*}/stats"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2599,7 +2599,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/GetUserStats", runtime.WithHTTPPathPattern("/api/{name=users/*}:getStats"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/GetUserStats", runtime.WithHTTPPathPattern("/api/{name=users/*}:getStats"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2616,7 +2616,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/GetUserUsage", runtime.WithHTTPPathPattern("/api/{name=users/*/usage}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/GetUserUsage", runtime.WithHTTPPathPattern("/api/{name=users/*/usage}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2629,96 +2629,96 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		}
 		forward_UserService_GetUserUsage_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_UserService_ListMemoViews_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_UserService_ListNoteViews_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListMemoViews", runtime.WithHTTPPathPattern("/api/{parent=users/*}/views"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/ListNoteViews", runtime.WithHTTPPathPattern("/api/{parent=users/*}/views"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_ListMemoViews_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UserService_ListNoteViews_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_ListMemoViews_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_ListNoteViews_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_UserService_GetMemoView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_UserService_GetNoteView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/GetMemoView", runtime.WithHTTPPathPattern("/api/{name=users/*/views/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/GetNoteView", runtime.WithHTTPPathPattern("/api/{name=users/*/views/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_GetMemoView_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UserService_GetNoteView_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_GetMemoView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_GetNoteView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_UserService_CreateMemoView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_UserService_CreateNoteView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/CreateMemoView", runtime.WithHTTPPathPattern("/api/{parent=users/*}/views"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/CreateNoteView", runtime.WithHTTPPathPattern("/api/{parent=users/*}/views"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_CreateMemoView_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UserService_CreateNoteView_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_CreateMemoView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_CreateNoteView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPatch, pattern_UserService_UpdateMemoView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPatch, pattern_UserService_UpdateNoteView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/UpdateMemoView", runtime.WithHTTPPathPattern("/api/{memo_view.name=users/*/views/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/UpdateNoteView", runtime.WithHTTPPathPattern("/api/{note_view.name=users/*/views/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_UpdateMemoView_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UserService_UpdateNoteView_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_UpdateMemoView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_UpdateNoteView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodDelete, pattern_UserService_DeleteMemoView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodDelete, pattern_UserService_DeleteNoteView_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/DeleteMemoView", runtime.WithHTTPPathPattern("/api/{name=users/*/views/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/DeleteNoteView", runtime.WithHTTPPathPattern("/api/{name=users/*/views/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_DeleteMemoView_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UserService_DeleteNoteView_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_DeleteMemoView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_DeleteNoteView_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodGet, pattern_UserService_ListUserNotifications_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListUserNotifications", runtime.WithHTTPPathPattern("/api/{parent=users/*}/notifications"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/ListUserNotifications", runtime.WithHTTPPathPattern("/api/{parent=users/*}/notifications"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2735,7 +2735,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/UpdateUserNotification", runtime.WithHTTPPathPattern("/api/{notification.name=users/*/notifications/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/UpdateUserNotification", runtime.WithHTTPPathPattern("/api/{notification.name=users/*/notifications/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2752,7 +2752,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/DeleteUserNotification", runtime.WithHTTPPathPattern("/api/{name=users/*/notifications/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/DeleteUserNotification", runtime.WithHTTPPathPattern("/api/{name=users/*/notifications/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2769,7 +2769,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListUserWebhooks", runtime.WithHTTPPathPattern("/api/{parent=users/*}/webhooks"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/ListUserWebhooks", runtime.WithHTTPPathPattern("/api/{parent=users/*}/webhooks"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2786,7 +2786,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/CreateUserWebhook", runtime.WithHTTPPathPattern("/api/{parent=users/*}/webhooks"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/CreateUserWebhook", runtime.WithHTTPPathPattern("/api/{parent=users/*}/webhooks"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2803,7 +2803,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/UpdateUserWebhook", runtime.WithHTTPPathPattern("/api/{webhook.name=users/*/webhooks/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/UpdateUserWebhook", runtime.WithHTTPPathPattern("/api/{webhook.name=users/*/webhooks/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2820,7 +2820,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/DeleteUserWebhook", runtime.WithHTTPPathPattern("/api/{name=users/*/webhooks/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/DeleteUserWebhook", runtime.WithHTTPPathPattern("/api/{name=users/*/webhooks/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2837,7 +2837,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/GetUserWebhookSigningSecret", runtime.WithHTTPPathPattern("/api/{name=users/*/webhooks/*}:getSigningSecret"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/GetUserWebhookSigningSecret", runtime.WithHTTPPathPattern("/api/{name=users/*/webhooks/*}:getSigningSecret"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2854,7 +2854,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListLinkedIdentities", runtime.WithHTTPPathPattern("/api/{parent=users/*}/linkedIdentities"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/ListLinkedIdentities", runtime.WithHTTPPathPattern("/api/{parent=users/*}/linkedIdentities"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2871,7 +2871,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/GetLinkedIdentity", runtime.WithHTTPPathPattern("/api/{name=users/*/linkedIdentities/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/GetLinkedIdentity", runtime.WithHTTPPathPattern("/api/{name=users/*/linkedIdentities/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2888,7 +2888,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/CreateLinkedIdentity", runtime.WithHTTPPathPattern("/api/{parent=users/*}/linkedIdentities"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/CreateLinkedIdentity", runtime.WithHTTPPathPattern("/api/{parent=users/*}/linkedIdentities"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2905,7 +2905,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/DeleteLinkedIdentity", runtime.WithHTTPPathPattern("/api/{name=users/*/linkedIdentities/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/DeleteLinkedIdentity", runtime.WithHTTPPathPattern("/api/{name=users/*/linkedIdentities/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2922,7 +2922,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListPersonalAccessTokens", runtime.WithHTTPPathPattern("/api/{parent=users/*}/personalAccessTokens"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/ListPersonalAccessTokens", runtime.WithHTTPPathPattern("/api/{parent=users/*}/personalAccessTokens"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2939,7 +2939,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/CreatePersonalAccessToken", runtime.WithHTTPPathPattern("/api/{parent=users/*}/personalAccessTokens"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/CreatePersonalAccessToken", runtime.WithHTTPPathPattern("/api/{parent=users/*}/personalAccessTokens"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2956,7 +2956,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/DeletePersonalAccessToken", runtime.WithHTTPPathPattern("/api/{name=users/*/personalAccessTokens/*}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/DeletePersonalAccessToken", runtime.WithHTTPPathPattern("/api/{name=users/*/personalAccessTokens/*}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2969,39 +2969,39 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		}
 		forward_UserService_DeletePersonalAccessToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_UserService_ExportMemos_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_UserService_ExportNotes_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ExportMemos", runtime.WithHTTPPathPattern("/api/{name=users/*}:exportMemos"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/ExportNotes", runtime.WithHTTPPathPattern("/api/{name=users/*}:exportNotes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_ExportMemos_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UserService_ExportNotes_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_ExportMemos_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_ExportNotes_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_UserService_ImportMemos_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_UserService_ImportNotes_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ImportMemos", runtime.WithHTTPPathPattern("/api/{name=users/*}:importMemos"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/roster.api.UserService/ImportNotes", runtime.WithHTTPPathPattern("/api/{name=users/*}:importNotes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UserService_ImportMemos_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UserService_ImportNotes_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_UserService_ImportMemos_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_ImportNotes_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	return nil
 }
@@ -3019,11 +3019,11 @@ var (
 	pattern_UserService_ListUserStats_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "stats"}, ""))
 	pattern_UserService_GetUserStats_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2}, []string{"api", "users", "name"}, "getStats"))
 	pattern_UserService_GetUserUsage_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 4, 3, 5, 3}, []string{"api", "users", "usage", "name"}, ""))
-	pattern_UserService_ListMemoViews_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "views"}, ""))
-	pattern_UserService_GetMemoView_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "views", "name"}, ""))
-	pattern_UserService_CreateMemoView_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "views"}, ""))
-	pattern_UserService_UpdateMemoView_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "views", "memo_view.name"}, ""))
-	pattern_UserService_DeleteMemoView_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "views", "name"}, ""))
+	pattern_UserService_ListNoteViews_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "views"}, ""))
+	pattern_UserService_GetNoteView_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "views", "name"}, ""))
+	pattern_UserService_CreateNoteView_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "views"}, ""))
+	pattern_UserService_UpdateNoteView_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "views", "note_view.name"}, ""))
+	pattern_UserService_DeleteNoteView_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "views", "name"}, ""))
 	pattern_UserService_ListUserNotifications_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "notifications"}, ""))
 	pattern_UserService_UpdateUserNotification_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "notifications", "notification.name"}, ""))
 	pattern_UserService_DeleteUserNotification_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "notifications", "name"}, ""))
@@ -3039,8 +3039,8 @@ var (
 	pattern_UserService_ListPersonalAccessTokens_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "personalAccessTokens"}, ""))
 	pattern_UserService_CreatePersonalAccessToken_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "personalAccessTokens"}, ""))
 	pattern_UserService_DeletePersonalAccessToken_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "personalAccessTokens", "name"}, ""))
-	pattern_UserService_ExportMemos_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2}, []string{"api", "users", "name"}, "exportMemos"))
-	pattern_UserService_ImportMemos_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2}, []string{"api", "users", "name"}, "importMemos"))
+	pattern_UserService_ExportNotes_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2}, []string{"api", "users", "name"}, "exportNotes"))
+	pattern_UserService_ImportNotes_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2}, []string{"api", "users", "name"}, "importNotes"))
 )
 
 var (
@@ -3056,11 +3056,11 @@ var (
 	forward_UserService_ListUserStats_0               = runtime.ForwardResponseMessage
 	forward_UserService_GetUserStats_0                = runtime.ForwardResponseMessage
 	forward_UserService_GetUserUsage_0                = runtime.ForwardResponseMessage
-	forward_UserService_ListMemoViews_0               = runtime.ForwardResponseMessage
-	forward_UserService_GetMemoView_0                 = runtime.ForwardResponseMessage
-	forward_UserService_CreateMemoView_0              = runtime.ForwardResponseMessage
-	forward_UserService_UpdateMemoView_0              = runtime.ForwardResponseMessage
-	forward_UserService_DeleteMemoView_0              = runtime.ForwardResponseMessage
+	forward_UserService_ListNoteViews_0               = runtime.ForwardResponseMessage
+	forward_UserService_GetNoteView_0                 = runtime.ForwardResponseMessage
+	forward_UserService_CreateNoteView_0              = runtime.ForwardResponseMessage
+	forward_UserService_UpdateNoteView_0              = runtime.ForwardResponseMessage
+	forward_UserService_DeleteNoteView_0              = runtime.ForwardResponseMessage
 	forward_UserService_ListUserNotifications_0       = runtime.ForwardResponseMessage
 	forward_UserService_UpdateUserNotification_0      = runtime.ForwardResponseMessage
 	forward_UserService_DeleteUserNotification_0      = runtime.ForwardResponseMessage
@@ -3076,6 +3076,6 @@ var (
 	forward_UserService_ListPersonalAccessTokens_0    = runtime.ForwardResponseMessage
 	forward_UserService_CreatePersonalAccessToken_0   = runtime.ForwardResponseMessage
 	forward_UserService_DeletePersonalAccessToken_0   = runtime.ForwardResponseMessage
-	forward_UserService_ExportMemos_0                 = runtime.ForwardResponseMessage
-	forward_UserService_ImportMemos_0                 = runtime.ForwardResponseMessage
+	forward_UserService_ExportNotes_0                 = runtime.ForwardResponseMessage
+	forward_UserService_ImportNotes_0                 = runtime.ForwardResponseMessage
 )

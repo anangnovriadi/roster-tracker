@@ -29,7 +29,7 @@ describe("<PasswordSignInForm>", () => {
   it("does not prefill seeded demo credentials", () => {
     render(<PasswordSignInForm />);
 
-    expect(screen.getByPlaceholderText("common.username")).toHaveValue("");
+    expect(screen.getByPlaceholderText("common.username-or-email")).toHaveValue("");
     expect(screen.getByPlaceholderText("common.password")).toHaveValue("");
   });
 });

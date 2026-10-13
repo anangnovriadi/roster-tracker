@@ -6,19 +6,19 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.AttachmentDeletionPolicy, attachmentIDs []int32) error {
 	if policy == nil || policy.ActorUserID <= 0 {
-		return store.ErrMemoPermissionDenied
+		return store.ErrNotePermissionDenied
 	}
 	tx, err := d.db.BeginTx(ctx, nil)
 	if err != nil {
 		return errors.Wrap(err, "failed to begin attachment delete transaction")
 	}
 	defer func() { _ = tx.Rollback() }()
-	actor, err := requireSQLiteActiveMemoActor(ctx, tx, policy.ActorUserID)
+	actor, err := requireSQLiteActiveNoteActor(ctx, tx, policy.ActorUserID)
 	if err != nil {
 		return err
 	}
@@ -26,14 +26,14 @@ func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.Atta
 	if err != nil {
 		return errors.Wrap(err, "failed to read attachment delete targets")
 	}
-	memoIDs, err := store.ValidateAttachmentMutationTargets(policy.ActorUserID, actor.Admin, attachmentIDs, attachments)
+	noteIDs, err := store.ValidateAttachmentMutationTargets(policy.ActorUserID, actor.Admin, attachmentIDs, attachments)
 	if err != nil {
 		return err
 	}
-	if err := store.ValidateAttachmentDeletionMemoSnapshots(memoIDs, policy.ExpectedMemoContents); err != nil {
+	if err := store.ValidateAttachmentDeletionNoteSnapshots(noteIDs, policy.ExpectedNoteContents); err != nil {
 		return err
 	}
-	if err := authorizeSQLiteAttachmentMutation(ctx, tx, policy.ActorUserID, actor.Admin, memoIDs, policy.ExpectedMemoContents); err != nil {
+	if err := authorizeSQLiteAttachmentMutation(ctx, tx, policy.ActorUserID, actor.Admin, noteIDs, policy.ExpectedNoteContents); err != nil {
 		return err
 	}
 
@@ -45,7 +45,7 @@ func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.Atta
 		if rows, err := result.RowsAffected(); err != nil {
 			return errors.Wrap(err, "failed to count deleted attachment")
 		} else if rows != 1 {
-			return store.ErrMemoMutationConflict
+			return store.ErrNoteMutationConflict
 		}
 	}
 	if err := tx.Commit(); err != nil {
@@ -59,7 +59,7 @@ func listSQLiteAttachmentSnapshots(ctx context.Context, tx dbExecutor, attachmen
 	seen := make(map[int32]struct{}, len(attachmentIDs))
 	for _, batch := range deleteUserBatches(attachmentIDs, deleteUserBatchSize) {
 		clause, args := deleteUserInClause(1, batch)
-		if err := appendDeleteUserAttachments(ctx, tx, `SELECT id, uid, creator_id, memo_id, storage_type, reference, payload
+		if err := appendDeleteUserAttachments(ctx, tx, `SELECT id, uid, creator_id, note_id, storage_type, reference, payload
 			FROM attachment WHERE id IN `+clause+` ORDER BY id`, args, seen, &attachments); err != nil {
 			return nil, err
 		}
@@ -72,41 +72,41 @@ func authorizeSQLiteAttachmentMutation(
 	tx dbExecutor,
 	actorUserID int32,
 	actorIsAdmin bool,
-	memoIDs []int32,
-	expectedMemoContents map[int32]string,
+	noteIDs []int32,
+	expectedNoteContents map[int32]string,
 ) error {
-	for _, memoID := range memoIDs {
-		snapshot := &store.MemoWriteSnapshot{ActorIsAdmin: actorIsAdmin}
+	for _, noteID := range noteIDs {
+		snapshot := &store.NoteWriteSnapshot{ActorIsAdmin: actorIsAdmin}
 		var currentSpace sql.NullInt64
 		var content string
 		if err := tx.QueryRowContext(ctx, `SELECT creator_id, row_status, space_id, visibility, content
-			FROM memo WHERE id = ?`, memoID).Scan(
+			FROM note WHERE id = ?`, noteID).Scan(
 			&snapshot.CreatorID, &snapshot.RowStatus, &currentSpace, &snapshot.Visibility, &content,
 		); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				return store.ErrMemoMutationConflict
+				return store.ErrNoteMutationConflict
 			}
-			return errors.Wrap(err, "failed to read attachment memo")
+			return errors.Wrap(err, "failed to read attachment note")
 		}
 		snapshot.SpaceID = store.NullInt32Pointer(currentSpace)
-		if expectedMemoContents != nil && content != expectedMemoContents[memoID] {
-			return store.ErrMemoMutationConflict
+		if expectedNoteContents != nil && content != expectedNoteContents[noteID] {
+			return store.ErrNoteMutationConflict
 		}
 		if snapshot.SpaceID != nil {
 			var exists bool
 			if err := tx.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM space WHERE id = ?)", *snapshot.SpaceID).Scan(&exists); err != nil {
-				return errors.Wrap(err, "failed to read attachment memo space")
+				return errors.Wrap(err, "failed to read attachment note space")
 			}
 			snapshot.SourceSpaceExists = exists
 			if exists && !actorIsAdmin {
 				active, err := sqliteSpaceMemberActive(ctx, tx, *snapshot.SpaceID, actorUserID)
 				if err != nil {
-					return errors.Wrap(err, "failed to read attachment memo membership")
+					return errors.Wrap(err, "failed to read attachment note membership")
 				}
 				snapshot.SourceMemberActive = active
 			}
 		}
-		if err := store.ValidateMemoWriteSnapshot(&store.MemoWritePolicy{ActorUserID: actorUserID}, nil, snapshot); err != nil {
+		if err := store.ValidateNoteWriteSnapshot(&store.NoteWritePolicy{ActorUserID: actorUserID}, nil, snapshot); err != nil {
 			return err
 		}
 	}

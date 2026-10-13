@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { MemoFilterProvider } from "@/contexts/MemoFilterContext";
+import { NoteFilterProvider } from "@/contexts/NoteFilterContext";
 import { useDateFilterNavigation } from "@/hooks/useDateFilterNavigation";
 
 const Harness = () => {
@@ -21,9 +21,9 @@ describe("useDateFilterNavigation", () => {
   it("preserves unrelated query parameters while replacing the date filter", async () => {
     render(
       <MemoryRouter initialEntries={["/?creator=steven&sort=displayTime&filter=tagSearch%3Awork"]}>
-        <MemoFilterProvider>
+        <NoteFilterProvider>
           <Harness />
-        </MemoFilterProvider>
+        </NoteFilterProvider>
       </MemoryRouter>,
     );
 

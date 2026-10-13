@@ -11,15 +11,15 @@ import AppSidebar, {
 } from "@/components/AppSidebar";
 import SidebarToggleButton from "@/components/AppSidebar/SidebarToggleButton";
 import { AppSidebarProvider, useAppSidebar } from "@/contexts/AppSidebarContext";
-import { GlobalMemoEditorProvider } from "@/contexts/GlobalMemoEditorContext";
+import { GlobalNoteEditorProvider } from "@/contexts/GlobalNoteEditorContext";
 import { useInstance } from "@/contexts/InstanceContext";
-import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { NoteFilterProvider, useNoteFilterContext } from "@/contexts/NoteFilterContext";
 import { SpaceProvider } from "@/contexts/SpaceContext";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
-const MEMOS_DEPLOY_URL = "https://usememos.com/docs/deploy";
+const ROSTER_DEPLOY_URL = "https://github.com/anangnovriadi/roster-tracker#readme";
 
 const DemoBanner = () => {
   const t = useTranslate();
@@ -29,7 +29,12 @@ const DemoBanner = () => {
       <div className="mx-auto flex max-w-5xl flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-center sm:gap-2">
         <span className="font-medium text-foreground">{t("demo.banner-title")}</span>
         <span>{t("demo.banner-description")}</span>
-        <a className="font-medium text-primary underline-offset-4 hover:underline" href={MEMOS_DEPLOY_URL} target="_blank" rel="noreferrer">
+        <a
+          className="font-medium text-primary underline-offset-4 hover:underline"
+          href={ROSTER_DEPLOY_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
           {t("demo.deploy-link")}
         </a>
       </div>
@@ -42,7 +47,7 @@ const RootLayoutContent = () => {
   const [searchParams] = useSearchParams();
   const md = useMediaQuery("md");
   const { profile } = useInstance();
-  const { removeFilter } = useMemoFilterContext();
+  const { removeFilter } = useNoteFilterContext();
   const { desktopCollapsed } = useAppSidebar();
   const { pathname } = location;
   const prevPathnameRef = useRef<string | undefined>(undefined);
@@ -96,13 +101,13 @@ const RootLayoutContent = () => {
 
 const RootLayout = () => (
   <SpaceProvider>
-    <MemoFilterProvider>
+    <NoteFilterProvider>
       <AppSidebarProvider>
-        <GlobalMemoEditorProvider>
+        <GlobalNoteEditorProvider>
           <RootLayoutContent />
-        </GlobalMemoEditorProvider>
+        </GlobalNoteEditorProvider>
       </AppSidebarProvider>
-    </MemoFilterProvider>
+    </NoteFilterProvider>
   </SpaceProvider>
 );
 

@@ -15,12 +15,12 @@ describe("getTooltipText", () => {
 
   it("uses the created-tooltip key for create_time basis (default)", () => {
     const out = getTooltipText(3, "2026-05-02", t);
-    expect(out.toLowerCase()).toContain("memo.count-memos-in-date");
+    expect(out.toLowerCase()).toContain("note.count-notes-in-date");
     expect(out.toLowerCase()).not.toContain("updated");
   });
 
   it("uses the updated-tooltip key for update_time basis", () => {
     const out = getTooltipText(3, "2026-05-02", t, "update_time");
-    expect(out.toLowerCase()).toContain("memo.count-memos-updated-in-date");
+    expect(out.toLowerCase()).toContain("note.count-notes-updated-in-date");
   });
 });

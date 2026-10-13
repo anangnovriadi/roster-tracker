@@ -1,7 +1,7 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import { useEffect, useMemo } from "react";
-import { getAttachmentMetadata, isImageAttachment, isVideoAttachment } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
+import { getAttachmentMetadata, isImageAttachment, isVideoAttachment } from "@/components/NoteMetadata/Attachment/attachmentHelpers";
 import { useInfiniteAttachments } from "@/hooks/useAttachmentQueries";
 import { combineCELFilters } from "@/lib/cel-filter";
 import type { Attachment, ListAttachmentsRequest } from "@/types/proto/api/attachment_service_pb";
@@ -23,7 +23,7 @@ export interface AttachmentLibraryListItem {
   createdLabel: string;
   fileTypeLabel: string;
   fileSizeLabel?: string;
-  memoName?: string;
+  noteName?: string;
   sourceUrl: string;
 }
 
@@ -32,7 +32,7 @@ export interface AttachmentLibraryMediaItem extends AttachmentVisualItem {
   createdAt?: Date;
   createdLabel: string;
   fileTypeLabel: string;
-  memoName?: string;
+  noteName?: string;
 }
 
 export interface AttachmentLibraryMonthGroup {
@@ -51,7 +51,7 @@ const COMPLETE_ATTACHMENT_LIBRARY_REQUEST = {
   orderBy: "create_time desc",
 };
 const UNUSED_ATTACHMENT_LIBRARY_REQUEST = {
-  filter: "memo_id == null",
+  filter: "note_id == null",
   pageSize: 1000,
   orderBy: "create_time desc",
 };
@@ -73,7 +73,7 @@ const useCompleteAttachments = (request: Partial<ListAttachmentsRequest>, enable
 
 const sortByNewest = (a?: Date, b?: Date) => (b?.getTime() ?? 0) - (a?.getTime() ?? 0);
 
-const isLinkedAttachment = (attachment: Attachment) => Boolean(attachment.memo);
+const isLinkedAttachment = (attachment: Attachment) => Boolean(attachment.note);
 
 const isVisualAttachment = (attachment: Attachment) =>
   isImageAttachment(attachment) || isVideoAttachment(attachment) || isMotionAttachment(attachment);
@@ -116,7 +116,7 @@ const toLibraryListItem = (attachment: Attachment, locale: string): AttachmentLi
     createdLabel: formatCreatedAt(createdAt, locale),
     fileTypeLabel,
     fileSizeLabel,
-    memoName: attachment.memo,
+    noteName: attachment.note,
     sourceUrl: attachment.externalLink || `${window.location.origin}/file/${attachment.name}/${attachment.filename}`,
   };
 };
@@ -132,7 +132,7 @@ const toLibraryMediaItem = (item: AttachmentVisualItem, locale: string, livePhot
     createdAt,
     createdLabel: formatCreatedAt(createdAt, locale),
     fileTypeLabel: item.kind === "motion" ? livePhotoLabel : fileTypeLabel,
-    memoName: primaryAttachment.memo,
+    noteName: primaryAttachment.note,
   };
 };
 

@@ -7,9 +7,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/core/usagelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/core/usagelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // GetUserUsage returns a user's usage and the usage limits in effect for the
@@ -50,9 +50,9 @@ func (s *APIService) GetUserUsage(ctx context.Context, request *apipb.GetUserUsa
 	}
 	return &apipb.UserUsage{
 		Name:              BuildUserName(user.Username) + "/usage",
-		MemoCount:         usage.MemoCount,
+		NoteCount:         usage.NoteCount,
 		StorageBytes:      usage.StorageBytes,
-		MemosLimit:        convertEffectiveLimitToProto(usage.Limits.Memos),
+		NotesLimit:        convertEffectiveLimitToProto(usage.Limits.Notes),
 		StorageBytesLimit: convertEffectiveLimitToProto(usage.Limits.StorageBytes),
 		UploadBytesLimit:  convertEffectiveLimitToProto(usage.Limits.UploadBytes),
 	}, nil

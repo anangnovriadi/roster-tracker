@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { createRef } from "react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { type ActiveFormatState, EMPTY_ACTIVE_FORMATS } from "@/components/MemoEditor/formatting/commands";
-import { FormattingToolbar } from "@/components/MemoEditor/Toolbar/FormattingToolbar";
-import type { EditorController } from "@/components/MemoEditor/types/editorController";
+import { type ActiveFormatState, EMPTY_ACTIVE_FORMATS } from "@/components/NoteEditor/formatting/commands";
+import { FormattingToolbar } from "@/components/NoteEditor/Toolbar/FormattingToolbar";
+import type { EditorController } from "@/components/NoteEditor/types/editorController";
 
 // Match the repo convention: t echoes the i18n key (no i18next backend in tests),
 // so accessible names below are the keys themselves.

@@ -74,6 +74,7 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
         username={username}
         password={password}
         passwordAutoComplete="current-password"
+        acceptEmail
         readOnly={actionBtnLoadingState.isLoading}
         onUsernameChange={setUsername}
         onPasswordChange={setPassword}

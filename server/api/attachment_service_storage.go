@@ -16,11 +16,11 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/internal/random"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/internal/random"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func convertAttachmentFromStore(attachment *store.Attachment) *apipb.Attachment {
@@ -36,13 +36,13 @@ func convertAttachmentFromStore(attachment *store.Attachment) *apipb.Attachment 
 	if attachment.CreatorUsername != nil {
 		attachmentMessage.Creator = BuildUserName(*attachment.CreatorUsername)
 	}
-	if attachment.MemoUID != nil && *attachment.MemoUID != "" {
-		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, *attachment.MemoUID)
-		attachmentMessage.Memo = &memoName
+	if attachment.NoteUID != nil && *attachment.NoteUID != "" {
+		noteName := fmt.Sprintf("%s%s", NoteNamePrefix, *attachment.NoteUID)
+		attachmentMessage.Note = &noteName
 	}
 	// Managed storage is always addressed through the authenticated file route.
 	// In particular, never expose an expiring S3 presigned URL as attachment API
-	// metadata because it can outlive a memo visibility change.
+	// metadata because it can outlive a note visibility change.
 	if attachment.StorageType == storepb.AttachmentStorageType_EXTERNAL {
 		attachmentMessage.ExternalLink = attachment.Reference
 	}
@@ -112,7 +112,7 @@ func saveAttachmentContent(
 		}
 
 		// Stage in a temp file so partial content never appears at the final path.
-		file, err := os.CreateTemp(dir, ".memos-upload-*")
+		file, err := os.CreateTemp(dir, ".notes-upload-*")
 		if err != nil {
 			return errors.Wrap(err, "failed to create attachment file")
 		}

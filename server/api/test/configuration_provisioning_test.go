@@ -13,8 +13,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 func TestDeploymentConfiguredResourcesRejectMutations(t *testing.T) {
@@ -26,12 +26,12 @@ func TestDeploymentConfiguredResourcesRejectMutations(t *testing.T) {
 	adminCtx := ts.CreateUserContext(ctx, admin.ID)
 
 	dir := t.TempDir()
-	writeDeploymentProto(t, filepath.Join(dir, "memos-idp-primary.json"), testStoreIdentityProvider("primary-sso"))
-	writeDeploymentProto(t, filepath.Join(dir, "memos-instance-setting-general.json"), &storepb.InstanceSetting{
+	writeDeploymentProto(t, filepath.Join(dir, "roster-tracker-idp-primary.json"), testStoreIdentityProvider("primary-sso"))
+	writeDeploymentProto(t, filepath.Join(dir, "roster-tracker-instance-setting-general.json"), &storepb.InstanceSetting{
 		Key:   storepb.InstanceSettingKey_GENERAL,
 		Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: &storepb.InstanceGeneralSetting{WeekStartDayOffset: 1}},
 	})
-	writeDeploymentProto(t, filepath.Join(dir, "memos-instance-setting-storage.json"), &storepb.InstanceSetting{
+	writeDeploymentProto(t, filepath.Join(dir, "roster-tracker-instance-setting-storage.json"), &storepb.InstanceSetting{
 		Key: storepb.InstanceSettingKey_STORAGE,
 		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
 			StorageType: storepb.InstanceStorageSetting_LOCAL,

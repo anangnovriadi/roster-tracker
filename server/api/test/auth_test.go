@@ -9,10 +9,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/random"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/random"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestAuthenticatorAccessTokenV2(t *testing.T) {

@@ -8,8 +8,8 @@ import (
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // =============================================================================
@@ -32,15 +32,15 @@ func formatInt(n int) string {
 // Test Fixture Builders
 // =============================================================================
 
-// MemoBuilder provides a fluent API for creating test memos.
-type MemoBuilder struct {
-	memo *store.Memo
+// NoteBuilder provides a fluent API for creating test notes.
+type NoteBuilder struct {
+	note *store.Note
 }
 
-// NewMemoBuilder creates a new memo builder with required fields.
-func NewMemoBuilder(uid string, creatorID int32) *MemoBuilder {
-	return &MemoBuilder{
-		memo: &store.Memo{
+// NewNoteBuilder creates a new note builder with required fields.
+func NewNoteBuilder(uid string, creatorID int32) *NoteBuilder {
+	return &NoteBuilder{
+		note: &store.Note{
 			UID:        uid,
 			CreatorID:  creatorID,
 			Visibility: store.Public,
@@ -48,42 +48,42 @@ func NewMemoBuilder(uid string, creatorID int32) *MemoBuilder {
 	}
 }
 
-func (b *MemoBuilder) Content(content string) *MemoBuilder {
-	b.memo.Content = content
+func (b *NoteBuilder) Content(content string) *NoteBuilder {
+	b.note.Content = content
 	return b
 }
 
-func (b *MemoBuilder) Visibility(v store.Visibility) *MemoBuilder {
-	b.memo.Visibility = v
+func (b *NoteBuilder) Visibility(v store.Visibility) *NoteBuilder {
+	b.note.Visibility = v
 	return b
 }
 
-func (b *MemoBuilder) CreatedTs(ts int64) *MemoBuilder {
-	b.memo.CreatedTs = ts
+func (b *NoteBuilder) CreatedTs(ts int64) *NoteBuilder {
+	b.note.CreatedTs = ts
 	return b
 }
 
-func (b *MemoBuilder) Tags(tags ...string) *MemoBuilder {
-	if b.memo.Payload == nil {
-		b.memo.Payload = &storepb.MemoPayload{}
+func (b *NoteBuilder) Tags(tags ...string) *NoteBuilder {
+	if b.note.Payload == nil {
+		b.note.Payload = &storepb.NotePayload{}
 	}
-	b.memo.Payload.Tags = tags
+	b.note.Payload.Tags = tags
 	return b
 }
 
-func (b *MemoBuilder) Property(fn func(*storepb.MemoPayload_Property)) *MemoBuilder {
-	if b.memo.Payload == nil {
-		b.memo.Payload = &storepb.MemoPayload{}
+func (b *NoteBuilder) Property(fn func(*storepb.NotePayload_Property)) *NoteBuilder {
+	if b.note.Payload == nil {
+		b.note.Payload = &storepb.NotePayload{}
 	}
-	if b.memo.Payload.Property == nil {
-		b.memo.Payload.Property = &storepb.MemoPayload_Property{}
+	if b.note.Payload.Property == nil {
+		b.note.Payload.Property = &storepb.NotePayload_Property{}
 	}
-	fn(b.memo.Payload.Property)
+	fn(b.note.Payload.Property)
 	return b
 }
 
-func (b *MemoBuilder) Build() *store.Memo {
-	return b.memo
+func (b *NoteBuilder) Build() *store.Note {
+	return b.note
 }
 
 // AttachmentBuilder provides a fluent API for creating test attachments.
@@ -113,8 +113,8 @@ func (b *AttachmentBuilder) MimeType(mimeType string) *AttachmentBuilder {
 	return b
 }
 
-func (b *AttachmentBuilder) MemoID(memoID *int32) *AttachmentBuilder {
-	b.attachment.MemoID = memoID
+func (b *AttachmentBuilder) NoteID(noteID *int32) *AttachmentBuilder {
+	b.attachment.NoteID = noteID
 	return b
 }
 
@@ -131,22 +131,22 @@ func (b *AttachmentBuilder) Build() *store.Attachment {
 // Test Context Helpers
 // =============================================================================
 
-// MemoFilterTestContext holds common test dependencies for memo filter tests.
-type MemoFilterTestContext struct {
+// NoteFilterTestContext holds common test dependencies for note filter tests.
+type NoteFilterTestContext struct {
 	Ctx   context.Context
 	T     *testing.T
 	Store *store.Store
 	User  *store.User
 }
 
-// NewMemoFilterTestContext creates a new test context with store and user.
-func NewMemoFilterTestContext(t *testing.T) *MemoFilterTestContext {
+// NewNoteFilterTestContext creates a new test context with store and user.
+func NewNoteFilterTestContext(t *testing.T) *NoteFilterTestContext {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 
-	return &MemoFilterTestContext{
+	return &NoteFilterTestContext{
 		Ctx:   ctx,
 		T:     t,
 		Store: ts,
@@ -154,42 +154,42 @@ func NewMemoFilterTestContext(t *testing.T) *MemoFilterTestContext {
 	}
 }
 
-// CreateMemo creates a memo using the builder pattern.
-func (tc *MemoFilterTestContext) CreateMemo(b *MemoBuilder) *store.Memo {
-	memo, err := tc.Store.CreateMemo(tc.Ctx, b.Build())
+// CreateNote creates a note using the builder pattern.
+func (tc *NoteFilterTestContext) CreateNote(b *NoteBuilder) *store.Note {
+	note, err := tc.Store.CreateNote(tc.Ctx, b.Build())
 	require.NoError(tc.T, err)
-	return memo
+	return note
 }
 
-// PinMemo pins a memo by ID.
-func (tc *MemoFilterTestContext) PinMemo(memoID int32) {
-	err := tc.Store.UpdateMemo(tc.Ctx, &store.UpdateMemo{
-		ID:     memoID,
+// PinNote pins a note by ID.
+func (tc *NoteFilterTestContext) PinNote(noteID int32) {
+	err := tc.Store.UpdateNote(tc.Ctx, &store.UpdateNote{
+		ID:     noteID,
 		Pinned: new(true),
 	})
 	require.NoError(tc.T, err)
 }
 
-// ListWithFilter lists memos with the given filter and returns the count.
-func (tc *MemoFilterTestContext) ListWithFilter(filter string) []*store.Memo {
-	memos, err := tc.Store.ListMemos(tc.Ctx, &store.FindMemo{
+// ListWithFilter lists notes with the given filter and returns the count.
+func (tc *NoteFilterTestContext) ListWithFilter(filter string) []*store.Note {
+	notes, err := tc.Store.ListNotes(tc.Ctx, &store.FindNote{
 		Filters: []string{filter},
 	})
 	require.NoError(tc.T, err)
-	return memos
+	return notes
 }
 
-// ListWithFilters lists memos with multiple filters and returns the count.
-func (tc *MemoFilterTestContext) ListWithFilters(filters ...string) []*store.Memo {
-	memos, err := tc.Store.ListMemos(tc.Ctx, &store.FindMemo{
+// ListWithFilters lists notes with multiple filters and returns the count.
+func (tc *NoteFilterTestContext) ListWithFilters(filters ...string) []*store.Note {
+	notes, err := tc.Store.ListNotes(tc.Ctx, &store.FindNote{
 		Filters: filters,
 	})
 	require.NoError(tc.T, err)
-	return memos
+	return notes
 }
 
 // Close closes the test store.
-func (tc *MemoFilterTestContext) Close() {
+func (tc *NoteFilterTestContext) Close() {
 	tc.Store.Close()
 }
 
@@ -238,16 +238,16 @@ func (tc *AttachmentFilterTestContext) CreateAttachment(b *AttachmentBuilder) *s
 	return attachment
 }
 
-// CreateMemo creates a memo (for attachment tests that need memos).
-func (tc *AttachmentFilterTestContext) CreateMemo(uid, content string) *store.Memo {
-	memo, err := tc.Store.CreateMemo(tc.Ctx, &store.Memo{
+// CreateNote creates a note (for attachment tests that need notes).
+func (tc *AttachmentFilterTestContext) CreateNote(uid, content string) *store.Note {
+	note, err := tc.Store.CreateNote(tc.Ctx, &store.Note{
 		UID:        uid,
 		CreatorID:  tc.CreatorID,
 		Content:    content,
 		Visibility: store.Public,
 	})
 	require.NoError(tc.T, err)
-	return memo
+	return note
 }
 
 // ListWithFilter lists attachments with the given filter.

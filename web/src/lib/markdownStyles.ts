@@ -4,7 +4,7 @@ export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
  * Per-level heading type (size / line height / weight / color), shared by the
- * read-only memo view and the editor's heading-line decorations so a heading
+ * read-only note view and the editor's heading-line decorations so a heading
  * looks the same while editing and after saving. The scale stays close to the
  * 16px body: headings organize a note, they are not page titles.
  */
@@ -32,7 +32,7 @@ const headingSpacingClasses: Record<HeadingLevel, string> = {
 
 /**
  * Complete heading class per level, precomputed once at module load (spacing +
- * type). headingClass is a hot path — MemoContent renders it per heading on
+ * type). headingClass is a hot path — NoteContent renders it per heading on
  * every content render — so the cn() merge happens here, not per call.
  */
 const headingClasses: Record<HeadingLevel, string> = {
@@ -46,14 +46,14 @@ const headingClasses: Record<HeadingLevel, string> = {
 
 /**
  * Single source of truth for the styling of common markdown elements rendered
- * by the read-only memo view (MemoContent). Each value is a complete, standalone
- * Tailwind class string so it can be dropped onto a DOM element as-is (MemoContent
+ * by the read-only note view (NoteContent). Each value is a complete, standalone
+ * Tailwind class string so it can be dropped onto a DOM element as-is (NoteContent
  * merges them with `cn`). The editor does not use these — it styles its raw
- * markdown source via CodeMirror decorations in `MemoEditor/Editor/theme.ts`
+ * markdown source via CodeMirror decorations in `NoteEditor/Editor/theme.ts`
  * (headings excepted: see `headingTypeClass`).
  *
  * Block rhythm: every block is `my-0 mb-2` (8px between blocks, none above the
- * first), and MemoContent trims the last block's margin. Headings and the
+ * first), and NoteContent trims the last block's margin. Headings and the
  * horizontal rule are the only blocks with their own vertical spacing; images
  * are inline content and keep a small margin of their own.
  *
@@ -76,7 +76,7 @@ export const markdownStyles = {
   // Trimming the last child keeps nested lists and loose-item paragraphs from
   // adding a gap before the next sibling item.
   listItem: "mt-0.5 leading-6 [&>*:last-child]:mb-0",
-  // Shared by the read-only task item (MemoContent/markdown/List.tsx) and the
+  // Shared by the read-only task item (NoteContent/markdown/List.tsx) and the
   // editor so the checkbox + text grid stays identical in both.
   taskListItem: "mt-0.5 min-w-0 leading-6 list-none grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-2 [&>[data-slot=checkbox]]:mt-1",
   taskItemContent: "min-w-0 [overflow-wrap:anywhere] [&>*:last-child]:mb-0",
@@ -94,10 +94,10 @@ export const headingClass = (level: HeadingLevel): string => headingClasses[leve
 export const headingTypeClass = (level: HeadingLevel): string => headingTypeClasses[level];
 
 /**
- * Tag pill styling for the read-only memo view (MemoContent/Tag.tsx). Split into
+ * Tag pill styling for the read-only note view (NoteContent/Tag.tsx). Split into
  * two tokens so the viewer can swap `defaultColor` for an inline custom color.
  * (The editor does not use these; it colors `#tag` source via the
- * `cm-memo-tag` decoration in Editor/theme.ts.)
+ * `cm-note-tag` decoration in Editor/theme.ts.)
  */
 export const tagStyles = {
   /** Shape, padding, and typography — always applied. */
@@ -107,10 +107,10 @@ export const tagStyles = {
 } as const;
 
 /**
- * `@mention` styling for the read-only memo view (MemoContent/Mention.tsx).
+ * `@mention` styling for the read-only note view (NoteContent/Mention.tsx).
  * Unlike a tag this is not a pill — it is a primary-colored accent (the read-only
  * view adds `hover:underline` for its link). (The editor does not use these; it
- * colors `@mention` source via the `cm-memo-mention` decoration in
+ * colors `@mention` source via the `cm-note-mention` decoration in
  * Editor/theme.ts.)
  */
 export const mentionStyles = {

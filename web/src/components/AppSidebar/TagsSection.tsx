@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { useNoteFilterContext } from "@/contexts/NoteFilterContext";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -80,7 +80,7 @@ const FlatTagRow = ({ tag, amount, active, ariaLabel, onClick }: FlatTagRowProps
 
 const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
   const t = useTranslate();
-  const { getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
+  const { getFiltersByFactor, addFilter, removeFilter } = useNoteFilterContext();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
   const activeTags = new Set(getFiltersByFactor("tagSearch").map((filter) => filter.value));
   const activeTag = activeTags.values().next().value as string | undefined;

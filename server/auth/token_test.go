@@ -163,29 +163,29 @@ func TestGeneratePersonalAccessToken(t *testing.T) {
 
 	t.Run("generates token of sufficient length", func(t *testing.T) {
 		token := GeneratePersonalAccessToken()
-		// Prefix is "memos_pat_" (10 chars) + 32 random chars = at least 42 chars
+		// Prefix is "roster_pat_" (10 chars) + 32 random chars = at least 42 chars
 		assert.True(t, len(token) >= 42, "token should be at least 42 characters")
 	})
 }
 
 func TestHashPersonalAccessToken(t *testing.T) {
 	t.Run("generates SHA-256 hash", func(t *testing.T) {
-		token := "memos_pat_abc123"
+		token := "roster_pat_abc123"
 		hash := HashPersonalAccessToken(token)
 		assert.NotEmpty(t, hash)
 		assert.Len(t, hash, 64, "SHA-256 hex should be 64 characters")
 	})
 
 	t.Run("same input produces same hash", func(t *testing.T) {
-		token := "memos_pat_abc123"
+		token := "roster_pat_abc123"
 		hash1 := HashPersonalAccessToken(token)
 		hash2 := HashPersonalAccessToken(token)
 		assert.Equal(t, hash1, hash2)
 	})
 
 	t.Run("different inputs produce different hashes", func(t *testing.T) {
-		token1 := "memos_pat_abc123"
-		token2 := "memos_pat_xyz789"
+		token1 := "roster_pat_abc123"
+		token2 := "roster_pat_xyz789"
 		hash1 := HashPersonalAccessToken(token1)
 		hash2 := HashPersonalAccessToken(token2)
 		assert.NotEqual(t, hash1, hash2)

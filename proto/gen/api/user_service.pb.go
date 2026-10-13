@@ -192,10 +192,10 @@ type UserNotification_Type int32
 
 const (
 	UserNotification_TYPE_UNSPECIFIED UserNotification_Type = 0
-	// Someone commented on a memo.
-	UserNotification_MEMO_COMMENT UserNotification_Type = 1
-	// Someone mentioned the receiver in a memo.
-	UserNotification_MEMO_MENTION UserNotification_Type = 2
+	// Someone commented on a note.
+	UserNotification_NOTE_COMMENT UserNotification_Type = 1
+	// Someone mentioned the receiver in a note.
+	UserNotification_NOTE_MENTION UserNotification_Type = 2
 	// Someone invited the receiver to a space.
 	UserNotification_SPACE_INVITATION UserNotification_Type = 3
 )
@@ -204,14 +204,14 @@ const (
 var (
 	UserNotification_Type_name = map[int32]string{
 		0: "TYPE_UNSPECIFIED",
-		1: "MEMO_COMMENT",
-		2: "MEMO_MENTION",
+		1: "NOTE_COMMENT",
+		2: "NOTE_MENTION",
 		3: "SPACE_INVITATION",
 	}
 	UserNotification_Type_value = map[string]int32{
 		"TYPE_UNSPECIFIED": 0,
-		"MEMO_COMMENT":     1,
-		"MEMO_MENTION":     2,
+		"NOTE_COMMENT":     1,
+		"NOTE_MENTION":     2,
 		"SPACE_INVITATION": 3,
 	}
 )
@@ -295,29 +295,29 @@ func (UserNotification_SpaceInvitationPayload_InvitationState) EnumDescriptor() 
 	return file_api_user_service_proto_rawDescGZIP(), []int{27, 2, 0}
 }
 
-// ConflictPolicy says what the importer does with a memo whose UID the user
+// ConflictPolicy says what the importer does with a note whose UID the user
 // already holds.
-type ImportMemosRequest_ConflictPolicy int32
+type ImportNotesRequest_ConflictPolicy int32
 
 const (
-	ImportMemosRequest_CONFLICT_POLICY_UNSPECIFIED ImportMemosRequest_ConflictPolicy = 0
-	// Leave the existing memo untouched. This is the default.
-	ImportMemosRequest_SKIP ImportMemosRequest_ConflictPolicy = 1
-	// Update the existing memo's content and metadata from the archive.
-	ImportMemosRequest_REPLACE ImportMemosRequest_ConflictPolicy = 2
-	// Keep the existing memo and create the archive version under a fresh UID.
-	ImportMemosRequest_DUPLICATE ImportMemosRequest_ConflictPolicy = 3
+	ImportNotesRequest_CONFLICT_POLICY_UNSPECIFIED ImportNotesRequest_ConflictPolicy = 0
+	// Leave the existing note untouched. This is the default.
+	ImportNotesRequest_SKIP ImportNotesRequest_ConflictPolicy = 1
+	// Update the existing note's content and metadata from the archive.
+	ImportNotesRequest_REPLACE ImportNotesRequest_ConflictPolicy = 2
+	// Keep the existing note and create the archive version under a fresh UID.
+	ImportNotesRequest_DUPLICATE ImportNotesRequest_ConflictPolicy = 3
 )
 
-// Enum value maps for ImportMemosRequest_ConflictPolicy.
+// Enum value maps for ImportNotesRequest_ConflictPolicy.
 var (
-	ImportMemosRequest_ConflictPolicy_name = map[int32]string{
+	ImportNotesRequest_ConflictPolicy_name = map[int32]string{
 		0: "CONFLICT_POLICY_UNSPECIFIED",
 		1: "SKIP",
 		2: "REPLACE",
 		3: "DUPLICATE",
 	}
-	ImportMemosRequest_ConflictPolicy_value = map[string]int32{
+	ImportNotesRequest_ConflictPolicy_value = map[string]int32{
 		"CONFLICT_POLICY_UNSPECIFIED": 0,
 		"SKIP":                        1,
 		"REPLACE":                     2,
@@ -325,30 +325,30 @@ var (
 	}
 )
 
-func (x ImportMemosRequest_ConflictPolicy) Enum() *ImportMemosRequest_ConflictPolicy {
-	p := new(ImportMemosRequest_ConflictPolicy)
+func (x ImportNotesRequest_ConflictPolicy) Enum() *ImportNotesRequest_ConflictPolicy {
+	p := new(ImportNotesRequest_ConflictPolicy)
 	*p = x
 	return p
 }
 
-func (x ImportMemosRequest_ConflictPolicy) String() string {
+func (x ImportNotesRequest_ConflictPolicy) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (ImportMemosRequest_ConflictPolicy) Descriptor() protoreflect.EnumDescriptor {
+func (ImportNotesRequest_ConflictPolicy) Descriptor() protoreflect.EnumDescriptor {
 	return file_api_user_service_proto_enumTypes[5].Descriptor()
 }
 
-func (ImportMemosRequest_ConflictPolicy) Type() protoreflect.EnumType {
+func (ImportNotesRequest_ConflictPolicy) Type() protoreflect.EnumType {
 	return &file_api_user_service_proto_enumTypes[5]
 }
 
-func (x ImportMemosRequest_ConflictPolicy) Number() protoreflect.EnumNumber {
+func (x ImportNotesRequest_ConflictPolicy) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use ImportMemosRequest_ConflictPolicy.Descriptor instead.
-func (ImportMemosRequest_ConflictPolicy) EnumDescriptor() ([]byte, []int) {
+// Deprecated: Use ImportNotesRequest_ConflictPolicy.Descriptor instead.
+func (ImportNotesRequest_ConflictPolicy) EnumDescriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{53, 0}
 }
 
@@ -375,9 +375,9 @@ type User struct {
 	// Input only. The password of the user. Never returned.
 	Password string `protobuf:"bytes,7,opt,name=password,proto3" json:"password,omitempty"`
 	// Required. The role of the user. Only admins can change it.
-	Role User_Role `protobuf:"varint,8,opt,name=role,proto3,enum=memos.api.User_Role" json:"role,omitempty"`
+	Role User_Role `protobuf:"varint,8,opt,name=role,proto3,enum=roster.api.User_Role" json:"role,omitempty"`
 	// Required. The state of the user. Only admins can change it.
-	State State `protobuf:"varint,9,opt,name=state,proto3,enum=memos.api.State" json:"state,omitempty"`
+	State State `protobuf:"varint,9,opt,name=state,proto3,enum=roster.api.State" json:"state,omitempty"`
 	// Output only. The creation timestamp.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The last update timestamp.
@@ -1265,7 +1265,7 @@ type UpdateUserSettingRequest struct {
 	// Required. The user setting to update. Its name identifies the setting.
 	UserSetting *UserSetting `protobuf:"bytes,1,opt,name=user_setting,json=userSetting,proto3" json:"user_setting,omitempty"`
 	// Required. The fields to update, relative to the setting value. GENERAL
-	// supports locale, memo_visibility, theme and save_media_metadata; TAGS
+	// supports locale, note_visibility, theme and save_media_metadata; TAGS
 	// supports tags.
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1316,31 +1316,31 @@ func (x *UpdateUserSettingRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// UserStats is a summary of a user's memos. Comments are not counted.
+// UserStats is a summary of a user's notes. Comments are not counted.
 type UserStats struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Identifier. The resource name of the user statistics singleton.
 	// Format: users/{user}/stats
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The number of counted memos.
-	TotalMemoCount int32 `protobuf:"varint,2,opt,name=total_memo_count,json=totalMemoCount,proto3" json:"total_memo_count,omitempty"`
-	// The number of counted memos by content type.
-	MemoTypeStats *UserStats_MemoTypeStats `protobuf:"bytes,3,opt,name=memo_type_stats,json=memoTypeStats,proto3" json:"memo_type_stats,omitempty"`
-	// The number of counted memos per tag.
+	// The number of counted notes.
+	TotalNoteCount int32 `protobuf:"varint,2,opt,name=total_note_count,json=totalNoteCount,proto3" json:"total_note_count,omitempty"`
+	// The number of counted notes by content type.
+	NoteTypeStats *UserStats_NoteTypeStats `protobuf:"bytes,3,opt,name=note_type_stats,json=noteTypeStats,proto3" json:"note_type_stats,omitempty"`
+	// The number of counted notes per tag.
 	TagCounts map[string]int32 `protobuf:"bytes,4,rep,name=tag_counts,json=tagCounts,proto3" json:"tag_counts,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	// The pinned memos among the counted memos.
-	// Format: memos/{memo}
-	PinnedMemos []string `protobuf:"bytes,5,rep,name=pinned_memos,json=pinnedMemos,proto3" json:"pinned_memos,omitempty"`
-	// The creation timestamps of the counted memos, one per memo.
-	MemoCreatedTimestamps []*timestamppb.Timestamp `protobuf:"bytes,6,rep,name=memo_created_timestamps,json=memoCreatedTimestamps,proto3" json:"memo_created_timestamps,omitempty"`
-	// The latest update timestamps of the counted memos (one per memo, mirrors
-	// memo_created_timestamps). Used by the activity heatmap when the client's
+	// The pinned notes among the counted notes.
+	// Format: notes/{note}
+	PinnedNotes []string `protobuf:"bytes,5,rep,name=pinned_notes,json=pinnedNotes,proto3" json:"pinned_notes,omitempty"`
+	// The creation timestamps of the counted notes, one per note.
+	NoteCreatedTimestamps []*timestamppb.Timestamp `protobuf:"bytes,6,rep,name=note_created_timestamps,json=noteCreatedTimestamps,proto3" json:"note_created_timestamps,omitempty"`
+	// The latest update timestamps of the counted notes (one per note, mirrors
+	// note_created_timestamps). Used by the activity heatmap when the client's
 	// view is set to update_time basis.
-	MemoUpdatedTimestamps []*timestamppb.Timestamp `protobuf:"bytes,7,rep,name=memo_updated_timestamps,json=memoUpdatedTimestamps,proto3" json:"memo_updated_timestamps,omitempty"`
+	NoteUpdatedTimestamps []*timestamppb.Timestamp `protobuf:"bytes,7,rep,name=note_updated_timestamps,json=noteUpdatedTimestamps,proto3" json:"note_updated_timestamps,omitempty"`
 	// Output only. Total persisted attachment size in bytes, including unlinked
 	// uploads and attachments in all spaces. Excludes temporary uploads and
 	// derived files. Returned only by GetUserStats for the authenticated user's
-	// own stats, independently of the request's memo filter.
+	// own stats, independently of the request's note filter.
 	AttachmentStorageBytes *int64 `protobuf:"varint,8,opt,name=attachment_storage_bytes,json=attachmentStorageBytes,proto3,oneof" json:"attachment_storage_bytes,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
@@ -1383,16 +1383,16 @@ func (x *UserStats) GetName() string {
 	return ""
 }
 
-func (x *UserStats) GetTotalMemoCount() int32 {
+func (x *UserStats) GetTotalNoteCount() int32 {
 	if x != nil {
-		return x.TotalMemoCount
+		return x.TotalNoteCount
 	}
 	return 0
 }
 
-func (x *UserStats) GetMemoTypeStats() *UserStats_MemoTypeStats {
+func (x *UserStats) GetNoteTypeStats() *UserStats_NoteTypeStats {
 	if x != nil {
-		return x.MemoTypeStats
+		return x.NoteTypeStats
 	}
 	return nil
 }
@@ -1404,23 +1404,23 @@ func (x *UserStats) GetTagCounts() map[string]int32 {
 	return nil
 }
 
-func (x *UserStats) GetPinnedMemos() []string {
+func (x *UserStats) GetPinnedNotes() []string {
 	if x != nil {
-		return x.PinnedMemos
+		return x.PinnedNotes
 	}
 	return nil
 }
 
-func (x *UserStats) GetMemoCreatedTimestamps() []*timestamppb.Timestamp {
+func (x *UserStats) GetNoteCreatedTimestamps() []*timestamppb.Timestamp {
 	if x != nil {
-		return x.MemoCreatedTimestamps
+		return x.NoteCreatedTimestamps
 	}
 	return nil
 }
 
-func (x *UserStats) GetMemoUpdatedTimestamps() []*timestamppb.Timestamp {
+func (x *UserStats) GetNoteUpdatedTimestamps() []*timestamppb.Timestamp {
 	if x != nil {
-		return x.MemoUpdatedTimestamps
+		return x.NoteUpdatedTimestamps
 	}
 	return nil
 }
@@ -1439,12 +1439,12 @@ type ListUserStatsRequest struct {
 	// users/{user} for one user.
 	// Format: users/{user}
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. A CEL expression selecting the memos to count. Uses the same
-	// filter syntax as ListMemos.
+	// Optional. A CEL expression selecting the notes to count. Uses the same
+	// filter syntax as ListNotes.
 	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
-	// Optional. The state of the memos to count. Defaults to NORMAL. ARCHIVED
-	// counts only the caller's own memos.
-	State         State `protobuf:"varint,3,opt,name=state,proto3,enum=memos.api.State" json:"state,omitempty"`
+	// Optional. The state of the notes to count. Defaults to NORMAL. ARCHIVED
+	// counts only the caller's own notes.
+	State         State `protobuf:"varint,3,opt,name=state,proto3,enum=roster.api.State" json:"state,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1552,8 +1552,8 @@ type GetUserStatsRequest struct {
 	// Required. The resource name of the user.
 	// Format: users/{user}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. A CEL expression selecting the readable non-comment memos to
-	// count. Supports the same fields as ListMemos, including `space`.
+	// Optional. A CEL expression selecting the readable non-comment notes to
+	// count. Supports the same fields as ListNotes, including `space`.
 	Filter        string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1609,14 +1609,14 @@ type UserUsage struct {
 	// Identifier. The resource name of the user usage singleton.
 	// Format: users/{user}/usage
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The number of memos the user created, including comments, archived
-	// memos, and memos in Spaces.
-	MemoCount int64 `protobuf:"varint,2,opt,name=memo_count,json=memoCount,proto3" json:"memo_count,omitempty"`
+	// The number of notes the user created, including comments, archived
+	// notes, and notes in Spaces.
+	NoteCount int64 `protobuf:"varint,2,opt,name=note_count,json=noteCount,proto3" json:"note_count,omitempty"`
 	// The total size in bytes of the user's uploads, including uploads not
-	// attached to a memo. External links do not count.
+	// attached to a note. External links do not count.
 	StorageBytes int64 `protobuf:"varint,3,opt,name=storage_bytes,json=storageBytes,proto3" json:"storage_bytes,omitempty"`
-	// The limit on memo_count.
-	MemosLimit *UserUsage_EffectiveLimit `protobuf:"bytes,4,opt,name=memos_limit,json=memosLimit,proto3" json:"memos_limit,omitempty"`
+	// The limit on note_count.
+	NotesLimit *UserUsage_EffectiveLimit `protobuf:"bytes,4,opt,name=notes_limit,json=notesLimit,proto3" json:"notes_limit,omitempty"`
 	// The limit on storage_bytes.
 	StorageBytesLimit *UserUsage_EffectiveLimit `protobuf:"bytes,5,opt,name=storage_bytes_limit,json=storageBytesLimit,proto3" json:"storage_bytes_limit,omitempty"`
 	// The limit on the size of one uploaded file.
@@ -1662,9 +1662,9 @@ func (x *UserUsage) GetName() string {
 	return ""
 }
 
-func (x *UserUsage) GetMemoCount() int64 {
+func (x *UserUsage) GetNoteCount() int64 {
 	if x != nil {
-		return x.MemoCount
+		return x.NoteCount
 	}
 	return 0
 }
@@ -1676,9 +1676,9 @@ func (x *UserUsage) GetStorageBytes() int64 {
 	return 0
 }
 
-func (x *UserUsage) GetMemosLimit() *UserUsage_EffectiveLimit {
+func (x *UserUsage) GetNotesLimit() *UserUsage_EffectiveLimit {
 	if x != nil {
-		return x.MemosLimit
+		return x.NotesLimit
 	}
 	return nil
 }
@@ -1744,39 +1744,39 @@ func (x *GetUserUsageRequest) GetName() string {
 	return ""
 }
 
-// MemoView is a user's saved memo filter.
-type MemoView struct {
+// NoteView is a user's saved note filter.
+type NoteView struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identifier. The resource name of the memo view.
+	// Identifier. The resource name of the note view.
 	// Format: users/{user}/views/{view}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. The title of the memo view.
+	// Required. The title of the note view.
 	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	// Required. The CEL filter expression for the memo view, using the same
-	// grammar as the ListMemos `filter` argument. Reuse it by passing this value
-	// to ListMemos.
+	// Required. The CEL filter expression for the note view, using the same
+	// grammar as the ListNotes `filter` argument. Reuse it by passing this value
+	// to ListNotes.
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. Display icon. Omit when updating with the "icon" mask to reset to
 	// the default view icon.
-	Icon          *MemoView_Icon `protobuf:"bytes,4,opt,name=icon,proto3" json:"icon,omitempty"`
+	Icon          *NoteView_Icon `protobuf:"bytes,4,opt,name=icon,proto3" json:"icon,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *MemoView) Reset() {
-	*x = MemoView{}
+func (x *NoteView) Reset() {
+	*x = NoteView{}
 	mi := &file_api_user_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *MemoView) String() string {
+func (x *NoteView) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MemoView) ProtoMessage() {}
+func (*NoteView) ProtoMessage() {}
 
-func (x *MemoView) ProtoReflect() protoreflect.Message {
+func (x *NoteView) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1788,63 +1788,63 @@ func (x *MemoView) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use MemoView.ProtoReflect.Descriptor instead.
-func (*MemoView) Descriptor() ([]byte, []int) {
+// Deprecated: Use NoteView.ProtoReflect.Descriptor instead.
+func (*NoteView) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{20}
 }
 
-func (x *MemoView) GetName() string {
+func (x *NoteView) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *MemoView) GetTitle() string {
+func (x *NoteView) GetTitle() string {
 	if x != nil {
 		return x.Title
 	}
 	return ""
 }
 
-func (x *MemoView) GetFilter() string {
+func (x *NoteView) GetFilter() string {
 	if x != nil {
 		return x.Filter
 	}
 	return ""
 }
 
-func (x *MemoView) GetIcon() *MemoView_Icon {
+func (x *NoteView) GetIcon() *NoteView_Icon {
 	if x != nil {
 		return x.Icon
 	}
 	return nil
 }
 
-// Request message for UserService.ListMemoViews.
-type ListMemoViewsRequest struct {
+// Request message for UserService.ListNoteViews.
+type ListNoteViewsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The user whose memo views are listed.
+	// Required. The user whose note views are listed.
 	// Format: users/{user}
 	Parent        string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ListMemoViewsRequest) Reset() {
-	*x = ListMemoViewsRequest{}
+func (x *ListNoteViewsRequest) Reset() {
+	*x = ListNoteViewsRequest{}
 	mi := &file_api_user_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ListMemoViewsRequest) String() string {
+func (x *ListNoteViewsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListMemoViewsRequest) ProtoMessage() {}
+func (*ListNoteViewsRequest) ProtoMessage() {}
 
-func (x *ListMemoViewsRequest) ProtoReflect() protoreflect.Message {
+func (x *ListNoteViewsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1856,41 +1856,41 @@ func (x *ListMemoViewsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListMemoViewsRequest.ProtoReflect.Descriptor instead.
-func (*ListMemoViewsRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListNoteViewsRequest.ProtoReflect.Descriptor instead.
+func (*ListNoteViewsRequest) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{21}
 }
 
-func (x *ListMemoViewsRequest) GetParent() string {
+func (x *ListNoteViewsRequest) GetParent() string {
 	if x != nil {
 		return x.Parent
 	}
 	return ""
 }
 
-// Response message for UserService.ListMemoViews.
-type ListMemoViewsResponse struct {
+// Response message for UserService.ListNoteViews.
+type ListNoteViewsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The memo views.
-	MemoViews     []*MemoView `protobuf:"bytes,1,rep,name=memo_views,json=memoViews,proto3" json:"memo_views,omitempty"`
+	// The note views.
+	NoteViews     []*NoteView `protobuf:"bytes,1,rep,name=note_views,json=noteViews,proto3" json:"note_views,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ListMemoViewsResponse) Reset() {
-	*x = ListMemoViewsResponse{}
+func (x *ListNoteViewsResponse) Reset() {
+	*x = ListNoteViewsResponse{}
 	mi := &file_api_user_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ListMemoViewsResponse) String() string {
+func (x *ListNoteViewsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListMemoViewsResponse) ProtoMessage() {}
+func (*ListNoteViewsResponse) ProtoMessage() {}
 
-func (x *ListMemoViewsResponse) ProtoReflect() protoreflect.Message {
+func (x *ListNoteViewsResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1902,42 +1902,42 @@ func (x *ListMemoViewsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListMemoViewsResponse.ProtoReflect.Descriptor instead.
-func (*ListMemoViewsResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListNoteViewsResponse.ProtoReflect.Descriptor instead.
+func (*ListNoteViewsResponse) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{22}
 }
 
-func (x *ListMemoViewsResponse) GetMemoViews() []*MemoView {
+func (x *ListNoteViewsResponse) GetNoteViews() []*NoteView {
 	if x != nil {
-		return x.MemoViews
+		return x.NoteViews
 	}
 	return nil
 }
 
-// Request message for UserService.GetMemoView.
-type GetMemoViewRequest struct {
+// Request message for UserService.GetNoteView.
+type GetNoteViewRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The resource name of the memo view.
+	// Required. The resource name of the note view.
 	// Format: users/{user}/views/{view}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetMemoViewRequest) Reset() {
-	*x = GetMemoViewRequest{}
+func (x *GetNoteViewRequest) Reset() {
+	*x = GetNoteViewRequest{}
 	mi := &file_api_user_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetMemoViewRequest) String() string {
+func (x *GetNoteViewRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetMemoViewRequest) ProtoMessage() {}
+func (*GetNoteViewRequest) ProtoMessage() {}
 
-func (x *GetMemoViewRequest) ProtoReflect() protoreflect.Message {
+func (x *GetNoteViewRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1949,46 +1949,46 @@ func (x *GetMemoViewRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetMemoViewRequest.ProtoReflect.Descriptor instead.
-func (*GetMemoViewRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use GetNoteViewRequest.ProtoReflect.Descriptor instead.
+func (*GetNoteViewRequest) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{23}
 }
 
-func (x *GetMemoViewRequest) GetName() string {
+func (x *GetNoteViewRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-// Request message for UserService.CreateMemoView.
-type CreateMemoViewRequest struct {
+// Request message for UserService.CreateNoteView.
+type CreateNoteViewRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The user who owns the memo view.
+	// Required. The user who owns the note view.
 	// Format: users/{user}
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The memo view to create.
-	MemoView *MemoView `protobuf:"bytes,2,opt,name=memo_view,json=memoView,proto3" json:"memo_view,omitempty"`
-	// Optional. If set, validate the request but do not create the memo view.
+	// Required. The note view to create.
+	NoteView *NoteView `protobuf:"bytes,2,opt,name=note_view,json=noteView,proto3" json:"note_view,omitempty"`
+	// Optional. If set, validate the request but do not create the note view.
 	ValidateOnly  bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateMemoViewRequest) Reset() {
-	*x = CreateMemoViewRequest{}
+func (x *CreateNoteViewRequest) Reset() {
+	*x = CreateNoteViewRequest{}
 	mi := &file_api_user_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateMemoViewRequest) String() string {
+func (x *CreateNoteViewRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateMemoViewRequest) ProtoMessage() {}
+func (*CreateNoteViewRequest) ProtoMessage() {}
 
-func (x *CreateMemoViewRequest) ProtoReflect() protoreflect.Message {
+func (x *CreateNoteViewRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2000,37 +2000,37 @@ func (x *CreateMemoViewRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateMemoViewRequest.ProtoReflect.Descriptor instead.
-func (*CreateMemoViewRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateNoteViewRequest.ProtoReflect.Descriptor instead.
+func (*CreateNoteViewRequest) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{24}
 }
 
-func (x *CreateMemoViewRequest) GetParent() string {
+func (x *CreateNoteViewRequest) GetParent() string {
 	if x != nil {
 		return x.Parent
 	}
 	return ""
 }
 
-func (x *CreateMemoViewRequest) GetMemoView() *MemoView {
+func (x *CreateNoteViewRequest) GetNoteView() *NoteView {
 	if x != nil {
-		return x.MemoView
+		return x.NoteView
 	}
 	return nil
 }
 
-func (x *CreateMemoViewRequest) GetValidateOnly() bool {
+func (x *CreateNoteViewRequest) GetValidateOnly() bool {
 	if x != nil {
 		return x.ValidateOnly
 	}
 	return false
 }
 
-// Request message for UserService.UpdateMemoView.
-type UpdateMemoViewRequest struct {
+// Request message for UserService.UpdateNoteView.
+type UpdateNoteViewRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The memo view to update. Its name identifies the memo view.
-	MemoView *MemoView `protobuf:"bytes,1,opt,name=memo_view,json=memoView,proto3" json:"memo_view,omitempty"`
+	// Required. The note view to update. Its name identifies the note view.
+	NoteView *NoteView `protobuf:"bytes,1,opt,name=note_view,json=noteView,proto3" json:"note_view,omitempty"`
 	// Optional. The fields to update. Supported paths: title, filter, icon. The
 	// service rejects an empty mask.
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
@@ -2038,20 +2038,20 @@ type UpdateMemoViewRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UpdateMemoViewRequest) Reset() {
-	*x = UpdateMemoViewRequest{}
+func (x *UpdateNoteViewRequest) Reset() {
+	*x = UpdateNoteViewRequest{}
 	mi := &file_api_user_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UpdateMemoViewRequest) String() string {
+func (x *UpdateNoteViewRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UpdateMemoViewRequest) ProtoMessage() {}
+func (*UpdateNoteViewRequest) ProtoMessage() {}
 
-func (x *UpdateMemoViewRequest) ProtoReflect() protoreflect.Message {
+func (x *UpdateNoteViewRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2063,49 +2063,49 @@ func (x *UpdateMemoViewRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateMemoViewRequest.ProtoReflect.Descriptor instead.
-func (*UpdateMemoViewRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use UpdateNoteViewRequest.ProtoReflect.Descriptor instead.
+func (*UpdateNoteViewRequest) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{25}
 }
 
-func (x *UpdateMemoViewRequest) GetMemoView() *MemoView {
+func (x *UpdateNoteViewRequest) GetNoteView() *NoteView {
 	if x != nil {
-		return x.MemoView
+		return x.NoteView
 	}
 	return nil
 }
 
-func (x *UpdateMemoViewRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+func (x *UpdateNoteViewRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	if x != nil {
 		return x.UpdateMask
 	}
 	return nil
 }
 
-// Request message for UserService.DeleteMemoView.
-type DeleteMemoViewRequest struct {
+// Request message for UserService.DeleteNoteView.
+type DeleteNoteViewRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The resource name of the memo view to delete.
+	// Required. The resource name of the note view to delete.
 	// Format: users/{user}/views/{view}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DeleteMemoViewRequest) Reset() {
-	*x = DeleteMemoViewRequest{}
+func (x *DeleteNoteViewRequest) Reset() {
+	*x = DeleteNoteViewRequest{}
 	mi := &file_api_user_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DeleteMemoViewRequest) String() string {
+func (x *DeleteNoteViewRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeleteMemoViewRequest) ProtoMessage() {}
+func (*DeleteNoteViewRequest) ProtoMessage() {}
 
-func (x *DeleteMemoViewRequest) ProtoReflect() protoreflect.Message {
+func (x *DeleteNoteViewRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2117,12 +2117,12 @@ func (x *DeleteMemoViewRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteMemoViewRequest.ProtoReflect.Descriptor instead.
-func (*DeleteMemoViewRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use DeleteNoteViewRequest.ProtoReflect.Descriptor instead.
+func (*DeleteNoteViewRequest) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{26}
 }
 
-func (x *DeleteMemoViewRequest) GetName() string {
+func (x *DeleteNoteViewRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
@@ -2141,17 +2141,17 @@ type UserNotification struct {
 	// Output only. The sender user details.
 	SenderUser *User `protobuf:"bytes,3,opt,name=sender_user,json=senderUser,proto3" json:"sender_user,omitempty"`
 	// Output only. The type of the notification.
-	Type UserNotification_Type `protobuf:"varint,4,opt,name=type,proto3,enum=memos.api.UserNotification_Type" json:"type,omitempty"`
+	Type UserNotification_Type `protobuf:"varint,4,opt,name=type,proto3,enum=roster.api.UserNotification_Type" json:"type,omitempty"`
 	// The type-specific details. The set field matches the type.
 	//
 	// Types that are valid to be assigned to Payload:
 	//
-	//	*UserNotification_MemoComment
-	//	*UserNotification_MemoMention
+	//	*UserNotification_NoteComment
+	//	*UserNotification_NoteMention
 	//	*UserNotification_SpaceInvitation
 	Payload isUserNotification_Payload `protobuf_oneof:"payload"`
 	// Optional. The status of the notification.
-	Status UserNotification_Status `protobuf:"varint,8,opt,name=status,proto3,enum=memos.api.UserNotification_Status" json:"status,omitempty"`
+	Status UserNotification_Status `protobuf:"varint,8,opt,name=status,proto3,enum=roster.api.UserNotification_Status" json:"status,omitempty"`
 	// Output only. The creation timestamp.
 	CreateTime    *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -2223,19 +2223,19 @@ func (x *UserNotification) GetPayload() isUserNotification_Payload {
 	return nil
 }
 
-func (x *UserNotification) GetMemoComment() *UserNotification_MemoCommentPayload {
+func (x *UserNotification) GetNoteComment() *UserNotification_NoteCommentPayload {
 	if x != nil {
-		if x, ok := x.Payload.(*UserNotification_MemoComment); ok {
-			return x.MemoComment
+		if x, ok := x.Payload.(*UserNotification_NoteComment); ok {
+			return x.NoteComment
 		}
 	}
 	return nil
 }
 
-func (x *UserNotification) GetMemoMention() *UserNotification_MemoMentionPayload {
+func (x *UserNotification) GetNoteMention() *UserNotification_NoteMentionPayload {
 	if x != nil {
-		if x, ok := x.Payload.(*UserNotification_MemoMention); ok {
-			return x.MemoMention
+		if x, ok := x.Payload.(*UserNotification_NoteMention); ok {
+			return x.NoteMention
 		}
 	}
 	return nil
@@ -2268,14 +2268,14 @@ type isUserNotification_Payload interface {
 	isUserNotification_Payload()
 }
 
-type UserNotification_MemoComment struct {
-	// Output only. Details of a MEMO_COMMENT notification.
-	MemoComment *UserNotification_MemoCommentPayload `protobuf:"bytes,5,opt,name=memo_comment,json=memoComment,proto3,oneof"`
+type UserNotification_NoteComment struct {
+	// Output only. Details of a NOTE_COMMENT notification.
+	NoteComment *UserNotification_NoteCommentPayload `protobuf:"bytes,5,opt,name=note_comment,json=noteComment,proto3,oneof"`
 }
 
-type UserNotification_MemoMention struct {
-	// Output only. Details of a MEMO_MENTION notification.
-	MemoMention *UserNotification_MemoMentionPayload `protobuf:"bytes,6,opt,name=memo_mention,json=memoMention,proto3,oneof"`
+type UserNotification_NoteMention struct {
+	// Output only. Details of a NOTE_MENTION notification.
+	NoteMention *UserNotification_NoteMentionPayload `protobuf:"bytes,6,opt,name=note_mention,json=noteMention,proto3,oneof"`
 }
 
 type UserNotification_SpaceInvitation struct {
@@ -2283,9 +2283,9 @@ type UserNotification_SpaceInvitation struct {
 	SpaceInvitation *UserNotification_SpaceInvitationPayload `protobuf:"bytes,7,opt,name=space_invitation,json=spaceInvitation,proto3,oneof"`
 }
 
-func (*UserNotification_MemoComment) isUserNotification_Payload() {}
+func (*UserNotification_NoteComment) isUserNotification_Payload() {}
 
-func (*UserNotification_MemoMention) isUserNotification_Payload() {}
+func (*UserNotification_NoteMention) isUserNotification_Payload() {}
 
 func (*UserNotification_SpaceInvitation) isUserNotification_Payload() {}
 
@@ -3685,30 +3685,30 @@ func (x *DeletePersonalAccessTokenRequest) GetName() string {
 	return ""
 }
 
-// Request message for UserService.ExportMemos.
-type ExportMemosRequest struct {
+// Request message for UserService.ExportNotes.
+type ExportNotesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The user whose memos are exported. Must be the caller.
+	// Required. The user whose notes are exported. Must be the caller.
 	// Format: users/{user}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ExportMemosRequest) Reset() {
-	*x = ExportMemosRequest{}
+func (x *ExportNotesRequest) Reset() {
+	*x = ExportNotesRequest{}
 	mi := &file_api_user_service_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ExportMemosRequest) String() string {
+func (x *ExportNotesRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ExportMemosRequest) ProtoMessage() {}
+func (*ExportNotesRequest) ProtoMessage() {}
 
-func (x *ExportMemosRequest) ProtoReflect() protoreflect.Message {
+func (x *ExportNotesRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3720,31 +3720,31 @@ func (x *ExportMemosRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ExportMemosRequest.ProtoReflect.Descriptor instead.
-func (*ExportMemosRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ExportNotesRequest.ProtoReflect.Descriptor instead.
+func (*ExportNotesRequest) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{52}
 }
 
-func (x *ExportMemosRequest) GetName() string {
+func (x *ExportNotesRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-// Request message for UserService.ImportMemos.
-type ImportMemosRequest struct {
+// Request message for UserService.ImportNotes.
+type ImportNotesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The user who receives the memos. Must be the caller.
+	// Required. The user who receives the notes. Must be the caller.
 	// Format: users/{user}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. Start a new upload or continue an existing one.
 	//
 	// Types that are valid to be assigned to Upload:
 	//
-	//	*ImportMemosRequest_Spec
-	//	*ImportMemosRequest_UploadId
-	Upload isImportMemosRequest_Upload `protobuf_oneof:"upload"`
+	//	*ImportNotesRequest_Spec
+	//	*ImportNotesRequest_UploadId
+	Upload isImportNotesRequest_Upload `protobuf_oneof:"upload"`
 	// Required. Zero-based byte offset at which data is written. Must equal the
 	// committed size, except when retrying the most recently accepted chunk
 	// with identical bytes and offset, which is accepted without writing again.
@@ -3759,7 +3759,7 @@ type ImportMemosRequest struct {
 	// returns the same report.
 	FinishWrite bool `protobuf:"varint,6,opt,name=finish_write,json=finishWrite,proto3" json:"finish_write,omitempty"`
 	// Optional. Read on the finishing call that imports. Unspecified means SKIP.
-	ConflictPolicy ImportMemosRequest_ConflictPolicy `protobuf:"varint,7,opt,name=conflict_policy,json=conflictPolicy,proto3,enum=memos.api.ImportMemosRequest_ConflictPolicy" json:"conflict_policy,omitempty"`
+	ConflictPolicy ImportNotesRequest_ConflictPolicy `protobuf:"varint,7,opt,name=conflict_policy,json=conflictPolicy,proto3,enum=roster.api.ImportNotesRequest_ConflictPolicy" json:"conflict_policy,omitempty"`
 	// Optional. On a finishing call, validate the archive and return the plan
 	// without importing. The upload stays staged so a later finishing call can
 	// import it.
@@ -3768,20 +3768,20 @@ type ImportMemosRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ImportMemosRequest) Reset() {
-	*x = ImportMemosRequest{}
+func (x *ImportNotesRequest) Reset() {
+	*x = ImportNotesRequest{}
 	mi := &file_api_user_service_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ImportMemosRequest) String() string {
+func (x *ImportNotesRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ImportMemosRequest) ProtoMessage() {}
+func (*ImportNotesRequest) ProtoMessage() {}
 
-func (x *ImportMemosRequest) ProtoReflect() protoreflect.Message {
+func (x *ImportNotesRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3793,98 +3793,98 @@ func (x *ImportMemosRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ImportMemosRequest.ProtoReflect.Descriptor instead.
-func (*ImportMemosRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ImportNotesRequest.ProtoReflect.Descriptor instead.
+func (*ImportNotesRequest) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{53}
 }
 
-func (x *ImportMemosRequest) GetName() string {
+func (x *ImportNotesRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-func (x *ImportMemosRequest) GetUpload() isImportMemosRequest_Upload {
+func (x *ImportNotesRequest) GetUpload() isImportNotesRequest_Upload {
 	if x != nil {
 		return x.Upload
 	}
 	return nil
 }
 
-func (x *ImportMemosRequest) GetSpec() *ImportMemosSpec {
+func (x *ImportNotesRequest) GetSpec() *ImportNotesSpec {
 	if x != nil {
-		if x, ok := x.Upload.(*ImportMemosRequest_Spec); ok {
+		if x, ok := x.Upload.(*ImportNotesRequest_Spec); ok {
 			return x.Spec
 		}
 	}
 	return nil
 }
 
-func (x *ImportMemosRequest) GetUploadId() string {
+func (x *ImportNotesRequest) GetUploadId() string {
 	if x != nil {
-		if x, ok := x.Upload.(*ImportMemosRequest_UploadId); ok {
+		if x, ok := x.Upload.(*ImportNotesRequest_UploadId); ok {
 			return x.UploadId
 		}
 	}
 	return ""
 }
 
-func (x *ImportMemosRequest) GetWriteOffset() int64 {
+func (x *ImportNotesRequest) GetWriteOffset() int64 {
 	if x != nil {
 		return x.WriteOffset
 	}
 	return 0
 }
 
-func (x *ImportMemosRequest) GetData() []byte {
+func (x *ImportNotesRequest) GetData() []byte {
 	if x != nil {
 		return x.Data
 	}
 	return nil
 }
 
-func (x *ImportMemosRequest) GetFinishWrite() bool {
+func (x *ImportNotesRequest) GetFinishWrite() bool {
 	if x != nil {
 		return x.FinishWrite
 	}
 	return false
 }
 
-func (x *ImportMemosRequest) GetConflictPolicy() ImportMemosRequest_ConflictPolicy {
+func (x *ImportNotesRequest) GetConflictPolicy() ImportNotesRequest_ConflictPolicy {
 	if x != nil {
 		return x.ConflictPolicy
 	}
-	return ImportMemosRequest_CONFLICT_POLICY_UNSPECIFIED
+	return ImportNotesRequest_CONFLICT_POLICY_UNSPECIFIED
 }
 
-func (x *ImportMemosRequest) GetValidateOnly() bool {
+func (x *ImportNotesRequest) GetValidateOnly() bool {
 	if x != nil {
 		return x.ValidateOnly
 	}
 	return false
 }
 
-type isImportMemosRequest_Upload interface {
-	isImportMemosRequest_Upload()
+type isImportNotesRequest_Upload interface {
+	isImportNotesRequest_Upload()
 }
 
-type ImportMemosRequest_Spec struct {
+type ImportNotesRequest_Spec struct {
 	// Starts a new upload. The same call may also carry data and finish_write.
-	Spec *ImportMemosSpec `protobuf:"bytes,2,opt,name=spec,proto3,oneof"`
+	Spec *ImportNotesSpec `protobuf:"bytes,2,opt,name=spec,proto3,oneof"`
 }
 
-type ImportMemosRequest_UploadId struct {
+type ImportNotesRequest_UploadId struct {
 	// Continues the upload identified by a previous response.
 	UploadId string `protobuf:"bytes,3,opt,name=upload_id,json=uploadId,proto3,oneof"`
 }
 
-func (*ImportMemosRequest_Spec) isImportMemosRequest_Upload() {}
+func (*ImportNotesRequest_Spec) isImportNotesRequest_Upload() {}
 
-func (*ImportMemosRequest_UploadId) isImportMemosRequest_Upload() {}
+func (*ImportNotesRequest_UploadId) isImportNotesRequest_Upload() {}
 
-// Response message for UserService.ImportMemos.
-type ImportMemosResponse struct {
+// Response message for UserService.ImportNotes.
+type ImportNotesResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Opaque ID for subsequent calls. This is not a resource name.
 	UploadId string `protobuf:"bytes,1,opt,name=upload_id,json=uploadId,proto3" json:"upload_id,omitempty"`
@@ -3896,27 +3896,27 @@ type ImportMemosResponse struct {
 	//
 	// Types that are valid to be assigned to Result:
 	//
-	//	*ImportMemosResponse_Plan
-	//	*ImportMemosResponse_Report
-	Result        isImportMemosResponse_Result `protobuf_oneof:"result"`
+	//	*ImportNotesResponse_Plan
+	//	*ImportNotesResponse_Report
+	Result        isImportNotesResponse_Result `protobuf_oneof:"result"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ImportMemosResponse) Reset() {
-	*x = ImportMemosResponse{}
+func (x *ImportNotesResponse) Reset() {
+	*x = ImportNotesResponse{}
 	mi := &file_api_user_service_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ImportMemosResponse) String() string {
+func (x *ImportNotesResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ImportMemosResponse) ProtoMessage() {}
+func (*ImportNotesResponse) ProtoMessage() {}
 
-func (x *ImportMemosResponse) ProtoReflect() protoreflect.Message {
+func (x *ImportNotesResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3928,77 +3928,77 @@ func (x *ImportMemosResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ImportMemosResponse.ProtoReflect.Descriptor instead.
-func (*ImportMemosResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ImportNotesResponse.ProtoReflect.Descriptor instead.
+func (*ImportNotesResponse) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{54}
 }
 
-func (x *ImportMemosResponse) GetUploadId() string {
+func (x *ImportNotesResponse) GetUploadId() string {
 	if x != nil {
 		return x.UploadId
 	}
 	return ""
 }
 
-func (x *ImportMemosResponse) GetCommittedSize() int64 {
+func (x *ImportNotesResponse) GetCommittedSize() int64 {
 	if x != nil {
 		return x.CommittedSize
 	}
 	return 0
 }
 
-func (x *ImportMemosResponse) GetMaxChunkSize() int32 {
+func (x *ImportNotesResponse) GetMaxChunkSize() int32 {
 	if x != nil {
 		return x.MaxChunkSize
 	}
 	return 0
 }
 
-func (x *ImportMemosResponse) GetResult() isImportMemosResponse_Result {
+func (x *ImportNotesResponse) GetResult() isImportNotesResponse_Result {
 	if x != nil {
 		return x.Result
 	}
 	return nil
 }
 
-func (x *ImportMemosResponse) GetPlan() *ImportMemosPlan {
+func (x *ImportNotesResponse) GetPlan() *ImportNotesPlan {
 	if x != nil {
-		if x, ok := x.Result.(*ImportMemosResponse_Plan); ok {
+		if x, ok := x.Result.(*ImportNotesResponse_Plan); ok {
 			return x.Plan
 		}
 	}
 	return nil
 }
 
-func (x *ImportMemosResponse) GetReport() *ImportMemosReport {
+func (x *ImportNotesResponse) GetReport() *ImportNotesReport {
 	if x != nil {
-		if x, ok := x.Result.(*ImportMemosResponse_Report); ok {
+		if x, ok := x.Result.(*ImportNotesResponse_Report); ok {
 			return x.Report
 		}
 	}
 	return nil
 }
 
-type isImportMemosResponse_Result interface {
-	isImportMemosResponse_Result()
+type isImportNotesResponse_Result interface {
+	isImportNotesResponse_Result()
 }
 
-type ImportMemosResponse_Plan struct {
+type ImportNotesResponse_Plan struct {
 	// What the import would do. Set by a finishing call with validate_only.
-	Plan *ImportMemosPlan `protobuf:"bytes,4,opt,name=plan,proto3,oneof"`
+	Plan *ImportNotesPlan `protobuf:"bytes,4,opt,name=plan,proto3,oneof"`
 }
 
-type ImportMemosResponse_Report struct {
+type ImportNotesResponse_Report struct {
 	// What the import did. Set by a finishing call that imported.
-	Report *ImportMemosReport `protobuf:"bytes,5,opt,name=report,proto3,oneof"`
+	Report *ImportNotesReport `protobuf:"bytes,5,opt,name=report,proto3,oneof"`
 }
 
-func (*ImportMemosResponse_Plan) isImportMemosResponse_Result() {}
+func (*ImportNotesResponse_Plan) isImportNotesResponse_Result() {}
 
-func (*ImportMemosResponse_Report) isImportMemosResponse_Result() {}
+func (*ImportNotesResponse_Report) isImportNotesResponse_Result() {}
 
-// ImportMemosSpec describes a new memo import upload.
-type ImportMemosSpec struct {
+// ImportNotesSpec describes a new note import upload.
+type ImportNotesSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. Total size of the archive in bytes.
 	TotalSize     int64 `protobuf:"varint,1,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
@@ -4006,20 +4006,20 @@ type ImportMemosSpec struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ImportMemosSpec) Reset() {
-	*x = ImportMemosSpec{}
+func (x *ImportNotesSpec) Reset() {
+	*x = ImportNotesSpec{}
 	mi := &file_api_user_service_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ImportMemosSpec) String() string {
+func (x *ImportNotesSpec) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ImportMemosSpec) ProtoMessage() {}
+func (*ImportNotesSpec) ProtoMessage() {}
 
-func (x *ImportMemosSpec) ProtoReflect() protoreflect.Message {
+func (x *ImportNotesSpec) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4031,20 +4031,20 @@ func (x *ImportMemosSpec) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ImportMemosSpec.ProtoReflect.Descriptor instead.
-func (*ImportMemosSpec) Descriptor() ([]byte, []int) {
+// Deprecated: Use ImportNotesSpec.ProtoReflect.Descriptor instead.
+func (*ImportNotesSpec) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{55}
 }
 
-func (x *ImportMemosSpec) GetTotalSize() int64 {
+func (x *ImportNotesSpec) GetTotalSize() int64 {
 	if x != nil {
 		return x.TotalSize
 	}
 	return 0
 }
 
-// ImportMemosPlan describes what importing a staged archive would do.
-type ImportMemosPlan struct {
+// ImportNotesPlan describes what importing a staged archive would do.
+type ImportNotesPlan struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// When the archive was written.
 	ExportTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=export_time,json=exportTime,proto3" json:"export_time,omitempty"`
@@ -4052,36 +4052,36 @@ type ImportMemosPlan struct {
 	Exporter string `protobuf:"bytes,2,opt,name=exporter,proto3" json:"exporter,omitempty"`
 	// The software that wrote the archive.
 	Generator string `protobuf:"bytes,3,opt,name=generator,proto3" json:"generator,omitempty"`
-	// Number of memo records in the archive.
-	MemoCount int32 `protobuf:"varint,4,opt,name=memo_count,json=memoCount,proto3" json:"memo_count,omitempty"`
+	// Number of note records in the archive.
+	NoteCount int32 `protobuf:"varint,4,opt,name=note_count,json=noteCount,proto3" json:"note_count,omitempty"`
 	// Number of attachment files in the archive.
 	AttachmentCount int32 `protobuf:"varint,5,opt,name=attachment_count,json=attachmentCount,proto3" json:"attachment_count,omitempty"`
-	// Memos whose UID nobody on the instance holds.
+	// Notes whose UID nobody on the instance holds.
 	New int32 `protobuf:"varint,6,opt,name=new,proto3" json:"new,omitempty"`
-	// Memos the user already holds; the conflict policy applies to them.
+	// Notes the user already holds; the conflict policy applies to them.
 	Existing int32 `protobuf:"varint,7,opt,name=existing,proto3" json:"existing,omitempty"`
-	// Memos whose UID another account holds; they are imported under fresh UIDs.
+	// Notes whose UID another account holds; they are imported under fresh UIDs.
 	Renamed int32 `protobuf:"varint,8,opt,name=renamed,proto3" json:"renamed,omitempty"`
 	// Deviations the archive reader corrected while validating.
-	Warnings      []*ImportMemosIssue `protobuf:"bytes,9,rep,name=warnings,proto3" json:"warnings,omitempty"`
+	Warnings      []*ImportNotesIssue `protobuf:"bytes,9,rep,name=warnings,proto3" json:"warnings,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ImportMemosPlan) Reset() {
-	*x = ImportMemosPlan{}
+func (x *ImportNotesPlan) Reset() {
+	*x = ImportNotesPlan{}
 	mi := &file_api_user_service_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ImportMemosPlan) String() string {
+func (x *ImportNotesPlan) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ImportMemosPlan) ProtoMessage() {}
+func (*ImportNotesPlan) ProtoMessage() {}
 
-func (x *ImportMemosPlan) ProtoReflect() protoreflect.Message {
+func (x *ImportNotesPlan) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4093,107 +4093,107 @@ func (x *ImportMemosPlan) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ImportMemosPlan.ProtoReflect.Descriptor instead.
-func (*ImportMemosPlan) Descriptor() ([]byte, []int) {
+// Deprecated: Use ImportNotesPlan.ProtoReflect.Descriptor instead.
+func (*ImportNotesPlan) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{56}
 }
 
-func (x *ImportMemosPlan) GetExportTime() *timestamppb.Timestamp {
+func (x *ImportNotesPlan) GetExportTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.ExportTime
 	}
 	return nil
 }
 
-func (x *ImportMemosPlan) GetExporter() string {
+func (x *ImportNotesPlan) GetExporter() string {
 	if x != nil {
 		return x.Exporter
 	}
 	return ""
 }
 
-func (x *ImportMemosPlan) GetGenerator() string {
+func (x *ImportNotesPlan) GetGenerator() string {
 	if x != nil {
 		return x.Generator
 	}
 	return ""
 }
 
-func (x *ImportMemosPlan) GetMemoCount() int32 {
+func (x *ImportNotesPlan) GetNoteCount() int32 {
 	if x != nil {
-		return x.MemoCount
+		return x.NoteCount
 	}
 	return 0
 }
 
-func (x *ImportMemosPlan) GetAttachmentCount() int32 {
+func (x *ImportNotesPlan) GetAttachmentCount() int32 {
 	if x != nil {
 		return x.AttachmentCount
 	}
 	return 0
 }
 
-func (x *ImportMemosPlan) GetNew() int32 {
+func (x *ImportNotesPlan) GetNew() int32 {
 	if x != nil {
 		return x.New
 	}
 	return 0
 }
 
-func (x *ImportMemosPlan) GetExisting() int32 {
+func (x *ImportNotesPlan) GetExisting() int32 {
 	if x != nil {
 		return x.Existing
 	}
 	return 0
 }
 
-func (x *ImportMemosPlan) GetRenamed() int32 {
+func (x *ImportNotesPlan) GetRenamed() int32 {
 	if x != nil {
 		return x.Renamed
 	}
 	return 0
 }
 
-func (x *ImportMemosPlan) GetWarnings() []*ImportMemosIssue {
+func (x *ImportNotesPlan) GetWarnings() []*ImportNotesIssue {
 	if x != nil {
 		return x.Warnings
 	}
 	return nil
 }
 
-// ImportMemosReport is the outcome of an import.
-type ImportMemosReport struct {
+// ImportNotesReport is the outcome of an import.
+type ImportNotesReport struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Number of memos created.
+	// Number of notes created.
 	Created int32 `protobuf:"varint,1,opt,name=created,proto3" json:"created,omitempty"`
-	// Number of existing memos replaced under the REPLACE policy.
+	// Number of existing notes replaced under the REPLACE policy.
 	Updated int32 `protobuf:"varint,2,opt,name=updated,proto3" json:"updated,omitempty"`
-	// Number of existing memos left untouched under the SKIP policy.
+	// Number of existing notes left untouched under the SKIP policy.
 	Skipped int32 `protobuf:"varint,3,opt,name=skipped,proto3" json:"skipped,omitempty"`
-	// Number of memos that could not be imported.
+	// Number of notes that could not be imported.
 	Failed int32 `protobuf:"varint,4,opt,name=failed,proto3" json:"failed,omitempty"`
 	// Deviations the importer corrected or tolerated.
-	Warnings []*ImportMemosIssue `protobuf:"bytes,5,rep,name=warnings,proto3" json:"warnings,omitempty"`
-	// One entry per failed memo, with the reason.
-	Failures      []*ImportMemosIssue `protobuf:"bytes,6,rep,name=failures,proto3" json:"failures,omitempty"`
+	Warnings []*ImportNotesIssue `protobuf:"bytes,5,rep,name=warnings,proto3" json:"warnings,omitempty"`
+	// One entry per failed note, with the reason.
+	Failures      []*ImportNotesIssue `protobuf:"bytes,6,rep,name=failures,proto3" json:"failures,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ImportMemosReport) Reset() {
-	*x = ImportMemosReport{}
+func (x *ImportNotesReport) Reset() {
+	*x = ImportNotesReport{}
 	mi := &file_api_user_service_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ImportMemosReport) String() string {
+func (x *ImportNotesReport) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ImportMemosReport) ProtoMessage() {}
+func (*ImportNotesReport) ProtoMessage() {}
 
-func (x *ImportMemosReport) ProtoReflect() protoreflect.Message {
+func (x *ImportNotesReport) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4205,79 +4205,79 @@ func (x *ImportMemosReport) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ImportMemosReport.ProtoReflect.Descriptor instead.
-func (*ImportMemosReport) Descriptor() ([]byte, []int) {
+// Deprecated: Use ImportNotesReport.ProtoReflect.Descriptor instead.
+func (*ImportNotesReport) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{57}
 }
 
-func (x *ImportMemosReport) GetCreated() int32 {
+func (x *ImportNotesReport) GetCreated() int32 {
 	if x != nil {
 		return x.Created
 	}
 	return 0
 }
 
-func (x *ImportMemosReport) GetUpdated() int32 {
+func (x *ImportNotesReport) GetUpdated() int32 {
 	if x != nil {
 		return x.Updated
 	}
 	return 0
 }
 
-func (x *ImportMemosReport) GetSkipped() int32 {
+func (x *ImportNotesReport) GetSkipped() int32 {
 	if x != nil {
 		return x.Skipped
 	}
 	return 0
 }
 
-func (x *ImportMemosReport) GetFailed() int32 {
+func (x *ImportNotesReport) GetFailed() int32 {
 	if x != nil {
 		return x.Failed
 	}
 	return 0
 }
 
-func (x *ImportMemosReport) GetWarnings() []*ImportMemosIssue {
+func (x *ImportNotesReport) GetWarnings() []*ImportNotesIssue {
 	if x != nil {
 		return x.Warnings
 	}
 	return nil
 }
 
-func (x *ImportMemosReport) GetFailures() []*ImportMemosIssue {
+func (x *ImportNotesReport) GetFailures() []*ImportNotesIssue {
 	if x != nil {
 		return x.Failures
 	}
 	return nil
 }
 
-// ImportMemosIssue is one warning or failure of an import, tied to the memo
+// ImportNotesIssue is one warning or failure of an import, tied to the note
 // UID from the archive when there is one.
-type ImportMemosIssue struct {
+type ImportNotesIssue struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The archive memo UID the issue concerns, if any.
-	MemoUid string `protobuf:"bytes,1,opt,name=memo_uid,json=memoUid,proto3" json:"memo_uid,omitempty"`
+	// The archive note UID the issue concerns, if any.
+	NoteUid string `protobuf:"bytes,1,opt,name=note_uid,json=noteUid,proto3" json:"note_uid,omitempty"`
 	// A description of the issue.
 	Message       string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ImportMemosIssue) Reset() {
-	*x = ImportMemosIssue{}
+func (x *ImportNotesIssue) Reset() {
+	*x = ImportNotesIssue{}
 	mi := &file_api_user_service_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ImportMemosIssue) String() string {
+func (x *ImportNotesIssue) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ImportMemosIssue) ProtoMessage() {}
+func (*ImportNotesIssue) ProtoMessage() {}
 
-func (x *ImportMemosIssue) ProtoReflect() protoreflect.Message {
+func (x *ImportNotesIssue) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4289,19 +4289,19 @@ func (x *ImportMemosIssue) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ImportMemosIssue.ProtoReflect.Descriptor instead.
-func (*ImportMemosIssue) Descriptor() ([]byte, []int) {
+// Deprecated: Use ImportNotesIssue.ProtoReflect.Descriptor instead.
+func (*ImportNotesIssue) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{58}
 }
 
-func (x *ImportMemosIssue) GetMemoUid() string {
+func (x *ImportNotesIssue) GetNoteUid() string {
 	if x != nil {
-		return x.MemoUid
+		return x.NoteUid
 	}
 	return ""
 }
 
-func (x *ImportMemosIssue) GetMessage() string {
+func (x *ImportNotesIssue) GetMessage() string {
 	if x != nil {
 		return x.Message
 	}
@@ -4313,9 +4313,9 @@ type UserSetting_GeneralSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. The preferred locale of the user.
 	Locale string `protobuf:"bytes,1,opt,name=locale,proto3" json:"locale,omitempty"`
-	// Optional. The default visibility of new memos: PRIVATE, PROTECTED or
+	// Optional. The default visibility of new notes: PRIVATE, PROTECTED or
 	// PUBLIC.
-	MemoVisibility string `protobuf:"bytes,2,opt,name=memo_visibility,json=memoVisibility,proto3" json:"memo_visibility,omitempty"`
+	NoteVisibility string `protobuf:"bytes,2,opt,name=note_visibility,json=noteVisibility,proto3" json:"note_visibility,omitempty"`
 	// Optional. The preferred theme of the user. This references a CSS file in
 	// the web/public/themes/ directory. If not set, the default theme is used.
 	Theme string `protobuf:"bytes,3,opt,name=theme,proto3" json:"theme,omitempty"`
@@ -4363,9 +4363,9 @@ func (x *UserSetting_GeneralSetting) GetLocale() string {
 	return ""
 }
 
-func (x *UserSetting_GeneralSetting) GetMemoVisibility() string {
+func (x *UserSetting_GeneralSetting) GetNoteVisibility() string {
 	if x != nil {
-		return x.MemoVisibility
+		return x.NoteVisibility
 	}
 	return ""
 }
@@ -4483,7 +4483,7 @@ type UserSetting_TagMetadata struct {
 	// Optional. The background color of the tag label. When unset, the default
 	// tag color is used.
 	BackgroundColor *color.Color `protobuf:"bytes,1,opt,name=background_color,json=backgroundColor,proto3" json:"background_color,omitempty"`
-	// Optional. Whether memos with this tag have their content blurred.
+	// Optional. Whether notes with this tag have their content blurred.
 	BlurContent   bool `protobuf:"varint,2,opt,name=blur_content,json=blurContent,proto3" json:"blur_content,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -4533,35 +4533,35 @@ func (x *UserSetting_TagMetadata) GetBlurContent() bool {
 	return false
 }
 
-// MemoTypeStats counts memos by the kind of content they contain.
-type UserStats_MemoTypeStats struct {
+// NoteTypeStats counts notes by the kind of content they contain.
+type UserStats_NoteTypeStats struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The number of memos that contain a link.
+	// The number of notes that contain a link.
 	LinkCount int32 `protobuf:"varint,1,opt,name=link_count,json=linkCount,proto3" json:"link_count,omitempty"`
-	// The number of memos that contain code.
+	// The number of notes that contain code.
 	CodeCount int32 `protobuf:"varint,2,opt,name=code_count,json=codeCount,proto3" json:"code_count,omitempty"`
-	// The number of memos that contain a task list.
+	// The number of notes that contain a task list.
 	TodoCount int32 `protobuf:"varint,3,opt,name=todo_count,json=todoCount,proto3" json:"todo_count,omitempty"`
-	// The number of memos that contain incomplete tasks.
+	// The number of notes that contain incomplete tasks.
 	UndoCount     int32 `protobuf:"varint,4,opt,name=undo_count,json=undoCount,proto3" json:"undo_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UserStats_MemoTypeStats) Reset() {
-	*x = UserStats_MemoTypeStats{}
+func (x *UserStats_NoteTypeStats) Reset() {
+	*x = UserStats_NoteTypeStats{}
 	mi := &file_api_user_service_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UserStats_MemoTypeStats) String() string {
+func (x *UserStats_NoteTypeStats) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserStats_MemoTypeStats) ProtoMessage() {}
+func (*UserStats_NoteTypeStats) ProtoMessage() {}
 
-func (x *UserStats_MemoTypeStats) ProtoReflect() protoreflect.Message {
+func (x *UserStats_NoteTypeStats) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4573,33 +4573,33 @@ func (x *UserStats_MemoTypeStats) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UserStats_MemoTypeStats.ProtoReflect.Descriptor instead.
-func (*UserStats_MemoTypeStats) Descriptor() ([]byte, []int) {
+// Deprecated: Use UserStats_NoteTypeStats.ProtoReflect.Descriptor instead.
+func (*UserStats_NoteTypeStats) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{14, 1}
 }
 
-func (x *UserStats_MemoTypeStats) GetLinkCount() int32 {
+func (x *UserStats_NoteTypeStats) GetLinkCount() int32 {
 	if x != nil {
 		return x.LinkCount
 	}
 	return 0
 }
 
-func (x *UserStats_MemoTypeStats) GetCodeCount() int32 {
+func (x *UserStats_NoteTypeStats) GetCodeCount() int32 {
 	if x != nil {
 		return x.CodeCount
 	}
 	return 0
 }
 
-func (x *UserStats_MemoTypeStats) GetTodoCount() int32 {
+func (x *UserStats_NoteTypeStats) GetTodoCount() int32 {
 	if x != nil {
 		return x.TodoCount
 	}
 	return 0
 }
 
-func (x *UserStats_MemoTypeStats) GetUndoCount() int32 {
+func (x *UserStats_NoteTypeStats) GetUndoCount() int32 {
 	if x != nil {
 		return x.UndoCount
 	}
@@ -4664,34 +4664,34 @@ func (x *UserUsage_EffectiveLimit) GetUsageLimit() string {
 	return ""
 }
 
-// Icon is the display icon of a memo view.
-type MemoView_Icon struct {
+// Icon is the display icon of a note view.
+type NoteView_Icon struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The icon value.
 	//
 	// Types that are valid to be assigned to Value:
 	//
-	//	*MemoView_Icon_Emoji
-	//	*MemoView_Icon_Lucide
-	Value         isMemoView_Icon_Value `protobuf_oneof:"value"`
+	//	*NoteView_Icon_Emoji
+	//	*NoteView_Icon_Lucide
+	Value         isNoteView_Icon_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *MemoView_Icon) Reset() {
-	*x = MemoView_Icon{}
+func (x *NoteView_Icon) Reset() {
+	*x = NoteView_Icon{}
 	mi := &file_api_user_service_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *MemoView_Icon) String() string {
+func (x *NoteView_Icon) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MemoView_Icon) ProtoMessage() {}
+func (*NoteView_Icon) ProtoMessage() {}
 
-func (x *MemoView_Icon) ProtoReflect() protoreflect.Message {
+func (x *NoteView_Icon) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4703,85 +4703,85 @@ func (x *MemoView_Icon) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use MemoView_Icon.ProtoReflect.Descriptor instead.
-func (*MemoView_Icon) Descriptor() ([]byte, []int) {
+// Deprecated: Use NoteView_Icon.ProtoReflect.Descriptor instead.
+func (*NoteView_Icon) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{20, 0}
 }
 
-func (x *MemoView_Icon) GetValue() isMemoView_Icon_Value {
+func (x *NoteView_Icon) GetValue() isNoteView_Icon_Value {
 	if x != nil {
 		return x.Value
 	}
 	return nil
 }
 
-func (x *MemoView_Icon) GetEmoji() string {
+func (x *NoteView_Icon) GetEmoji() string {
 	if x != nil {
-		if x, ok := x.Value.(*MemoView_Icon_Emoji); ok {
+		if x, ok := x.Value.(*NoteView_Icon_Emoji); ok {
 			return x.Emoji
 		}
 	}
 	return ""
 }
 
-func (x *MemoView_Icon) GetLucide() string {
+func (x *NoteView_Icon) GetLucide() string {
 	if x != nil {
-		if x, ok := x.Value.(*MemoView_Icon_Lucide); ok {
+		if x, ok := x.Value.(*NoteView_Icon_Lucide); ok {
 			return x.Lucide
 		}
 	}
 	return ""
 }
 
-type isMemoView_Icon_Value interface {
-	isMemoView_Icon_Value()
+type isNoteView_Icon_Value interface {
+	isNoteView_Icon_Value()
 }
 
-type MemoView_Icon_Emoji struct {
+type NoteView_Icon_Emoji struct {
 	// A Unicode emoji sequence.
 	Emoji string `protobuf:"bytes,1,opt,name=emoji,proto3,oneof"`
 }
 
-type MemoView_Icon_Lucide struct {
+type NoteView_Icon_Lucide struct {
 	// A canonical Lucide icon name, such as "leaf".
 	Lucide string `protobuf:"bytes,2,opt,name=lucide,proto3,oneof"`
 }
 
-func (*MemoView_Icon_Emoji) isMemoView_Icon_Value() {}
+func (*NoteView_Icon_Emoji) isNoteView_Icon_Value() {}
 
-func (*MemoView_Icon_Lucide) isMemoView_Icon_Value() {}
+func (*NoteView_Icon_Lucide) isNoteView_Icon_Value() {}
 
-// MemoCommentPayload holds the details of a MEMO_COMMENT notification.
-type UserNotification_MemoCommentPayload struct {
+// NoteCommentPayload holds the details of a NOTE_COMMENT notification.
+type UserNotification_NoteCommentPayload struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The comment memo.
-	// Format: memos/{memo}
-	Memo string `protobuf:"bytes,1,opt,name=memo,proto3" json:"memo,omitempty"`
-	// The memo that was commented on.
-	// Format: memos/{memo}
-	RelatedMemo string `protobuf:"bytes,2,opt,name=related_memo,json=relatedMemo,proto3" json:"related_memo,omitempty"`
-	// Preview text of the comment memo.
-	MemoSnippet string `protobuf:"bytes,3,opt,name=memo_snippet,json=memoSnippet,proto3" json:"memo_snippet,omitempty"`
-	// Preview text of the related memo.
-	RelatedMemoSnippet string `protobuf:"bytes,4,opt,name=related_memo_snippet,json=relatedMemoSnippet,proto3" json:"related_memo_snippet,omitempty"`
+	// The comment note.
+	// Format: notes/{note}
+	Note string `protobuf:"bytes,1,opt,name=note,proto3" json:"note,omitempty"`
+	// The note that was commented on.
+	// Format: notes/{note}
+	RelatedNote string `protobuf:"bytes,2,opt,name=related_note,json=relatedNote,proto3" json:"related_note,omitempty"`
+	// Preview text of the comment note.
+	NoteSnippet string `protobuf:"bytes,3,opt,name=note_snippet,json=noteSnippet,proto3" json:"note_snippet,omitempty"`
+	// Preview text of the related note.
+	RelatedNoteSnippet string `protobuf:"bytes,4,opt,name=related_note_snippet,json=relatedNoteSnippet,proto3" json:"related_note_snippet,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
 
-func (x *UserNotification_MemoCommentPayload) Reset() {
-	*x = UserNotification_MemoCommentPayload{}
+func (x *UserNotification_NoteCommentPayload) Reset() {
+	*x = UserNotification_NoteCommentPayload{}
 	mi := &file_api_user_service_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UserNotification_MemoCommentPayload) String() string {
+func (x *UserNotification_NoteCommentPayload) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserNotification_MemoCommentPayload) ProtoMessage() {}
+func (*UserNotification_NoteCommentPayload) ProtoMessage() {}
 
-func (x *UserNotification_MemoCommentPayload) ProtoReflect() protoreflect.Message {
+func (x *UserNotification_NoteCommentPayload) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4793,70 +4793,70 @@ func (x *UserNotification_MemoCommentPayload) ProtoReflect() protoreflect.Messag
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UserNotification_MemoCommentPayload.ProtoReflect.Descriptor instead.
-func (*UserNotification_MemoCommentPayload) Descriptor() ([]byte, []int) {
+// Deprecated: Use UserNotification_NoteCommentPayload.ProtoReflect.Descriptor instead.
+func (*UserNotification_NoteCommentPayload) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{27, 0}
 }
 
-func (x *UserNotification_MemoCommentPayload) GetMemo() string {
+func (x *UserNotification_NoteCommentPayload) GetNote() string {
 	if x != nil {
-		return x.Memo
+		return x.Note
 	}
 	return ""
 }
 
-func (x *UserNotification_MemoCommentPayload) GetRelatedMemo() string {
+func (x *UserNotification_NoteCommentPayload) GetRelatedNote() string {
 	if x != nil {
-		return x.RelatedMemo
+		return x.RelatedNote
 	}
 	return ""
 }
 
-func (x *UserNotification_MemoCommentPayload) GetMemoSnippet() string {
+func (x *UserNotification_NoteCommentPayload) GetNoteSnippet() string {
 	if x != nil {
-		return x.MemoSnippet
+		return x.NoteSnippet
 	}
 	return ""
 }
 
-func (x *UserNotification_MemoCommentPayload) GetRelatedMemoSnippet() string {
+func (x *UserNotification_NoteCommentPayload) GetRelatedNoteSnippet() string {
 	if x != nil {
-		return x.RelatedMemoSnippet
+		return x.RelatedNoteSnippet
 	}
 	return ""
 }
 
-// MemoMentionPayload holds the details of a MEMO_MENTION notification.
-type UserNotification_MemoMentionPayload struct {
+// NoteMentionPayload holds the details of a NOTE_MENTION notification.
+type UserNotification_NoteMentionPayload struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The memo that contains the mention.
-	// Format: memos/{memo}
-	Memo string `protobuf:"bytes,1,opt,name=memo,proto3" json:"memo,omitempty"`
-	// The related parent memo when the mention was created in a comment.
-	// Format: memos/{memo}
-	RelatedMemo string `protobuf:"bytes,2,opt,name=related_memo,json=relatedMemo,proto3" json:"related_memo,omitempty"`
-	// Preview text of the memo that contains the mention.
-	MemoSnippet string `protobuf:"bytes,3,opt,name=memo_snippet,json=memoSnippet,proto3" json:"memo_snippet,omitempty"`
-	// Preview text of the related parent memo.
-	RelatedMemoSnippet string `protobuf:"bytes,4,opt,name=related_memo_snippet,json=relatedMemoSnippet,proto3" json:"related_memo_snippet,omitempty"`
+	// The note that contains the mention.
+	// Format: notes/{note}
+	Note string `protobuf:"bytes,1,opt,name=note,proto3" json:"note,omitempty"`
+	// The related parent note when the mention was created in a comment.
+	// Format: notes/{note}
+	RelatedNote string `protobuf:"bytes,2,opt,name=related_note,json=relatedNote,proto3" json:"related_note,omitempty"`
+	// Preview text of the note that contains the mention.
+	NoteSnippet string `protobuf:"bytes,3,opt,name=note_snippet,json=noteSnippet,proto3" json:"note_snippet,omitempty"`
+	// Preview text of the related parent note.
+	RelatedNoteSnippet string `protobuf:"bytes,4,opt,name=related_note_snippet,json=relatedNoteSnippet,proto3" json:"related_note_snippet,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
 
-func (x *UserNotification_MemoMentionPayload) Reset() {
-	*x = UserNotification_MemoMentionPayload{}
+func (x *UserNotification_NoteMentionPayload) Reset() {
+	*x = UserNotification_NoteMentionPayload{}
 	mi := &file_api_user_service_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UserNotification_MemoMentionPayload) String() string {
+func (x *UserNotification_NoteMentionPayload) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UserNotification_MemoMentionPayload) ProtoMessage() {}
+func (*UserNotification_NoteMentionPayload) ProtoMessage() {}
 
-func (x *UserNotification_MemoMentionPayload) ProtoReflect() protoreflect.Message {
+func (x *UserNotification_NoteMentionPayload) ProtoReflect() protoreflect.Message {
 	mi := &file_api_user_service_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4868,35 +4868,35 @@ func (x *UserNotification_MemoMentionPayload) ProtoReflect() protoreflect.Messag
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UserNotification_MemoMentionPayload.ProtoReflect.Descriptor instead.
-func (*UserNotification_MemoMentionPayload) Descriptor() ([]byte, []int) {
+// Deprecated: Use UserNotification_NoteMentionPayload.ProtoReflect.Descriptor instead.
+func (*UserNotification_NoteMentionPayload) Descriptor() ([]byte, []int) {
 	return file_api_user_service_proto_rawDescGZIP(), []int{27, 1}
 }
 
-func (x *UserNotification_MemoMentionPayload) GetMemo() string {
+func (x *UserNotification_NoteMentionPayload) GetNote() string {
 	if x != nil {
-		return x.Memo
+		return x.Note
 	}
 	return ""
 }
 
-func (x *UserNotification_MemoMentionPayload) GetRelatedMemo() string {
+func (x *UserNotification_NoteMentionPayload) GetRelatedNote() string {
 	if x != nil {
-		return x.RelatedMemo
+		return x.RelatedNote
 	}
 	return ""
 }
 
-func (x *UserNotification_MemoMentionPayload) GetMemoSnippet() string {
+func (x *UserNotification_NoteMentionPayload) GetNoteSnippet() string {
 	if x != nil {
-		return x.MemoSnippet
+		return x.NoteSnippet
 	}
 	return ""
 }
 
-func (x *UserNotification_MemoMentionPayload) GetRelatedMemoSnippet() string {
+func (x *UserNotification_NoteMentionPayload) GetRelatedNoteSnippet() string {
 	if x != nil {
-		return x.RelatedMemoSnippet
+		return x.RelatedNoteSnippet
 	}
 	return ""
 }
@@ -4911,9 +4911,9 @@ type UserNotification_SpaceInvitationPayload struct {
 	// The read-only Space summary carried by the invitation.
 	Space *Space `protobuf:"bytes,2,opt,name=space,proto3" json:"space,omitempty"`
 	// The role the invitation offers.
-	Role SpaceMember_Role `protobuf:"varint,3,opt,name=role,proto3,enum=memos.api.SpaceMember_Role" json:"role,omitempty"`
+	Role SpaceMember_Role `protobuf:"varint,3,opt,name=role,proto3,enum=roster.api.SpaceMember_Role" json:"role,omitempty"`
 	// The current state of the invitation for the receiver.
-	State         UserNotification_SpaceInvitationPayload_InvitationState `protobuf:"varint,4,opt,name=state,proto3,enum=memos.api.UserNotification_SpaceInvitationPayload_InvitationState" json:"state,omitempty"`
+	State         UserNotification_SpaceInvitationPayload_InvitationState `protobuf:"varint,4,opt,name=state,proto3,enum=roster.api.UserNotification_SpaceInvitationPayload_InvitationState" json:"state,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4980,7 +4980,8 @@ var File_api_user_service_proto protoreflect.FileDescriptor
 
 const file_api_user_service_proto_rawDesc = "" +
 	"\n" +
-	"\x16api/user_service.proto\x12\tmemos.api\x1a\x10api/common.proto\x1a\x17api/space_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\xb2\x04\n" +
+	"\x16api/user_service.proto\x12\n" +
+	"roster.api\x1a\x10api/common.proto\x1a\x17api/space_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\xb5\x04\n" +
 	"\x04User\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1f\n" +
 	"\busername\x18\x02 \x01(\tB\x03\xe0A\x02R\busername\x12&\n" +
@@ -4989,9 +4990,9 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\n" +
 	"avatar_url\x18\x05 \x01(\tB\x03\xe0A\x01R\tavatarUrl\x12%\n" +
 	"\vdescription\x18\x06 \x01(\tB\x03\xe0A\x01R\vdescription\x12\x1f\n" +
-	"\bpassword\x18\a \x01(\tB\x03\xe0A\x04R\bpassword\x12-\n" +
-	"\x04role\x18\b \x01(\x0e2\x14.memos.api.User.RoleB\x03\xe0A\x02R\x04role\x12+\n" +
-	"\x05state\x18\t \x01(\x0e2\x10.memos.api.StateB\x03\xe0A\x02R\x05state\x12@\n" +
+	"\bpassword\x18\a \x01(\tB\x03\xe0A\x04R\bpassword\x12.\n" +
+	"\x04role\x18\b \x01(\x0e2\x15.roster.api.User.RoleB\x03\xe0A\x02R\x04role\x12,\n" +
+	"\x05state\x18\t \x01(\x0e2\x11.roster.api.StateB\x03\xe0A\x02R\x05state\x12@\n" +
 	"\vcreate_time\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
@@ -5000,58 +5001,58 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ADMIN\x10\x02\x12\b\n" +
-	"\x04USER\x10\x03:.\xeaA+\n" +
-	"\x0ememos.api/User\x12\fusers/{user}*\x05users2\x04user\"\x9d\x01\n" +
+	"\x04USER\x10\x03:/\xeaA,\n" +
+	"\x0froster.api/User\x12\fusers/{user}*\x05users2\x04user\"\x9d\x01\n" +
 	"\x10ListUsersRequest\x12 \n" +
 	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
 	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12&\n" +
-	"\fshow_deleted\x18\x04 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"b\n" +
-	"\x11ListUsersResponse\x12%\n" +
-	"\x05users\x18\x01 \x03(\v2\x0f.memos.api.UserR\x05users\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"z\n" +
-	"\x0eGetUserRequest\x12*\n" +
-	"\x04name\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x04name\x12<\n" +
-	"\tread_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\breadMask\"D\n" +
-	"\x14BatchGetUsersRequest\x12,\n" +
-	"\x05names\x18\x01 \x03(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x05names\">\n" +
-	"\x15BatchGetUsersResponse\x12%\n" +
-	"\x05users\x18\x01 \x03(\v2\x0f.memos.api.UserR\x05users\"\xac\x01\n" +
-	"\x11CreateUserRequest\x12+\n" +
-	"\x04user\x18\x01 \x01(\v2\x0f.memos.api.UserB\x06\xe0A\x02\xe0A\x04R\x04user\x12\x1c\n" +
+	"\fshow_deleted\x18\x04 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"c\n" +
+	"\x11ListUsersResponse\x12&\n" +
+	"\x05users\x18\x01 \x03(\v2\x10.roster.api.UserR\x05users\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"{\n" +
+	"\x0eGetUserRequest\x12+\n" +
+	"\x04name\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x04name\x12<\n" +
+	"\tread_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\breadMask\"E\n" +
+	"\x14BatchGetUsersRequest\x12-\n" +
+	"\x05names\x18\x01 \x03(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x05names\"?\n" +
+	"\x15BatchGetUsersResponse\x12&\n" +
+	"\x05users\x18\x01 \x03(\v2\x10.roster.api.UserR\x05users\"\xad\x01\n" +
+	"\x11CreateUserRequest\x12,\n" +
+	"\x04user\x18\x01 \x01(\v2\x10.roster.api.UserB\x06\xe0A\x02\xe0A\x04R\x04user\x12\x1c\n" +
 	"\auser_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x06userId\x12(\n" +
 	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\x12\"\n" +
 	"\n" +
-	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xa9\x01\n" +
-	"\x11UpdateUserRequest\x12(\n" +
-	"\x04user\x18\x01 \x01(\v2\x0f.memos.api.UserB\x03\xe0A\x02R\x04user\x12@\n" +
+	"request_id\x18\x04 \x01(\tB\x03\xe0A\x01R\trequestId\"\xaa\x01\n" +
+	"\x11UpdateUserRequest\x12)\n" +
+	"\x04user\x18\x01 \x01(\v2\x10.roster.api.UserB\x03\xe0A\x02R\x04user\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
 	"updateMask\x12(\n" +
-	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\"Z\n" +
-	"\x11DeleteUserRequest\x12*\n" +
-	"\x04name\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xdc\a\n" +
+	"\rallow_missing\x18\x03 \x01(\bB\x03\xe0A\x01R\fallowMissing\"[\n" +
+	"\x11DeleteUserRequest\x12+\n" +
+	"\x04name\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x04name\x12\x19\n" +
+	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xe3\a\n" +
 	"\vUserSetting\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12P\n" +
-	"\x0fgeneral_setting\x18\x02 \x01(\v2%.memos.api.UserSetting.GeneralSettingH\x00R\x0egeneralSetting\x12S\n" +
-	"\x10webhooks_setting\x18\x03 \x01(\v2&.memos.api.UserSetting.WebhooksSettingH\x00R\x0fwebhooksSetting\x12G\n" +
-	"\ftags_setting\x18\x04 \x01(\v2\".memos.api.UserSetting.TagsSettingH\x00R\vtagsSetting\x1a\xab\x01\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12Q\n" +
+	"\x0fgeneral_setting\x18\x02 \x01(\v2&.roster.api.UserSetting.GeneralSettingH\x00R\x0egeneralSetting\x12T\n" +
+	"\x10webhooks_setting\x18\x03 \x01(\v2'.roster.api.UserSetting.WebhooksSettingH\x00R\x0fwebhooksSetting\x12H\n" +
+	"\ftags_setting\x18\x04 \x01(\v2#.roster.api.UserSetting.TagsSettingH\x00R\vtagsSetting\x1a\xab\x01\n" +
 	"\x0eGeneralSetting\x12\x1b\n" +
 	"\x06locale\x18\x01 \x01(\tB\x03\xe0A\x01R\x06locale\x12,\n" +
-	"\x0fmemo_visibility\x18\x02 \x01(\tB\x03\xe0A\x01R\x0ememoVisibility\x12\x19\n" +
+	"\x0fnote_visibility\x18\x02 \x01(\tB\x03\xe0A\x01R\x0enoteVisibility\x12\x19\n" +
 	"\x05theme\x18\x03 \x01(\tB\x03\xe0A\x01R\x05theme\x123\n" +
-	"\x13save_media_metadata\x18\x04 \x01(\bB\x03\xe0A\x01R\x11saveMediaMetadata\x1aE\n" +
-	"\x0fWebhooksSetting\x122\n" +
-	"\bwebhooks\x18\x01 \x03(\v2\x16.memos.api.UserWebhookR\bwebhooks\x1a\xb1\x01\n" +
-	"\vTagsSetting\x12E\n" +
-	"\x04tags\x18\x01 \x03(\v2,.memos.api.UserSetting.TagsSetting.TagsEntryB\x03\xe0A\x01R\x04tags\x1a[\n" +
+	"\x13save_media_metadata\x18\x04 \x01(\bB\x03\xe0A\x01R\x11saveMediaMetadata\x1aF\n" +
+	"\x0fWebhooksSetting\x123\n" +
+	"\bwebhooks\x18\x01 \x03(\v2\x17.roster.api.UserWebhookR\bwebhooks\x1a\xb3\x01\n" +
+	"\vTagsSetting\x12F\n" +
+	"\x04tags\x18\x01 \x03(\v2-.roster.api.UserSetting.TagsSetting.TagsEntryB\x03\xe0A\x01R\x04tags\x1a\\\n" +
 	"\tTagsEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x128\n" +
-	"\x05value\x18\x02 \x01(\v2\".memos.api.UserSetting.TagMetadataR\x05value:\x028\x01\x1ay\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x129\n" +
+	"\x05value\x18\x02 \x01(\v2#.roster.api.UserSetting.TagMetadataR\x05value:\x028\x01\x1ay\n" +
 	"\vTagMetadata\x12B\n" +
 	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorB\x03\xe0A\x01R\x0fbackgroundColor\x12&\n" +
 	"\fblur_content\x18\x02 \x01(\bB\x03\xe0A\x01R\vblurContent\"?\n" +
@@ -5059,40 +5060,40 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\f\n" +
 	"\bWEBHOOKS\x10\x04\x12\b\n" +
-	"\x04TAGS\x10\x05:V\xeaAS\n" +
-	"\x15memos.api/UserSetting\x12\x1fusers/{user}/settings/{setting}*\fuserSettings2\vuserSettingB\a\n" +
-	"\x05value\"\x8f\x01\n" +
-	"\x17ListUserSettingsRequest\x12.\n" +
-	"\x06parent\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x06parent\x12 \n" +
+	"\x04TAGS\x10\x05:W\xeaAT\n" +
+	"\x16roster.api/UserSetting\x12\x1fusers/{user}/settings/{setting}*\fuserSettings2\vuserSettingB\a\n" +
+	"\x05value\"\x90\x01\n" +
+	"\x17ListUserSettingsRequest\x12/\n" +
+	"\x06parent\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x7f\n" +
-	"\x18ListUserSettingsResponse\x12;\n" +
-	"\ruser_settings\x18\x01 \x03(\v2\x16.memos.api.UserSettingR\fuserSettings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"J\n" +
-	"\x15GetUserSettingRequest\x121\n" +
-	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
-	"\x15memos.api/UserSettingR\x04name\"\x9c\x01\n" +
-	"\x18UpdateUserSettingRequest\x12>\n" +
-	"\fuser_setting\x18\x01 \x01(\v2\x16.memos.api.UserSettingB\x03\xe0A\x02R\vuserSetting\x12@\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x80\x01\n" +
+	"\x18ListUserSettingsResponse\x12<\n" +
+	"\ruser_settings\x18\x01 \x03(\v2\x17.roster.api.UserSettingR\fuserSettings\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"K\n" +
+	"\x15GetUserSettingRequest\x122\n" +
+	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
+	"\x16roster.api/UserSettingR\x04name\"\x9d\x01\n" +
+	"\x18UpdateUserSettingRequest\x12?\n" +
+	"\fuser_setting\x18\x01 \x01(\v2\x17.roster.api.UserSettingB\x03\xe0A\x02R\vuserSetting\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"\xaf\x06\n" +
+	"updateMask\"\xb3\x06\n" +
 	"\tUserStats\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
-	"\x10total_memo_count\x18\x02 \x01(\x05R\x0etotalMemoCount\x12J\n" +
-	"\x0fmemo_type_stats\x18\x03 \x01(\v2\".memos.api.UserStats.MemoTypeStatsR\rmemoTypeStats\x12B\n" +
+	"\x10total_note_count\x18\x02 \x01(\x05R\x0etotalNoteCount\x12K\n" +
+	"\x0fnote_type_stats\x18\x03 \x01(\v2#.roster.api.UserStats.NoteTypeStatsR\rnoteTypeStats\x12C\n" +
 	"\n" +
-	"tag_counts\x18\x04 \x03(\v2#.memos.api.UserStats.TagCountsEntryR\ttagCounts\x126\n" +
-	"\fpinned_memos\x18\x05 \x03(\tB\x13\xfaA\x10\n" +
-	"\x0ememos.api/MemoR\vpinnedMemos\x12R\n" +
-	"\x17memo_created_timestamps\x18\x06 \x03(\v2\x1a.google.protobuf.TimestampR\x15memoCreatedTimestamps\x12R\n" +
-	"\x17memo_updated_timestamps\x18\a \x03(\v2\x1a.google.protobuf.TimestampR\x15memoUpdatedTimestamps\x12B\n" +
+	"tag_counts\x18\x04 \x03(\v2$.roster.api.UserStats.TagCountsEntryR\ttagCounts\x127\n" +
+	"\fpinned_notes\x18\x05 \x03(\tB\x14\xfaA\x11\n" +
+	"\x0froster.api/NoteR\vpinnedNotes\x12R\n" +
+	"\x17note_created_timestamps\x18\x06 \x03(\v2\x1a.google.protobuf.TimestampR\x15noteCreatedTimestamps\x12R\n" +
+	"\x17note_updated_timestamps\x18\a \x03(\v2\x1a.google.protobuf.TimestampR\x15noteUpdatedTimestamps\x12B\n" +
 	"\x18attachment_storage_bytes\x18\b \x01(\x03B\x03\xe0A\x03H\x00R\x16attachmentStorageBytes\x88\x01\x01\x1a<\n" +
 	"\x0eTagCountsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a\x8b\x01\n" +
-	"\rMemoTypeStats\x12\x1d\n" +
+	"\rNoteTypeStats\x12\x1d\n" +
 	"\n" +
 	"link_count\x18\x01 \x01(\x05R\tlinkCount\x12\x1d\n" +
 	"\n" +
@@ -5100,97 +5101,97 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\n" +
 	"todo_count\x18\x03 \x01(\x05R\ttodoCount\x12\x1d\n" +
 	"\n" +
-	"undo_count\x18\x04 \x01(\x05R\tundoCount:B\xeaA?\n" +
-	"\x13memos.api/UserStats\x12\x12users/{user}/stats*\tuserStats2\tuserStatsB\x1b\n" +
-	"\x19_attachment_storage_bytes\"\x95\x01\n" +
-	"\x14ListUserStatsRequest\x123\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1b\xe0A\x02\xfaA\x15\x12\x13memos.api/UserStatsR\x06parent\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12+\n" +
-	"\x05state\x18\x03 \x01(\x0e2\x10.memos.api.StateB\x03\xe0A\x01R\x05state\"L\n" +
-	"\x15ListUserStatsResponse\x123\n" +
+	"undo_count\x18\x04 \x01(\x05R\tundoCount:C\xeaA@\n" +
+	"\x14roster.api/UserStats\x12\x12users/{user}/stats*\tuserStats2\tuserStatsB\x1b\n" +
+	"\x19_attachment_storage_bytes\"\x97\x01\n" +
+	"\x14ListUserStatsRequest\x124\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1c\xe0A\x02\xfaA\x16\x12\x14roster.api/UserStatsR\x06parent\x12\x1b\n" +
+	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\x12,\n" +
+	"\x05state\x18\x03 \x01(\x0e2\x11.roster.api.StateB\x03\xe0A\x01R\x05state\"M\n" +
+	"\x15ListUserStatsResponse\x124\n" +
 	"\n" +
-	"user_stats\x18\x01 \x03(\v2\x14.memos.api.UserStatsR\tuserStats\"^\n" +
-	"\x13GetUserStatsRequest\x12*\n" +
-	"\x04name\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x04name\x12\x1b\n" +
-	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\"\xff\x03\n" +
+	"user_stats\x18\x01 \x03(\v2\x15.roster.api.UserStatsR\tuserStats\"_\n" +
+	"\x13GetUserStatsRequest\x12+\n" +
+	"\x04name\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x04name\x12\x1b\n" +
+	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\"\x84\x04\n" +
 	"\tUserUsage\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1d\n" +
 	"\n" +
-	"memo_count\x18\x02 \x01(\x03R\tmemoCount\x12#\n" +
-	"\rstorage_bytes\x18\x03 \x01(\x03R\fstorageBytes\x12D\n" +
-	"\vmemos_limit\x18\x04 \x01(\v2#.memos.api.UserUsage.EffectiveLimitR\n" +
-	"memosLimit\x12S\n" +
-	"\x13storage_bytes_limit\x18\x05 \x01(\v2#.memos.api.UserUsage.EffectiveLimitR\x11storageBytesLimit\x12Q\n" +
-	"\x12upload_bytes_limit\x18\x06 \x01(\v2#.memos.api.UserUsage.EffectiveLimitR\x10uploadBytesLimit\x1ab\n" +
+	"note_count\x18\x02 \x01(\x03R\tnoteCount\x12#\n" +
+	"\rstorage_bytes\x18\x03 \x01(\x03R\fstorageBytes\x12E\n" +
+	"\vnotes_limit\x18\x04 \x01(\v2$.roster.api.UserUsage.EffectiveLimitR\n" +
+	"notesLimit\x12T\n" +
+	"\x13storage_bytes_limit\x18\x05 \x01(\v2$.roster.api.UserUsage.EffectiveLimitR\x11storageBytesLimit\x12R\n" +
+	"\x12upload_bytes_limit\x18\x06 \x01(\v2$.roster.api.UserUsage.EffectiveLimitR\x10uploadBytesLimit\x1ac\n" +
 	"\x0eEffectiveLimit\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\x03R\x05value\x12:\n" +
-	"\vusage_limit\x18\x02 \x01(\tB\x19\xfaA\x16\n" +
-	"\x14memos.api/UsageLimitR\n" +
-	"usageLimit:C\xeaA@\n" +
-	"\x13memos.api/UserUsage\x12\x12users/{user}/usage*\n" +
-	"userUsages2\tuserUsage\"F\n" +
-	"\x13GetUserUsageRequest\x12/\n" +
-	"\x04name\x18\x01 \x01(\tB\x1b\xe0A\x02\xfaA\x15\n" +
-	"\x13memos.api/UserUsageR\x04name\"\x9a\x02\n" +
-	"\bMemoView\x12\x17\n" +
+	"\x05value\x18\x01 \x01(\x03R\x05value\x12;\n" +
+	"\vusage_limit\x18\x02 \x01(\tB\x1a\xfaA\x17\n" +
+	"\x15roster.api/UsageLimitR\n" +
+	"usageLimit:D\xeaAA\n" +
+	"\x14roster.api/UserUsage\x12\x12users/{user}/usage*\n" +
+	"userUsages2\tuserUsage\"G\n" +
+	"\x13GetUserUsageRequest\x120\n" +
+	"\x04name\x18\x01 \x01(\tB\x1c\xe0A\x02\xfaA\x16\n" +
+	"\x14roster.api/UserUsageR\x04name\"\x9c\x02\n" +
+	"\bNoteView\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x02R\x05title\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x02R\x06filter\x121\n" +
-	"\x04icon\x18\x04 \x01(\v2\x18.memos.api.MemoView.IconB\x03\xe0A\x01R\x04icon\x1aA\n" +
+	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x02R\x06filter\x122\n" +
+	"\x04icon\x18\x04 \x01(\v2\x19.roster.api.NoteView.IconB\x03\xe0A\x01R\x04icon\x1aA\n" +
 	"\x04Icon\x12\x16\n" +
 	"\x05emoji\x18\x01 \x01(\tH\x00R\x05emoji\x12\x18\n" +
 	"\x06lucide\x18\x02 \x01(\tH\x00R\x06lucideB\a\n" +
-	"\x05value:G\xeaAD\n" +
-	"\x12memos.api/MemoView\x12\x19users/{user}/views/{view}*\tmemoViews2\bmemoView\"J\n" +
-	"\x14ListMemoViewsRequest\x122\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1a\xe0A\x02\xfaA\x14\x12\x12memos.api/MemoViewR\x06parent\"K\n" +
-	"\x15ListMemoViewsResponse\x122\n" +
+	"\x05value:H\xeaAE\n" +
+	"\x13roster.api/NoteView\x12\x19users/{user}/views/{view}*\tnoteViews2\bnoteView\"K\n" +
+	"\x14ListNoteViewsRequest\x123\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1b\xe0A\x02\xfaA\x15\x12\x13roster.api/NoteViewR\x06parent\"L\n" +
+	"\x15ListNoteViewsResponse\x123\n" +
 	"\n" +
-	"memo_views\x18\x01 \x03(\v2\x13.memos.api.MemoViewR\tmemoViews\"D\n" +
-	"\x12GetMemoViewRequest\x12.\n" +
-	"\x04name\x18\x01 \x01(\tB\x1a\xe0A\x02\xfaA\x14\n" +
-	"\x12memos.api/MemoViewR\x04name\"\xac\x01\n" +
-	"\x15CreateMemoViewRequest\x122\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1a\xe0A\x02\xfaA\x14\x12\x12memos.api/MemoViewR\x06parent\x125\n" +
-	"\tmemo_view\x18\x02 \x01(\v2\x13.memos.api.MemoViewB\x03\xe0A\x02R\bmemoView\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x90\x01\n" +
-	"\x15UpdateMemoViewRequest\x125\n" +
-	"\tmemo_view\x18\x01 \x01(\v2\x13.memos.api.MemoViewB\x03\xe0A\x02R\bmemoView\x12@\n" +
+	"note_views\x18\x01 \x03(\v2\x14.roster.api.NoteViewR\tnoteViews\"E\n" +
+	"\x12GetNoteViewRequest\x12/\n" +
+	"\x04name\x18\x01 \x01(\tB\x1b\xe0A\x02\xfaA\x15\n" +
+	"\x13roster.api/NoteViewR\x04name\"\xae\x01\n" +
+	"\x15CreateNoteViewRequest\x123\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1b\xe0A\x02\xfaA\x15\x12\x13roster.api/NoteViewR\x06parent\x126\n" +
+	"\tnote_view\x18\x02 \x01(\v2\x14.roster.api.NoteViewB\x03\xe0A\x02R\bnoteView\x12(\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x91\x01\n" +
+	"\x15UpdateNoteViewRequest\x126\n" +
+	"\tnote_view\x18\x01 \x01(\v2\x14.roster.api.NoteViewB\x03\xe0A\x02R\bnoteView\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"G\n" +
-	"\x15DeleteMemoViewRequest\x12.\n" +
-	"\x04name\x18\x01 \x01(\tB\x1a\xe0A\x02\xfaA\x14\n" +
-	"\x12memos.api/MemoViewR\x04name\"\xa1\f\n" +
+	"updateMask\"H\n" +
+	"\x15DeleteNoteViewRequest\x12/\n" +
+	"\x04name\x18\x01 \x01(\tB\x1b\xe0A\x02\xfaA\x15\n" +
+	"\x13roster.api/NoteViewR\x04name\"\xad\f\n" +
 	"\x10UserNotification\x12\x1a\n" +
-	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12.\n" +
-	"\x06sender\x18\x02 \x01(\tB\x16\xe0A\x03\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x06sender\x125\n" +
-	"\vsender_user\x18\x03 \x01(\v2\x0f.memos.api.UserB\x03\xe0A\x03R\n" +
-	"senderUser\x129\n" +
-	"\x04type\x18\x04 \x01(\x0e2 .memos.api.UserNotification.TypeB\x03\xe0A\x03R\x04type\x12X\n" +
-	"\fmemo_comment\x18\x05 \x01(\v2..memos.api.UserNotification.MemoCommentPayloadB\x03\xe0A\x03H\x00R\vmemoComment\x12X\n" +
-	"\fmemo_mention\x18\x06 \x01(\v2..memos.api.UserNotification.MemoMentionPayloadB\x03\xe0A\x03H\x00R\vmemoMention\x12d\n" +
-	"\x10space_invitation\x18\a \x01(\v22.memos.api.UserNotification.SpaceInvitationPayloadB\x03\xe0A\x03H\x00R\x0fspaceInvitation\x12?\n" +
-	"\x06status\x18\b \x01(\x0e2\".memos.api.UserNotification.StatusB\x03\xe0A\x01R\x06status\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x12/\n" +
+	"\x06sender\x18\x02 \x01(\tB\x17\xe0A\x03\xfaA\x11\n" +
+	"\x0froster.api/UserR\x06sender\x126\n" +
+	"\vsender_user\x18\x03 \x01(\v2\x10.roster.api.UserB\x03\xe0A\x03R\n" +
+	"senderUser\x12:\n" +
+	"\x04type\x18\x04 \x01(\x0e2!.roster.api.UserNotification.TypeB\x03\xe0A\x03R\x04type\x12Y\n" +
+	"\fnote_comment\x18\x05 \x01(\v2/.roster.api.UserNotification.NoteCommentPayloadB\x03\xe0A\x03H\x00R\vnoteComment\x12Y\n" +
+	"\fnote_mention\x18\x06 \x01(\v2/.roster.api.UserNotification.NoteMentionPayloadB\x03\xe0A\x03H\x00R\vnoteMention\x12e\n" +
+	"\x10space_invitation\x18\a \x01(\v23.roster.api.UserNotification.SpaceInvitationPayloadB\x03\xe0A\x03H\x00R\x0fspaceInvitation\x12@\n" +
+	"\x06status\x18\b \x01(\x0e2#.roster.api.UserNotification.StatusB\x03\xe0A\x01R\x06status\x12@\n" +
 	"\vcreate_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x1a\xa0\x01\n" +
-	"\x12MemoCommentPayload\x12\x12\n" +
-	"\x04memo\x18\x01 \x01(\tR\x04memo\x12!\n" +
-	"\frelated_memo\x18\x02 \x01(\tR\vrelatedMemo\x12!\n" +
-	"\fmemo_snippet\x18\x03 \x01(\tR\vmemoSnippet\x120\n" +
-	"\x14related_memo_snippet\x18\x04 \x01(\tR\x12relatedMemoSnippet\x1a\xa0\x01\n" +
-	"\x12MemoMentionPayload\x12\x12\n" +
-	"\x04memo\x18\x01 \x01(\tR\x04memo\x12!\n" +
-	"\frelated_memo\x18\x02 \x01(\tR\vrelatedMemo\x12!\n" +
-	"\fmemo_snippet\x18\x03 \x01(\tR\vmemoSnippet\x120\n" +
-	"\x14related_memo_snippet\x18\x04 \x01(\tR\x12relatedMemoSnippet\x1a\xdb\x02\n" +
-	"\x16SpaceInvitationPayload\x12I\n" +
-	"\x10space_invitation\x18\x01 \x01(\tB\x1e\xfaA\x1b\n" +
-	"\x19memos.api/SpaceInvitationR\x0fspaceInvitation\x12&\n" +
-	"\x05space\x18\x02 \x01(\v2\x10.memos.api.SpaceR\x05space\x12/\n" +
-	"\x04role\x18\x03 \x01(\x0e2\x1b.memos.api.SpaceMember.RoleR\x04role\x12X\n" +
-	"\x05state\x18\x04 \x01(\x0e2B.memos.api.UserNotification.SpaceInvitationPayload.InvitationStateR\x05state\"C\n" +
+	"\x12NoteCommentPayload\x12\x12\n" +
+	"\x04note\x18\x01 \x01(\tR\x04note\x12!\n" +
+	"\frelated_note\x18\x02 \x01(\tR\vrelatedNote\x12!\n" +
+	"\fnote_snippet\x18\x03 \x01(\tR\vnoteSnippet\x120\n" +
+	"\x14related_note_snippet\x18\x04 \x01(\tR\x12relatedNoteSnippet\x1a\xa0\x01\n" +
+	"\x12NoteMentionPayload\x12\x12\n" +
+	"\x04note\x18\x01 \x01(\tR\x04note\x12!\n" +
+	"\frelated_note\x18\x02 \x01(\tR\vrelatedNote\x12!\n" +
+	"\fnote_snippet\x18\x03 \x01(\tR\vnoteSnippet\x120\n" +
+	"\x14related_note_snippet\x18\x04 \x01(\tR\x12relatedNoteSnippet\x1a\xdf\x02\n" +
+	"\x16SpaceInvitationPayload\x12J\n" +
+	"\x10space_invitation\x18\x01 \x01(\tB\x1f\xfaA\x1c\n" +
+	"\x1aroster.api/SpaceInvitationR\x0fspaceInvitation\x12'\n" +
+	"\x05space\x18\x02 \x01(\v2\x11.roster.api.SpaceR\x05space\x120\n" +
+	"\x04role\x18\x03 \x01(\x0e2\x1c.roster.api.SpaceMember.RoleR\x04role\x12Y\n" +
+	"\x05state\x18\x04 \x01(\x0e2C.roster.api.UserNotification.SpaceInvitationPayload.InvitationStateR\x05state\"C\n" +
 	"\x0fInvitationState\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\f\n" +
@@ -5202,28 +5203,28 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\bARCHIVED\x10\x02\"V\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fMEMO_COMMENT\x10\x01\x12\x10\n" +
-	"\fMEMO_MENTION\x10\x02\x12\x14\n" +
-	"\x10SPACE_INVITATION\x10\x03:o\xeaAl\n" +
-	"\x1amemos.api/UserNotification\x12)users/{user}/notifications/{notification}*\x11userNotifications2\x10userNotificationB\t\n" +
-	"\apayload\"\xb1\x01\n" +
-	"\x1cListUserNotificationsRequest\x12.\n" +
-	"\x06parent\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x06parent\x12 \n" +
+	"\fNOTE_COMMENT\x10\x01\x12\x10\n" +
+	"\fNOTE_MENTION\x10\x02\x12\x14\n" +
+	"\x10SPACE_INVITATION\x10\x03:p\xeaAm\n" +
+	"\x1broster.api/UserNotification\x12)users/{user}/notifications/{notification}*\x11userNotifications2\x10userNotificationB\t\n" +
+	"\apayload\"\xb2\x01\n" +
+	"\x1cListUserNotificationsRequest\x12/\n" +
+	"\x06parent\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x8a\x01\n" +
-	"\x1dListUserNotificationsResponse\x12A\n" +
-	"\rnotifications\x18\x01 \x03(\v2\x1b.memos.api.UserNotificationR\rnotifications\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa7\x01\n" +
-	"\x1dUpdateUserNotificationRequest\x12D\n" +
-	"\fnotification\x18\x01 \x01(\v2\x1b.memos.api.UserNotificationB\x03\xe0A\x02R\fnotification\x12@\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\"\x8b\x01\n" +
+	"\x1dListUserNotificationsResponse\x12B\n" +
+	"\rnotifications\x18\x01 \x03(\v2\x1c.roster.api.UserNotificationR\rnotifications\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa8\x01\n" +
+	"\x1dUpdateUserNotificationRequest\x12E\n" +
+	"\fnotification\x18\x01 \x01(\v2\x1c.roster.api.UserNotificationB\x03\xe0A\x02R\fnotification\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"W\n" +
-	"\x1dDeleteUserNotificationRequest\x126\n" +
-	"\x04name\x18\x01 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1amemos.api/UserNotificationR\x04name\"\x96\x03\n" +
+	"updateMask\"X\n" +
+	"\x1dDeleteUserNotificationRequest\x127\n" +
+	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"\x1broster.api/UserNotificationR\x04name\"\x97\x03\n" +
 	"\vUserWebhook\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x10\n" +
@@ -5233,52 +5234,52 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\vcreate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime:V\xeaAS\n" +
-	"\x15memos.api/UserWebhook\x12\x1fusers/{user}/webhooks/{webhook}*\fuserWebhooks2\vuserWebhook\"P\n" +
-	"\x17ListUserWebhooksRequest\x125\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\x12\x15memos.api/UserWebhookR\x06parent\"N\n" +
-	"\x18ListUserWebhooksResponse\x122\n" +
-	"\bwebhooks\x18\x01 \x03(\v2\x16.memos.api.UserWebhookR\bwebhooks\"\x88\x01\n" +
-	"\x18CreateUserWebhookRequest\x125\n" +
-	"\x06parent\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\x12\x15memos.api/UserWebhookR\x06parent\x125\n" +
-	"\awebhook\x18\x02 \x01(\v2\x16.memos.api.UserWebhookB\x03\xe0A\x02R\awebhook\"\x8e\x01\n" +
-	"\x18UpdateUserWebhookRequest\x125\n" +
-	"\awebhook\x18\x01 \x01(\v2\x16.memos.api.UserWebhookB\x03\xe0A\x02R\awebhook\x12;\n" +
+	"updateTime:W\xeaAT\n" +
+	"\x16roster.api/UserWebhook\x12\x1fusers/{user}/webhooks/{webhook}*\fuserWebhooks2\vuserWebhook\"Q\n" +
+	"\x17ListUserWebhooksRequest\x126\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\x12\x16roster.api/UserWebhookR\x06parent\"O\n" +
+	"\x18ListUserWebhooksResponse\x123\n" +
+	"\bwebhooks\x18\x01 \x03(\v2\x17.roster.api.UserWebhookR\bwebhooks\"\x8a\x01\n" +
+	"\x18CreateUserWebhookRequest\x126\n" +
+	"\x06parent\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\x12\x16roster.api/UserWebhookR\x06parent\x126\n" +
+	"\awebhook\x18\x02 \x01(\v2\x17.roster.api.UserWebhookB\x03\xe0A\x02R\awebhook\"\x8f\x01\n" +
+	"\x18UpdateUserWebhookRequest\x126\n" +
+	"\awebhook\x18\x01 \x01(\v2\x17.roster.api.UserWebhookB\x03\xe0A\x02R\awebhook\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"M\n" +
-	"\x18DeleteUserWebhookRequest\x121\n" +
-	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
-	"\x15memos.api/UserWebhookR\x04name\"W\n" +
-	"\"GetUserWebhookSigningSecretRequest\x121\n" +
-	"\x04name\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\n" +
-	"\x15memos.api/UserWebhookR\x04name\"L\n" +
+	"updateMask\"N\n" +
+	"\x18DeleteUserWebhookRequest\x122\n" +
+	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
+	"\x16roster.api/UserWebhookR\x04name\"X\n" +
+	"\"GetUserWebhookSigningSecretRequest\x122\n" +
+	"\x04name\x18\x01 \x01(\tB\x1e\xe0A\x02\xfaA\x18\n" +
+	"\x16roster.api/UserWebhookR\x04name\"L\n" +
 	"#GetUserWebhookSigningSecretResponse\x12%\n" +
-	"\x0esigning_secret\x18\x01 \x01(\tR\rsigningSecret\"\x94\x02\n" +
+	"\x0esigning_secret\x18\x01 \x01(\tR\rsigningSecret\"\x96\x02\n" +
 	"\x0eLinkedIdentity\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12O\n" +
-	"\x11identity_provider\x18\x02 \x01(\tB\"\xe0A\x03\xfaA\x1c\n" +
-	"\x1amemos.api/IdentityProviderR\x10identityProvider\x12&\n" +
-	"\fexternal_uid\x18\x03 \x01(\tB\x03\xe0A\x03R\vexternalUid:p\xeaAm\n" +
-	"\x18memos.api/LinkedIdentity\x12/users/{user}/linkedIdentities/{linked_identity}*\x10linkedIdentities2\x0elinkedIdentity\"M\n" +
-	"\x1bListLinkedIdentitiesRequest\x12.\n" +
-	"\x06parent\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x06parent\"f\n" +
-	"\x1cListLinkedIdentitiesResponse\x12F\n" +
-	"\x11linked_identities\x18\x01 \x03(\v2\x19.memos.api.LinkedIdentityR\x10linkedIdentities\"P\n" +
-	"\x18GetLinkedIdentityRequest\x124\n" +
-	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
-	"\x18memos.api/LinkedIdentityR\x04name\"\x89\x02\n" +
-	"\x1bCreateLinkedIdentityRequest\x12.\n" +
-	"\x06parent\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x06parent\x12O\n" +
-	"\x11identity_provider\x18\x02 \x01(\tB\"\xe0A\x02\xfaA\x1c\n" +
-	"\x1amemos.api/IdentityProviderR\x10identityProvider\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12P\n" +
+	"\x11identity_provider\x18\x02 \x01(\tB#\xe0A\x03\xfaA\x1d\n" +
+	"\x1broster.api/IdentityProviderR\x10identityProvider\x12&\n" +
+	"\fexternal_uid\x18\x03 \x01(\tB\x03\xe0A\x03R\vexternalUid:q\xeaAn\n" +
+	"\x19roster.api/LinkedIdentity\x12/users/{user}/linkedIdentities/{linked_identity}*\x10linkedIdentities2\x0elinkedIdentity\"N\n" +
+	"\x1bListLinkedIdentitiesRequest\x12/\n" +
+	"\x06parent\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x06parent\"g\n" +
+	"\x1cListLinkedIdentitiesResponse\x12G\n" +
+	"\x11linked_identities\x18\x01 \x03(\v2\x1a.roster.api.LinkedIdentityR\x10linkedIdentities\"Q\n" +
+	"\x18GetLinkedIdentityRequest\x125\n" +
+	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
+	"\x19roster.api/LinkedIdentityR\x04name\"\x8b\x02\n" +
+	"\x1bCreateLinkedIdentityRequest\x12/\n" +
+	"\x06parent\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x06parent\x12P\n" +
+	"\x11identity_provider\x18\x02 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
+	"\x1broster.api/IdentityProviderR\x10identityProvider\x12\x17\n" +
 	"\x04code\x18\x03 \x01(\tB\x03\xe0A\x02R\x04code\x12&\n" +
 	"\fredirect_uri\x18\x04 \x01(\tB\x03\xe0A\x02R\vredirectUri\x12(\n" +
-	"\rcode_verifier\x18\x05 \x01(\tB\x03\xe0A\x01R\fcodeVerifier\"S\n" +
-	"\x1bDeleteLinkedIdentityRequest\x124\n" +
-	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
-	"\x18memos.api/LinkedIdentityR\x04name\"\xaa\x03\n" +
+	"\rcode_verifier\x18\x05 \x01(\tB\x03\xe0A\x01R\fcodeVerifier\"T\n" +
+	"\x1bDeleteLinkedIdentityRequest\x125\n" +
+	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
+	"\x19roster.api/LinkedIdentityR\x04name\"\xab\x03\n" +
 	"\x13PersonalAccessToken\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12@\n" +
@@ -5286,121 +5287,122 @@ const file_api_user_service_proto_rawDesc = "" +
 	"createTime\x12@\n" +
 	"\vexpire_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
 	"expireTime\x12C\n" +
-	"\rlast_use_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vlastUseTime:\x89\x01\xeaA\x85\x01\n" +
-	"\x1dmemos.api/PersonalAccessToken\x129users/{user}/personalAccessTokens/{personal_access_token}*\x14personalAccessTokens2\x13personalAccessToken\"\x97\x01\n" +
-	"\x1fListPersonalAccessTokensRequest\x12.\n" +
-	"\x06parent\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x06parent\x12 \n" +
+	"\rlast_use_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\vlastUseTime:\x8a\x01\xeaA\x86\x01\n" +
+	"\x1eroster.api/PersonalAccessToken\x129users/{user}/personalAccessTokens/{personal_access_token}*\x14personalAccessTokens2\x13personalAccessToken\"\x98\x01\n" +
+	"\x1fListPersonalAccessTokensRequest\x12/\n" +
+	"\x06parent\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa0\x01\n" +
-	" ListPersonalAccessTokensResponse\x12T\n" +
-	"\x16personal_access_tokens\x18\x01 \x03(\v2\x1e.memos.api.PersonalAccessTokenR\x14personalAccessTokens\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa6\x01\n" +
-	" CreatePersonalAccessTokenRequest\x12.\n" +
-	"\x06parent\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x06parent\x12%\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa1\x01\n" +
+	" ListPersonalAccessTokensResponse\x12U\n" +
+	"\x16personal_access_tokens\x18\x01 \x03(\v2\x1f.roster.api.PersonalAccessTokenR\x14personalAccessTokens\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa7\x01\n" +
+	" CreatePersonalAccessTokenRequest\x12/\n" +
+	"\x06parent\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x06parent\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tB\x03\xe0A\x01R\vdescription\x12+\n" +
-	"\x0fexpires_in_days\x18\x03 \x01(\x05B\x03\xe0A\x01R\rexpiresInDays\"\x8d\x01\n" +
-	"!CreatePersonalAccessTokenResponse\x12R\n" +
-	"\x15personal_access_token\x18\x01 \x01(\v2\x1e.memos.api.PersonalAccessTokenR\x13personalAccessToken\x12\x14\n" +
-	"\x05token\x18\x02 \x01(\tR\x05token\"]\n" +
-	" DeletePersonalAccessTokenRequest\x129\n" +
-	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dmemos.api/PersonalAccessTokenR\x04name\"@\n" +
-	"\x12ExportMemosRequest\x12*\n" +
-	"\x04name\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x04name\"\xe3\x03\n" +
-	"\x12ImportMemosRequest\x12*\n" +
-	"\x04name\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x04name\x120\n" +
-	"\x04spec\x18\x02 \x01(\v2\x1a.memos.api.ImportMemosSpecH\x00R\x04spec\x12\x1d\n" +
+	"\x0fexpires_in_days\x18\x03 \x01(\x05B\x03\xe0A\x01R\rexpiresInDays\"\x8e\x01\n" +
+	"!CreatePersonalAccessTokenResponse\x12S\n" +
+	"\x15personal_access_token\x18\x01 \x01(\v2\x1f.roster.api.PersonalAccessTokenR\x13personalAccessToken\x12\x14\n" +
+	"\x05token\x18\x02 \x01(\tR\x05token\"^\n" +
+	" DeletePersonalAccessTokenRequest\x12:\n" +
+	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
+	"\x1eroster.api/PersonalAccessTokenR\x04name\"A\n" +
+	"\x12ExportNotesRequest\x12+\n" +
+	"\x04name\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x04name\"\xe6\x03\n" +
+	"\x12ImportNotesRequest\x12+\n" +
+	"\x04name\x18\x01 \x01(\tB\x17\xe0A\x02\xfaA\x11\n" +
+	"\x0froster.api/UserR\x04name\x121\n" +
+	"\x04spec\x18\x02 \x01(\v2\x1b.roster.api.ImportNotesSpecH\x00R\x04spec\x12\x1d\n" +
 	"\tupload_id\x18\x03 \x01(\tH\x00R\buploadId\x12&\n" +
 	"\fwrite_offset\x18\x04 \x01(\x03B\x03\xe0A\x02R\vwriteOffset\x12\x17\n" +
 	"\x04data\x18\x05 \x01(\fB\x03\xe0A\x01R\x04data\x12&\n" +
-	"\ffinish_write\x18\x06 \x01(\bB\x03\xe0A\x01R\vfinishWrite\x12Z\n" +
-	"\x0fconflict_policy\x18\a \x01(\x0e2,.memos.api.ImportMemosRequest.ConflictPolicyB\x03\xe0A\x01R\x0econflictPolicy\x12(\n" +
+	"\ffinish_write\x18\x06 \x01(\bB\x03\xe0A\x01R\vfinishWrite\x12[\n" +
+	"\x0fconflict_policy\x18\a \x01(\x0e2-.roster.api.ImportNotesRequest.ConflictPolicyB\x03\xe0A\x01R\x0econflictPolicy\x12(\n" +
 	"\rvalidate_only\x18\b \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"W\n" +
 	"\x0eConflictPolicy\x12\x1f\n" +
 	"\x1bCONFLICT_POLICY_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04SKIP\x10\x01\x12\v\n" +
 	"\aREPLACE\x10\x02\x12\r\n" +
 	"\tDUPLICATE\x10\x03B\b\n" +
-	"\x06upload\"\xf3\x01\n" +
-	"\x13ImportMemosResponse\x12\x1b\n" +
+	"\x06upload\"\xf5\x01\n" +
+	"\x13ImportNotesResponse\x12\x1b\n" +
 	"\tupload_id\x18\x01 \x01(\tR\buploadId\x12%\n" +
 	"\x0ecommitted_size\x18\x02 \x01(\x03R\rcommittedSize\x12$\n" +
-	"\x0emax_chunk_size\x18\x03 \x01(\x05R\fmaxChunkSize\x120\n" +
-	"\x04plan\x18\x04 \x01(\v2\x1a.memos.api.ImportMemosPlanH\x00R\x04plan\x126\n" +
-	"\x06report\x18\x05 \x01(\v2\x1c.memos.api.ImportMemosReportH\x00R\x06reportB\b\n" +
+	"\x0emax_chunk_size\x18\x03 \x01(\x05R\fmaxChunkSize\x121\n" +
+	"\x04plan\x18\x04 \x01(\v2\x1b.roster.api.ImportNotesPlanH\x00R\x04plan\x127\n" +
+	"\x06report\x18\x05 \x01(\v2\x1d.roster.api.ImportNotesReportH\x00R\x06reportB\b\n" +
 	"\x06result\"5\n" +
-	"\x0fImportMemosSpec\x12\"\n" +
+	"\x0fImportNotesSpec\x12\"\n" +
 	"\n" +
-	"total_size\x18\x01 \x01(\x03B\x03\xe0A\x01R\ttotalSize\"\xd3\x02\n" +
-	"\x0fImportMemosPlan\x12;\n" +
+	"total_size\x18\x01 \x01(\x03B\x03\xe0A\x01R\ttotalSize\"\xd4\x02\n" +
+	"\x0fImportNotesPlan\x12;\n" +
 	"\vexport_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"exportTime\x12\x1a\n" +
 	"\bexporter\x18\x02 \x01(\tR\bexporter\x12\x1c\n" +
 	"\tgenerator\x18\x03 \x01(\tR\tgenerator\x12\x1d\n" +
 	"\n" +
-	"memo_count\x18\x04 \x01(\x05R\tmemoCount\x12)\n" +
+	"note_count\x18\x04 \x01(\x05R\tnoteCount\x12)\n" +
 	"\x10attachment_count\x18\x05 \x01(\x05R\x0fattachmentCount\x12\x10\n" +
 	"\x03new\x18\x06 \x01(\x05R\x03new\x12\x1a\n" +
 	"\bexisting\x18\a \x01(\x05R\bexisting\x12\x18\n" +
-	"\arenamed\x18\b \x01(\x05R\arenamed\x127\n" +
-	"\bwarnings\x18\t \x03(\v2\x1b.memos.api.ImportMemosIssueR\bwarnings\"\xeb\x01\n" +
-	"\x11ImportMemosReport\x12\x18\n" +
+	"\arenamed\x18\b \x01(\x05R\arenamed\x128\n" +
+	"\bwarnings\x18\t \x03(\v2\x1c.roster.api.ImportNotesIssueR\bwarnings\"\xed\x01\n" +
+	"\x11ImportNotesReport\x12\x18\n" +
 	"\acreated\x18\x01 \x01(\x05R\acreated\x12\x18\n" +
 	"\aupdated\x18\x02 \x01(\x05R\aupdated\x12\x18\n" +
 	"\askipped\x18\x03 \x01(\x05R\askipped\x12\x16\n" +
-	"\x06failed\x18\x04 \x01(\x05R\x06failed\x127\n" +
-	"\bwarnings\x18\x05 \x03(\v2\x1b.memos.api.ImportMemosIssueR\bwarnings\x127\n" +
-	"\bfailures\x18\x06 \x03(\v2\x1b.memos.api.ImportMemosIssueR\bfailures\"G\n" +
-	"\x10ImportMemosIssue\x12\x19\n" +
-	"\bmemo_uid\x18\x01 \x01(\tR\amemoUid\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\x8a%\n" +
-	"\vUserService\x12Z\n" +
-	"\tListUsers\x12\x1b.memos.api.ListUsersRequest\x1a\x1c.memos.api.ListUsersResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
-	"/api/users\x12Y\n" +
-	"\aGetUser\x12\x19.memos.api.GetUserRequest\x1a\x0f.memos.api.User\"\"\xdaA\x04name\x82\xd3\xe4\x93\x02\x15\x12\x13/api/{name=users/*}\x12r\n" +
-	"\rBatchGetUsers\x12\x1f.memos.api.BatchGetUsersRequest\x1a .memos.api.BatchGetUsersResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/users:batchGet\x12d\n" +
+	"\x06failed\x18\x04 \x01(\x05R\x06failed\x128\n" +
+	"\bwarnings\x18\x05 \x03(\v2\x1c.roster.api.ImportNotesIssueR\bwarnings\x128\n" +
+	"\bfailures\x18\x06 \x03(\v2\x1c.roster.api.ImportNotesIssueR\bfailures\"G\n" +
+	"\x10ImportNotesIssue\x12\x19\n" +
+	"\bnote_uid\x18\x01 \x01(\tR\anoteUid\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\xc8%\n" +
+	"\vUserService\x12\\\n" +
+	"\tListUsers\x12\x1c.roster.api.ListUsersRequest\x1a\x1d.roster.api.ListUsersResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
+	"/api/users\x12[\n" +
+	"\aGetUser\x12\x1a.roster.api.GetUserRequest\x1a\x10.roster.api.User\"\"\xdaA\x04name\x82\xd3\xe4\x93\x02\x15\x12\x13/api/{name=users/*}\x12t\n" +
+	"\rBatchGetUsers\x12 .roster.api.BatchGetUsersRequest\x1a!.roster.api.BatchGetUsersResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/users:batchGet\x12f\n" +
 	"\n" +
-	"CreateUser\x12\x1c.memos.api.CreateUserRequest\x1a\x0f.memos.api.User\"'\xdaA\fuser,user_id\x82\xd3\xe4\x93\x02\x12:\x04user\"\n" +
-	"/api/users\x12v\n" +
+	"CreateUser\x12\x1d.roster.api.CreateUserRequest\x1a\x10.roster.api.User\"'\xdaA\fuser,user_id\x82\xd3\xe4\x93\x02\x12:\x04user\"\n" +
+	"/api/users\x12x\n" +
 	"\n" +
-	"UpdateUser\x12\x1c.memos.api.UpdateUserRequest\x1a\x0f.memos.api.User\"9\xdaA\x10user,update_mask\x82\xd3\xe4\x93\x02 :\x04user2\x18/api/{user.name=users/*}\x12f\n" +
+	"UpdateUser\x12\x1d.roster.api.UpdateUserRequest\x1a\x10.roster.api.User\"9\xdaA\x10user,update_mask\x82\xd3\xe4\x93\x02 :\x04user2\x18/api/{user.name=users/*}\x12g\n" +
 	"\n" +
-	"DeleteUser\x12\x1c.memos.api.DeleteUserRequest\x1a\x16.google.protobuf.Empty\"\"\xdaA\x04name\x82\xd3\xe4\x93\x02\x15*\x13/api/{name=users/*}\x12\x8c\x01\n" +
-	"\x10ListUserSettings\x12\".memos.api.ListUserSettingsRequest\x1a#.memos.api.ListUserSettingsResponse\"/\xdaA\x06parent\x82\xd3\xe4\x93\x02 \x12\x1e/api/{parent=users/*}/settings\x12y\n" +
-	"\x0eGetUserSetting\x12 .memos.api.GetUserSettingRequest\x1a\x16.memos.api.UserSetting\"-\xdaA\x04name\x82\xd3\xe4\x93\x02 \x12\x1e/api/{name=users/*/settings/*}\x12\xae\x01\n" +
-	"\x11UpdateUserSetting\x12#.memos.api.UpdateUserSettingRequest\x1a\x16.memos.api.UserSetting\"\\\xdaA\x18user_setting,update_mask\x82\xd3\xe4\x93\x02;:\fuser_setting2+/api/{user_setting.name=users/*/settings/*}\x12\x80\x01\n" +
-	"\rListUserStats\x12\x1f.memos.api.ListUserStatsRequest\x1a .memos.api.ListUserStatsResponse\",\xdaA\x06parent\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/{parent=users/*}/stats\x12q\n" +
-	"\fGetUserStats\x12\x1e.memos.api.GetUserStatsRequest\x1a\x14.memos.api.UserStats\"+\xdaA\x04name\x82\xd3\xe4\x93\x02\x1e\x12\x1c/api/{name=users/*}:getStats\x12n\n" +
-	"\fGetUserUsage\x12\x1e.memos.api.GetUserUsageRequest\x1a\x14.memos.api.UserUsage\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/{name=users/*/usage}\x12\x80\x01\n" +
-	"\rListMemoViews\x12\x1f.memos.api.ListMemoViewsRequest\x1a .memos.api.ListMemoViewsResponse\",\xdaA\x06parent\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/{parent=users/*}/views\x12m\n" +
-	"\vGetMemoView\x12\x1d.memos.api.GetMemoViewRequest\x1a\x13.memos.api.MemoView\"*\xdaA\x04name\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/{name=users/*/views/*}\x12\x8a\x01\n" +
-	"\x0eCreateMemoView\x12 .memos.api.CreateMemoViewRequest\x1a\x13.memos.api.MemoView\"A\xdaA\x10parent,memo_view\x82\xd3\xe4\x93\x02(:\tmemo_view\"\x1b/api/{parent=users/*}/views\x12\x99\x01\n" +
-	"\x0eUpdateMemoView\x12 .memos.api.UpdateMemoViewRequest\x1a\x13.memos.api.MemoView\"P\xdaA\x15memo_view,update_mask\x82\xd3\xe4\x93\x022:\tmemo_view2%/api/{memo_view.name=users/*/views/*}\x12v\n" +
-	"\x0eDeleteMemoView\x12 .memos.api.DeleteMemoViewRequest\x1a\x16.google.protobuf.Empty\"*\xdaA\x04name\x82\xd3\xe4\x93\x02\x1d*\x1b/api/{name=users/*/views/*}\x12\xa0\x01\n" +
-	"\x15ListUserNotifications\x12'.memos.api.ListUserNotificationsRequest\x1a(.memos.api.ListUserNotificationsResponse\"4\xdaA\x06parent\x82\xd3\xe4\x93\x02%\x12#/api/{parent=users/*}/notifications\x12\xc2\x01\n" +
-	"\x16UpdateUserNotification\x12(.memos.api.UpdateUserNotificationRequest\x1a\x1b.memos.api.UserNotification\"a\xdaA\x18notification,update_mask\x82\xd3\xe4\x93\x02@:\fnotification20/api/{notification.name=users/*/notifications/*}\x12\x8e\x01\n" +
-	"\x16DeleteUserNotification\x12(.memos.api.DeleteUserNotificationRequest\x1a\x16.google.protobuf.Empty\"2\xdaA\x04name\x82\xd3\xe4\x93\x02%*#/api/{name=users/*/notifications/*}\x12\x8c\x01\n" +
-	"\x10ListUserWebhooks\x12\".memos.api.ListUserWebhooksRequest\x1a#.memos.api.ListUserWebhooksResponse\"/\xdaA\x06parent\x82\xd3\xe4\x93\x02 \x12\x1e/api/{parent=users/*}/webhooks\x12\x92\x01\n" +
-	"\x11CreateUserWebhook\x12#.memos.api.CreateUserWebhookRequest\x1a\x16.memos.api.UserWebhook\"@\xdaA\x0eparent,webhook\x82\xd3\xe4\x93\x02):\awebhook\"\x1e/api/{parent=users/*}/webhooks\x12\x9f\x01\n" +
-	"\x11UpdateUserWebhook\x12#.memos.api.UpdateUserWebhookRequest\x1a\x16.memos.api.UserWebhook\"M\xdaA\x13webhook,update_mask\x82\xd3\xe4\x93\x021:\awebhook2&/api/{webhook.name=users/*/webhooks/*}\x12\x7f\n" +
-	"\x11DeleteUserWebhook\x12#.memos.api.DeleteUserWebhookRequest\x1a\x16.google.protobuf.Empty\"-\xdaA\x04name\x82\xd3\xe4\x93\x02 *\x1e/api/{name=users/*/webhooks/*}\x12\xbc\x01\n" +
-	"\x1bGetUserWebhookSigningSecret\x12-.memos.api.GetUserWebhookSigningSecretRequest\x1a..memos.api.GetUserWebhookSigningSecretResponse\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//api/{name=users/*/webhooks/*}:getSigningSecret\x12\xa0\x01\n" +
-	"\x14ListLinkedIdentities\x12&.memos.api.ListLinkedIdentitiesRequest\x1a'.memos.api.ListLinkedIdentitiesResponse\"7\xdaA\x06parent\x82\xd3\xe4\x93\x02(\x12&/api/{parent=users/*}/linkedIdentities\x12\x8a\x01\n" +
-	"\x11GetLinkedIdentity\x12#.memos.api.GetLinkedIdentityRequest\x1a\x19.memos.api.LinkedIdentity\"5\xdaA\x04name\x82\xd3\xe4\x93\x02(\x12&/api/{name=users/*/linkedIdentities/*}\x12\xa7\x01\n" +
-	"\x14CreateLinkedIdentity\x12&.memos.api.CreateLinkedIdentityRequest\x1a\x19.memos.api.LinkedIdentity\"L\xdaA\x18parent,identity_provider\x82\xd3\xe4\x93\x02+:\x01*\"&/api/{parent=users/*}/linkedIdentities\x12\x8d\x01\n" +
-	"\x14DeleteLinkedIdentity\x12&.memos.api.DeleteLinkedIdentityRequest\x1a\x16.google.protobuf.Empty\"5\xdaA\x04name\x82\xd3\xe4\x93\x02(*&/api/{name=users/*/linkedIdentities/*}\x12\xb0\x01\n" +
-	"\x18ListPersonalAccessTokens\x12*.memos.api.ListPersonalAccessTokensRequest\x1a+.memos.api.ListPersonalAccessTokensResponse\";\xdaA\x06parent\x82\xd3\xe4\x93\x02,\x12*/api/{parent=users/*}/personalAccessTokens\x12\xad\x01\n" +
-	"\x19CreatePersonalAccessToken\x12+.memos.api.CreatePersonalAccessTokenRequest\x1a,.memos.api.CreatePersonalAccessTokenResponse\"5\x82\xd3\xe4\x93\x02/:\x01*\"*/api/{parent=users/*}/personalAccessTokens\x12\x9b\x01\n" +
-	"\x19DeletePersonalAccessToken\x12+.memos.api.DeletePersonalAccessTokenRequest\x1a\x16.google.protobuf.Empty\"9\xdaA\x04name\x82\xd3\xe4\x93\x02,**/api/{name=users/*/personalAccessTokens/*}\x12r\n" +
-	"\vExportMemos\x12\x1d.memos.api.ExportMemosRequest\x1a\x14.google.api.HttpBody\".\xdaA\x04name\x82\xd3\xe4\x93\x02!\x12\x1f/api/{name=users/*}:exportMemos\x12x\n" +
-	"\vImportMemos\x12\x1d.memos.api.ImportMemosRequest\x1a\x1e.memos.api.ImportMemosResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/api/{name=users/*}:importMemosB\x8f\x01\n" +
-	"\rcom.memos.apiB\x10UserServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
-	"Memos::Apib\x06proto3"
+	"DeleteUser\x12\x1d.roster.api.DeleteUserRequest\x1a\x16.google.protobuf.Empty\"\"\xdaA\x04name\x82\xd3\xe4\x93\x02\x15*\x13/api/{name=users/*}\x12\x8e\x01\n" +
+	"\x10ListUserSettings\x12#.roster.api.ListUserSettingsRequest\x1a$.roster.api.ListUserSettingsResponse\"/\xdaA\x06parent\x82\xd3\xe4\x93\x02 \x12\x1e/api/{parent=users/*}/settings\x12{\n" +
+	"\x0eGetUserSetting\x12!.roster.api.GetUserSettingRequest\x1a\x17.roster.api.UserSetting\"-\xdaA\x04name\x82\xd3\xe4\x93\x02 \x12\x1e/api/{name=users/*/settings/*}\x12\xb0\x01\n" +
+	"\x11UpdateUserSetting\x12$.roster.api.UpdateUserSettingRequest\x1a\x17.roster.api.UserSetting\"\\\xdaA\x18user_setting,update_mask\x82\xd3\xe4\x93\x02;:\fuser_setting2+/api/{user_setting.name=users/*/settings/*}\x12\x82\x01\n" +
+	"\rListUserStats\x12 .roster.api.ListUserStatsRequest\x1a!.roster.api.ListUserStatsResponse\",\xdaA\x06parent\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/{parent=users/*}/stats\x12s\n" +
+	"\fGetUserStats\x12\x1f.roster.api.GetUserStatsRequest\x1a\x15.roster.api.UserStats\"+\xdaA\x04name\x82\xd3\xe4\x93\x02\x1e\x12\x1c/api/{name=users/*}:getStats\x12p\n" +
+	"\fGetUserUsage\x12\x1f.roster.api.GetUserUsageRequest\x1a\x15.roster.api.UserUsage\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/{name=users/*/usage}\x12\x82\x01\n" +
+	"\rListNoteViews\x12 .roster.api.ListNoteViewsRequest\x1a!.roster.api.ListNoteViewsResponse\",\xdaA\x06parent\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/{parent=users/*}/views\x12o\n" +
+	"\vGetNoteView\x12\x1e.roster.api.GetNoteViewRequest\x1a\x14.roster.api.NoteView\"*\xdaA\x04name\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/{name=users/*/views/*}\x12\x8c\x01\n" +
+	"\x0eCreateNoteView\x12!.roster.api.CreateNoteViewRequest\x1a\x14.roster.api.NoteView\"A\xdaA\x10parent,note_view\x82\xd3\xe4\x93\x02(:\tnote_view\"\x1b/api/{parent=users/*}/views\x12\x9b\x01\n" +
+	"\x0eUpdateNoteView\x12!.roster.api.UpdateNoteViewRequest\x1a\x14.roster.api.NoteView\"P\xdaA\x15note_view,update_mask\x82\xd3\xe4\x93\x022:\tnote_view2%/api/{note_view.name=users/*/views/*}\x12w\n" +
+	"\x0eDeleteNoteView\x12!.roster.api.DeleteNoteViewRequest\x1a\x16.google.protobuf.Empty\"*\xdaA\x04name\x82\xd3\xe4\x93\x02\x1d*\x1b/api/{name=users/*/views/*}\x12\xa2\x01\n" +
+	"\x15ListUserNotifications\x12(.roster.api.ListUserNotificationsRequest\x1a).roster.api.ListUserNotificationsResponse\"4\xdaA\x06parent\x82\xd3\xe4\x93\x02%\x12#/api/{parent=users/*}/notifications\x12\xc4\x01\n" +
+	"\x16UpdateUserNotification\x12).roster.api.UpdateUserNotificationRequest\x1a\x1c.roster.api.UserNotification\"a\xdaA\x18notification,update_mask\x82\xd3\xe4\x93\x02@:\fnotification20/api/{notification.name=users/*/notifications/*}\x12\x8f\x01\n" +
+	"\x16DeleteUserNotification\x12).roster.api.DeleteUserNotificationRequest\x1a\x16.google.protobuf.Empty\"2\xdaA\x04name\x82\xd3\xe4\x93\x02%*#/api/{name=users/*/notifications/*}\x12\x8e\x01\n" +
+	"\x10ListUserWebhooks\x12#.roster.api.ListUserWebhooksRequest\x1a$.roster.api.ListUserWebhooksResponse\"/\xdaA\x06parent\x82\xd3\xe4\x93\x02 \x12\x1e/api/{parent=users/*}/webhooks\x12\x94\x01\n" +
+	"\x11CreateUserWebhook\x12$.roster.api.CreateUserWebhookRequest\x1a\x17.roster.api.UserWebhook\"@\xdaA\x0eparent,webhook\x82\xd3\xe4\x93\x02):\awebhook\"\x1e/api/{parent=users/*}/webhooks\x12\xa1\x01\n" +
+	"\x11UpdateUserWebhook\x12$.roster.api.UpdateUserWebhookRequest\x1a\x17.roster.api.UserWebhook\"M\xdaA\x13webhook,update_mask\x82\xd3\xe4\x93\x021:\awebhook2&/api/{webhook.name=users/*/webhooks/*}\x12\x80\x01\n" +
+	"\x11DeleteUserWebhook\x12$.roster.api.DeleteUserWebhookRequest\x1a\x16.google.protobuf.Empty\"-\xdaA\x04name\x82\xd3\xe4\x93\x02 *\x1e/api/{name=users/*/webhooks/*}\x12\xbe\x01\n" +
+	"\x1bGetUserWebhookSigningSecret\x12..roster.api.GetUserWebhookSigningSecretRequest\x1a/.roster.api.GetUserWebhookSigningSecretResponse\">\xdaA\x04name\x82\xd3\xe4\x93\x021\x12//api/{name=users/*/webhooks/*}:getSigningSecret\x12\xa2\x01\n" +
+	"\x14ListLinkedIdentities\x12'.roster.api.ListLinkedIdentitiesRequest\x1a(.roster.api.ListLinkedIdentitiesResponse\"7\xdaA\x06parent\x82\xd3\xe4\x93\x02(\x12&/api/{parent=users/*}/linkedIdentities\x12\x8c\x01\n" +
+	"\x11GetLinkedIdentity\x12$.roster.api.GetLinkedIdentityRequest\x1a\x1a.roster.api.LinkedIdentity\"5\xdaA\x04name\x82\xd3\xe4\x93\x02(\x12&/api/{name=users/*/linkedIdentities/*}\x12\xa9\x01\n" +
+	"\x14CreateLinkedIdentity\x12'.roster.api.CreateLinkedIdentityRequest\x1a\x1a.roster.api.LinkedIdentity\"L\xdaA\x18parent,identity_provider\x82\xd3\xe4\x93\x02+:\x01*\"&/api/{parent=users/*}/linkedIdentities\x12\x8e\x01\n" +
+	"\x14DeleteLinkedIdentity\x12'.roster.api.DeleteLinkedIdentityRequest\x1a\x16.google.protobuf.Empty\"5\xdaA\x04name\x82\xd3\xe4\x93\x02(*&/api/{name=users/*/linkedIdentities/*}\x12\xb2\x01\n" +
+	"\x18ListPersonalAccessTokens\x12+.roster.api.ListPersonalAccessTokensRequest\x1a,.roster.api.ListPersonalAccessTokensResponse\";\xdaA\x06parent\x82\xd3\xe4\x93\x02,\x12*/api/{parent=users/*}/personalAccessTokens\x12\xaf\x01\n" +
+	"\x19CreatePersonalAccessToken\x12,.roster.api.CreatePersonalAccessTokenRequest\x1a-.roster.api.CreatePersonalAccessTokenResponse\"5\x82\xd3\xe4\x93\x02/:\x01*\"*/api/{parent=users/*}/personalAccessTokens\x12\x9c\x01\n" +
+	"\x19DeletePersonalAccessToken\x12,.roster.api.DeletePersonalAccessTokenRequest\x1a\x16.google.protobuf.Empty\"9\xdaA\x04name\x82\xd3\xe4\x93\x02,**/api/{name=users/*/personalAccessTokens/*}\x12s\n" +
+	"\vExportNotes\x12\x1e.roster.api.ExportNotesRequest\x1a\x14.google.api.HttpBody\".\xdaA\x04name\x82\xd3\xe4\x93\x02!\x12\x1f/api/{name=users/*}:exportNotes\x12z\n" +
+	"\vImportNotes\x12\x1e.roster.api.ImportNotesRequest\x1a\x1f.roster.api.ImportNotesResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/api/{name=users/*}:importNotesB\xa2\x01\n" +
+	"\x0ecom.roster.apiB\x10UserServiceProtoP\x01Z5github.com/anangnovriadi/roster-tracker/proto/gen/api\xa2\x02\x03RAX\xaa\x02\n" +
+	"Roster.Api\xca\x02\n" +
+	"Roster\\Api\xe2\x02\x16Roster\\Api\\GPBMetadata\xea\x02\vRoster::Apib\x06proto3"
 
 var (
 	file_api_user_service_proto_rawDescOnce sync.Once
@@ -5417,228 +5419,228 @@ func file_api_user_service_proto_rawDescGZIP() []byte {
 var file_api_user_service_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_api_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 71)
 var file_api_user_service_proto_goTypes = []any{
-	(User_Role)(0),               // 0: memos.api.User.Role
-	(UserSetting_Key)(0),         // 1: memos.api.UserSetting.Key
-	(UserNotification_Status)(0), // 2: memos.api.UserNotification.Status
-	(UserNotification_Type)(0),   // 3: memos.api.UserNotification.Type
-	(UserNotification_SpaceInvitationPayload_InvitationState)(0), // 4: memos.api.UserNotification.SpaceInvitationPayload.InvitationState
-	(ImportMemosRequest_ConflictPolicy)(0),                       // 5: memos.api.ImportMemosRequest.ConflictPolicy
-	(*User)(nil),                                                 // 6: memos.api.User
-	(*ListUsersRequest)(nil),                                     // 7: memos.api.ListUsersRequest
-	(*ListUsersResponse)(nil),                                    // 8: memos.api.ListUsersResponse
-	(*GetUserRequest)(nil),                                       // 9: memos.api.GetUserRequest
-	(*BatchGetUsersRequest)(nil),                                 // 10: memos.api.BatchGetUsersRequest
-	(*BatchGetUsersResponse)(nil),                                // 11: memos.api.BatchGetUsersResponse
-	(*CreateUserRequest)(nil),                                    // 12: memos.api.CreateUserRequest
-	(*UpdateUserRequest)(nil),                                    // 13: memos.api.UpdateUserRequest
-	(*DeleteUserRequest)(nil),                                    // 14: memos.api.DeleteUserRequest
-	(*UserSetting)(nil),                                          // 15: memos.api.UserSetting
-	(*ListUserSettingsRequest)(nil),                              // 16: memos.api.ListUserSettingsRequest
-	(*ListUserSettingsResponse)(nil),                             // 17: memos.api.ListUserSettingsResponse
-	(*GetUserSettingRequest)(nil),                                // 18: memos.api.GetUserSettingRequest
-	(*UpdateUserSettingRequest)(nil),                             // 19: memos.api.UpdateUserSettingRequest
-	(*UserStats)(nil),                                            // 20: memos.api.UserStats
-	(*ListUserStatsRequest)(nil),                                 // 21: memos.api.ListUserStatsRequest
-	(*ListUserStatsResponse)(nil),                                // 22: memos.api.ListUserStatsResponse
-	(*GetUserStatsRequest)(nil),                                  // 23: memos.api.GetUserStatsRequest
-	(*UserUsage)(nil),                                            // 24: memos.api.UserUsage
-	(*GetUserUsageRequest)(nil),                                  // 25: memos.api.GetUserUsageRequest
-	(*MemoView)(nil),                                             // 26: memos.api.MemoView
-	(*ListMemoViewsRequest)(nil),                                 // 27: memos.api.ListMemoViewsRequest
-	(*ListMemoViewsResponse)(nil),                                // 28: memos.api.ListMemoViewsResponse
-	(*GetMemoViewRequest)(nil),                                   // 29: memos.api.GetMemoViewRequest
-	(*CreateMemoViewRequest)(nil),                                // 30: memos.api.CreateMemoViewRequest
-	(*UpdateMemoViewRequest)(nil),                                // 31: memos.api.UpdateMemoViewRequest
-	(*DeleteMemoViewRequest)(nil),                                // 32: memos.api.DeleteMemoViewRequest
-	(*UserNotification)(nil),                                     // 33: memos.api.UserNotification
-	(*ListUserNotificationsRequest)(nil),                         // 34: memos.api.ListUserNotificationsRequest
-	(*ListUserNotificationsResponse)(nil),                        // 35: memos.api.ListUserNotificationsResponse
-	(*UpdateUserNotificationRequest)(nil),                        // 36: memos.api.UpdateUserNotificationRequest
-	(*DeleteUserNotificationRequest)(nil),                        // 37: memos.api.DeleteUserNotificationRequest
-	(*UserWebhook)(nil),                                          // 38: memos.api.UserWebhook
-	(*ListUserWebhooksRequest)(nil),                              // 39: memos.api.ListUserWebhooksRequest
-	(*ListUserWebhooksResponse)(nil),                             // 40: memos.api.ListUserWebhooksResponse
-	(*CreateUserWebhookRequest)(nil),                             // 41: memos.api.CreateUserWebhookRequest
-	(*UpdateUserWebhookRequest)(nil),                             // 42: memos.api.UpdateUserWebhookRequest
-	(*DeleteUserWebhookRequest)(nil),                             // 43: memos.api.DeleteUserWebhookRequest
-	(*GetUserWebhookSigningSecretRequest)(nil),                   // 44: memos.api.GetUserWebhookSigningSecretRequest
-	(*GetUserWebhookSigningSecretResponse)(nil),                  // 45: memos.api.GetUserWebhookSigningSecretResponse
-	(*LinkedIdentity)(nil),                                       // 46: memos.api.LinkedIdentity
-	(*ListLinkedIdentitiesRequest)(nil),                          // 47: memos.api.ListLinkedIdentitiesRequest
-	(*ListLinkedIdentitiesResponse)(nil),                         // 48: memos.api.ListLinkedIdentitiesResponse
-	(*GetLinkedIdentityRequest)(nil),                             // 49: memos.api.GetLinkedIdentityRequest
-	(*CreateLinkedIdentityRequest)(nil),                          // 50: memos.api.CreateLinkedIdentityRequest
-	(*DeleteLinkedIdentityRequest)(nil),                          // 51: memos.api.DeleteLinkedIdentityRequest
-	(*PersonalAccessToken)(nil),                                  // 52: memos.api.PersonalAccessToken
-	(*ListPersonalAccessTokensRequest)(nil),                      // 53: memos.api.ListPersonalAccessTokensRequest
-	(*ListPersonalAccessTokensResponse)(nil),                     // 54: memos.api.ListPersonalAccessTokensResponse
-	(*CreatePersonalAccessTokenRequest)(nil),                     // 55: memos.api.CreatePersonalAccessTokenRequest
-	(*CreatePersonalAccessTokenResponse)(nil),                    // 56: memos.api.CreatePersonalAccessTokenResponse
-	(*DeletePersonalAccessTokenRequest)(nil),                     // 57: memos.api.DeletePersonalAccessTokenRequest
-	(*ExportMemosRequest)(nil),                                   // 58: memos.api.ExportMemosRequest
-	(*ImportMemosRequest)(nil),                                   // 59: memos.api.ImportMemosRequest
-	(*ImportMemosResponse)(nil),                                  // 60: memos.api.ImportMemosResponse
-	(*ImportMemosSpec)(nil),                                      // 61: memos.api.ImportMemosSpec
-	(*ImportMemosPlan)(nil),                                      // 62: memos.api.ImportMemosPlan
-	(*ImportMemosReport)(nil),                                    // 63: memos.api.ImportMemosReport
-	(*ImportMemosIssue)(nil),                                     // 64: memos.api.ImportMemosIssue
-	(*UserSetting_GeneralSetting)(nil),                           // 65: memos.api.UserSetting.GeneralSetting
-	(*UserSetting_WebhooksSetting)(nil),                          // 66: memos.api.UserSetting.WebhooksSetting
-	(*UserSetting_TagsSetting)(nil),                              // 67: memos.api.UserSetting.TagsSetting
-	(*UserSetting_TagMetadata)(nil),                              // 68: memos.api.UserSetting.TagMetadata
-	nil,                                                          // 69: memos.api.UserSetting.TagsSetting.TagsEntry
-	nil,                                                          // 70: memos.api.UserStats.TagCountsEntry
-	(*UserStats_MemoTypeStats)(nil),                              // 71: memos.api.UserStats.MemoTypeStats
-	(*UserUsage_EffectiveLimit)(nil),                             // 72: memos.api.UserUsage.EffectiveLimit
-	(*MemoView_Icon)(nil),                                        // 73: memos.api.MemoView.Icon
-	(*UserNotification_MemoCommentPayload)(nil),                  // 74: memos.api.UserNotification.MemoCommentPayload
-	(*UserNotification_MemoMentionPayload)(nil),                  // 75: memos.api.UserNotification.MemoMentionPayload
-	(*UserNotification_SpaceInvitationPayload)(nil),              // 76: memos.api.UserNotification.SpaceInvitationPayload
-	(State)(0),                    // 77: memos.api.State
+	(User_Role)(0),               // 0: roster.api.User.Role
+	(UserSetting_Key)(0),         // 1: roster.api.UserSetting.Key
+	(UserNotification_Status)(0), // 2: roster.api.UserNotification.Status
+	(UserNotification_Type)(0),   // 3: roster.api.UserNotification.Type
+	(UserNotification_SpaceInvitationPayload_InvitationState)(0), // 4: roster.api.UserNotification.SpaceInvitationPayload.InvitationState
+	(ImportNotesRequest_ConflictPolicy)(0),                       // 5: roster.api.ImportNotesRequest.ConflictPolicy
+	(*User)(nil),                                                 // 6: roster.api.User
+	(*ListUsersRequest)(nil),                                     // 7: roster.api.ListUsersRequest
+	(*ListUsersResponse)(nil),                                    // 8: roster.api.ListUsersResponse
+	(*GetUserRequest)(nil),                                       // 9: roster.api.GetUserRequest
+	(*BatchGetUsersRequest)(nil),                                 // 10: roster.api.BatchGetUsersRequest
+	(*BatchGetUsersResponse)(nil),                                // 11: roster.api.BatchGetUsersResponse
+	(*CreateUserRequest)(nil),                                    // 12: roster.api.CreateUserRequest
+	(*UpdateUserRequest)(nil),                                    // 13: roster.api.UpdateUserRequest
+	(*DeleteUserRequest)(nil),                                    // 14: roster.api.DeleteUserRequest
+	(*UserSetting)(nil),                                          // 15: roster.api.UserSetting
+	(*ListUserSettingsRequest)(nil),                              // 16: roster.api.ListUserSettingsRequest
+	(*ListUserSettingsResponse)(nil),                             // 17: roster.api.ListUserSettingsResponse
+	(*GetUserSettingRequest)(nil),                                // 18: roster.api.GetUserSettingRequest
+	(*UpdateUserSettingRequest)(nil),                             // 19: roster.api.UpdateUserSettingRequest
+	(*UserStats)(nil),                                            // 20: roster.api.UserStats
+	(*ListUserStatsRequest)(nil),                                 // 21: roster.api.ListUserStatsRequest
+	(*ListUserStatsResponse)(nil),                                // 22: roster.api.ListUserStatsResponse
+	(*GetUserStatsRequest)(nil),                                  // 23: roster.api.GetUserStatsRequest
+	(*UserUsage)(nil),                                            // 24: roster.api.UserUsage
+	(*GetUserUsageRequest)(nil),                                  // 25: roster.api.GetUserUsageRequest
+	(*NoteView)(nil),                                             // 26: roster.api.NoteView
+	(*ListNoteViewsRequest)(nil),                                 // 27: roster.api.ListNoteViewsRequest
+	(*ListNoteViewsResponse)(nil),                                // 28: roster.api.ListNoteViewsResponse
+	(*GetNoteViewRequest)(nil),                                   // 29: roster.api.GetNoteViewRequest
+	(*CreateNoteViewRequest)(nil),                                // 30: roster.api.CreateNoteViewRequest
+	(*UpdateNoteViewRequest)(nil),                                // 31: roster.api.UpdateNoteViewRequest
+	(*DeleteNoteViewRequest)(nil),                                // 32: roster.api.DeleteNoteViewRequest
+	(*UserNotification)(nil),                                     // 33: roster.api.UserNotification
+	(*ListUserNotificationsRequest)(nil),                         // 34: roster.api.ListUserNotificationsRequest
+	(*ListUserNotificationsResponse)(nil),                        // 35: roster.api.ListUserNotificationsResponse
+	(*UpdateUserNotificationRequest)(nil),                        // 36: roster.api.UpdateUserNotificationRequest
+	(*DeleteUserNotificationRequest)(nil),                        // 37: roster.api.DeleteUserNotificationRequest
+	(*UserWebhook)(nil),                                          // 38: roster.api.UserWebhook
+	(*ListUserWebhooksRequest)(nil),                              // 39: roster.api.ListUserWebhooksRequest
+	(*ListUserWebhooksResponse)(nil),                             // 40: roster.api.ListUserWebhooksResponse
+	(*CreateUserWebhookRequest)(nil),                             // 41: roster.api.CreateUserWebhookRequest
+	(*UpdateUserWebhookRequest)(nil),                             // 42: roster.api.UpdateUserWebhookRequest
+	(*DeleteUserWebhookRequest)(nil),                             // 43: roster.api.DeleteUserWebhookRequest
+	(*GetUserWebhookSigningSecretRequest)(nil),                   // 44: roster.api.GetUserWebhookSigningSecretRequest
+	(*GetUserWebhookSigningSecretResponse)(nil),                  // 45: roster.api.GetUserWebhookSigningSecretResponse
+	(*LinkedIdentity)(nil),                                       // 46: roster.api.LinkedIdentity
+	(*ListLinkedIdentitiesRequest)(nil),                          // 47: roster.api.ListLinkedIdentitiesRequest
+	(*ListLinkedIdentitiesResponse)(nil),                         // 48: roster.api.ListLinkedIdentitiesResponse
+	(*GetLinkedIdentityRequest)(nil),                             // 49: roster.api.GetLinkedIdentityRequest
+	(*CreateLinkedIdentityRequest)(nil),                          // 50: roster.api.CreateLinkedIdentityRequest
+	(*DeleteLinkedIdentityRequest)(nil),                          // 51: roster.api.DeleteLinkedIdentityRequest
+	(*PersonalAccessToken)(nil),                                  // 52: roster.api.PersonalAccessToken
+	(*ListPersonalAccessTokensRequest)(nil),                      // 53: roster.api.ListPersonalAccessTokensRequest
+	(*ListPersonalAccessTokensResponse)(nil),                     // 54: roster.api.ListPersonalAccessTokensResponse
+	(*CreatePersonalAccessTokenRequest)(nil),                     // 55: roster.api.CreatePersonalAccessTokenRequest
+	(*CreatePersonalAccessTokenResponse)(nil),                    // 56: roster.api.CreatePersonalAccessTokenResponse
+	(*DeletePersonalAccessTokenRequest)(nil),                     // 57: roster.api.DeletePersonalAccessTokenRequest
+	(*ExportNotesRequest)(nil),                                   // 58: roster.api.ExportNotesRequest
+	(*ImportNotesRequest)(nil),                                   // 59: roster.api.ImportNotesRequest
+	(*ImportNotesResponse)(nil),                                  // 60: roster.api.ImportNotesResponse
+	(*ImportNotesSpec)(nil),                                      // 61: roster.api.ImportNotesSpec
+	(*ImportNotesPlan)(nil),                                      // 62: roster.api.ImportNotesPlan
+	(*ImportNotesReport)(nil),                                    // 63: roster.api.ImportNotesReport
+	(*ImportNotesIssue)(nil),                                     // 64: roster.api.ImportNotesIssue
+	(*UserSetting_GeneralSetting)(nil),                           // 65: roster.api.UserSetting.GeneralSetting
+	(*UserSetting_WebhooksSetting)(nil),                          // 66: roster.api.UserSetting.WebhooksSetting
+	(*UserSetting_TagsSetting)(nil),                              // 67: roster.api.UserSetting.TagsSetting
+	(*UserSetting_TagMetadata)(nil),                              // 68: roster.api.UserSetting.TagMetadata
+	nil,                                                          // 69: roster.api.UserSetting.TagsSetting.TagsEntry
+	nil,                                                          // 70: roster.api.UserStats.TagCountsEntry
+	(*UserStats_NoteTypeStats)(nil),                              // 71: roster.api.UserStats.NoteTypeStats
+	(*UserUsage_EffectiveLimit)(nil),                             // 72: roster.api.UserUsage.EffectiveLimit
+	(*NoteView_Icon)(nil),                                        // 73: roster.api.NoteView.Icon
+	(*UserNotification_NoteCommentPayload)(nil),                  // 74: roster.api.UserNotification.NoteCommentPayload
+	(*UserNotification_NoteMentionPayload)(nil),                  // 75: roster.api.UserNotification.NoteMentionPayload
+	(*UserNotification_SpaceInvitationPayload)(nil),              // 76: roster.api.UserNotification.SpaceInvitationPayload
+	(State)(0),                    // 77: roster.api.State
 	(*timestamppb.Timestamp)(nil), // 78: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil), // 79: google.protobuf.FieldMask
 	(*color.Color)(nil),           // 80: google.type.Color
-	(*Space)(nil),                 // 81: memos.api.Space
-	(SpaceMember_Role)(0),         // 82: memos.api.SpaceMember.Role
+	(*Space)(nil),                 // 81: roster.api.Space
+	(SpaceMember_Role)(0),         // 82: roster.api.SpaceMember.Role
 	(*emptypb.Empty)(nil),         // 83: google.protobuf.Empty
 	(*httpbody.HttpBody)(nil),     // 84: google.api.HttpBody
 }
 var file_api_user_service_proto_depIdxs = []int32{
-	0,   // 0: memos.api.User.role:type_name -> memos.api.User.Role
-	77,  // 1: memos.api.User.state:type_name -> memos.api.State
-	78,  // 2: memos.api.User.create_time:type_name -> google.protobuf.Timestamp
-	78,  // 3: memos.api.User.update_time:type_name -> google.protobuf.Timestamp
-	6,   // 4: memos.api.ListUsersResponse.users:type_name -> memos.api.User
-	79,  // 5: memos.api.GetUserRequest.read_mask:type_name -> google.protobuf.FieldMask
-	6,   // 6: memos.api.BatchGetUsersResponse.users:type_name -> memos.api.User
-	6,   // 7: memos.api.CreateUserRequest.user:type_name -> memos.api.User
-	6,   // 8: memos.api.UpdateUserRequest.user:type_name -> memos.api.User
-	79,  // 9: memos.api.UpdateUserRequest.update_mask:type_name -> google.protobuf.FieldMask
-	65,  // 10: memos.api.UserSetting.general_setting:type_name -> memos.api.UserSetting.GeneralSetting
-	66,  // 11: memos.api.UserSetting.webhooks_setting:type_name -> memos.api.UserSetting.WebhooksSetting
-	67,  // 12: memos.api.UserSetting.tags_setting:type_name -> memos.api.UserSetting.TagsSetting
-	15,  // 13: memos.api.ListUserSettingsResponse.user_settings:type_name -> memos.api.UserSetting
-	15,  // 14: memos.api.UpdateUserSettingRequest.user_setting:type_name -> memos.api.UserSetting
-	79,  // 15: memos.api.UpdateUserSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
-	71,  // 16: memos.api.UserStats.memo_type_stats:type_name -> memos.api.UserStats.MemoTypeStats
-	70,  // 17: memos.api.UserStats.tag_counts:type_name -> memos.api.UserStats.TagCountsEntry
-	78,  // 18: memos.api.UserStats.memo_created_timestamps:type_name -> google.protobuf.Timestamp
-	78,  // 19: memos.api.UserStats.memo_updated_timestamps:type_name -> google.protobuf.Timestamp
-	77,  // 20: memos.api.ListUserStatsRequest.state:type_name -> memos.api.State
-	20,  // 21: memos.api.ListUserStatsResponse.user_stats:type_name -> memos.api.UserStats
-	72,  // 22: memos.api.UserUsage.memos_limit:type_name -> memos.api.UserUsage.EffectiveLimit
-	72,  // 23: memos.api.UserUsage.storage_bytes_limit:type_name -> memos.api.UserUsage.EffectiveLimit
-	72,  // 24: memos.api.UserUsage.upload_bytes_limit:type_name -> memos.api.UserUsage.EffectiveLimit
-	73,  // 25: memos.api.MemoView.icon:type_name -> memos.api.MemoView.Icon
-	26,  // 26: memos.api.ListMemoViewsResponse.memo_views:type_name -> memos.api.MemoView
-	26,  // 27: memos.api.CreateMemoViewRequest.memo_view:type_name -> memos.api.MemoView
-	26,  // 28: memos.api.UpdateMemoViewRequest.memo_view:type_name -> memos.api.MemoView
-	79,  // 29: memos.api.UpdateMemoViewRequest.update_mask:type_name -> google.protobuf.FieldMask
-	6,   // 30: memos.api.UserNotification.sender_user:type_name -> memos.api.User
-	3,   // 31: memos.api.UserNotification.type:type_name -> memos.api.UserNotification.Type
-	74,  // 32: memos.api.UserNotification.memo_comment:type_name -> memos.api.UserNotification.MemoCommentPayload
-	75,  // 33: memos.api.UserNotification.memo_mention:type_name -> memos.api.UserNotification.MemoMentionPayload
-	76,  // 34: memos.api.UserNotification.space_invitation:type_name -> memos.api.UserNotification.SpaceInvitationPayload
-	2,   // 35: memos.api.UserNotification.status:type_name -> memos.api.UserNotification.Status
-	78,  // 36: memos.api.UserNotification.create_time:type_name -> google.protobuf.Timestamp
-	33,  // 37: memos.api.ListUserNotificationsResponse.notifications:type_name -> memos.api.UserNotification
-	33,  // 38: memos.api.UpdateUserNotificationRequest.notification:type_name -> memos.api.UserNotification
-	79,  // 39: memos.api.UpdateUserNotificationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	78,  // 40: memos.api.UserWebhook.create_time:type_name -> google.protobuf.Timestamp
-	78,  // 41: memos.api.UserWebhook.update_time:type_name -> google.protobuf.Timestamp
-	38,  // 42: memos.api.ListUserWebhooksResponse.webhooks:type_name -> memos.api.UserWebhook
-	38,  // 43: memos.api.CreateUserWebhookRequest.webhook:type_name -> memos.api.UserWebhook
-	38,  // 44: memos.api.UpdateUserWebhookRequest.webhook:type_name -> memos.api.UserWebhook
-	79,  // 45: memos.api.UpdateUserWebhookRequest.update_mask:type_name -> google.protobuf.FieldMask
-	46,  // 46: memos.api.ListLinkedIdentitiesResponse.linked_identities:type_name -> memos.api.LinkedIdentity
-	78,  // 47: memos.api.PersonalAccessToken.create_time:type_name -> google.protobuf.Timestamp
-	78,  // 48: memos.api.PersonalAccessToken.expire_time:type_name -> google.protobuf.Timestamp
-	78,  // 49: memos.api.PersonalAccessToken.last_use_time:type_name -> google.protobuf.Timestamp
-	52,  // 50: memos.api.ListPersonalAccessTokensResponse.personal_access_tokens:type_name -> memos.api.PersonalAccessToken
-	52,  // 51: memos.api.CreatePersonalAccessTokenResponse.personal_access_token:type_name -> memos.api.PersonalAccessToken
-	61,  // 52: memos.api.ImportMemosRequest.spec:type_name -> memos.api.ImportMemosSpec
-	5,   // 53: memos.api.ImportMemosRequest.conflict_policy:type_name -> memos.api.ImportMemosRequest.ConflictPolicy
-	62,  // 54: memos.api.ImportMemosResponse.plan:type_name -> memos.api.ImportMemosPlan
-	63,  // 55: memos.api.ImportMemosResponse.report:type_name -> memos.api.ImportMemosReport
-	78,  // 56: memos.api.ImportMemosPlan.export_time:type_name -> google.protobuf.Timestamp
-	64,  // 57: memos.api.ImportMemosPlan.warnings:type_name -> memos.api.ImportMemosIssue
-	64,  // 58: memos.api.ImportMemosReport.warnings:type_name -> memos.api.ImportMemosIssue
-	64,  // 59: memos.api.ImportMemosReport.failures:type_name -> memos.api.ImportMemosIssue
-	38,  // 60: memos.api.UserSetting.WebhooksSetting.webhooks:type_name -> memos.api.UserWebhook
-	69,  // 61: memos.api.UserSetting.TagsSetting.tags:type_name -> memos.api.UserSetting.TagsSetting.TagsEntry
-	80,  // 62: memos.api.UserSetting.TagMetadata.background_color:type_name -> google.type.Color
-	68,  // 63: memos.api.UserSetting.TagsSetting.TagsEntry.value:type_name -> memos.api.UserSetting.TagMetadata
-	81,  // 64: memos.api.UserNotification.SpaceInvitationPayload.space:type_name -> memos.api.Space
-	82,  // 65: memos.api.UserNotification.SpaceInvitationPayload.role:type_name -> memos.api.SpaceMember.Role
-	4,   // 66: memos.api.UserNotification.SpaceInvitationPayload.state:type_name -> memos.api.UserNotification.SpaceInvitationPayload.InvitationState
-	7,   // 67: memos.api.UserService.ListUsers:input_type -> memos.api.ListUsersRequest
-	9,   // 68: memos.api.UserService.GetUser:input_type -> memos.api.GetUserRequest
-	10,  // 69: memos.api.UserService.BatchGetUsers:input_type -> memos.api.BatchGetUsersRequest
-	12,  // 70: memos.api.UserService.CreateUser:input_type -> memos.api.CreateUserRequest
-	13,  // 71: memos.api.UserService.UpdateUser:input_type -> memos.api.UpdateUserRequest
-	14,  // 72: memos.api.UserService.DeleteUser:input_type -> memos.api.DeleteUserRequest
-	16,  // 73: memos.api.UserService.ListUserSettings:input_type -> memos.api.ListUserSettingsRequest
-	18,  // 74: memos.api.UserService.GetUserSetting:input_type -> memos.api.GetUserSettingRequest
-	19,  // 75: memos.api.UserService.UpdateUserSetting:input_type -> memos.api.UpdateUserSettingRequest
-	21,  // 76: memos.api.UserService.ListUserStats:input_type -> memos.api.ListUserStatsRequest
-	23,  // 77: memos.api.UserService.GetUserStats:input_type -> memos.api.GetUserStatsRequest
-	25,  // 78: memos.api.UserService.GetUserUsage:input_type -> memos.api.GetUserUsageRequest
-	27,  // 79: memos.api.UserService.ListMemoViews:input_type -> memos.api.ListMemoViewsRequest
-	29,  // 80: memos.api.UserService.GetMemoView:input_type -> memos.api.GetMemoViewRequest
-	30,  // 81: memos.api.UserService.CreateMemoView:input_type -> memos.api.CreateMemoViewRequest
-	31,  // 82: memos.api.UserService.UpdateMemoView:input_type -> memos.api.UpdateMemoViewRequest
-	32,  // 83: memos.api.UserService.DeleteMemoView:input_type -> memos.api.DeleteMemoViewRequest
-	34,  // 84: memos.api.UserService.ListUserNotifications:input_type -> memos.api.ListUserNotificationsRequest
-	36,  // 85: memos.api.UserService.UpdateUserNotification:input_type -> memos.api.UpdateUserNotificationRequest
-	37,  // 86: memos.api.UserService.DeleteUserNotification:input_type -> memos.api.DeleteUserNotificationRequest
-	39,  // 87: memos.api.UserService.ListUserWebhooks:input_type -> memos.api.ListUserWebhooksRequest
-	41,  // 88: memos.api.UserService.CreateUserWebhook:input_type -> memos.api.CreateUserWebhookRequest
-	42,  // 89: memos.api.UserService.UpdateUserWebhook:input_type -> memos.api.UpdateUserWebhookRequest
-	43,  // 90: memos.api.UserService.DeleteUserWebhook:input_type -> memos.api.DeleteUserWebhookRequest
-	44,  // 91: memos.api.UserService.GetUserWebhookSigningSecret:input_type -> memos.api.GetUserWebhookSigningSecretRequest
-	47,  // 92: memos.api.UserService.ListLinkedIdentities:input_type -> memos.api.ListLinkedIdentitiesRequest
-	49,  // 93: memos.api.UserService.GetLinkedIdentity:input_type -> memos.api.GetLinkedIdentityRequest
-	50,  // 94: memos.api.UserService.CreateLinkedIdentity:input_type -> memos.api.CreateLinkedIdentityRequest
-	51,  // 95: memos.api.UserService.DeleteLinkedIdentity:input_type -> memos.api.DeleteLinkedIdentityRequest
-	53,  // 96: memos.api.UserService.ListPersonalAccessTokens:input_type -> memos.api.ListPersonalAccessTokensRequest
-	55,  // 97: memos.api.UserService.CreatePersonalAccessToken:input_type -> memos.api.CreatePersonalAccessTokenRequest
-	57,  // 98: memos.api.UserService.DeletePersonalAccessToken:input_type -> memos.api.DeletePersonalAccessTokenRequest
-	58,  // 99: memos.api.UserService.ExportMemos:input_type -> memos.api.ExportMemosRequest
-	59,  // 100: memos.api.UserService.ImportMemos:input_type -> memos.api.ImportMemosRequest
-	8,   // 101: memos.api.UserService.ListUsers:output_type -> memos.api.ListUsersResponse
-	6,   // 102: memos.api.UserService.GetUser:output_type -> memos.api.User
-	11,  // 103: memos.api.UserService.BatchGetUsers:output_type -> memos.api.BatchGetUsersResponse
-	6,   // 104: memos.api.UserService.CreateUser:output_type -> memos.api.User
-	6,   // 105: memos.api.UserService.UpdateUser:output_type -> memos.api.User
-	83,  // 106: memos.api.UserService.DeleteUser:output_type -> google.protobuf.Empty
-	17,  // 107: memos.api.UserService.ListUserSettings:output_type -> memos.api.ListUserSettingsResponse
-	15,  // 108: memos.api.UserService.GetUserSetting:output_type -> memos.api.UserSetting
-	15,  // 109: memos.api.UserService.UpdateUserSetting:output_type -> memos.api.UserSetting
-	22,  // 110: memos.api.UserService.ListUserStats:output_type -> memos.api.ListUserStatsResponse
-	20,  // 111: memos.api.UserService.GetUserStats:output_type -> memos.api.UserStats
-	24,  // 112: memos.api.UserService.GetUserUsage:output_type -> memos.api.UserUsage
-	28,  // 113: memos.api.UserService.ListMemoViews:output_type -> memos.api.ListMemoViewsResponse
-	26,  // 114: memos.api.UserService.GetMemoView:output_type -> memos.api.MemoView
-	26,  // 115: memos.api.UserService.CreateMemoView:output_type -> memos.api.MemoView
-	26,  // 116: memos.api.UserService.UpdateMemoView:output_type -> memos.api.MemoView
-	83,  // 117: memos.api.UserService.DeleteMemoView:output_type -> google.protobuf.Empty
-	35,  // 118: memos.api.UserService.ListUserNotifications:output_type -> memos.api.ListUserNotificationsResponse
-	33,  // 119: memos.api.UserService.UpdateUserNotification:output_type -> memos.api.UserNotification
-	83,  // 120: memos.api.UserService.DeleteUserNotification:output_type -> google.protobuf.Empty
-	40,  // 121: memos.api.UserService.ListUserWebhooks:output_type -> memos.api.ListUserWebhooksResponse
-	38,  // 122: memos.api.UserService.CreateUserWebhook:output_type -> memos.api.UserWebhook
-	38,  // 123: memos.api.UserService.UpdateUserWebhook:output_type -> memos.api.UserWebhook
-	83,  // 124: memos.api.UserService.DeleteUserWebhook:output_type -> google.protobuf.Empty
-	45,  // 125: memos.api.UserService.GetUserWebhookSigningSecret:output_type -> memos.api.GetUserWebhookSigningSecretResponse
-	48,  // 126: memos.api.UserService.ListLinkedIdentities:output_type -> memos.api.ListLinkedIdentitiesResponse
-	46,  // 127: memos.api.UserService.GetLinkedIdentity:output_type -> memos.api.LinkedIdentity
-	46,  // 128: memos.api.UserService.CreateLinkedIdentity:output_type -> memos.api.LinkedIdentity
-	83,  // 129: memos.api.UserService.DeleteLinkedIdentity:output_type -> google.protobuf.Empty
-	54,  // 130: memos.api.UserService.ListPersonalAccessTokens:output_type -> memos.api.ListPersonalAccessTokensResponse
-	56,  // 131: memos.api.UserService.CreatePersonalAccessToken:output_type -> memos.api.CreatePersonalAccessTokenResponse
-	83,  // 132: memos.api.UserService.DeletePersonalAccessToken:output_type -> google.protobuf.Empty
-	84,  // 133: memos.api.UserService.ExportMemos:output_type -> google.api.HttpBody
-	60,  // 134: memos.api.UserService.ImportMemos:output_type -> memos.api.ImportMemosResponse
+	0,   // 0: roster.api.User.role:type_name -> roster.api.User.Role
+	77,  // 1: roster.api.User.state:type_name -> roster.api.State
+	78,  // 2: roster.api.User.create_time:type_name -> google.protobuf.Timestamp
+	78,  // 3: roster.api.User.update_time:type_name -> google.protobuf.Timestamp
+	6,   // 4: roster.api.ListUsersResponse.users:type_name -> roster.api.User
+	79,  // 5: roster.api.GetUserRequest.read_mask:type_name -> google.protobuf.FieldMask
+	6,   // 6: roster.api.BatchGetUsersResponse.users:type_name -> roster.api.User
+	6,   // 7: roster.api.CreateUserRequest.user:type_name -> roster.api.User
+	6,   // 8: roster.api.UpdateUserRequest.user:type_name -> roster.api.User
+	79,  // 9: roster.api.UpdateUserRequest.update_mask:type_name -> google.protobuf.FieldMask
+	65,  // 10: roster.api.UserSetting.general_setting:type_name -> roster.api.UserSetting.GeneralSetting
+	66,  // 11: roster.api.UserSetting.webhooks_setting:type_name -> roster.api.UserSetting.WebhooksSetting
+	67,  // 12: roster.api.UserSetting.tags_setting:type_name -> roster.api.UserSetting.TagsSetting
+	15,  // 13: roster.api.ListUserSettingsResponse.user_settings:type_name -> roster.api.UserSetting
+	15,  // 14: roster.api.UpdateUserSettingRequest.user_setting:type_name -> roster.api.UserSetting
+	79,  // 15: roster.api.UpdateUserSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	71,  // 16: roster.api.UserStats.note_type_stats:type_name -> roster.api.UserStats.NoteTypeStats
+	70,  // 17: roster.api.UserStats.tag_counts:type_name -> roster.api.UserStats.TagCountsEntry
+	78,  // 18: roster.api.UserStats.note_created_timestamps:type_name -> google.protobuf.Timestamp
+	78,  // 19: roster.api.UserStats.note_updated_timestamps:type_name -> google.protobuf.Timestamp
+	77,  // 20: roster.api.ListUserStatsRequest.state:type_name -> roster.api.State
+	20,  // 21: roster.api.ListUserStatsResponse.user_stats:type_name -> roster.api.UserStats
+	72,  // 22: roster.api.UserUsage.notes_limit:type_name -> roster.api.UserUsage.EffectiveLimit
+	72,  // 23: roster.api.UserUsage.storage_bytes_limit:type_name -> roster.api.UserUsage.EffectiveLimit
+	72,  // 24: roster.api.UserUsage.upload_bytes_limit:type_name -> roster.api.UserUsage.EffectiveLimit
+	73,  // 25: roster.api.NoteView.icon:type_name -> roster.api.NoteView.Icon
+	26,  // 26: roster.api.ListNoteViewsResponse.note_views:type_name -> roster.api.NoteView
+	26,  // 27: roster.api.CreateNoteViewRequest.note_view:type_name -> roster.api.NoteView
+	26,  // 28: roster.api.UpdateNoteViewRequest.note_view:type_name -> roster.api.NoteView
+	79,  // 29: roster.api.UpdateNoteViewRequest.update_mask:type_name -> google.protobuf.FieldMask
+	6,   // 30: roster.api.UserNotification.sender_user:type_name -> roster.api.User
+	3,   // 31: roster.api.UserNotification.type:type_name -> roster.api.UserNotification.Type
+	74,  // 32: roster.api.UserNotification.note_comment:type_name -> roster.api.UserNotification.NoteCommentPayload
+	75,  // 33: roster.api.UserNotification.note_mention:type_name -> roster.api.UserNotification.NoteMentionPayload
+	76,  // 34: roster.api.UserNotification.space_invitation:type_name -> roster.api.UserNotification.SpaceInvitationPayload
+	2,   // 35: roster.api.UserNotification.status:type_name -> roster.api.UserNotification.Status
+	78,  // 36: roster.api.UserNotification.create_time:type_name -> google.protobuf.Timestamp
+	33,  // 37: roster.api.ListUserNotificationsResponse.notifications:type_name -> roster.api.UserNotification
+	33,  // 38: roster.api.UpdateUserNotificationRequest.notification:type_name -> roster.api.UserNotification
+	79,  // 39: roster.api.UpdateUserNotificationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	78,  // 40: roster.api.UserWebhook.create_time:type_name -> google.protobuf.Timestamp
+	78,  // 41: roster.api.UserWebhook.update_time:type_name -> google.protobuf.Timestamp
+	38,  // 42: roster.api.ListUserWebhooksResponse.webhooks:type_name -> roster.api.UserWebhook
+	38,  // 43: roster.api.CreateUserWebhookRequest.webhook:type_name -> roster.api.UserWebhook
+	38,  // 44: roster.api.UpdateUserWebhookRequest.webhook:type_name -> roster.api.UserWebhook
+	79,  // 45: roster.api.UpdateUserWebhookRequest.update_mask:type_name -> google.protobuf.FieldMask
+	46,  // 46: roster.api.ListLinkedIdentitiesResponse.linked_identities:type_name -> roster.api.LinkedIdentity
+	78,  // 47: roster.api.PersonalAccessToken.create_time:type_name -> google.protobuf.Timestamp
+	78,  // 48: roster.api.PersonalAccessToken.expire_time:type_name -> google.protobuf.Timestamp
+	78,  // 49: roster.api.PersonalAccessToken.last_use_time:type_name -> google.protobuf.Timestamp
+	52,  // 50: roster.api.ListPersonalAccessTokensResponse.personal_access_tokens:type_name -> roster.api.PersonalAccessToken
+	52,  // 51: roster.api.CreatePersonalAccessTokenResponse.personal_access_token:type_name -> roster.api.PersonalAccessToken
+	61,  // 52: roster.api.ImportNotesRequest.spec:type_name -> roster.api.ImportNotesSpec
+	5,   // 53: roster.api.ImportNotesRequest.conflict_policy:type_name -> roster.api.ImportNotesRequest.ConflictPolicy
+	62,  // 54: roster.api.ImportNotesResponse.plan:type_name -> roster.api.ImportNotesPlan
+	63,  // 55: roster.api.ImportNotesResponse.report:type_name -> roster.api.ImportNotesReport
+	78,  // 56: roster.api.ImportNotesPlan.export_time:type_name -> google.protobuf.Timestamp
+	64,  // 57: roster.api.ImportNotesPlan.warnings:type_name -> roster.api.ImportNotesIssue
+	64,  // 58: roster.api.ImportNotesReport.warnings:type_name -> roster.api.ImportNotesIssue
+	64,  // 59: roster.api.ImportNotesReport.failures:type_name -> roster.api.ImportNotesIssue
+	38,  // 60: roster.api.UserSetting.WebhooksSetting.webhooks:type_name -> roster.api.UserWebhook
+	69,  // 61: roster.api.UserSetting.TagsSetting.tags:type_name -> roster.api.UserSetting.TagsSetting.TagsEntry
+	80,  // 62: roster.api.UserSetting.TagMetadata.background_color:type_name -> google.type.Color
+	68,  // 63: roster.api.UserSetting.TagsSetting.TagsEntry.value:type_name -> roster.api.UserSetting.TagMetadata
+	81,  // 64: roster.api.UserNotification.SpaceInvitationPayload.space:type_name -> roster.api.Space
+	82,  // 65: roster.api.UserNotification.SpaceInvitationPayload.role:type_name -> roster.api.SpaceMember.Role
+	4,   // 66: roster.api.UserNotification.SpaceInvitationPayload.state:type_name -> roster.api.UserNotification.SpaceInvitationPayload.InvitationState
+	7,   // 67: roster.api.UserService.ListUsers:input_type -> roster.api.ListUsersRequest
+	9,   // 68: roster.api.UserService.GetUser:input_type -> roster.api.GetUserRequest
+	10,  // 69: roster.api.UserService.BatchGetUsers:input_type -> roster.api.BatchGetUsersRequest
+	12,  // 70: roster.api.UserService.CreateUser:input_type -> roster.api.CreateUserRequest
+	13,  // 71: roster.api.UserService.UpdateUser:input_type -> roster.api.UpdateUserRequest
+	14,  // 72: roster.api.UserService.DeleteUser:input_type -> roster.api.DeleteUserRequest
+	16,  // 73: roster.api.UserService.ListUserSettings:input_type -> roster.api.ListUserSettingsRequest
+	18,  // 74: roster.api.UserService.GetUserSetting:input_type -> roster.api.GetUserSettingRequest
+	19,  // 75: roster.api.UserService.UpdateUserSetting:input_type -> roster.api.UpdateUserSettingRequest
+	21,  // 76: roster.api.UserService.ListUserStats:input_type -> roster.api.ListUserStatsRequest
+	23,  // 77: roster.api.UserService.GetUserStats:input_type -> roster.api.GetUserStatsRequest
+	25,  // 78: roster.api.UserService.GetUserUsage:input_type -> roster.api.GetUserUsageRequest
+	27,  // 79: roster.api.UserService.ListNoteViews:input_type -> roster.api.ListNoteViewsRequest
+	29,  // 80: roster.api.UserService.GetNoteView:input_type -> roster.api.GetNoteViewRequest
+	30,  // 81: roster.api.UserService.CreateNoteView:input_type -> roster.api.CreateNoteViewRequest
+	31,  // 82: roster.api.UserService.UpdateNoteView:input_type -> roster.api.UpdateNoteViewRequest
+	32,  // 83: roster.api.UserService.DeleteNoteView:input_type -> roster.api.DeleteNoteViewRequest
+	34,  // 84: roster.api.UserService.ListUserNotifications:input_type -> roster.api.ListUserNotificationsRequest
+	36,  // 85: roster.api.UserService.UpdateUserNotification:input_type -> roster.api.UpdateUserNotificationRequest
+	37,  // 86: roster.api.UserService.DeleteUserNotification:input_type -> roster.api.DeleteUserNotificationRequest
+	39,  // 87: roster.api.UserService.ListUserWebhooks:input_type -> roster.api.ListUserWebhooksRequest
+	41,  // 88: roster.api.UserService.CreateUserWebhook:input_type -> roster.api.CreateUserWebhookRequest
+	42,  // 89: roster.api.UserService.UpdateUserWebhook:input_type -> roster.api.UpdateUserWebhookRequest
+	43,  // 90: roster.api.UserService.DeleteUserWebhook:input_type -> roster.api.DeleteUserWebhookRequest
+	44,  // 91: roster.api.UserService.GetUserWebhookSigningSecret:input_type -> roster.api.GetUserWebhookSigningSecretRequest
+	47,  // 92: roster.api.UserService.ListLinkedIdentities:input_type -> roster.api.ListLinkedIdentitiesRequest
+	49,  // 93: roster.api.UserService.GetLinkedIdentity:input_type -> roster.api.GetLinkedIdentityRequest
+	50,  // 94: roster.api.UserService.CreateLinkedIdentity:input_type -> roster.api.CreateLinkedIdentityRequest
+	51,  // 95: roster.api.UserService.DeleteLinkedIdentity:input_type -> roster.api.DeleteLinkedIdentityRequest
+	53,  // 96: roster.api.UserService.ListPersonalAccessTokens:input_type -> roster.api.ListPersonalAccessTokensRequest
+	55,  // 97: roster.api.UserService.CreatePersonalAccessToken:input_type -> roster.api.CreatePersonalAccessTokenRequest
+	57,  // 98: roster.api.UserService.DeletePersonalAccessToken:input_type -> roster.api.DeletePersonalAccessTokenRequest
+	58,  // 99: roster.api.UserService.ExportNotes:input_type -> roster.api.ExportNotesRequest
+	59,  // 100: roster.api.UserService.ImportNotes:input_type -> roster.api.ImportNotesRequest
+	8,   // 101: roster.api.UserService.ListUsers:output_type -> roster.api.ListUsersResponse
+	6,   // 102: roster.api.UserService.GetUser:output_type -> roster.api.User
+	11,  // 103: roster.api.UserService.BatchGetUsers:output_type -> roster.api.BatchGetUsersResponse
+	6,   // 104: roster.api.UserService.CreateUser:output_type -> roster.api.User
+	6,   // 105: roster.api.UserService.UpdateUser:output_type -> roster.api.User
+	83,  // 106: roster.api.UserService.DeleteUser:output_type -> google.protobuf.Empty
+	17,  // 107: roster.api.UserService.ListUserSettings:output_type -> roster.api.ListUserSettingsResponse
+	15,  // 108: roster.api.UserService.GetUserSetting:output_type -> roster.api.UserSetting
+	15,  // 109: roster.api.UserService.UpdateUserSetting:output_type -> roster.api.UserSetting
+	22,  // 110: roster.api.UserService.ListUserStats:output_type -> roster.api.ListUserStatsResponse
+	20,  // 111: roster.api.UserService.GetUserStats:output_type -> roster.api.UserStats
+	24,  // 112: roster.api.UserService.GetUserUsage:output_type -> roster.api.UserUsage
+	28,  // 113: roster.api.UserService.ListNoteViews:output_type -> roster.api.ListNoteViewsResponse
+	26,  // 114: roster.api.UserService.GetNoteView:output_type -> roster.api.NoteView
+	26,  // 115: roster.api.UserService.CreateNoteView:output_type -> roster.api.NoteView
+	26,  // 116: roster.api.UserService.UpdateNoteView:output_type -> roster.api.NoteView
+	83,  // 117: roster.api.UserService.DeleteNoteView:output_type -> google.protobuf.Empty
+	35,  // 118: roster.api.UserService.ListUserNotifications:output_type -> roster.api.ListUserNotificationsResponse
+	33,  // 119: roster.api.UserService.UpdateUserNotification:output_type -> roster.api.UserNotification
+	83,  // 120: roster.api.UserService.DeleteUserNotification:output_type -> google.protobuf.Empty
+	40,  // 121: roster.api.UserService.ListUserWebhooks:output_type -> roster.api.ListUserWebhooksResponse
+	38,  // 122: roster.api.UserService.CreateUserWebhook:output_type -> roster.api.UserWebhook
+	38,  // 123: roster.api.UserService.UpdateUserWebhook:output_type -> roster.api.UserWebhook
+	83,  // 124: roster.api.UserService.DeleteUserWebhook:output_type -> google.protobuf.Empty
+	45,  // 125: roster.api.UserService.GetUserWebhookSigningSecret:output_type -> roster.api.GetUserWebhookSigningSecretResponse
+	48,  // 126: roster.api.UserService.ListLinkedIdentities:output_type -> roster.api.ListLinkedIdentitiesResponse
+	46,  // 127: roster.api.UserService.GetLinkedIdentity:output_type -> roster.api.LinkedIdentity
+	46,  // 128: roster.api.UserService.CreateLinkedIdentity:output_type -> roster.api.LinkedIdentity
+	83,  // 129: roster.api.UserService.DeleteLinkedIdentity:output_type -> google.protobuf.Empty
+	54,  // 130: roster.api.UserService.ListPersonalAccessTokens:output_type -> roster.api.ListPersonalAccessTokensResponse
+	56,  // 131: roster.api.UserService.CreatePersonalAccessToken:output_type -> roster.api.CreatePersonalAccessTokenResponse
+	83,  // 132: roster.api.UserService.DeletePersonalAccessToken:output_type -> google.protobuf.Empty
+	84,  // 133: roster.api.UserService.ExportNotes:output_type -> google.api.HttpBody
+	60,  // 134: roster.api.UserService.ImportNotes:output_type -> roster.api.ImportNotesResponse
 	101, // [101:135] is the sub-list for method output_type
 	67,  // [67:101] is the sub-list for method input_type
 	67,  // [67:67] is the sub-list for extension type_name
@@ -5660,21 +5662,21 @@ func file_api_user_service_proto_init() {
 	}
 	file_api_user_service_proto_msgTypes[14].OneofWrappers = []any{}
 	file_api_user_service_proto_msgTypes[27].OneofWrappers = []any{
-		(*UserNotification_MemoComment)(nil),
-		(*UserNotification_MemoMention)(nil),
+		(*UserNotification_NoteComment)(nil),
+		(*UserNotification_NoteMention)(nil),
 		(*UserNotification_SpaceInvitation)(nil),
 	}
 	file_api_user_service_proto_msgTypes[53].OneofWrappers = []any{
-		(*ImportMemosRequest_Spec)(nil),
-		(*ImportMemosRequest_UploadId)(nil),
+		(*ImportNotesRequest_Spec)(nil),
+		(*ImportNotesRequest_UploadId)(nil),
 	}
 	file_api_user_service_proto_msgTypes[54].OneofWrappers = []any{
-		(*ImportMemosResponse_Plan)(nil),
-		(*ImportMemosResponse_Report)(nil),
+		(*ImportNotesResponse_Plan)(nil),
+		(*ImportNotesResponse_Report)(nil),
 	}
 	file_api_user_service_proto_msgTypes[67].OneofWrappers = []any{
-		(*MemoView_Icon_Emoji)(nil),
-		(*MemoView_Icon_Lucide)(nil),
+		(*NoteView_Icon_Emoji)(nil),
+		(*NoteView_Icon_Lucide)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

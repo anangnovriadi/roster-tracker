@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	mast "github.com/usememos/memos/markdown/ast"
+	mast "github.com/anangnovriadi/roster-tracker/markdown/ast"
 )
 
 func TestFindTagMatches(t *testing.T) {
@@ -207,7 +207,7 @@ func TestFindTagMatchesMultipleTags(t *testing.T) {
 	assert.Equal(t, "tag2", string(matches[1].Value))
 }
 
-func TestFindTagMatchesMemosTagV1(t *testing.T) {
+func TestFindTagMatchesNotesTagV1(t *testing.T) {
 	tests := []struct {
 		name           string
 		input          string

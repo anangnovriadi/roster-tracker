@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/usememos/memos/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
 
 	"google.golang.org/grpc/metadata"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 func TestParseUserAgent(t *testing.T) {
@@ -188,7 +188,7 @@ func TestBuildRefreshTokenCookieSecureFlag(t *testing.T) {
 
 	t.Run("sets Secure for https origin", func(t *testing.T) {
 		ctx := metadata.NewIncomingContext(context.Background(), metadata.Pairs(
-			"origin", "https://memos.example",
+			"origin", "https://notes.example",
 		))
 		cookie := service.buildRefreshTokenCookie(ctx, "token", testCookieExpiry())
 		if !containsCookieAttribute(cookie, "Secure") {
@@ -208,7 +208,7 @@ func TestBuildRefreshTokenCookieSecureFlag(t *testing.T) {
 
 	t.Run("omits Secure for plain http", func(t *testing.T) {
 		ctx := metadata.NewIncomingContext(context.Background(), metadata.Pairs(
-			"origin", "http://memos.example",
+			"origin", "http://notes.example",
 		))
 		cookie := service.buildRefreshTokenCookie(ctx, "token", testCookieExpiry())
 		if containsCookieAttribute(cookie, "Secure") {

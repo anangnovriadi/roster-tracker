@@ -8,9 +8,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/identifier"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/provider/storage"
+	"github.com/anangnovriadi/roster-tracker/internal/identifier"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/provider/storage"
 )
 
 type Attachment struct {
@@ -33,14 +33,14 @@ type Attachment struct {
 	Reference   string
 	Payload     *storepb.AttachmentPayload
 
-	// The related memo ID.
-	MemoID *int32
+	// The related note ID.
+	NoteID *int32
 	// Policy is present for transport-facing direct-link mutations. Drivers
 	// revalidate it in the same transaction as the attachment insert.
-	Policy *MemoWritePolicy
+	Policy *NoteWritePolicy
 
 	// Composed field
-	MemoUID         *string
+	NoteUID         *string
 	CreatorUsername *string
 }
 
@@ -51,14 +51,14 @@ type FindAttachment struct {
 	CreatorID      *int32
 	Filename       *string
 	FilenameSearch *string
-	MemoID         *int32
-	MemoIDList     []int32
-	HasRelatedMemo bool
+	NoteID         *int32
+	NoteIDList     []int32
+	HasRelatedNote bool
 	Filters        []string
-	// Access applies memo-local authorization to linked attachments
+	// Access applies note-local authorization to linked attachments
 	// before pagination. Unlinked attachments are visible only to the active
 	// matching creator. Nil is reserved for trusted internal callers.
-	Access           *MemoAccessScope
+	Access           *NoteAccessScope
 	Limit            *int
 	Offset           *int
 	SkipDefaultLimit bool
@@ -69,17 +69,17 @@ type UpdateAttachment struct {
 	UID       *string
 	UpdatedTs *int64
 	Filename  *string
-	MemoID    *int32
+	NoteID    *int32
 	Payload   *storepb.AttachmentPayload
 	// Policy is present for transport-facing updates. Drivers discover the
-	// current attachment binding and authorize any linked memo in the same
+	// current attachment binding and authorize any linked note in the same
 	// transaction as the update.
-	Policy *MemoWritePolicy
+	Policy *NoteWritePolicy
 }
 
 type DeleteAttachment struct {
 	ID     int32
-	MemoID *int32
+	NoteID *int32
 }
 
 const (
@@ -116,7 +116,7 @@ func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Atta
 	if !identifier.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
 	}
-	if err := validateMemoWritePolicy(create.Policy); err != nil {
+	if err := validateNoteWritePolicy(create.Policy); err != nil {
 		return nil, err
 	}
 	var (
@@ -124,14 +124,14 @@ func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Atta
 		err        error
 	)
 	if create.Policy != nil {
-		if create.MemoID == nil {
-			return nil, errors.New("attachment write policy requires a memo")
+		if create.NoteID == nil {
+			return nil, errors.New("attachment write policy requires a note")
 		}
 		if create.CreatorID != create.Policy.ActorUserID {
-			return nil, ErrMemoPermissionDenied
+			return nil, ErrNotePermissionDenied
 		}
 		if shouldFailCreateAttachmentPolicy(ctx) {
-			return nil, ErrMemoSpaceMembershipRequired
+			return nil, ErrNoteSpaceMembershipRequired
 		}
 		attachment, err = s.driver.CreateAttachment(ctx, create)
 	} else {
@@ -148,7 +148,7 @@ func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Atta
 
 func (s *Store) ListAttachments(ctx context.Context, find *FindAttachment) ([]*Attachment, error) {
 	// Set default limits to prevent loading too many attachments at once
-	shouldApplyDefaultLimit := find.Limit == nil && find.MemoID == nil && len(find.MemoIDList) == 0 && !find.SkipDefaultLimit
+	shouldApplyDefaultLimit := find.Limit == nil && find.NoteID == nil && len(find.NoteIDList) == 0 && !find.SkipDefaultLimit
 	if shouldApplyDefaultLimit && find.GetBlob {
 		// When fetching blobs, we should be especially careful with limits
 		defaultLimit := 10
@@ -179,12 +179,12 @@ func (s *Store) UpdateAttachment(ctx context.Context, update *UpdateAttachment) 
 	if update.UID != nil && !identifier.UIDMatcher.MatchString(*update.UID) {
 		return errors.New("invalid uid")
 	}
-	if err := validateMemoWritePolicy(update.Policy); err != nil {
+	if err := validateNoteWritePolicy(update.Policy); err != nil {
 		return err
 	}
 	if update.Policy != nil {
-		if update.MemoID != nil {
-			return errors.New("policy-bearing attachment updates cannot change memo binding")
+		if update.NoteID != nil {
+			return errors.New("policy-bearing attachment updates cannot change note binding")
 		}
 		return s.driver.UpdateAttachment(ctx, update)
 	}
@@ -220,7 +220,7 @@ func (s *Store) DeleteAttachments(ctx context.Context, attachments []*Attachment
 		if attachment == nil {
 			continue
 		}
-		deletes = append(deletes, &DeleteAttachment{ID: attachment.ID, MemoID: attachment.MemoID})
+		deletes = append(deletes, &DeleteAttachment{ID: attachment.ID, NoteID: attachment.NoteID})
 	}
 	if len(deletes) == 0 {
 		return nil

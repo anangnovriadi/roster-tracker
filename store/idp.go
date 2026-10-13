@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 type IdentityProvider struct {

@@ -12,10 +12,10 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/core/access"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/core/access"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (s *APIService) ListUserNotifications(ctx context.Context, request *apipb.ListUserNotificationsRequest) (*apipb.ListUserNotificationsResponse, error) {
@@ -54,9 +54,9 @@ func (s *APIService) ListUserNotifications(ctx context.Context, request *apipb.L
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list notification users: %v", err)
 	}
-	memosByID, err := s.listMemosByID(ctx, collectInboxMemoIDs(inboxes))
+	notesByID, err := s.listNotesByID(ctx, collectInboxNoteIDs(inboxes))
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list notification memos: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list notification notes: %v", err)
 	}
 	spaceContext, err := s.loadSpaceInvitationNotificationContext(ctx, currentUser, inboxes)
 	if err != nil {
@@ -65,7 +65,7 @@ func (s *APIService) ListUserNotifications(ctx context.Context, request *apipb.L
 
 	notifications := []*apipb.UserNotification{}
 	for _, inbox := range inboxes {
-		notification, err := s.convertInboxToUserNotificationWithUsersAndMemos(ctx, inbox, currentUser, usersByID, memosByID, spaceContext)
+		notification, err := s.convertInboxToUserNotificationWithUsersAndNotes(ctx, inbox, currentUser, usersByID, notesByID, spaceContext)
 		if err != nil {
 			if status.Code(err) == codes.NotFound {
 				slog.Warn("Skipping notification with missing user",
@@ -128,15 +128,15 @@ func (s *APIService) UpdateUserNotification(ctx context.Context, request *apipb.
 	if inbox.ReceiverID != currentUser.ID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-	memosByID, err := s.listMemosByID(ctx, collectInboxMemoIDs([]*store.Inbox{inbox}))
+	notesByID, err := s.listNotesByID(ctx, collectInboxNoteIDs([]*store.Inbox{inbox}))
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list notification memos: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list notification notes: %v", err)
 	}
 	spaceContext, err := s.loadSpaceInvitationNotificationContext(ctx, currentUser, []*store.Inbox{inbox})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list notification spaces: %v", err)
 	}
-	accessible, err := s.canAccessNotification(ctx, currentUser, inbox, memosByID, spaceContext)
+	accessible, err := s.canAccessNotification(ctx, currentUser, inbox, notesByID, spaceContext)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to authorize notification: %v", err)
 	}
@@ -234,53 +234,53 @@ func (s *APIService) convertInboxToUserNotification(ctx context.Context, inbox *
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list notification users: %v", err)
 	}
-	memosByID, err := s.listMemosByID(ctx, collectInboxMemoIDs([]*store.Inbox{inbox}))
+	notesByID, err := s.listNotesByID(ctx, collectInboxNoteIDs([]*store.Inbox{inbox}))
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list notification memos: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list notification notes: %v", err)
 	}
 	spaceContext, err := s.loadSpaceInvitationNotificationContext(ctx, viewer, []*store.Inbox{inbox})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list notification spaces: %v", err)
 	}
-	return s.convertInboxToUserNotificationWithUsersAndMemos(ctx, inbox, viewer, usersByID, memosByID, spaceContext)
+	return s.convertInboxToUserNotificationWithUsersAndNotes(ctx, inbox, viewer, usersByID, notesByID, spaceContext)
 }
 
-func collectInboxMemoIDs(inboxes []*store.Inbox) []int32 {
-	memoIDs := make([]int32, 0, len(inboxes)*2)
+func collectInboxNoteIDs(inboxes []*store.Inbox) []int32 {
+	noteIDs := make([]int32, 0, len(inboxes)*2)
 	for _, inbox := range inboxes {
 		if inbox == nil || inbox.Message == nil {
 			continue
 		}
 		switch inbox.Message.Type {
-		case storepb.InboxMessage_MEMO_COMMENT:
-			payload := inbox.Message.GetMemoComment()
+		case storepb.InboxMessage_NOTE_COMMENT:
+			payload := inbox.Message.GetNoteComment()
 			if payload != nil {
-				if payload.MemoId > 0 {
-					memoIDs = append(memoIDs, payload.MemoId)
+				if payload.NoteId > 0 {
+					noteIDs = append(noteIDs, payload.NoteId)
 				}
-				if payload.RelatedMemoId > 0 {
-					memoIDs = append(memoIDs, payload.RelatedMemoId)
+				if payload.RelatedNoteId > 0 {
+					noteIDs = append(noteIDs, payload.RelatedNoteId)
 				}
 			}
-		case storepb.InboxMessage_MEMO_MENTION:
-			payload := inbox.Message.GetMemoMention()
+		case storepb.InboxMessage_NOTE_MENTION:
+			payload := inbox.Message.GetNoteMention()
 			if payload != nil {
-				if payload.MemoId > 0 {
-					memoIDs = append(memoIDs, payload.MemoId)
+				if payload.NoteId > 0 {
+					noteIDs = append(noteIDs, payload.NoteId)
 				}
-				if payload.RelatedMemoId > 0 {
-					memoIDs = append(memoIDs, payload.RelatedMemoId)
+				if payload.RelatedNoteId > 0 {
+					noteIDs = append(noteIDs, payload.RelatedNoteId)
 				}
 			}
 		default:
-			// Ignore notification types without memo references.
+			// Ignore notification types without note references.
 		}
 	}
-	return memoIDs
+	return noteIDs
 }
 
-func (s *APIService) convertInboxToUserNotificationWithUsersAndMemos(ctx context.Context, inbox *store.Inbox, viewer *store.User, usersByID map[int32]*store.User, memosByID map[int32]*store.Memo, spaceContext *spaceInvitationNotificationContext) (*apipb.UserNotification, error) {
-	accessible, err := s.canAccessNotification(ctx, viewer, inbox, memosByID, spaceContext)
+func (s *APIService) convertInboxToUserNotificationWithUsersAndNotes(ctx context.Context, inbox *store.Inbox, viewer *store.User, usersByID map[int32]*store.User, notesByID map[int32]*store.Note, spaceContext *spaceInvitationNotificationContext) (*apipb.UserNotification, error) {
+	accessible, err := s.canAccessNotification(ctx, viewer, inbox, notesByID, spaceContext)
 	if err != nil {
 		return nil, err
 	}
@@ -316,26 +316,26 @@ func (s *APIService) convertInboxToUserNotificationWithUsersAndMemos(ctx context
 	// Extract notification type and payload from the inbox message.
 	if inbox.Message != nil {
 		switch inbox.Message.Type {
-		case storepb.InboxMessage_MEMO_COMMENT:
-			notification.Type = apipb.UserNotification_MEMO_COMMENT
-			payload, err := s.convertMemoCommentNotificationPayload(inbox.Message, memosByID)
+		case storepb.InboxMessage_NOTE_COMMENT:
+			notification.Type = apipb.UserNotification_NOTE_COMMENT
+			payload, err := s.convertNoteCommentNotificationPayload(inbox.Message, notesByID)
 			if err != nil {
 				return nil, err
 			}
 			if payload != nil {
-				notification.Payload = &apipb.UserNotification_MemoComment{
-					MemoComment: payload,
+				notification.Payload = &apipb.UserNotification_NoteComment{
+					NoteComment: payload,
 				}
 			}
-		case storepb.InboxMessage_MEMO_MENTION:
-			notification.Type = apipb.UserNotification_MEMO_MENTION
-			payload, err := s.convertMemoMentionNotificationPayload(inbox.Message, memosByID)
+		case storepb.InboxMessage_NOTE_MENTION:
+			notification.Type = apipb.UserNotification_NOTE_MENTION
+			payload, err := s.convertNoteMentionNotificationPayload(inbox.Message, notesByID)
 			if err != nil {
 				return nil, err
 			}
 			if payload != nil {
-				notification.Payload = &apipb.UserNotification_MemoMention{
-					MemoMention: payload,
+				notification.Payload = &apipb.UserNotification_NoteMention{
+					NoteMention: payload,
 				}
 			}
 		case storepb.InboxMessage_SPACE_INVITATION:
@@ -359,10 +359,10 @@ func (s *APIService) convertInboxToUserNotificationWithUsersAndMemos(ctx context
 }
 
 // canAccessNotification reports whether the viewer may still read every
-// subject the notification refers to. Memo notifications require read access
-// to each memo; a space invitation requires the viewer to hold the pending
+// subject the notification refers to. Note notifications require read access
+// to each note; a space invitation requires the viewer to hold the pending
 // offer or to have accepted it.
-func (s *APIService) canAccessNotification(ctx context.Context, viewer *store.User, inbox *store.Inbox, memosByID map[int32]*store.Memo, spaceContext *spaceInvitationNotificationContext) (bool, error) {
+func (s *APIService) canAccessNotification(ctx context.Context, viewer *store.User, inbox *store.Inbox, notesByID map[int32]*store.Note, spaceContext *spaceInvitationNotificationContext) (bool, error) {
 	if viewer == nil || viewer.RowStatus != store.Normal {
 		return false, nil
 	}
@@ -373,41 +373,41 @@ func (s *APIService) canAccessNotification(ctx context.Context, viewer *store.Us
 		if id <= 0 {
 			return false, nil
 		}
-		memo := memosByID[id]
-		if memo == nil {
+		note := notesByID[id]
+		if note == nil {
 			return false, nil
 		}
-		readContext, err := s.buildMemoReadContextForViewer(ctx, memo, viewer, false, nil)
+		readContext, err := s.buildNoteReadContextForViewer(ctx, note, viewer, false, nil)
 		if err != nil {
 			if status.Code(err) == codes.NotFound {
 				return false, nil
 			}
 			return false, err
 		}
-		return access.CheckMemoReadContext(readContext).Allowed(), nil
+		return access.CheckNoteReadContext(readContext).Allowed(), nil
 	}
 
 	switch inbox.Message.Type {
-	case storepb.InboxMessage_MEMO_COMMENT:
-		payload := inbox.Message.GetMemoComment()
+	case storepb.InboxMessage_NOTE_COMMENT:
+		payload := inbox.Message.GetNoteComment()
 		if payload == nil {
 			return false, nil
 		}
-		canReadComment, err := check(payload.MemoId)
+		canReadComment, err := check(payload.NoteId)
 		if err != nil || !canReadComment {
 			return canReadComment, err
 		}
-		return check(payload.RelatedMemoId)
-	case storepb.InboxMessage_MEMO_MENTION:
-		payload := inbox.Message.GetMemoMention()
+		return check(payload.RelatedNoteId)
+	case storepb.InboxMessage_NOTE_MENTION:
+		payload := inbox.Message.GetNoteMention()
 		if payload == nil {
 			return false, nil
 		}
-		canReadMemo, err := check(payload.MemoId)
-		if err != nil || !canReadMemo || payload.RelatedMemoId <= 0 {
-			return canReadMemo, err
+		canReadNote, err := check(payload.NoteId)
+		if err != nil || !canReadNote || payload.RelatedNoteId <= 0 {
+			return canReadNote, err
 		}
-		return check(payload.RelatedMemoId)
+		return check(payload.RelatedNoteId)
 	case storepb.InboxMessage_SPACE_INVITATION:
 		space, _, state := spaceContext.resolve(inbox.Message.GetSpaceInvitation().GetSpaceId())
 		return space != nil && state != apipb.UserNotification_SpaceInvitationPayload_STATE_UNSPECIFIED, nil
@@ -416,70 +416,70 @@ func (s *APIService) canAccessNotification(ctx context.Context, viewer *store.Us
 	}
 }
 
-func (s *APIService) memoNotificationSnippet(memo *store.Memo) (string, error) {
-	if memo == nil || memo.Content == "" {
+func (s *APIService) noteNotificationSnippet(note *store.Note) (string, error) {
+	if note == nil || note.Content == "" {
 		return "", nil
 	}
 
-	snippet, err := s.getMemoContentSnippet(memo.Content)
+	snippet, err := s.getNoteContentSnippet(note.Content)
 	if err != nil {
 		return "", err
 	}
 	return snippet, nil
 }
 
-func (s *APIService) convertMemoCommentNotificationPayload(message *storepb.InboxMessage, memosByID map[int32]*store.Memo) (*apipb.UserNotification_MemoCommentPayload, error) {
-	memoComment := message.GetMemoComment()
-	if message == nil || message.Type != storepb.InboxMessage_MEMO_COMMENT || memoComment == nil {
+func (s *APIService) convertNoteCommentNotificationPayload(message *storepb.InboxMessage, notesByID map[int32]*store.Note) (*apipb.UserNotification_NoteCommentPayload, error) {
+	noteComment := message.GetNoteComment()
+	if message == nil || message.Type != storepb.InboxMessage_NOTE_COMMENT || noteComment == nil {
 		return nil, nil
 	}
 
-	commentMemo := memosByID[memoComment.MemoId]
-	relatedMemo := memosByID[memoComment.RelatedMemoId]
+	commentNote := notesByID[noteComment.NoteId]
+	relatedNote := notesByID[noteComment.RelatedNoteId]
 
-	memoSnippet, err := s.memoNotificationSnippet(commentMemo)
+	noteSnippet, err := s.noteNotificationSnippet(commentNote)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get comment memo snippet")
+		return nil, errors.Wrap(err, "failed to get comment note snippet")
 	}
-	relatedMemoSnippet, err := s.memoNotificationSnippet(relatedMemo)
+	relatedNoteSnippet, err := s.noteNotificationSnippet(relatedNote)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get related memo snippet")
+		return nil, errors.Wrap(err, "failed to get related note snippet")
 	}
 
-	return &apipb.UserNotification_MemoCommentPayload{
-		Memo:               fmt.Sprintf("%s%s", MemoNamePrefix, commentMemo.UID),
-		RelatedMemo:        fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID),
-		MemoSnippet:        memoSnippet,
-		RelatedMemoSnippet: relatedMemoSnippet,
+	return &apipb.UserNotification_NoteCommentPayload{
+		Note:               fmt.Sprintf("%s%s", NoteNamePrefix, commentNote.UID),
+		RelatedNote:        fmt.Sprintf("%s%s", NoteNamePrefix, relatedNote.UID),
+		NoteSnippet:        noteSnippet,
+		RelatedNoteSnippet: relatedNoteSnippet,
 	}, nil
 }
 
-func (s *APIService) convertMemoMentionNotificationPayload(message *storepb.InboxMessage, memosByID map[int32]*store.Memo) (*apipb.UserNotification_MemoMentionPayload, error) {
-	memoMention := message.GetMemoMention()
-	if message == nil || message.Type != storepb.InboxMessage_MEMO_MENTION || memoMention == nil {
+func (s *APIService) convertNoteMentionNotificationPayload(message *storepb.InboxMessage, notesByID map[int32]*store.Note) (*apipb.UserNotification_NoteMentionPayload, error) {
+	noteMention := message.GetNoteMention()
+	if message == nil || message.Type != storepb.InboxMessage_NOTE_MENTION || noteMention == nil {
 		return nil, nil
 	}
 
-	memo := memosByID[memoMention.MemoId]
+	note := notesByID[noteMention.NoteId]
 
-	memoSnippet, err := s.memoNotificationSnippet(memo)
+	noteSnippet, err := s.noteNotificationSnippet(note)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get mention memo snippet")
+		return nil, errors.Wrap(err, "failed to get mention note snippet")
 	}
 
-	payload := &apipb.UserNotification_MemoMentionPayload{
-		Memo:        fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
-		MemoSnippet: memoSnippet,
+	payload := &apipb.UserNotification_NoteMentionPayload{
+		Note:        fmt.Sprintf("%s%s", NoteNamePrefix, note.UID),
+		NoteSnippet: noteSnippet,
 	}
-	if memoMention.RelatedMemoId != 0 {
-		relatedMemo := memosByID[memoMention.RelatedMemoId]
-		if relatedMemo != nil {
-			payload.RelatedMemo = fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID)
-			relatedMemoSnippet, err := s.memoNotificationSnippet(relatedMemo)
+	if noteMention.RelatedNoteId != 0 {
+		relatedNote := notesByID[noteMention.RelatedNoteId]
+		if relatedNote != nil {
+			payload.RelatedNote = fmt.Sprintf("%s%s", NoteNamePrefix, relatedNote.UID)
+			relatedNoteSnippet, err := s.noteNotificationSnippet(relatedNote)
 			if err != nil {
-				return nil, errors.Wrap(err, "failed to get related memo snippet")
+				return nil, errors.Wrap(err, "failed to get related note snippet")
 			}
-			payload.RelatedMemoSnippet = relatedMemoSnippet
+			payload.RelatedNoteSnippet = relatedNoteSnippet
 		}
 	}
 

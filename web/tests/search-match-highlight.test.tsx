@@ -1,7 +1,7 @@
 import { render, waitFor } from "@testing-library/react";
 import { useRef } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { SEARCH_MATCH_HIGHLIGHT_NAME, useSearchMatchHighlight } from "@/components/MemoContent/useSearchMatchHighlight";
+import { SEARCH_MATCH_HIGHLIGHT_NAME, useSearchMatchHighlight } from "@/components/NoteContent/useSearchMatchHighlight";
 
 // jsdom has no CSS Custom Highlight API; a Set-backed Highlight and a Map registry are
 // exactly the surface the hook uses (add/delete on the highlight, get/set on the registry).
@@ -32,10 +32,10 @@ describe("useSearchMatchHighlight", () => {
   });
 
   it("registers one shared highlight and paints every case-folded hit as a range", () => {
-    render(<Body terms={["memo"]} html="<p>A <em>Memo</em> about memos.</p>" />);
+    render(<Body terms={["note"]} html="<p>A <em>Note</em> about notes.</p>" />);
 
     expect(registry.has(SEARCH_MATCH_HIGHLIGHT_NAME)).toBe(true);
-    expect(paintedRanges()).toEqual(["Memo", "memo"]);
+    expect(paintedRanges()).toEqual(["Note", "note"]);
   });
 
   it("leaves math and SVG subtrees alone", () => {
@@ -45,19 +45,19 @@ describe("useSearchMatchHighlight", () => {
   });
 
   it("does nothing without terms", () => {
-    render(<Body terms={[]} html="<p>memo</p>" />);
+    render(<Body terms={[]} html="<p>note</p>" />);
 
     expect(registry.has(SEARCH_MATCH_HIGHLIGHT_NAME)).toBe(false);
   });
 
   it("rebuilds the ranges after the subtree changes", async () => {
-    const { container } = render(<Body terms={["memo"]} html="<p>loading</p>" />);
+    const { container } = render(<Body terms={["note"]} html="<p>loading</p>" />);
     expect(paintedRanges()).toEqual([]);
 
     // Simulates an async renderer (code highlighting, a lazy link card) replacing content later.
-    container.querySelector("p")!.textContent = "memo, then memo";
+    container.querySelector("p")!.textContent = "note, then note";
 
-    await waitFor(() => expect(paintedRanges()).toEqual(["memo", "memo"]));
+    await waitFor(() => expect(paintedRanges()).toEqual(["note", "note"]));
   });
 
   it("follows the search as the terms change and removes its ranges on unmount", async () => {
@@ -72,8 +72,8 @@ describe("useSearchMatchHighlight", () => {
   });
 
   it("only removes its own ranges when several bodies share the highlight", () => {
-    const first = render(<Body terms={["memo"]} html="<p>first memo</p>" />);
-    render(<Body terms={["memo"]} html="<p>second memo</p>" />);
+    const first = render(<Body terms={["note"]} html="<p>first note</p>" />);
+    render(<Body terms={["note"]} html="<p>second note</p>" />);
     expect(paintedRanges()).toHaveLength(2);
 
     first.unmount();
@@ -83,7 +83,7 @@ describe("useSearchMatchHighlight", () => {
   it("is a no-op where the browser lacks the API", () => {
     vi.stubGlobal("CSS", {});
 
-    expect(() => render(<Body terms={["memo"]} html="<p>memo</p>" />)).not.toThrow();
+    expect(() => render(<Body terms={["note"]} html="<p>note</p>" />)).not.toThrow();
     expect(registry.size).toBe(0);
   });
 });

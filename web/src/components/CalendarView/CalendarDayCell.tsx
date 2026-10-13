@@ -1,10 +1,10 @@
 import { FileTextIcon, UserRoundCheckIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { type CalendarDayCell as CalendarDayCellData, getTooltipText } from "@/components/ActivityCalendar";
-import { useResolvedUser, useResolvedUsersByNames } from "@/components/MemoContent/MentionResolutionContext";
+import { useResolvedUser, useResolvedUsersByNames } from "@/components/NoteContent/MentionResolutionContext";
 import UserAvatar from "@/components/UserAvatar";
 import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
-import type { MemoTimeBasis } from "@/contexts/ViewContext";
+import type { NoteTimeBasis } from "@/contexts/ViewContext";
 import { cn } from "@/lib/utils";
 import { type Translations, useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
@@ -64,9 +64,9 @@ export interface CalendarDayCellProps {
   /** Display names of the members on the roster that day. */
   onDuty?: string[];
   layout: CalendarCellLayout;
-  /** The month's memos are still loading; `day.count` from statistics is all we know. */
+  /** The month's notes are still loading; `day.count` from statistics is all we know. */
   pending: boolean;
-  timeBasis: MemoTimeBasis;
+  timeBasis: NoteTimeBasis;
   /** Several creators share the grid, so each excerpt leads with its author's avatar. */
   showAuthor: boolean;
   tabIndex: number;
@@ -150,7 +150,7 @@ const DayMark = ({
 
 /**
  * One day, one excerpt, and a strip of photos; a single mark when the cell is too small for
- * them. The entire cell opens the day's memo stream.
+ * them. The entire cell opens the day's note stream.
  *
  * The cell borrows the sidebar's row grammar: the date and every excerpt line are 13px type
  * on the column's text axis, weight is reserved for the open day, and idle text is muted
@@ -160,7 +160,7 @@ export const CalendarDayCell = memo(
   ({ day, summary, onDuty, layout, pending, timeBasis, showAuthor, tabIndex, isLastColumn, isLastRow, corner }: CalendarDayCellProps) => {
     const t = useTranslate();
     const [failedImages, setFailedImages] = useState<string[]>([]);
-    const count = summary ? summary.memos.length : day.count;
+    const count = summary ? summary.notes.length : day.count;
     const images =
       layout.imageCount > 0
         ? (summary?.images ?? NO_IMAGES).filter((image) => !failedImages.includes(image.thumbnailUrl)).slice(0, layout.imageCount)

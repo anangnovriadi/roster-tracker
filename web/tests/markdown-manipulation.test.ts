@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findAnchorTarget, findMemoAnchorTarget, slugify, toggleTaskAtIndex } from "@/utils/markdown-manipulation";
+import { findAnchorTarget, findNoteAnchorTarget, slugify, toggleTaskAtIndex } from "@/utils/markdown-manipulation";
 
 describe("toggleTaskAtIndex", () => {
   it.each(["1.", "1)", "42.", "42)", "-", "*", "+"])("checks and unchecks %s tasks", (marker) => {
@@ -52,17 +52,17 @@ describe("findAnchorTarget", () => {
     expect(findAnchorTarget(root, "caf-1")).toBe(root.children[1]);
   });
 
-  it("prefers a matching heading inside the requested memo over a page-level id", () => {
+  it("prefers a matching heading inside the requested note over a page-level id", () => {
     const root = document.createElement("div");
-    root.innerHTML = '<div id="root"></div><div data-memo-content data-memo-name="memos/1"><h2 id="root">Title</h2></div>';
+    root.innerHTML = '<div id="root"></div><div data-note-content data-note-name="notes/1"><h2 id="root">Title</h2></div>';
 
-    expect(findMemoAnchorTarget(root, "memos/1", "root")).toBe(root.querySelector("h2"));
+    expect(findNoteAnchorTarget(root, "notes/1", "root")).toBe(root.querySelector("h2"));
   });
 
-  it("falls back to page-level targets outside the memo", () => {
+  it("falls back to page-level targets outside the note", () => {
     const root = document.createElement("div");
-    root.innerHTML = '<div data-memo-content data-memo-name="memos/1"></div><div id="comment-1"></div>';
+    root.innerHTML = '<div data-note-content data-note-name="notes/1"></div><div id="comment-1"></div>';
 
-    expect(findMemoAnchorTarget(root, "memos/1", "comment-1")).toBe(root.lastElementChild);
+    expect(findNoteAnchorTarget(root, "notes/1", "comment-1")).toBe(root.lastElementChild);
   });
 });

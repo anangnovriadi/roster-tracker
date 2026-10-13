@@ -1,4 +1,4 @@
-import type { MemoTimeBasis } from "@/contexts/ViewContext";
+import type { NoteTimeBasis } from "@/contexts/ViewContext";
 
 export interface StatisticsViewProps {
   className?: string;
@@ -11,5 +11,5 @@ export interface MonthNavigatorProps {
 
 export interface StatisticsData {
   activityStats: Record<string, number>;
-  timeBasis: MemoTimeBasis;
+  timeBasis: NoteTimeBasis;
 }

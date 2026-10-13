@@ -15,13 +15,13 @@ import (
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/internal/clientip"
-	"github.com/usememos/memos/internal/profile"
-	memosproto "github.com/usememos/memos/proto"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	notesproto "github.com/anangnovriadi/roster-tracker/proto"
 )
 
 func TestIsAllowedMCPOrigin(t *testing.T) {
-	profile := &profile.Profile{InstanceURL: "https://memos.example.com/app"}
+	profile := &profile.Profile{InstanceURL: "https://notes.example.com/app"}
 
 	tests := []struct {
 		name   string
@@ -31,9 +31,9 @@ func TestIsAllowedMCPOrigin(t *testing.T) {
 	}{
 		{name: "empty origin", host: "localhost:5230", origin: "", want: true},
 		{name: "same http host", host: "localhost:5230", origin: "http://localhost:5230", want: true},
-		{name: "same https host", host: "memos.example.com", origin: "https://memos.example.com", want: true},
-		{name: "configured instance URL origin", host: "127.0.0.1:5230", origin: "https://memos.example.com", want: true},
-		{name: "configured instance URL ignores path", host: "127.0.0.1:5230", origin: "https://memos.example.com", want: true},
+		{name: "same https host", host: "notes.example.com", origin: "https://notes.example.com", want: true},
+		{name: "configured instance URL origin", host: "127.0.0.1:5230", origin: "https://notes.example.com", want: true},
+		{name: "configured instance URL ignores path", host: "127.0.0.1:5230", origin: "https://notes.example.com", want: true},
 		{name: "different host", host: "localhost:5230", origin: "https://evil.example.com", want: false},
 		{name: "invalid origin", host: "localhost:5230", origin: "not a url", want: false},
 	}
@@ -53,11 +53,11 @@ func TestNewMCPServiceRegistersCuratedTools(t *testing.T) {
 	require.NotNil(t, service.handler)
 	require.Len(t, service.operationsByTool, len(curatedOperationIDs))
 
-	operation := service.operationsByTool["memo_list_memos"]
+	operation := service.operationsByTool["note_list_notes"]
 	require.NotNil(t, operation)
-	require.Equal(t, "MemoService_ListMemos", operation.OperationID)
+	require.Equal(t, "NoteService_ListNotes", operation.OperationID)
 	require.Equal(t, "GET", operation.Method)
-	require.Equal(t, "/api/memos", operation.Path)
+	require.Equal(t, "/api/notes", operation.Path)
 }
 
 func TestNewMCPServiceUsesEmbeddedOpenAPISpec(t *testing.T) {
@@ -72,23 +72,23 @@ func TestNewMCPServiceUsesEmbeddedOpenAPISpec(t *testing.T) {
 func TestEmbeddedOpenAPISpecMatchesGeneratedFile(t *testing.T) {
 	generated, err := os.ReadFile("../../proto/gen/openapi.yaml")
 	require.NoError(t, err)
-	require.Equal(t, generated, memosproto.OpenAPIYAML())
+	require.Equal(t, generated, notesproto.OpenAPIYAML())
 }
 
 func TestMCPToolHandlerForwardsArgumentsAndAuthorization(t *testing.T) {
 	echoServer := echo.New()
-	echoServer.GET("/api/memos", func(c *echo.Context) error {
+	echoServer.GET("/api/notes", func(c *echo.Context) error {
 		require.Equal(t, "Bearer token", c.Request().Header.Get("Authorization"))
 		require.Equal(t, "7", c.QueryParam("pageSize"))
 		return c.JSON(http.StatusOK, map[string]any{
-			"memos": []any{map[string]any{"name": "memos/test"}},
+			"notes": []any{map[string]any{"name": "notes/test"}},
 		})
 	})
 
 	operation := &registeredOperation{
 		Operation: &openAPIOperation{
 			Method:     "GET",
-			Path:       "/api/memos",
+			Path:       "/api/notes",
 			Parameters: []openAPIParameter{{Name: "pageSize", In: "query", Schema: jsonSchema{"type": "integer"}}},
 		},
 	}
@@ -98,7 +98,7 @@ func TestMCPToolHandlerForwardsArgumentsAndAuthorization(t *testing.T) {
 
 	result, err := handler(context.Background(), &sdkmcp.CallToolRequest{
 		Params: &sdkmcp.CallToolParamsRaw{
-			Name:      "memo_list_memos",
+			Name:      "note_list_notes",
 			Arguments: arguments,
 		},
 		Extra: &sdkmcp.RequestExtra{
@@ -108,7 +108,7 @@ func TestMCPToolHandlerForwardsArgumentsAndAuthorization(t *testing.T) {
 	require.NoError(t, err)
 	require.False(t, result.IsError)
 	require.Equal(t, map[string]any{
-		"memos": []any{map[string]any{"name": "memos/test"}},
+		"notes": []any{map[string]any{"name": "notes/test"}},
 	}, result.StructuredContent)
 }
 
@@ -159,9 +159,9 @@ func TestMCPToolCallForwardsClientAddress(t *testing.T) {
 			echoServer.Use(clientip.Middleware(resolver))
 
 			seen := ""
-			echoServer.GET("/api/memos", func(c *echo.Context) error {
+			echoServer.GET("/api/notes", func(c *echo.Context) error {
 				seen = clientip.FromContext(c.Request().Context())
-				return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
+				return c.JSON(http.StatusOK, map[string]any{"notes": []any{}})
 			})
 			service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
 			require.NoError(t, err)
@@ -172,7 +172,7 @@ func TestMCPToolCallForwardsClientAddress(t *testing.T) {
 				"jsonrpc": "2.0",
 				"id":      2,
 				"method":  "tools/call",
-				"params":  map[string]any{"name": "memo_list_memos", "arguments": map[string]any{}},
+				"params":  map[string]any{"name": "note_list_notes", "arguments": map[string]any{}},
 			})
 			require.NoError(t, err)
 			request := httptest.NewRequest(http.MethodPost, "/mcp", bytes.NewReader(payload))
@@ -362,17 +362,17 @@ func TestMCPProtocolListsCuratedToolsOnly(t *testing.T) {
 		require.Contains(t, tool, "inputSchema")
 		require.Contains(t, tool, "outputSchema")
 	}
-	require.Contains(t, names, "memo_list_memos")
-	require.Contains(t, names, "memo_create_memo")
+	require.Contains(t, names, "note_list_notes")
+	require.Contains(t, names, "note_create_note")
 	require.NotContains(t, names, "auth_sign_in")
 	require.NotContains(t, names, "user_create_user")
 }
 
 func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
 	echoServer := echo.New()
-	echoServer.GET("/api/memos", func(c *echo.Context) error {
+	echoServer.GET("/api/notes", func(c *echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]any{
-			"memos": []any{map[string]any{"name": "memos/abc123"}},
+			"notes": []any{map[string]any{"name": "notes/abc123"}},
 		})
 	})
 
@@ -386,7 +386,7 @@ func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
 		"id":      2,
 		"method":  "tools/call",
 		"params": map[string]any{
-			"name": "memo_list_memos",
+			"name": "note_list_notes",
 			"arguments": map[string]any{
 				"pageSize": 1,
 			},
@@ -396,23 +396,23 @@ func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
 	result, ok := response["result"].(map[string]any)
 	require.True(t, ok)
 	require.Equal(t, map[string]any{
-		"memos": []any{map[string]any{"name": "memos/abc123"}},
+		"notes": []any{map[string]any{"name": "notes/abc123"}},
 	}, result["structuredContent"])
 }
 
-func TestMCPToolCallAllowsGatewayToInferMemoUpdateMask(t *testing.T) {
+func TestMCPToolCallAllowsGatewayToInferNoteUpdateMask(t *testing.T) {
 	echoServer := echo.New()
 	routeHits := 0
-	echoServer.PATCH("/api/memos/:memo", func(c *echo.Context) error {
+	echoServer.PATCH("/api/notes/:note", func(c *echo.Context) error {
 		routeHits++
-		require.Equal(t, "abc123", c.Param("memo"))
+		require.Equal(t, "abc123", c.Param("note"))
 		require.Empty(t, c.QueryParam("updateMask"))
 
 		body := map[string]any{}
 		require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
 		require.Equal(t, map[string]any{"content": "updated"}, body)
 		return c.JSON(http.StatusOK, map[string]any{
-			"name":    "memos/abc123",
+			"name":    "notes/abc123",
 			"content": "updated",
 		})
 	})
@@ -427,9 +427,9 @@ func TestMCPToolCallAllowsGatewayToInferMemoUpdateMask(t *testing.T) {
 		"id":      2,
 		"method":  "tools/call",
 		"params": map[string]any{
-			"name": "memo_update_memo",
+			"name": "note_update_note",
 			"arguments": map[string]any{
-				"memo": "memos/abc123",
+				"note": "notes/abc123",
 				"body": map[string]any{"content": "updated"},
 			},
 		},
@@ -439,13 +439,13 @@ func TestMCPToolCallAllowsGatewayToInferMemoUpdateMask(t *testing.T) {
 	require.True(t, ok)
 	require.NotEqual(t, true, result["isError"])
 	require.Equal(t, map[string]any{
-		"name":    "memos/abc123",
+		"name":    "notes/abc123",
 		"content": "updated",
 	}, result["structuredContent"])
 	require.Equal(t, 1, routeHits)
 }
 
-func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
+func TestMCPToolCallBindsNoteFromPathForBodyStarOperations(t *testing.T) {
 	register := func(e *echo.Echo, method, path string, handler func(*echo.Context) error) {
 		switch method {
 		case http.MethodPatch:
@@ -468,24 +468,24 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 		{
 			name:     "set attachments",
 			method:   http.MethodPatch,
-			path:     "/api/memos/:memo/attachments",
-			toolName: "memo_set_memo_attachments",
+			path:     "/api/notes/:note/attachments",
+			toolName: "note_set_note_attachments",
 			body:     map[string]any{"attachments": []any{}},
 			response: map[string]any{},
 		},
 		{
 			name:     "set relations",
 			method:   http.MethodPatch,
-			path:     "/api/memos/:memo/relations",
-			toolName: "memo_set_memo_relations",
+			path:     "/api/notes/:note/relations",
+			toolName: "note_set_note_relations",
 			body:     map[string]any{"relations": []any{}},
 			response: map[string]any{},
 		},
 		{
 			name:     "upsert reaction",
 			method:   http.MethodPost,
-			path:     "/api/memos/:memo/reactions",
-			toolName: "memo_upsert_memo_reaction",
+			path:     "/api/notes/:note/reactions",
+			toolName: "note_upsert_note_reaction",
 			body: map[string]any{
 				"reaction": map[string]any{
 					"reactionType": "👍",
@@ -501,9 +501,9 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 			routeHits := 0
 			register(echoServer, test.method, test.path, func(c *echo.Context) error {
 				routeHits++
-				// The memo must be bound from the path, and the omitted "name"
+				// The note must be bound from the path, and the omitted "name"
 				// property must not reappear in the forwarded body.
-				require.Equal(t, "abc123", c.Param("memo"))
+				require.Equal(t, "abc123", c.Param("note"))
 				body := map[string]any{}
 				require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
 				require.NotContains(t, body, "name")
@@ -522,7 +522,7 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 				"params": map[string]any{
 					"name": test.toolName,
 					"arguments": map[string]any{
-						"memo": "memos/abc123",
+						"note": "notes/abc123",
 						"body": test.body,
 					},
 				},
@@ -539,13 +539,13 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
 	echoServer := echo.New()
 	routeHits := 0
-	echoServer.GET("/api/memos", func(c *echo.Context) error {
+	echoServer.GET("/api/notes", func(c *echo.Context) error {
 		routeHits++
-		return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
+		return c.JSON(http.StatusOK, map[string]any{"notes": []any{}})
 	})
-	echoServer.GET("/api/memos/:memo", func(c *echo.Context) error {
+	echoServer.GET("/api/notes/:note", func(c *echo.Context) error {
 		routeHits++
-		return c.JSON(http.StatusOK, map[string]any{"name": c.Param("memo")})
+		return c.JSON(http.StatusOK, map[string]any{"name": c.Param("note")})
 	})
 
 	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
@@ -562,19 +562,19 @@ func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
 	}{
 		{
 			name:      "unknown argument",
-			toolName:  "memo_list_memos",
+			toolName:  "note_list_notes",
 			arguments: map[string]any{"unexpected": true},
 			wantError: `unknown argument "unexpected"`,
 		},
 		{
 			name:      "missing required argument",
-			toolName:  "memo_get_memo",
+			toolName:  "note_get_note",
 			arguments: map[string]any{},
-			wantError: `missing required argument "memo"`,
+			wantError: `missing required argument "note"`,
 		},
 		{
 			name:      "wrong primitive type",
-			toolName:  "memo_list_memos",
+			toolName:  "note_list_notes",
 			arguments: map[string]any{"pageSize": "ten"},
 			wantError: `argument "pageSize" must be integer`,
 		},
@@ -613,7 +613,7 @@ func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
 
 // TestMCPLoopbackBehindReverseProxy verifies that a loopback-bound instance
 // served under a non-loopback Host (the reverse-proxy deployment shape) is no
-// longer rejected by the SDK's DNS-rebinding guard, while memos' own Origin
+// longer rejected by the SDK's DNS-rebinding guard, while notes' own Origin
 // allowlist still rejects disallowed origins.
 func TestMCPLoopbackBehindReverseProxy(t *testing.T) {
 	echoServer := echo.New()
@@ -628,7 +628,7 @@ func TestMCPLoopbackBehindReverseProxy(t *testing.T) {
 		"params": map[string]any{
 			"protocolVersion": "2025-06-18",
 			"capabilities":    map[string]any{},
-			"clientInfo":      map[string]any{"name": "memos-test", "version": "1.0.0"},
+			"clientInfo":      map[string]any{"name": "notes-test", "version": "1.0.0"},
 		},
 	})
 	require.NoError(t, err)
@@ -637,7 +637,7 @@ func TestMCPLoopbackBehindReverseProxy(t *testing.T) {
 	// address, but the public Host header is a real domain.
 	newRequest := func() *http.Request {
 		request := httptest.NewRequest(http.MethodPost, "/mcp", bytes.NewReader(initialize))
-		request.Host = "demo.usememos.com"
+		request.Host = "demo.example.com"
 		request.Header.Set("Content-Type", "application/json")
 		request.Header.Set("Accept", "application/json, text/event-stream")
 		loopback := &net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: 5230}
@@ -670,7 +670,7 @@ func initializeMCP(t *testing.T, echoServer *echo.Echo) {
 			"protocolVersion": "2025-06-18",
 			"capabilities":    map[string]any{},
 			"clientInfo": map[string]any{
-				"name":    "memos-test",
+				"name":    "notes-test",
 				"version": "1.0.0",
 			},
 		},
@@ -701,9 +701,9 @@ func postMCP(t *testing.T, echoServer *echo.Echo, payload map[string]any) map[st
 func TestMCPStatelessProtocol2026(t *testing.T) {
 	echoServer := echo.New()
 	var forwardedAuthorization string
-	echoServer.GET("/api/memos", func(c *echo.Context) error {
+	echoServer.GET("/api/notes", func(c *echo.Context) error {
 		forwardedAuthorization = c.Request().Header.Get("Authorization")
-		return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
+		return c.JSON(http.StatusOK, map[string]any{"notes": []any{}})
 	})
 	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
 	require.NoError(t, err)
@@ -712,7 +712,7 @@ func TestMCPStatelessProtocol2026(t *testing.T) {
 	meta := map[string]any{
 		"io.modelcontextprotocol/protocolVersion":    "2026-07-28",
 		"io.modelcontextprotocol/clientCapabilities": map[string]any{},
-		"io.modelcontextprotocol/clientInfo":         map[string]any{"name": "memos-test", "version": "1.0.0"},
+		"io.modelcontextprotocol/clientInfo":         map[string]any{"name": "notes-test", "version": "1.0.0"},
 	}
 
 	discover := postMCPWithHeaders(t, echoServer, map[string]any{
@@ -749,18 +749,18 @@ func TestMCPStatelessProtocol2026(t *testing.T) {
 		"method":  "tools/call",
 		"params": map[string]any{
 			"_meta":     meta,
-			"name":      "memo_list_memos",
+			"name":      "note_list_notes",
 			"arguments": map[string]any{},
 		},
 	}, map[string]string{
 		"Mcp-Method":    "tools/call",
-		"Mcp-Name":      "memo_list_memos",
+		"Mcp-Name":      "note_list_notes",
 		"Authorization": "Bearer test-token",
 	})
 	callResult, ok := call["result"].(map[string]any)
 	require.True(t, ok, call)
 	require.Equal(t, "complete", callResult["resultType"])
-	require.Equal(t, map[string]any{"memos": []any{}}, callResult["structuredContent"])
+	require.Equal(t, map[string]any{"notes": []any{}}, callResult["structuredContent"])
 	require.Equal(t, "Bearer test-token", forwardedAuthorization)
 }
 

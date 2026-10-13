@@ -26,16 +26,16 @@ type Driver interface {
 	DeleteAttachment(ctx context.Context, delete *DeleteAttachment) error
 	DeleteAttachments(ctx context.Context, deletes []*DeleteAttachment) error
 	DeleteAttachmentsWithPolicy(ctx context.Context, policy *AttachmentDeletionPolicy, attachmentIDs []int32) error
-	ApplyMemoMutation(ctx context.Context, mutation *MemoMutation) error
+	ApplyNoteMutation(ctx context.Context, mutation *NoteMutation) error
 
-	// Memo model related methods.
-	CreateMemo(ctx context.Context, create *Memo) (*Memo, error)
-	ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error)
-	UpdateMemo(ctx context.Context, update *UpdateMemo) error
-	DeleteMemo(ctx context.Context, delete *DeleteMemo) error
-	DeleteMemoWithPolicy(ctx context.Context, delete *DeleteMemoWithPolicy) (*DeleteMemoWithPolicyResult, error)
-	// CountUserMemos counts the memos a user created, comments included, in every row status and Space.
-	CountUserMemos(ctx context.Context, creatorID int32) (int64, error)
+	// Note model related methods.
+	CreateNote(ctx context.Context, create *Note) (*Note, error)
+	ListNotes(ctx context.Context, find *FindNote) ([]*Note, error)
+	UpdateNote(ctx context.Context, update *UpdateNote) error
+	DeleteNote(ctx context.Context, delete *DeleteNote) error
+	DeleteNoteWithPolicy(ctx context.Context, delete *DeleteNoteWithPolicy) (*DeleteNoteWithPolicyResult, error)
+	// CountUserNotes counts the notes a user created, comments included, in every row status and Space.
+	CountUserNotes(ctx context.Context, creatorID int32) (int64, error)
 
 	// Space model related methods.
 	CreateSpace(ctx context.Context, create *Space, creatorID int32) (*Space, error)
@@ -51,10 +51,10 @@ type Driver interface {
 	DeclineSpaceInvitation(ctx context.Context, decline *DeclineSpaceInvitation, actorUserID int32) error
 	RevokeSpaceInvitation(ctx context.Context, revoke *RevokeSpaceInvitation, actorUserID int32) error
 
-	// MemoRelation model related methods.
-	UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*MemoRelation, error)
-	ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error)
-	DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error
+	// NoteRelation model related methods.
+	UpsertNoteRelation(ctx context.Context, create *NoteRelation) (*NoteRelation, error)
+	ListNoteRelations(ctx context.Context, find *FindNoteRelation) ([]*NoteRelation, error)
+	DeleteNoteRelation(ctx context.Context, delete *DeleteNoteRelation) error
 
 	// InstanceSetting model related methods.
 	// CreateInstanceSettingIfNotExists atomically creates the setting when its name is absent and reports whether it inserted the row.
@@ -104,11 +104,11 @@ type Driver interface {
 	ListRosterAssignments(ctx context.Context, find *FindRosterAssignment) ([]*RosterAssignment, error)
 	DeleteRosterAssignment(ctx context.Context, delete *DeleteRosterAssignment) error
 
-	// MemoShare model related methods.
-	CreateMemoShare(ctx context.Context, create *MemoShare) (*MemoShare, error)
-	ListMemoShares(ctx context.Context, find *FindMemoShare) ([]*MemoShare, error)
-	GetMemoShare(ctx context.Context, find *FindMemoShare) (*MemoShare, error)
-	DeleteMemoShare(ctx context.Context, delete *DeleteMemoShare) error
+	// NoteShare model related methods.
+	CreateNoteShare(ctx context.Context, create *NoteShare) (*NoteShare, error)
+	ListNoteShares(ctx context.Context, find *FindNoteShare) ([]*NoteShare, error)
+	GetNoteShare(ctx context.Context, find *FindNoteShare) (*NoteShare, error)
+	DeleteNoteShare(ctx context.Context, delete *DeleteNoteShare) error
 
 	// UserIdentity model related methods.
 	CreateUserIdentity(ctx context.Context, create *UserIdentity) (*UserIdentity, error)

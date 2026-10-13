@@ -34,11 +34,11 @@ export const userKeys = {
   userStats: (name: string, filter?: string) =>
     filter ? ([...userKeys.stats(), name, filter] as const) : ([...userKeys.stats(), name] as const),
   allUserStats: (request: Partial<ListUserStatsQuery>) => [...userKeys.stats(), "all", request] as const,
-  // Usage sits under stats so that every change that refreshes stats (memo
+  // Usage sits under stats so that every change that refreshes stats (note
   // saves, deletes, attachment changes) refreshes usage too.
   usage: (name: string) => [...userKeys.stats(), "usage", name] as const,
   currentUser: () => [...userKeys.all, "current"] as const,
-  memoViews: (parent?: string) => [...userKeys.all, "memoViews", parent] as const,
+  noteViews: (parent?: string) => [...userKeys.all, "noteViews", parent] as const,
   notifications: () => [...userKeys.all, "notifications"] as const,
   byNames: (names: string[]) => [...userKeys.all, "byNames", ...[...names].sort()] as const,
   byUsernames: (usernames: string[]) => [...userKeys.all, "byUsernames", ...[...usernames].sort()] as const,
@@ -72,7 +72,7 @@ export function useUserStats(username?: string, options?: { enabled?: boolean; f
   });
 }
 
-/** A user's memo count and stored bytes, and the usage limits in effect for the user. */
+/** A user's note count and stored bytes, and the usage limits in effect for the user. */
 export function useUserUsage(username?: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: username ? userKeys.usage(username) : userKeys.stats(),
@@ -99,13 +99,13 @@ export function useAllUserStats(request: Partial<ListUserStatsQuery> = {}, optio
   });
 }
 
-export function useMemoViews(parent?: string) {
+export function useNoteViews(parent?: string) {
   return useQuery({
-    queryKey: userKeys.memoViews(parent),
+    queryKey: userKeys.noteViews(parent),
     queryFn: async () => {
       if (!parent) return [];
-      const { memoViews } = await userServiceClient.listMemoViews({ parent });
-      return memoViews;
+      const { noteViews } = await userServiceClient.listNoteViews({ parent });
+      return noteViews;
     },
     enabled: !!parent,
   });

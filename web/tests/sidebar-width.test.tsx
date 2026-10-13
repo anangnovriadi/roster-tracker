@@ -6,7 +6,7 @@ import useSidebarWidth, { SIDEBAR_DEFAULT_WIDTH, SIDEBAR_MAX_WIDTH, SIDEBAR_MIN_
 // never overwrite. That distinction is the whole reason the hook keeps `preferredWidth` and
 // the rendered `width` apart, so it is what these tests pin down.
 
-const STORAGE_KEY = "memos-sidebar-width";
+const STORAGE_KEY = "notes-sidebar-width";
 
 // jsdom's default viewport (1024) leaves the 40% share above SIDEBAR_MAX_WIDTH, so the
 // ceiling is the absolute one unless a test deliberately narrows the window.

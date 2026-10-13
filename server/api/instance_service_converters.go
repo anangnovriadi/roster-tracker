@@ -3,8 +3,8 @@ package api
 import (
 	"fmt"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 func convertInstanceSettingFromStore(setting *storepb.InstanceSetting) *apipb.InstanceSetting {
@@ -20,9 +20,9 @@ func convertInstanceSettingFromStore(setting *storepb.InstanceSetting) *apipb.In
 		instanceSetting.Value = &apipb.InstanceSetting_StorageSetting_{
 			StorageSetting: convertInstanceStorageSettingFromStore(setting.GetStorageSetting()),
 		}
-	case *storepb.InstanceSetting_MemoRelatedSetting:
-		instanceSetting.Value = &apipb.InstanceSetting_MemoRelatedSetting_{
-			MemoRelatedSetting: convertInstanceMemoRelatedSettingFromStore(setting.GetMemoRelatedSetting()),
+	case *storepb.InstanceSetting_NoteRelatedSetting:
+		instanceSetting.Value = &apipb.InstanceSetting_NoteRelatedSetting_{
+			NoteRelatedSetting: convertInstanceNoteRelatedSettingFromStore(setting.GetNoteRelatedSetting()),
 		}
 	case *storepb.InstanceSetting_TagsSetting:
 		instanceSetting.Value = &apipb.InstanceSetting_TagsSetting_{
@@ -63,9 +63,9 @@ func convertInstanceSettingToStore(setting *apipb.InstanceSetting) *storepb.Inst
 		instanceSetting.Value = &storepb.InstanceSetting_StorageSetting{
 			StorageSetting: convertInstanceStorageSettingToStore(setting.GetStorageSetting()),
 		}
-	case storepb.InstanceSettingKey_MEMO_RELATED:
-		instanceSetting.Value = &storepb.InstanceSetting_MemoRelatedSetting{
-			MemoRelatedSetting: convertInstanceMemoRelatedSettingToStore(setting.GetMemoRelatedSetting()),
+	case storepb.InstanceSettingKey_NOTE_RELATED:
+		instanceSetting.Value = &storepb.InstanceSetting_NoteRelatedSetting{
+			NoteRelatedSetting: convertInstanceNoteRelatedSettingToStore(setting.GetNoteRelatedSetting()),
 		}
 	case storepb.InstanceSettingKey_TAGS:
 		instanceSetting.Value = &storepb.InstanceSetting_TagsSetting{
@@ -260,22 +260,22 @@ func convertStorageToStore(storage *apipb.InstanceSetting_Storage) *storepb.Stor
 	return storagepb
 }
 
-func convertInstanceMemoRelatedSettingFromStore(setting *storepb.InstanceMemoRelatedSetting) *apipb.InstanceSetting_MemoRelatedSetting {
+func convertInstanceNoteRelatedSettingFromStore(setting *storepb.InstanceNoteRelatedSetting) *apipb.InstanceSetting_NoteRelatedSetting {
 	if setting == nil {
 		return nil
 	}
-	return &apipb.InstanceSetting_MemoRelatedSetting{
+	return &apipb.InstanceSetting_NoteRelatedSetting{
 		ContentLengthLimit:    setting.ContentLengthLimit,
 		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
 		Reactions:             setting.Reactions,
 	}
 }
 
-func convertInstanceMemoRelatedSettingToStore(setting *apipb.InstanceSetting_MemoRelatedSetting) *storepb.InstanceMemoRelatedSetting {
+func convertInstanceNoteRelatedSettingToStore(setting *apipb.InstanceSetting_NoteRelatedSetting) *storepb.InstanceNoteRelatedSetting {
 	if setting == nil {
 		return nil
 	}
-	return &storepb.InstanceMemoRelatedSetting{
+	return &storepb.InstanceNoteRelatedSetting{
 		ContentLengthLimit:    setting.ContentLengthLimit,
 		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
 		Reactions:             setting.Reactions,

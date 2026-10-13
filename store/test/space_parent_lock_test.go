@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // TestSQLiteRelationshipWriteSerializesWithParentDelete confirms how SQLite
@@ -99,7 +99,7 @@ func TestSpaceInvitationWaitsForConcurrentUserDelete(t *testing.T) {
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "user-delete-lock-space", Title: "User Delete Lock"}, owner.ID)
 	require.NoError(t, err)
-	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: "user-delete-lock-memo", CreatorID: target.ID, Content: "lock", Visibility: store.Public})
+	note, err := ts.CreateNote(ctx, &store.Note{UID: "user-delete-lock-note", CreatorID: target.ID, Content: "lock", Visibility: store.Public})
 	require.NoError(t, err)
 
 	blocker, err := ts.GetDriver().GetDB().BeginTx(ctx, nil)
@@ -110,7 +110,7 @@ func TestSpaceInvitationWaitsForConcurrentUserDelete(t *testing.T) {
 			_ = blocker.Rollback()
 		}
 	}()
-	require.NoError(t, lockMemoRow(ctx, blocker, driver, memo.ID))
+	require.NoError(t, lockNoteRow(ctx, blocker, driver, note.ID))
 
 	deleteDone := make(chan error, 1)
 	go func() {
@@ -162,8 +162,8 @@ func TestSpaceInvitationWaitsForConcurrentSpaceDelete(t *testing.T) {
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "space-delete-lock-space", Title: "Space Delete Lock"}, owner.ID)
 	require.NoError(t, err)
-	memo, err := ts.CreateMemo(ctx, &store.Memo{
-		UID: "space-delete-lock-memo", CreatorID: owner.ID, Content: "lock", Visibility: store.SpaceAudience, SpaceID: &space.ID,
+	note, err := ts.CreateNote(ctx, &store.Note{
+		UID: "space-delete-lock-note", CreatorID: owner.ID, Content: "lock", Visibility: store.SpaceAudience, SpaceID: &space.ID,
 	})
 	require.NoError(t, err)
 
@@ -175,7 +175,7 @@ func TestSpaceInvitationWaitsForConcurrentSpaceDelete(t *testing.T) {
 			_ = blocker.Rollback()
 		}
 	}()
-	require.NoError(t, lockMemoRow(ctx, blocker, driver, memo.ID))
+	require.NoError(t, lockNoteRow(ctx, blocker, driver, note.ID))
 
 	deleteDone := make(chan error, 1)
 	go func() {
@@ -209,13 +209,13 @@ func TestSpaceInvitationWaitsForConcurrentSpaceDelete(t *testing.T) {
 	require.Zero(t, relationshipCount, "deleting a Space must not leave a concurrent invitation behind")
 }
 
-func lockMemoRow(ctx context.Context, tx *sql.Tx, driver string, memoID int32) error {
-	query := "SELECT id FROM memo WHERE id = ? FOR UPDATE"
+func lockNoteRow(ctx context.Context, tx *sql.Tx, driver string, noteID int32) error {
+	query := "SELECT id FROM note WHERE id = ? FOR UPDATE"
 	if driver == "postgres" {
-		query = "SELECT id FROM memo WHERE id = $1 FOR UPDATE"
+		query = "SELECT id FROM note WHERE id = $1 FOR UPDATE"
 	}
-	var storedMemoID int32
-	return tx.QueryRowContext(ctx, query, memoID).Scan(&storedMemoID)
+	var storedNoteID int32
+	return tx.QueryRowContext(ctx, query, noteID).Scan(&storedNoteID)
 }
 
 func waitForLockedParentRow(ctx context.Context, t *testing.T, db *sql.DB, driver, table string, id int32) {

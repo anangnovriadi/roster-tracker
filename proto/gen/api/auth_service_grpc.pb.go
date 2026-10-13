@@ -20,10 +20,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_SignIn_FullMethodName         = "/memos.api.AuthService/SignIn"
-	AuthService_RefreshToken_FullMethodName   = "/memos.api.AuthService/RefreshToken"
-	AuthService_GetCurrentUser_FullMethodName = "/memos.api.AuthService/GetCurrentUser"
-	AuthService_SignOut_FullMethodName        = "/memos.api.AuthService/SignOut"
+	AuthService_SignIn_FullMethodName         = "/roster.api.AuthService/SignIn"
+	AuthService_RefreshToken_FullMethodName   = "/roster.api.AuthService/RefreshToken"
+	AuthService_GetCurrentUser_FullMethodName = "/roster.api.AuthService/GetCurrentUser"
+	AuthService_SignOut_FullMethodName        = "/roster.api.AuthService/SignOut"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -239,7 +239,7 @@ func _AuthService_SignOut_Handler(srv interface{}, ctx context.Context, dec func
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "memos.api.AuthService",
+	ServiceName: "roster.api.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

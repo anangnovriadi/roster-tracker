@@ -10,10 +10,10 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/core/notification"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/core/notification"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 const (
@@ -116,10 +116,10 @@ func (s *APIService) getInstanceSettingByName(ctx context.Context, name string, 
 		var setting *storepb.InstanceGeneralSetting
 		setting, err = s.Store.GetInstanceGeneralSetting(ctx)
 		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: setting}}
-	case storepb.InstanceSettingKey_MEMO_RELATED:
-		var setting *storepb.InstanceMemoRelatedSetting
-		setting, err = s.Store.GetInstanceMemoRelatedSetting(ctx)
-		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: setting}}
+	case storepb.InstanceSettingKey_NOTE_RELATED:
+		var setting *storepb.InstanceNoteRelatedSetting
+		setting, err = s.Store.GetInstanceNoteRelatedSetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_NoteRelatedSetting{NoteRelatedSetting: setting}}
 	case storepb.InstanceSettingKey_STORAGE:
 		var setting *storepb.InstanceStorageSetting
 		setting, err = s.Store.GetInstanceStorageSetting(ctx)

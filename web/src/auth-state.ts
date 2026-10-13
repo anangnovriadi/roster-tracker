@@ -3,14 +3,14 @@
 let accessToken: string | null = null;
 let tokenExpiresAt: Date | null = null;
 
-const TOKEN_KEY = "memos_access_token";
-const EXPIRES_KEY = "memos_token_expires_at";
+const TOKEN_KEY = "notes_access_token";
+const EXPIRES_KEY = "notes_token_expires_at";
 
 // BroadcastChannel lets tabs share freshly-refreshed tokens so that only one
 // tab needs to hit the refresh endpoint. When another tab successfully refreshes
 // we adopt the new token immediately, avoiding a redundant (and potentially
 // conflicting) refresh request of our own.
-const TOKEN_CHANNEL_NAME = "memos_token_sync";
+const TOKEN_CHANNEL_NAME = "notes_token_sync";
 
 // Token refresh policy:
 // - REQUEST_TOKEN_EXPIRY_BUFFER_MS: used for normal API requests.

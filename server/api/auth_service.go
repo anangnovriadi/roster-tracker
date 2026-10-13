@@ -2,16 +2,17 @@ package api
 
 import (
 	"context"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/clientip"
-	"github.com/usememos/memos/internal/ratelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 const (
@@ -59,7 +60,7 @@ func (s *APIService) SignIn(ctx context.Context, request *apipb.SignInRequest) (
 	// The account key is the submitted name whether or not it exists, so the
 	// limit cannot be used to learn which accounts are real.
 	clientIP := clientip.FromContext(ctx)
-	attempt, err := s.reserveSignIn(clientIP, request.GetPasswordCredentials().GetUsername())
+	attempt, err := s.reserveSignIn(clientIP, signInAccountKey(request.GetPasswordCredentials().GetUsername()))
 	if err != nil {
 		return nil, err
 	}
@@ -70,9 +71,7 @@ func (s *APIService) SignIn(ctx context.Context, request *apipb.SignInRequest) (
 			attempt.succeeded()
 			return nil, err
 		}
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			Username: &passwordCredentials.Username,
-		})
+		user, err := s.findPasswordSignInUser(ctx, passwordCredentials.Username)
 		if err != nil {
 			attempt.succeeded()
 			return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
@@ -132,6 +131,32 @@ func (s *APIService) SignIn(ctx context.Context, request *apipb.SignInRequest) (
 		AccessToken:           accessToken,
 		AccessTokenExpireTime: timestamppb.New(accessExpiresAt),
 	}, nil
+}
+
+// findPasswordSignInUser looks up the account a password sign-in names: an
+// exact username first, then an email address. New usernames cannot contain
+// "@", but legacy ones can, so a username match wins over an email match. An
+// identifier that is not a valid address matches no account by email.
+func (s *APIService) findPasswordSignInUser(ctx context.Context, identifier string) (*store.User, error) {
+	user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &identifier})
+	if err != nil || user != nil || !strings.Contains(identifier, "@") {
+		return user, err
+	}
+	email, err := store.NormalizeEmail(identifier)
+	if err != nil || email == "" {
+		return nil, nil
+	}
+	return s.Store.GetUser(ctx, &store.FindUser{Email: &email})
+}
+
+// signInAccountKey is the rate-limit key for the account a sign-in names. Emails
+// are matched case-insensitively, so their key is folded the same way; otherwise
+// changing the letter case of an address would reset its limit.
+func signInAccountKey(identifier string) string {
+	if strings.Contains(identifier, "@") {
+		return strings.ToLower(strings.TrimSpace(identifier))
+	}
+	return identifier
 }
 
 // resolveSSOUser resolves a local user from an external-identity subject, creating the

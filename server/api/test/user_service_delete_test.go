@@ -13,10 +13,10 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestDeleteUserSelfDeleteCleansAccountDataAndAuthCookies(t *testing.T) {
@@ -67,10 +67,10 @@ func TestDeleteUserSelfDeleteCleansAccountDataAndAuthCookies(t *testing.T) {
 
 	carrier := api.GetHeaderCarrier(authCtx)
 	require.NotNil(t, carrier)
-	require.Contains(t, strings.ToLower(carrier.Get("Set-Cookie")), "memos_refresh=")
+	require.Contains(t, strings.ToLower(carrier.Get("Set-Cookie")), "roster_refresh=")
 }
 
-func TestDeleteUserSelfDeleteRemovesOnlyOwnedMemosAndResources(t *testing.T) {
+func TestDeleteUserSelfDeleteRemovesOnlyOwnedNotesAndResources(t *testing.T) {
 	t.Parallel()
 
 	ts := NewTestService(t)
@@ -85,81 +85,81 @@ func TestDeleteUserSelfDeleteRemovesOnlyOwnedMemosAndResources(t *testing.T) {
 	userCtx := ts.CreateUserContext(ctx, user.ID)
 	peerCtx := ts.CreateUserContext(ctx, peer.ID)
 
-	ownMemo, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "owner memo",
+	ownNote, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "owner note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	foreignMemo, err := ts.Service.CreateMemo(peerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "peer memo",
+	foreignNote, err := ts.Service.CreateNote(peerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "peer note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	peerCommentOnOwnMemo, err := ts.Service.CreateMemoComment(peerCtx, &apipb.CreateMemoCommentRequest{
-		Parent: ownMemo.Name,
-		Comment: &apipb.Memo{
-			Content:    "peer comment on owner memo",
+	peerCommentOnOwnNote, err := ts.Service.CreateNoteComment(peerCtx, &apipb.CreateNoteCommentRequest{
+		Parent: ownNote.Name,
+		Comment: &apipb.Note{
+			Content:    "peer comment on owner note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	peerNestedCommentOnOwnMemo, err := ts.Service.CreateMemoComment(peerCtx, &apipb.CreateMemoCommentRequest{
-		Parent: peerCommentOnOwnMemo.Name,
-		Comment: &apipb.Memo{
-			Content:    "peer nested comment on owner memo",
+	peerNestedCommentOnOwnNote, err := ts.Service.CreateNoteComment(peerCtx, &apipb.CreateNoteCommentRequest{
+		Parent: peerCommentOnOwnNote.Name,
+		Comment: &apipb.Note{
+			Content:    "peer nested comment on owner note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	userCommentOnForeignMemo, err := ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{
-		Parent: foreignMemo.Name,
-		Comment: &apipb.Memo{
-			Content:    "owner comment on peer memo",
+	userCommentOnForeignNote, err := ts.Service.CreateNoteComment(userCtx, &apipb.CreateNoteCommentRequest{
+		Parent: foreignNote.Name,
+		Comment: &apipb.Note{
+			Content:    "owner comment on peer note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
-	peerReplyToUserComment, err := ts.Service.CreateMemoComment(peerCtx, &apipb.CreateMemoCommentRequest{
-		Parent: userCommentOnForeignMemo.Name,
-		Comment: &apipb.Memo{
+	peerReplyToUserComment, err := ts.Service.CreateNoteComment(peerCtx, &apipb.CreateNoteCommentRequest{
+		Parent: userCommentOnForeignNote.Name,
+		Comment: &apipb.Note{
 			Content:    "peer reply to owner comment",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	ownMemoUID, err := api.ExtractMemoUIDFromName(ownMemo.Name)
+	ownNoteUID, err := api.ExtractNoteUIDFromName(ownNote.Name)
 	require.NoError(t, err)
-	ownMemoStore, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &ownMemoUID})
+	ownNoteStore, err := ts.Store.GetNote(ctx, &store.FindNote{UID: &ownNoteUID})
 	require.NoError(t, err)
-	require.NotNil(t, ownMemoStore)
+	require.NotNil(t, ownNoteStore)
 
-	foreignMemoUID, err := api.ExtractMemoUIDFromName(foreignMemo.Name)
+	foreignNoteUID, err := api.ExtractNoteUIDFromName(foreignNote.Name)
 	require.NoError(t, err)
-	foreignMemoStore, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &foreignMemoUID})
+	foreignNoteStore, err := ts.Store.GetNote(ctx, &store.FindNote{UID: &foreignNoteUID})
 	require.NoError(t, err)
-	require.NotNil(t, foreignMemoStore)
-	peerCommentOnOwnMemoID := parseMemoIDFromNameForTest(t, ts, peerCommentOnOwnMemo.Name)
-	peerNestedCommentOnOwnMemoID := parseMemoIDFromNameForTest(t, ts, peerNestedCommentOnOwnMemo.Name)
-	userCommentOnForeignMemoID := parseMemoIDFromNameForTest(t, ts, userCommentOnForeignMemo.Name)
-	peerReplyToUserCommentID := parseMemoIDFromNameForTest(t, ts, peerReplyToUserComment.Name)
+	require.NotNil(t, foreignNoteStore)
+	peerCommentOnOwnNoteID := parseNoteIDFromNameForTest(t, ts, peerCommentOnOwnNote.Name)
+	peerNestedCommentOnOwnNoteID := parseNoteIDFromNameForTest(t, ts, peerNestedCommentOnOwnNote.Name)
+	userCommentOnForeignNoteID := parseNoteIDFromNameForTest(t, ts, userCommentOnForeignNote.Name)
+	peerReplyToUserCommentID := parseNoteIDFromNameForTest(t, ts, peerReplyToUserComment.Name)
 
 	attachedAttachment, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
-		UID:       "attach-owner-memo",
+		UID:       "attach-owner-note",
 		CreatorID: user.ID,
 		Filename:  "owner.txt",
 		Type:      "text/plain",
 		Size:      4,
-		Blob:      []byte("memo"),
-		MemoID:    &ownMemoStore.ID,
+		Blob:      []byte("note"),
+		NoteID:    &ownNoteStore.ID,
 	})
 	require.NoError(t, err)
 	thumbnailCachePath := filepath.Join(ts.Profile.Data, ".thumbnail_cache", attachedAttachment.UID+".jpeg")
@@ -186,50 +186,50 @@ func TestDeleteUserSelfDeleteRemovesOnlyOwnedMemosAndResources(t *testing.T) {
 		Type:      "text/plain",
 		Size:      4,
 		Blob:      []byte("peer"),
-		MemoID:    &foreignMemoStore.ID,
+		NoteID:    &foreignNoteStore.ID,
 	})
 	require.NoError(t, err)
 
 	_, err = ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		MemoID:       ownMemoStore.ID,
+		NoteID:       ownNoteStore.ID,
 		ReactionType: "👍",
 	})
 	require.NoError(t, err)
 	_, err = ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		MemoID:       userCommentOnForeignMemoID,
+		NoteID:       userCommentOnForeignNoteID,
 		ReactionType: "🔥",
 	})
 	require.NoError(t, err)
 	_, err = ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       foreignMemoStore.ID,
+		NoteID:       foreignNoteStore.ID,
 		ReactionType: "👋",
 	})
 	require.NoError(t, err)
-	peerReactionOnForeignMemo, err := ts.Store.UpsertReaction(ctx, &store.Reaction{
+	peerReactionOnForeignNote, err := ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		MemoID:       foreignMemoStore.ID,
+		NoteID:       foreignNoteStore.ID,
 		ReactionType: "✅",
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Store.CreateMemoShare(ctx, &store.MemoShare{
-		UID:       "share-owner-ownmemo",
-		MemoID:    ownMemoStore.ID,
+	_, err = ts.Store.CreateNoteShare(ctx, &store.NoteShare{
+		UID:       "share-owner-ownnote",
+		NoteID:    ownNoteStore.ID,
 		CreatorID: user.ID,
 	})
 	require.NoError(t, err)
-	_, err = ts.Store.CreateMemoShare(ctx, &store.MemoShare{
-		UID:       "share-owner-foreignmemo",
-		MemoID:    foreignMemoStore.ID,
+	_, err = ts.Store.CreateNoteShare(ctx, &store.NoteShare{
+		UID:       "share-owner-foreignnote",
+		NoteID:    foreignNoteStore.ID,
 		CreatorID: user.ID,
 	})
 	require.NoError(t, err)
-	peerShare, err := ts.Store.CreateMemoShare(ctx, &store.MemoShare{
-		UID:       "share-peer-foreignmemo",
-		MemoID:    foreignMemoStore.ID,
+	peerShare, err := ts.Store.CreateNoteShare(ctx, &store.NoteShare{
+		UID:       "share-peer-foreignnote",
+		NoteID:    foreignNoteStore.ID,
 		CreatorID: peer.ID,
 	})
 	require.NoError(t, err)
@@ -258,41 +258,41 @@ func TestDeleteUserSelfDeleteRemovesOnlyOwnedMemosAndResources(t *testing.T) {
 	require.NoError(t, err)
 	require.Nil(t, deletedUser)
 
-	for _, memoName := range []string{
-		ownMemo.Name,
-		userCommentOnForeignMemo.Name,
+	for _, noteName := range []string{
+		ownNote.Name,
+		userCommentOnForeignNote.Name,
 	} {
-		memoUID, extractErr := api.ExtractMemoUIDFromName(memoName)
+		noteUID, extractErr := api.ExtractNoteUIDFromName(noteName)
 		require.NoError(t, extractErr)
-		memo, getErr := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		note, getErr := ts.Store.GetNote(ctx, &store.FindNote{UID: &noteUID})
 		require.NoError(t, getErr)
-		require.Nil(t, memo, memoName)
+		require.Nil(t, note, noteName)
 	}
-	for _, memoName := range []string{
-		peerCommentOnOwnMemo.Name,
-		peerNestedCommentOnOwnMemo.Name,
+	for _, noteName := range []string{
+		peerCommentOnOwnNote.Name,
+		peerNestedCommentOnOwnNote.Name,
 		peerReplyToUserComment.Name,
 	} {
-		memoUID, extractErr := api.ExtractMemoUIDFromName(memoName)
+		noteUID, extractErr := api.ExtractNoteUIDFromName(noteName)
 		require.NoError(t, extractErr)
-		memo, getErr := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		note, getErr := ts.Store.GetNote(ctx, &store.FindNote{UID: &noteUID})
 		require.NoError(t, getErr)
-		require.NotNil(t, memo, memoName)
+		require.NotNil(t, note, noteName)
 	}
 
-	foreignMemoAfterDelete, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &foreignMemoUID})
+	foreignNoteAfterDelete, err := ts.Store.GetNote(ctx, &store.FindNote{UID: &foreignNoteUID})
 	require.NoError(t, err)
-	require.NotNil(t, foreignMemoAfterDelete)
-	nestedRelations, err := ts.Store.ListMemoRelations(ctx, &store.FindMemoRelation{MemoID: &peerNestedCommentOnOwnMemoID})
+	require.NotNil(t, foreignNoteAfterDelete)
+	nestedRelations, err := ts.Store.ListNoteRelations(ctx, &store.FindNoteRelation{NoteID: &peerNestedCommentOnOwnNoteID})
 	require.NoError(t, err)
 	require.Len(t, nestedRelations, 1)
-	require.Equal(t, peerCommentOnOwnMemoID, nestedRelations[0].RelatedMemoID)
-	for _, memoID := range []int32{ownMemoStore.ID, userCommentOnForeignMemoID} {
-		incidentRelations, listErr := ts.Store.ListMemoRelations(ctx, &store.FindMemoRelation{MemoIDList: []int32{memoID}})
+	require.Equal(t, peerCommentOnOwnNoteID, nestedRelations[0].RelatedNoteID)
+	for _, noteID := range []int32{ownNoteStore.ID, userCommentOnForeignNoteID} {
+		incidentRelations, listErr := ts.Store.ListNoteRelations(ctx, &store.FindNoteRelation{NoteIDList: []int32{noteID}})
 		require.NoError(t, listErr)
 		require.Empty(t, incidentRelations)
 	}
-	contextlessReplyRelations, err := ts.Store.ListMemoRelations(ctx, &store.FindMemoRelation{MemoID: &peerReplyToUserCommentID})
+	contextlessReplyRelations, err := ts.Store.ListNoteRelations(ctx, &store.FindNoteRelation{NoteID: &peerReplyToUserCommentID})
 	require.NoError(t, err)
 	require.Empty(t, contextlessReplyRelations)
 
@@ -309,24 +309,24 @@ func TestDeleteUserSelfDeleteRemovesOnlyOwnedMemosAndResources(t *testing.T) {
 	_, err = os.Stat(motionCachePath)
 	require.ErrorIs(t, err, os.ErrNotExist)
 
-	ownMemoReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &ownMemoStore.ID})
+	ownNoteReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{NoteID: &ownNoteStore.ID})
 	require.NoError(t, err)
-	require.Empty(t, ownMemoReactions)
+	require.Empty(t, ownNoteReactions)
 
-	userCommentReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &userCommentOnForeignMemoID})
+	userCommentReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{NoteID: &userCommentOnForeignNoteID})
 	require.NoError(t, err)
 	require.Empty(t, userCommentReactions)
 
-	foreignMemoReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &foreignMemoStore.ID})
+	foreignNoteReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{NoteID: &foreignNoteStore.ID})
 	require.NoError(t, err)
-	require.Len(t, foreignMemoReactions, 1)
-	require.Equal(t, peerReactionOnForeignMemo.ID, foreignMemoReactions[0].ID)
+	require.Len(t, foreignNoteReactions, 1)
+	require.Equal(t, peerReactionOnForeignNote.ID, foreignNoteReactions[0].ID)
 
-	ownerShares, err := ts.Store.ListMemoShares(ctx, &store.FindMemoShare{CreatorID: &user.ID})
+	ownerShares, err := ts.Store.ListNoteShares(ctx, &store.FindNoteShare{CreatorID: &user.ID})
 	require.NoError(t, err)
 	require.Empty(t, ownerShares)
 
-	peerShares, err := ts.Store.ListMemoShares(ctx, &store.FindMemoShare{CreatorID: &peer.ID})
+	peerShares, err := ts.Store.ListNoteShares(ctx, &store.FindNoteShare{CreatorID: &peer.ID})
 	require.NoError(t, err)
 	require.Len(t, peerShares, 1)
 	require.Equal(t, peerShare.ID, peerShares[0].ID)
@@ -368,7 +368,7 @@ func TestDeleteUserSpaceMembershipGuardIgnoresForce(t *testing.T) {
 			require.NoError(t, err)
 			space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "membership-delete-" + tc.suffix, Title: "Membership guard"}, user.ID)
 			require.NoError(t, err)
-			memo, err := ts.Service.CreateMemo(ts.CreateUserContext(ctx, user.ID), &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+			note, err := ts.Service.CreateNote(ts.CreateUserContext(ctx, user.ID), &apipb.CreateNoteRequest{Note: &apipb.Note{
 				Content:    "must survive failed account deletion",
 				Visibility: apipb.Visibility_PUBLIC,
 			}})
@@ -387,11 +387,11 @@ func TestDeleteUserSpaceMembershipGuardIgnoresForce(t *testing.T) {
 			membership, err := ts.Store.GetSpaceMember(ctx, &store.FindSpaceMember{SpaceID: &space.ID, UserID: &user.ID, ViewerUserID: &user.ID})
 			require.NoError(t, err)
 			require.NotNil(t, membership)
-			memoUID, err := api.ExtractMemoUIDFromName(memo.Name)
+			noteUID, err := api.ExtractNoteUIDFromName(note.Name)
 			require.NoError(t, err)
-			remainingMemo, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+			remainingNote, err := ts.Store.GetNote(ctx, &store.FindNote{UID: &noteUID})
 			require.NoError(t, err)
-			require.NotNil(t, remainingMemo)
+			require.NotNil(t, remainingNote)
 		})
 	}
 }
@@ -409,19 +409,19 @@ func TestDeleteUserRollbackPreservesAllResources(t *testing.T) {
 	require.NoError(t, err)
 
 	userCtx := ts.CreateUserContext(ctx, user.ID)
-	ownMemo, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "rollback owner memo",
+	ownNote, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "rollback owner note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	ownMemoUID, err := api.ExtractMemoUIDFromName(ownMemo.Name)
+	ownNoteUID, err := api.ExtractNoteUIDFromName(ownNote.Name)
 	require.NoError(t, err)
-	ownMemoStore, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &ownMemoUID})
+	ownNoteStore, err := ts.Store.GetNote(ctx, &store.FindNote{UID: &ownNoteUID})
 	require.NoError(t, err)
-	require.NotNil(t, ownMemoStore)
+	require.NotNil(t, ownNoteStore)
 
 	attachment, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
 		UID:       "attach-rollback-owner",
@@ -430,20 +430,20 @@ func TestDeleteUserRollbackPreservesAllResources(t *testing.T) {
 		Type:      "text/plain",
 		Size:      8,
 		Blob:      []byte("rollback"),
-		MemoID:    &ownMemoStore.ID,
+		NoteID:    &ownNoteStore.ID,
 	})
 	require.NoError(t, err)
 
 	reaction, err := ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       ownMemoStore.ID,
+		NoteID:       ownNoteStore.ID,
 		ReactionType: "💥",
 	})
 	require.NoError(t, err)
 
-	share, err := ts.Store.CreateMemoShare(ctx, &store.MemoShare{
+	share, err := ts.Store.CreateNoteShare(ctx, &store.NoteShare{
 		UID:       "share-rollback-owner",
-		MemoID:    ownMemoStore.ID,
+		NoteID:    ownNoteStore.ID,
 		CreatorID: user.ID,
 	})
 	require.NoError(t, err)
@@ -453,10 +453,10 @@ func TestDeleteUserRollbackPreservesAllResources(t *testing.T) {
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Type: storepb.InboxMessage_MEMO_COMMENT,
-			Payload: &storepb.InboxMessage_MemoComment{
-				MemoComment: &storepb.InboxMessage_MemoCommentPayload{
-					MemoId: ownMemoStore.ID,
+			Type: storepb.InboxMessage_NOTE_COMMENT,
+			Payload: &storepb.InboxMessage_NoteComment{
+				NoteComment: &storepb.InboxMessage_NoteCommentPayload{
+					NoteId: ownNoteStore.ID,
 				},
 			},
 		},
@@ -489,9 +489,9 @@ func TestDeleteUserRollbackPreservesAllResources(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, userAfterRollback)
 
-	memoAfterRollback, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &ownMemoUID})
+	noteAfterRollback, err := ts.Store.GetNote(ctx, &store.FindNote{UID: &ownNoteUID})
 	require.NoError(t, err)
-	require.NotNil(t, memoAfterRollback)
+	require.NotNil(t, noteAfterRollback)
 
 	attachmentAfterRollback, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID})
 	require.NoError(t, err)
@@ -501,7 +501,7 @@ func TestDeleteUserRollbackPreservesAllResources(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, reactionAfterRollback)
 
-	shareAfterRollback, err := ts.Store.GetMemoShare(ctx, &store.FindMemoShare{ID: &share.ID})
+	shareAfterRollback, err := ts.Store.GetNoteShare(ctx, &store.FindNoteShare{ID: &share.ID})
 	require.NoError(t, err)
 	require.NotNil(t, shareAfterRollback)
 

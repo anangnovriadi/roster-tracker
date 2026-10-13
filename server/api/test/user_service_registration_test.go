@@ -11,10 +11,10 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestCreateUserRegistration(t *testing.T) {
@@ -395,8 +395,8 @@ func TestCreateUserRegistration(t *testing.T) {
 		_, err = ts.Service.GetCurrentUser(userCtx, &apipb.GetCurrentUserRequest{})
 		require.Error(t, err)
 
-		_, err = ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
-			Memo: &apipb.Memo{
+		_, err = ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{
+			Note: &apipb.Note{
 				Content: "should not be created",
 			},
 		})

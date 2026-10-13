@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-rou
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import RootLayout from "@/layouts/RootLayout";
 
-vi.mock("@/hooks/useMemoSuggestions", () => ({ useMemoSuggestions: () => [] }));
+vi.mock("@/hooks/useNoteSuggestions", () => ({ useNoteSuggestions: () => [] }));
 
 const authState = vi.hoisted(() => ({ currentUser: { name: "users/test" } as { name: string } | undefined }));
 const instanceState = vi.hoisted(() => ({ accessMode: 2, instanceUrl: "https://example.com", demo: true }));
@@ -18,7 +18,7 @@ vi.mock("@/components/AppSidebar", () => ({
   useSidebarWidth: () => ({ width: 256, minWidth: 192, maxWidth: 384, setWidth: vi.fn() }),
 }));
 
-// GlobalMemoEditorContext is deliberately NOT mocked: the real provider calls
+// GlobalNoteEditorContext is deliberately NOT mocked: the real provider calls
 // useAppSidebar(), which throws unless RootLayout nests it inside
 // AppSidebarProvider. That nesting is the only thing here that can break.
 vi.mock("@/contexts/AuthContext", () => ({

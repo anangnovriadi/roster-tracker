@@ -1,31 +1,31 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
-import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
-import { deriveDefaultCreateTimeFromDate } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
-import { MEMO_PANEL_INSET, MEMO_PANEL_TITLE_CLASS, MEMO_PANEL_WIDTH_CSS, MemoPanel, MemoPanelList } from "@/components/MemoPanel";
-import MemoListError from "@/components/PagedMemoList/MemoListError";
+import { MentionResolutionProvider } from "@/components/NoteContent/MentionResolutionContext";
+import { deriveDefaultCreateTimeFromDate } from "@/components/NoteEditor/utils/deriveDefaultCreateTime";
+import { NOTE_PANEL_INSET, NOTE_PANEL_TITLE_CLASS, NOTE_PANEL_WIDTH_CSS, NotePanel, NotePanelList } from "@/components/NotePanel";
+import NoteListError from "@/components/PagedNoteList/NoteListError";
 import RosterTodayBanner from "@/components/RosterTodayBanner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
+import { useFilteredNoteStats } from "@/hooks/useFilteredNoteStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
-import { useMemoFilters } from "@/hooks/useMemoFilters";
+import { useNoteFilters } from "@/hooks/useNoteFilters";
 import { formatMonthLabel, getToday, parseLocalDate } from "@/lib/calendar-utils";
 import { combineCELFilters } from "@/lib/cel-filter";
-import { isMemoBlurred } from "@/lib/tag";
-import type { Memo } from "@/types/proto/api/memo_service_pb";
+import { isNoteBlurred } from "@/lib/tag";
+import type { Note } from "@/types/proto/api/note_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { PREVIEW_MIN_CELL_WIDTH } from "./CalendarDayCell";
 import { CalendarGrid } from "./CalendarGrid";
 import { CalendarHeader } from "./CalendarHeader";
 import { buildCalendarPath, getDefaultDate } from "./paths";
 import RosterDayPanel from "./RosterDayPanel";
-import { useMonthMemos } from "./useMonthMemos";
+import { useMonthNotes } from "./useMonthNotes";
 
-const NO_MEMOS: Memo[] = [];
+const NO_NOTES: Note[] = [];
 const NO_CONTENTS: string[] = [];
 /**
  * What the pushed grid keeps beside the panel: page padding, the grid's 2px border and seven
@@ -33,7 +33,7 @@ const NO_CONTENTS: string[] = [];
  * one as a gap, so one comes back off. A persisted card wider than this yields for as long as
  * the window is narrow, down to its minimum.
  */
-export const RESERVED_BESIDE_PANEL = 48 + 2 + 7 * PREVIEW_MIN_CELL_WIDTH - MEMO_PANEL_INSET;
+export const RESERVED_BESIDE_PANEL = 48 + 2 + 7 * PREVIEW_MIN_CELL_WIDTH - NOTE_PANEL_INSET;
 
 export interface CalendarViewProps {
   /** `YYYY-MM` */
@@ -43,10 +43,10 @@ export interface CalendarViewProps {
 }
 
 /**
- * The readable memos in the selected creator and Space scope, shown as a month.
+ * The readable notes in the selected creator and Space scope, shown as a month.
  * Month and day both live in the URL; this component only reads them and renders.
  *
- * The open day has two homes. From md it is the floating memo panel at the end edge; at xl
+ * The open day has two homes. From md it is the floating note panel at the end edge; at xl
  * the grid gives way to it and the card narrows so every column keeps its preview, below xl
  * it floats over the trailing columns. Below md the grid is compact and the day's list sits
  * under it, the way phone calendars work, so a day is always shown there: today in the
@@ -62,28 +62,28 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
   const xl = useMediaQuery("xl");
   const { userTagsSetting, isInitialized: authInitialized, isUserSettingsInitialized } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
-  const { memoFilter: contextFilter, creatorUsername } = useSpaceContext();
+  const { noteFilter: contextFilter, creatorUsername } = useSpaceContext();
 
   // The sidebar's view and tag filters narrow the month exactly as they narrow Home. They are
   // not echoed as chips here: the sidebar already shows them checked and clears them on a
   // second click, and search hands off to Home, so nothing can be active without a sidebar row.
-  const viewFilter = useMemoFilters({ includeMemoViews: true, includePinned: false });
+  const viewFilter = useNoteFilters({ includeNoteViews: true, includePinned: false });
   // The scope filter includes both creator and Space, and matches the sidebar statistics.
   const statsFilter = useMemo(() => combineCELFilters(contextFilter, viewFilter), [contextFilter, viewFilter]);
   const monthFilter = useMemo(() => combineCELFilters(contextFilter, viewFilter), [contextFilter, viewFilter]);
 
-  // Statistics draw counts before the month's memos load, and are the only signal the grid
+  // Statistics draw counts before the month's notes load, and are the only signal the grid
   // has for days outside the month.
-  const { statistics } = useFilteredMemoStats({
+  const { statistics } = useFilteredNoteStats({
     context: "collection",
     filter: statsFilter,
     enabled: authInitialized && instanceInitialized,
   });
 
-  const isRedacted = useCallback((memo: Memo) => isMemoBlurred(memo, userTagsSetting), [userTagsSetting]);
+  const isRedacted = useCallback((note: Note) => isNoteBlurred(note, userTagsSetting), [userTagsSetting]);
   // Snippets and thumbnails must not appear before the tag settings that decide what to blur
   // have loaded; until then the predicate would let everything through.
-  const { model, isLoading, error, refetch } = useMonthMemos({
+  const { model, isLoading, error, refetch } = useMonthNotes({
     month,
     filter: monthFilter,
     isRedacted,
@@ -95,7 +95,7 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
 
   const today = getToday();
   const activeDate = date ?? (md ? undefined : getDefaultDate(month, today));
-  const activeMemos = (activeDate && model[activeDate]?.memos) || NO_MEMOS;
+  const activeNotes = (activeDate && model[activeDate]?.notes) || NO_NOTES;
   const dateLabel = useMemo(
     () =>
       activeDate
@@ -117,16 +117,16 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
   const list = activeDate && (
     <>
       <RosterDayPanel date={activeDate} />
-      <MemoPanelList
-        memos={activeMemos}
+      <NotePanelList
+        notes={activeNotes}
         selectionKey={activeDate}
         timeDisplay="time"
-        emptyText={canCompose ? undefined : t("calendar.no-memos-on-day")}
+        emptyText={canCompose ? undefined : t("calendar.no-notes-on-day")}
         compose={
           canCompose
             ? {
                 cacheKey: `calendar-day-editor:${activeDate}`,
-                label: t("calendar.new-memo-on-day"),
+                label: t("calendar.new-note-on-day"),
                 defaults: { defaultCreateTime },
                 onSavingChange: setSaving,
               }
@@ -143,7 +143,7 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
           padding reads the panel's own custom property, so it follows a resize drag live. */}
       <section
         className="flex w-full min-w-0 flex-col gap-1 xl:h-[calc(100dvh-3.5rem)]"
-        style={{ paddingInlineEnd: xl && panelOpen ? `calc(${MEMO_PANEL_WIDTH_CSS} + ${MEMO_PANEL_INSET}px)` : undefined }}
+        style={{ paddingInlineEnd: xl && panelOpen ? `calc(${NOTE_PANEL_WIDTH_CSS} + ${NOTE_PANEL_INSET}px)` : undefined }}
       >
         <RosterTodayBanner className="shrink-0" />
         <CalendarHeader month={month} monthLabel={monthLabel} today={today} activeDate={activeDate} closable={md} />
@@ -160,11 +160,11 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
             showAuthors={showAuthors}
           />
         </MentionResolutionProvider>
-        {error && <MemoListError error={error} onRetry={refetch} />}
+        {error && <NoteListError error={error} onRetry={refetch} />}
         {activeDate && !md && (
           <section aria-label={dateLabel} className="mt-4 flex w-full flex-col">
             <header className="mb-3 border-b border-border/70 pb-3">
-              <h2 className={MEMO_PANEL_TITLE_CLASS}>{dateLabel}</h2>
+              <h2 className={NOTE_PANEL_TITLE_CLASS}>{dateLabel}</h2>
             </header>
             {list}
           </section>
@@ -172,9 +172,9 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
       </section>
 
       {md && (
-        <MemoPanel open={panelOpen} title={dateLabel} reservedWidth={RESERVED_BESIDE_PANEL} busy={saving} onClose={closeDay}>
+        <NotePanel open={panelOpen} title={dateLabel} reservedWidth={RESERVED_BESIDE_PANEL} busy={saving} onClose={closeDay}>
           {list}
-        </MemoPanel>
+        </NotePanel>
       )}
     </>
   );

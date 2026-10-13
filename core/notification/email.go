@@ -8,10 +8,10 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/email"
-	"github.com/usememos/memos/internal/profile"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/email"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // EmailSender sends a prepared email message with the given SMTP configuration.
@@ -73,12 +73,12 @@ func (d *EmailDispatcher) DispatchInboxEmail(ctx context.Context, inbox *store.I
 		return nil
 	}
 
-	memosByID, err := d.listMemosByID(ctx, collectInboxMemoIDs([]*store.Inbox{inbox}), receiver.ID)
+	notesByID, err := d.listNotesByID(ctx, collectInboxNoteIDs([]*store.Inbox{inbox}), receiver.ID)
 	if err != nil {
-		return errors.Wrap(err, "failed to get notification memos")
+		return errors.Wrap(err, "failed to get notification notes")
 	}
 
-	message, err := d.buildInboxEmailMessage(ctx, inbox, receiver, sender, memosByID)
+	message, err := d.buildInboxEmailMessage(ctx, inbox, receiver, sender, notesByID)
 	if err != nil {
 		return err
 	}
@@ -133,13 +133,13 @@ func SendTestEmail(setting *storepb.InstanceNotificationSetting_EmailSetting, re
 	return email.Send(EmailConfigFromInstanceSetting(setting), NewTestEmailMessage(recipientEmail, setting.GetReplyTo()))
 }
 
-func (d *EmailDispatcher) buildInboxEmailMessage(ctx context.Context, inbox *store.Inbox, receiver *store.User, sender *store.User, memosByID map[int32]*store.Memo) (*email.Message, error) {
+func (d *EmailDispatcher) buildInboxEmailMessage(ctx context.Context, inbox *store.Inbox, receiver *store.User, sender *store.User, notesByID map[int32]*store.Note) (*email.Message, error) {
 	senderName := displayNameForEmail(sender)
 	switch inbox.Message.Type {
-	case storepb.InboxMessage_MEMO_COMMENT:
-		return d.buildMemoCommentEmailMessage(inbox.Message, receiver, senderName, memosByID)
-	case storepb.InboxMessage_MEMO_MENTION:
-		return d.buildMemoMentionEmailMessage(inbox.Message, receiver, senderName, memosByID)
+	case storepb.InboxMessage_NOTE_COMMENT:
+		return d.buildNoteCommentEmailMessage(inbox.Message, receiver, senderName, notesByID)
+	case storepb.InboxMessage_NOTE_MENTION:
+		return d.buildNoteMentionEmailMessage(inbox.Message, receiver, senderName, notesByID)
 	case storepb.InboxMessage_SPACE_INVITATION:
 		return d.buildSpaceInvitationEmailMessage(ctx, inbox.Message, receiver, senderName)
 	default:
@@ -200,17 +200,17 @@ func (d *EmailDispatcher) buildSpaceInvitationEmailMessage(ctx context.Context, 
 	}, nil
 }
 
-func (d *EmailDispatcher) buildMemoCommentEmailMessage(message *storepb.InboxMessage, receiver *store.User, senderName string, memosByID map[int32]*store.Memo) (*email.Message, error) {
-	payload := message.GetMemoComment()
+func (d *EmailDispatcher) buildNoteCommentEmailMessage(message *storepb.InboxMessage, receiver *store.User, senderName string, notesByID map[int32]*store.Note) (*email.Message, error) {
+	payload := message.GetNoteComment()
 	if payload == nil {
 		return nil, nil
 	}
-	commentMemo := memosByID[payload.MemoId]
-	relatedMemo := memosByID[payload.RelatedMemoId]
-	if !canViewerAccessMemo(receiver, commentMemo) || !canViewerAccessMemo(receiver, relatedMemo) {
+	commentNote := notesByID[payload.NoteId]
+	relatedNote := notesByID[payload.RelatedNoteId]
+	if !canViewerAccessNote(receiver, commentNote) || !canViewerAccessNote(receiver, relatedNote) {
 		return nil, nil
 	}
-	url := d.memoCommentURL(relatedMemo, commentMemo)
+	url := d.noteCommentURL(relatedNote, commentNote)
 	if url == "" {
 		return nil, nil
 	}
@@ -233,24 +233,24 @@ func (d *EmailDispatcher) buildMemoCommentEmailMessage(message *storepb.InboxMes
 	}, nil
 }
 
-func (d *EmailDispatcher) buildMemoMentionEmailMessage(message *storepb.InboxMessage, receiver *store.User, senderName string, memosByID map[int32]*store.Memo) (*email.Message, error) {
-	payload := message.GetMemoMention()
+func (d *EmailDispatcher) buildNoteMentionEmailMessage(message *storepb.InboxMessage, receiver *store.User, senderName string, notesByID map[int32]*store.Note) (*email.Message, error) {
+	payload := message.GetNoteMention()
 	if payload == nil {
 		return nil, nil
 	}
-	memo := memosByID[payload.MemoId]
-	if !canViewerAccessMemo(receiver, memo) {
+	note := notesByID[payload.NoteId]
+	if !canViewerAccessNote(receiver, note) {
 		return nil, nil
 	}
 	// A mention created from a comment carries its conversational context in
-	// RelatedMemoId. The notification represents that relation, so suppress the
+	// RelatedNoteId. The notification represents that relation, so suppress the
 	// complete email unless the receiver can still read both endpoints.
-	if payload.RelatedMemoId > 0 {
-		if !canViewerAccessMemo(receiver, memosByID[payload.RelatedMemoId]) {
+	if payload.RelatedNoteId > 0 {
+		if !canViewerAccessNote(receiver, notesByID[payload.RelatedNoteId]) {
 			return nil, nil
 		}
 	}
-	url := d.memoURL(memo)
+	url := d.noteURL(note)
 	if url == "" {
 		return nil, nil
 	}
@@ -273,64 +273,64 @@ func (d *EmailDispatcher) buildMemoMentionEmailMessage(message *storepb.InboxMes
 	}, nil
 }
 
-func (d *EmailDispatcher) listMemosByID(ctx context.Context, memoIDs []int32, viewerID int32) (map[int32]*store.Memo, error) {
-	if len(memoIDs) == 0 {
-		return map[int32]*store.Memo{}, nil
+func (d *EmailDispatcher) listNotesByID(ctx context.Context, noteIDs []int32, viewerID int32) (map[int32]*store.Note, error) {
+	if len(noteIDs) == 0 {
+		return map[int32]*store.Note{}, nil
 	}
 
-	uniqueMemoIDs := make([]int32, 0, len(memoIDs))
-	seenMemoIDs := make(map[int32]struct{}, len(memoIDs))
-	for _, memoID := range memoIDs {
-		if memoID == 0 {
+	uniqueNoteIDs := make([]int32, 0, len(noteIDs))
+	seenNoteIDs := make(map[int32]struct{}, len(noteIDs))
+	for _, noteID := range noteIDs {
+		if noteID == 0 {
 			continue
 		}
-		if _, seen := seenMemoIDs[memoID]; seen {
+		if _, seen := seenNoteIDs[noteID]; seen {
 			continue
 		}
-		seenMemoIDs[memoID] = struct{}{}
-		uniqueMemoIDs = append(uniqueMemoIDs, memoID)
+		seenNoteIDs[noteID] = struct{}{}
+		uniqueNoteIDs = append(uniqueNoteIDs, noteID)
 	}
-	if len(uniqueMemoIDs) == 0 {
-		return map[int32]*store.Memo{}, nil
+	if len(uniqueNoteIDs) == 0 {
+		return map[int32]*store.Note{}, nil
 	}
 
-	memos, err := d.store.ListMemos(ctx, &store.FindMemo{
-		IDList: uniqueMemoIDs,
-		Access: &store.MemoAccessScope{UserID: &viewerID, AllowPublic: true, AllowProtected: true},
+	notes, err := d.store.ListNotes(ctx, &store.FindNote{
+		IDList: uniqueNoteIDs,
+		Access: &store.NoteAccessScope{UserID: &viewerID, AllowPublic: true, AllowProtected: true},
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	memosByID := make(map[int32]*store.Memo, len(memos))
-	for _, memo := range memos {
-		memosByID[memo.ID] = memo
+	notesByID := make(map[int32]*store.Note, len(notes))
+	for _, note := range notes {
+		notesByID[note.ID] = note
 	}
-	return memosByID, nil
+	return notesByID, nil
 }
 
-func collectInboxMemoIDs(inboxes []*store.Inbox) []int32 {
-	memoIDs := make([]int32, 0, len(inboxes)*2)
+func collectInboxNoteIDs(inboxes []*store.Inbox) []int32 {
+	noteIDs := make([]int32, 0, len(inboxes)*2)
 	for _, inbox := range inboxes {
 		if inbox == nil || inbox.Message == nil {
 			continue
 		}
 		switch inbox.Message.Type {
-		case storepb.InboxMessage_MEMO_COMMENT:
-			payload := inbox.Message.GetMemoComment()
+		case storepb.InboxMessage_NOTE_COMMENT:
+			payload := inbox.Message.GetNoteComment()
 			if payload != nil {
-				memoIDs = append(memoIDs, payload.MemoId, payload.RelatedMemoId)
+				noteIDs = append(noteIDs, payload.NoteId, payload.RelatedNoteId)
 			}
-		case storepb.InboxMessage_MEMO_MENTION:
-			payload := inbox.Message.GetMemoMention()
+		case storepb.InboxMessage_NOTE_MENTION:
+			payload := inbox.Message.GetNoteMention()
 			if payload != nil {
-				memoIDs = append(memoIDs, payload.MemoId, payload.RelatedMemoId)
+				noteIDs = append(noteIDs, payload.NoteId, payload.RelatedNoteId)
 			}
 		default:
-			// Ignore notification types without memo references.
+			// Ignore notification types without note references.
 		}
 	}
-	return memoIDs
+	return noteIDs
 }
 
 func displayNameForEmail(user *store.User) string {
@@ -361,28 +361,28 @@ func (d *EmailDispatcher) inboxURL() string {
 	return baseURL + "/inbox"
 }
 
-func (d *EmailDispatcher) memoURL(memo *store.Memo) string {
+func (d *EmailDispatcher) noteURL(note *store.Note) string {
 	baseURL := d.baseURL()
-	if memo == nil || memo.UID == "" || baseURL == "" {
+	if note == nil || note.UID == "" || baseURL == "" {
 		return ""
 	}
-	return fmt.Sprintf("%s/notes/%s", baseURL, memo.UID)
+	return fmt.Sprintf("%s/notes/%s", baseURL, note.UID)
 }
 
-func (d *EmailDispatcher) memoCommentURL(relatedMemo *store.Memo, commentMemo *store.Memo) string {
+func (d *EmailDispatcher) noteCommentURL(relatedNote *store.Note, commentNote *store.Note) string {
 	baseURL := d.baseURL()
-	if relatedMemo == nil || relatedMemo.UID == "" || commentMemo == nil || commentMemo.UID == "" || baseURL == "" {
+	if relatedNote == nil || relatedNote.UID == "" || commentNote == nil || commentNote.UID == "" || baseURL == "" {
 		return ""
 	}
-	return fmt.Sprintf("%s/notes/%s#%s", baseURL, relatedMemo.UID, commentMemo.UID)
+	return fmt.Sprintf("%s/notes/%s#%s", baseURL, relatedNote.UID, commentNote.UID)
 }
 
-func canViewerAccessMemo(viewer *store.User, memo *store.Memo) bool {
-	if memo == nil {
+func canViewerAccessNote(viewer *store.User, note *store.Note) bool {
+	if note == nil {
 		return false
 	}
-	if memo.Visibility == store.Private {
-		return viewer != nil && viewer.ID == memo.CreatorID
+	if note.Visibility == store.Private {
+		return viewer != nil && viewer.ID == note.CreatorID
 	}
 	return true
 }

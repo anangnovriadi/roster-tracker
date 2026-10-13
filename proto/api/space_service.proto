@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package memos.api;
+package roster.api;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
@@ -46,8 +46,8 @@ service SpaceService {
     option (google.api.method_signature) = "space,update_mask";
   }
 
-  // DeleteSpace permanently deletes a space and every memo currently placed
-  // in it. It never follows memo relations to other memos. Only a space
+  // DeleteSpace permanently deletes a space and every note currently placed
+  // in it. It never follows note relations to other notes. Only a space
   // administrator can delete a space.
   rpc DeleteSpace(DeleteSpaceRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/{name=spaces/*}"};
@@ -146,10 +146,10 @@ service SpaceService {
   }
 }
 
-// Space is a collaboration boundary for placed memos.
+// Space is a collaboration boundary for placed notes.
 message Space {
   option (google.api.resource) = {
-    type: "memos.api/Space"
+    type: "roster.api/Space"
     pattern: "spaces/{space}"
     singular: "space"
     plural: "spaces"
@@ -214,7 +214,7 @@ message GetSpaceRequest {
   // Format: spaces/{space}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/Space"}
+    (google.api.resource_reference) = {type: "roster.api/Space"}
   ];
 }
 
@@ -245,14 +245,14 @@ message DeleteSpaceRequest {
   // Format: spaces/{space}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/Space"}
+    (google.api.resource_reference) = {type: "roster.api/Space"}
   ];
 }
 
 // SpaceMember is a user's membership and governance role in a space.
 message SpaceMember {
   option (google.api.resource) = {
-    type: "memos.api/SpaceMember"
+    type: "roster.api/SpaceMember"
     pattern: "spaces/{space}/members/{member}"
     singular: "spaceMember"
     plural: "spaceMembers"
@@ -267,7 +267,7 @@ message SpaceMember {
   // Format: users/{user}
   string user = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Required. The member's role within this space.
@@ -289,7 +289,7 @@ message ListSpaceMembersRequest {
   // Format: spaces/{space}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {child_type: "memos.api/SpaceMember"}
+    (google.api.resource_reference) = {child_type: "roster.api/SpaceMember"}
   ];
 
   // Optional. The maximum number of members to return. The service may return fewer.
@@ -314,7 +314,7 @@ message GetSpaceMemberRequest {
   // Format: spaces/{space}/members/{member}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/SpaceMember"}
+    (google.api.resource_reference) = {type: "roster.api/SpaceMember"}
   ];
 }
 
@@ -335,14 +335,14 @@ message DeleteSpaceMemberRequest {
   // Format: spaces/{space}/members/{member}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/SpaceMember"}
+    (google.api.resource_reference) = {type: "roster.api/SpaceMember"}
   ];
 }
 
 // SpaceInvitation is a pending invitation for an existing user to join a space.
 message SpaceInvitation {
   option (google.api.resource) = {
-    type: "memos.api/SpaceInvitation"
+    type: "roster.api/SpaceInvitation"
     pattern: "spaces/{space}/invitations/{invitation}"
     singular: "spaceInvitation"
     plural: "spaceInvitations"
@@ -357,7 +357,7 @@ message SpaceInvitation {
   // Format: users/{user}
   string invitee = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Required. The role the user receives after accepting the invitation.
@@ -375,7 +375,7 @@ message ListSpaceInvitationsRequest {
   // Format: spaces/{space}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {child_type: "memos.api/SpaceInvitation"}
+    (google.api.resource_reference) = {child_type: "roster.api/SpaceInvitation"}
   ];
 
   // Optional. The maximum number of invitations to return. The service may return fewer.
@@ -401,7 +401,7 @@ message ListUserSpaceInvitationsRequest {
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Optional. The maximum number of invitations to return. The service may return fewer.
@@ -426,7 +426,7 @@ message GetSpaceInvitationRequest {
   // Format: spaces/{space}/invitations/{invitation}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/SpaceInvitation"}
+    (google.api.resource_reference) = {type: "roster.api/SpaceInvitation"}
   ];
 }
 
@@ -436,7 +436,7 @@ message CreateSpaceInvitationRequest {
   // Format: spaces/{space}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {child_type: "memos.api/SpaceInvitation"}
+    (google.api.resource_reference) = {child_type: "roster.api/SpaceInvitation"}
   ];
 
   // Required. The invitation to create. The role must be ADMIN or USER.
@@ -449,7 +449,7 @@ message DeleteSpaceInvitationRequest {
   // Format: spaces/{space}/invitations/{invitation}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/SpaceInvitation"}
+    (google.api.resource_reference) = {type: "roster.api/SpaceInvitation"}
   ];
 }
 
@@ -459,7 +459,7 @@ message AcceptSpaceInvitationRequest {
   // Format: spaces/{space}/invitations/{invitation}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/SpaceInvitation"}
+    (google.api.resource_reference) = {type: "roster.api/SpaceInvitation"}
   ];
 }
 
@@ -469,6 +469,6 @@ message DeclineSpaceInvitationRequest {
   // Format: spaces/{space}/invitations/{invitation}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/SpaceInvitation"}
+    (google.api.resource_reference) = {type: "roster.api/SpaceInvitation"}
   ];
 }

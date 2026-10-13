@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package memos.api;
+package roster.api;
 
 import "api/common.proto";
 import "api/space_service.proto";
@@ -17,8 +17,8 @@ import "google/type/color.proto";
 option go_package = "gen/api";
 
 // UserService manages users and the resources they own: settings, statistics,
-// memo views, notifications, webhooks, linked identities, personal access
-// tokens, and memo export files.
+// note views, notifications, webhooks, linked identities, personal access
+// tokens, and note export files.
 service UserService {
   // ListUsers lists users in every state. Only admins may call it.
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
@@ -92,16 +92,16 @@ service UserService {
     option (google.api.method_signature) = "user_setting,update_mask";
   }
 
-  // ListUserStats returns memo statistics for every user who created at least
-  // one matching memo the caller can read. Use the parent users/- for all
+  // ListUserStats returns note statistics for every user who created at least
+  // one matching note the caller can read. Use the parent users/- for all
   // users, or users/{user} for one user.
   rpc ListUserStats(ListUserStatsRequest) returns (ListUserStatsResponse) {
     option (google.api.http) = {get: "/api/{parent=users/*}/stats"};
     option (google.api.method_signature) = "parent";
   }
 
-  // GetUserStats returns memo statistics for one user, counting the user's
-  // memos that the caller can read.
+  // GetUserStats returns note statistics for one user, counting the user's
+  // notes that the caller can read.
   rpc GetUserStats(GetUserStatsRequest) returns (UserStats) {
     option (google.api.http) = {get: "/api/{name=users/*}:getStats"};
     option (google.api.method_signature) = "name";
@@ -114,46 +114,46 @@ service UserService {
     option (google.api.method_signature) = "name";
   }
 
-  // ListMemoViews lists a user's memo views. Each view is a named, reusable
-  // CEL filter (see MemoView.filter); pass its filter string directly to the
-  // ListMemos `filter` argument. Only the user may call it.
-  rpc ListMemoViews(ListMemoViewsRequest) returns (ListMemoViewsResponse) {
+  // ListNoteViews lists a user's note views. Each view is a named, reusable
+  // CEL filter (see NoteView.filter); pass its filter string directly to the
+  // ListNotes `filter` argument. Only the user may call it.
+  rpc ListNoteViews(ListNoteViewsRequest) returns (ListNoteViewsResponse) {
     option (google.api.http) = {get: "/api/{parent=users/*}/views"};
     option (google.api.method_signature) = "parent";
   }
 
-  // GetMemoView gets a memo view. Only the owner may call it.
-  rpc GetMemoView(GetMemoViewRequest) returns (MemoView) {
+  // GetNoteView gets a note view. Only the owner may call it.
+  rpc GetNoteView(GetNoteViewRequest) returns (NoteView) {
     option (google.api.http) = {get: "/api/{name=users/*/views/*}"};
     option (google.api.method_signature) = "name";
   }
 
-  // CreateMemoView creates a memo view for a user. Only the user may call it.
-  rpc CreateMemoView(CreateMemoViewRequest) returns (MemoView) {
+  // CreateNoteView creates a note view for a user. Only the user may call it.
+  rpc CreateNoteView(CreateNoteViewRequest) returns (NoteView) {
     option (google.api.http) = {
       post: "/api/{parent=users/*}/views"
-      body: "memo_view"
+      body: "note_view"
     };
-    option (google.api.method_signature) = "parent,memo_view";
+    option (google.api.method_signature) = "parent,note_view";
   }
 
-  // UpdateMemoView updates a memo view. Only the owner may call it.
-  rpc UpdateMemoView(UpdateMemoViewRequest) returns (MemoView) {
+  // UpdateNoteView updates a note view. Only the owner may call it.
+  rpc UpdateNoteView(UpdateNoteViewRequest) returns (NoteView) {
     option (google.api.http) = {
-      patch: "/api/{memo_view.name=users/*/views/*}"
-      body: "memo_view"
+      patch: "/api/{note_view.name=users/*/views/*}"
+      body: "note_view"
     };
-    option (google.api.method_signature) = "memo_view,update_mask";
+    option (google.api.method_signature) = "note_view,update_mask";
   }
 
-  // DeleteMemoView deletes a memo view. Only the owner may call it.
-  rpc DeleteMemoView(DeleteMemoViewRequest) returns (google.protobuf.Empty) {
+  // DeleteNoteView deletes a note view. Only the owner may call it.
+  rpc DeleteNoteView(DeleteNoteViewRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/{name=users/*/views/*}"};
     option (google.api.method_signature) = "name";
   }
 
   // ListUserNotifications lists a user's notifications. Only the user may call
-  // it. Notifications whose memos or space invitation the user can no longer
+  // it. Notifications whose notes or space invitation the user can no longer
   // read are left out.
   rpc ListUserNotifications(ListUserNotificationsRequest) returns (ListUserNotificationsResponse) {
     option (google.api.http) = {get: "/api/{parent=users/*}/notifications"};
@@ -273,25 +273,25 @@ service UserService {
     option (google.api.method_signature) = "name";
   }
 
-  // ExportMemos writes every memo the user created, with comments, archived
-  // memos, and attachment files, as a Memos export file (a ZIP file, see
-  // docs/design/memos-export-format.md). Only the user may export their own
-  // memos. The body is the archive; content_type is its media type.
-  rpc ExportMemos(ExportMemosRequest) returns (google.api.HttpBody) {
-    option (google.api.http) = {get: "/api/{name=users/*}:exportMemos"};
+  // ExportNotes writes every note the user created, with comments, archived
+  // notes, and attachment files, as a Roster Tracker export file (a ZIP file, see
+  // docs/design/notes-export-format.md). Only the user may export their own
+  // notes. The body is the archive; content_type is its media type.
+  rpc ExportNotes(ExportNotesRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {get: "/api/{name=users/*}:exportNotes"};
     option (google.api.method_signature) = "name";
   }
 
-  // ImportMemos uploads a Memos export file in bounded chunks and imports it
-  // into the user's memos. The first call carries the spec and returns an
+  // ImportNotes uploads a Roster Tracker export file in bounded chunks and imports it
+  // into the user's notes. The first call carries the spec and returns an
   // upload_id; later calls carry that upload_id. A finishing call with
   // validate_only returns the plan and keeps the archive staged; a finishing
   // call without it imports and returns the report. Uploads are bound to the
   // authenticated user, expire after 30 minutes of inactivity, and do not
   // survive a server restart.
-  rpc ImportMemos(ImportMemosRequest) returns (ImportMemosResponse) {
+  rpc ImportNotes(ImportNotesRequest) returns (ImportNotesResponse) {
     option (google.api.http) = {
-      post: "/api/{name=users/*}:importMemos"
+      post: "/api/{name=users/*}:importNotes"
       body: "*"
     };
   }
@@ -300,7 +300,7 @@ service UserService {
 // User is an account on the instance.
 message User {
   option (google.api.resource) = {
-    type: "memos.api/User"
+    type: "roster.api/User"
     pattern: "users/{user}"
     singular: "user"
     plural: "users"
@@ -389,7 +389,7 @@ message GetUserRequest {
   // Format: users/{user}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Optional. Currently ignored; all fields are returned.
@@ -403,7 +403,7 @@ message BatchGetUsersRequest {
   // Format: users/{user}
   repeated string names = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 }
 
@@ -454,7 +454,7 @@ message DeleteUserRequest {
   // Format: users/{user}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Optional. Currently ignored; deleting a user who belongs to any space
@@ -465,7 +465,7 @@ message DeleteUserRequest {
 // UserSetting is one group of a user's preferences, identified by its key.
 message UserSetting {
   option (google.api.resource) = {
-    type: "memos.api/UserSetting"
+    type: "roster.api/UserSetting"
     pattern: "users/{user}/settings/{setting}"
     singular: "userSetting"
     plural: "userSettings"
@@ -504,9 +504,9 @@ message UserSetting {
     // Optional. The preferred locale of the user.
     string locale = 1 [(google.api.field_behavior) = OPTIONAL];
 
-    // Optional. The default visibility of new memos: PRIVATE, PROTECTED or
+    // Optional. The default visibility of new notes: PRIVATE, PROTECTED or
     // PUBLIC.
-    string memo_visibility = 2 [(google.api.field_behavior) = OPTIONAL];
+    string note_visibility = 2 [(google.api.field_behavior) = OPTIONAL];
 
     // Optional. The preferred theme of the user. This references a CSS file in
     // the web/public/themes/ directory. If not set, the default theme is used.
@@ -536,7 +536,7 @@ message UserSetting {
     // tag color is used.
     google.type.Color background_color = 1 [(google.api.field_behavior) = OPTIONAL];
 
-    // Optional. Whether memos with this tag have their content blurred.
+    // Optional. Whether notes with this tag have their content blurred.
     bool blur_content = 2 [(google.api.field_behavior) = OPTIONAL];
   }
 }
@@ -547,7 +547,7 @@ message ListUserSettingsRequest {
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Optional. The maximum number of settings to return. The service may return
@@ -574,7 +574,7 @@ message GetUserSettingRequest {
   // Format: users/{user}/settings/{setting}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/UserSetting"}
+    (google.api.resource_reference) = {type: "roster.api/UserSetting"}
   ];
 }
 
@@ -584,15 +584,15 @@ message UpdateUserSettingRequest {
   UserSetting user_setting = 1 [(google.api.field_behavior) = REQUIRED];
 
   // Required. The fields to update, relative to the setting value. GENERAL
-  // supports locale, memo_visibility, theme and save_media_metadata; TAGS
+  // supports locale, note_visibility, theme and save_media_metadata; TAGS
   // supports tags.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// UserStats is a summary of a user's memos. Comments are not counted.
+// UserStats is a summary of a user's notes. Comments are not counted.
 message UserStats {
   option (google.api.resource) = {
-    type: "memos.api/UserStats"
+    type: "roster.api/UserStats"
     pattern: "users/{user}/stats"
     singular: "userStats"
     plural: "userStats"
@@ -602,45 +602,45 @@ message UserStats {
   // Format: users/{user}/stats
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // The number of counted memos.
-  int32 total_memo_count = 2;
+  // The number of counted notes.
+  int32 total_note_count = 2;
 
-  // The number of counted memos by content type.
-  MemoTypeStats memo_type_stats = 3;
+  // The number of counted notes by content type.
+  NoteTypeStats note_type_stats = 3;
 
-  // The number of counted memos per tag.
+  // The number of counted notes per tag.
   map<string, int32> tag_counts = 4;
 
-  // The pinned memos among the counted memos.
-  // Format: memos/{memo}
-  repeated string pinned_memos = 5 [(google.api.resource_reference) = {type: "memos.api/Memo"}];
+  // The pinned notes among the counted notes.
+  // Format: notes/{note}
+  repeated string pinned_notes = 5 [(google.api.resource_reference) = {type: "roster.api/Note"}];
 
-  // The creation timestamps of the counted memos, one per memo.
-  repeated google.protobuf.Timestamp memo_created_timestamps = 6;
+  // The creation timestamps of the counted notes, one per note.
+  repeated google.protobuf.Timestamp note_created_timestamps = 6;
 
-  // The latest update timestamps of the counted memos (one per memo, mirrors
-  // memo_created_timestamps). Used by the activity heatmap when the client's
+  // The latest update timestamps of the counted notes (one per note, mirrors
+  // note_created_timestamps). Used by the activity heatmap when the client's
   // view is set to update_time basis.
-  repeated google.protobuf.Timestamp memo_updated_timestamps = 7;
+  repeated google.protobuf.Timestamp note_updated_timestamps = 7;
 
   // Output only. Total persisted attachment size in bytes, including unlinked
   // uploads and attachments in all spaces. Excludes temporary uploads and
   // derived files. Returned only by GetUserStats for the authenticated user's
-  // own stats, independently of the request's memo filter.
+  // own stats, independently of the request's note filter.
   optional int64 attachment_storage_bytes = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // MemoTypeStats counts memos by the kind of content they contain.
-  message MemoTypeStats {
-    // The number of memos that contain a link.
+  // NoteTypeStats counts notes by the kind of content they contain.
+  message NoteTypeStats {
+    // The number of notes that contain a link.
     int32 link_count = 1;
 
-    // The number of memos that contain code.
+    // The number of notes that contain code.
     int32 code_count = 2;
 
-    // The number of memos that contain a task list.
+    // The number of notes that contain a task list.
     int32 todo_count = 3;
 
-    // The number of memos that contain incomplete tasks.
+    // The number of notes that contain incomplete tasks.
     int32 undo_count = 4;
   }
 }
@@ -652,15 +652,15 @@ message ListUserStatsRequest {
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {child_type: "memos.api/UserStats"}
+    (google.api.resource_reference) = {child_type: "roster.api/UserStats"}
   ];
 
-  // Optional. A CEL expression selecting the memos to count. Uses the same
-  // filter syntax as ListMemos.
+  // Optional. A CEL expression selecting the notes to count. Uses the same
+  // filter syntax as ListNotes.
   string filter = 2 [(google.api.field_behavior) = OPTIONAL];
 
-  // Optional. The state of the memos to count. Defaults to NORMAL. ARCHIVED
-  // counts only the caller's own memos.
+  // Optional. The state of the notes to count. Defaults to NORMAL. ARCHIVED
+  // counts only the caller's own notes.
   State state = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
@@ -676,18 +676,18 @@ message GetUserStatsRequest {
   // Format: users/{user}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
-  // Optional. A CEL expression selecting the readable non-comment memos to
-  // count. Supports the same fields as ListMemos, including `space`.
+  // Optional. A CEL expression selecting the readable non-comment notes to
+  // count. Supports the same fields as ListNotes, including `space`.
   string filter = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // UserUsage is a user's usage and the usage limits in effect for the user.
 message UserUsage {
   option (google.api.resource) = {
-    type: "memos.api/UserUsage"
+    type: "roster.api/UserUsage"
     pattern: "users/{user}/usage"
     singular: "userUsage"
     plural: "userUsages"
@@ -697,16 +697,16 @@ message UserUsage {
   // Format: users/{user}/usage
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // The number of memos the user created, including comments, archived
-  // memos, and memos in Spaces.
-  int64 memo_count = 2;
+  // The number of notes the user created, including comments, archived
+  // notes, and notes in Spaces.
+  int64 note_count = 2;
 
   // The total size in bytes of the user's uploads, including uploads not
-  // attached to a memo. External links do not count.
+  // attached to a note. External links do not count.
   int64 storage_bytes = 3;
 
-  // The limit on memo_count.
-  EffectiveLimit memos_limit = 4;
+  // The limit on note_count.
+  EffectiveLimit notes_limit = 4;
 
   // The limit on storage_bytes.
   EffectiveLimit storage_bytes_limit = 5;
@@ -723,7 +723,7 @@ message UserUsage {
     // The usage limit the value comes from: the user's own limit, or else the
     // default. Empty when no usage limit applies.
     // Format: usageLimits/{usage_limit}
-    string usage_limit = 2 [(google.api.resource_reference) = {type: "memos.api/UsageLimit"}];
+    string usage_limit = 2 [(google.api.resource_reference) = {type: "roster.api/UsageLimit"}];
   }
 }
 
@@ -733,36 +733,36 @@ message GetUserUsageRequest {
   // Format: users/{user}/usage
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/UserUsage"}
+    (google.api.resource_reference) = {type: "roster.api/UserUsage"}
   ];
 }
 
-// MemoView is a user's saved memo filter.
-message MemoView {
+// NoteView is a user's saved note filter.
+message NoteView {
   option (google.api.resource) = {
-    type: "memos.api/MemoView"
+    type: "roster.api/NoteView"
     pattern: "users/{user}/views/{view}"
-    singular: "memoView"
-    plural: "memoViews"
+    singular: "noteView"
+    plural: "noteViews"
   };
 
-  // Identifier. The resource name of the memo view.
+  // Identifier. The resource name of the note view.
   // Format: users/{user}/views/{view}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // Required. The title of the memo view.
+  // Required. The title of the note view.
   string title = 2 [(google.api.field_behavior) = REQUIRED];
 
-  // Required. The CEL filter expression for the memo view, using the same
-  // grammar as the ListMemos `filter` argument. Reuse it by passing this value
-  // to ListMemos.
+  // Required. The CEL filter expression for the note view, using the same
+  // grammar as the ListNotes `filter` argument. Reuse it by passing this value
+  // to ListNotes.
   string filter = 3 [(google.api.field_behavior) = REQUIRED];
 
   // Optional. Display icon. Omit when updating with the "icon" mask to reset to
   // the default view icon.
   Icon icon = 4 [(google.api.field_behavior) = OPTIONAL];
 
-  // Icon is the display icon of a memo view.
+  // Icon is the display icon of a note view.
   message Icon {
     // The icon value.
     oneof value {
@@ -775,72 +775,72 @@ message MemoView {
   }
 }
 
-// Request message for UserService.ListMemoViews.
-message ListMemoViewsRequest {
-  // Required. The user whose memo views are listed.
+// Request message for UserService.ListNoteViews.
+message ListNoteViewsRequest {
+  // Required. The user whose note views are listed.
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {child_type: "memos.api/MemoView"}
+    (google.api.resource_reference) = {child_type: "roster.api/NoteView"}
   ];
 }
 
-// Response message for UserService.ListMemoViews.
-message ListMemoViewsResponse {
-  // The memo views.
-  repeated MemoView memo_views = 1;
+// Response message for UserService.ListNoteViews.
+message ListNoteViewsResponse {
+  // The note views.
+  repeated NoteView note_views = 1;
 }
 
-// Request message for UserService.GetMemoView.
-message GetMemoViewRequest {
-  // Required. The resource name of the memo view.
+// Request message for UserService.GetNoteView.
+message GetNoteViewRequest {
+  // Required. The resource name of the note view.
   // Format: users/{user}/views/{view}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/MemoView"}
+    (google.api.resource_reference) = {type: "roster.api/NoteView"}
   ];
 }
 
-// Request message for UserService.CreateMemoView.
-message CreateMemoViewRequest {
-  // Required. The user who owns the memo view.
+// Request message for UserService.CreateNoteView.
+message CreateNoteViewRequest {
+  // Required. The user who owns the note view.
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {child_type: "memos.api/MemoView"}
+    (google.api.resource_reference) = {child_type: "roster.api/NoteView"}
   ];
 
-  // Required. The memo view to create.
-  MemoView memo_view = 2 [(google.api.field_behavior) = REQUIRED];
+  // Required. The note view to create.
+  NoteView note_view = 2 [(google.api.field_behavior) = REQUIRED];
 
-  // Optional. If set, validate the request but do not create the memo view.
+  // Optional. If set, validate the request but do not create the note view.
   bool validate_only = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// Request message for UserService.UpdateMemoView.
-message UpdateMemoViewRequest {
-  // Required. The memo view to update. Its name identifies the memo view.
-  MemoView memo_view = 1 [(google.api.field_behavior) = REQUIRED];
+// Request message for UserService.UpdateNoteView.
+message UpdateNoteViewRequest {
+  // Required. The note view to update. Its name identifies the note view.
+  NoteView note_view = 1 [(google.api.field_behavior) = REQUIRED];
 
   // Optional. The fields to update. Supported paths: title, filter, icon. The
   // service rejects an empty mask.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// Request message for UserService.DeleteMemoView.
-message DeleteMemoViewRequest {
-  // Required. The resource name of the memo view to delete.
+// Request message for UserService.DeleteNoteView.
+message DeleteNoteViewRequest {
+  // Required. The resource name of the note view to delete.
   // Format: users/{user}/views/{view}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/MemoView"}
+    (google.api.resource_reference) = {type: "roster.api/NoteView"}
   ];
 }
 
 // UserNotification is a notification delivered to a user.
 message UserNotification {
   option (google.api.resource) = {
-    type: "memos.api/UserNotification"
+    type: "roster.api/UserNotification"
     pattern: "users/{user}/notifications/{notification}"
     singular: "userNotification"
     plural: "userNotifications"
@@ -857,7 +857,7 @@ message UserNotification {
   // Format: users/{user}
   string sender = 2 [
     (google.api.field_behavior) = OUTPUT_ONLY,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Output only. The sender user details.
@@ -868,11 +868,11 @@ message UserNotification {
 
   // The type-specific details. The set field matches the type.
   oneof payload {
-    // Output only. Details of a MEMO_COMMENT notification.
-    MemoCommentPayload memo_comment = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+    // Output only. Details of a NOTE_COMMENT notification.
+    NoteCommentPayload note_comment = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-    // Output only. Details of a MEMO_MENTION notification.
-    MemoMentionPayload memo_mention = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+    // Output only. Details of a NOTE_MENTION notification.
+    NoteMentionPayload note_mention = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
 
     // Output only. Details of a SPACE_INVITATION notification.
     SpaceInvitationPayload space_invitation = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -896,46 +896,46 @@ message UserNotification {
   // Type is the kind of event a notification reports.
   enum Type {
     TYPE_UNSPECIFIED = 0;
-    // Someone commented on a memo.
-    MEMO_COMMENT = 1;
-    // Someone mentioned the receiver in a memo.
-    MEMO_MENTION = 2;
+    // Someone commented on a note.
+    NOTE_COMMENT = 1;
+    // Someone mentioned the receiver in a note.
+    NOTE_MENTION = 2;
     // Someone invited the receiver to a space.
     SPACE_INVITATION = 3;
   }
 
-  // MemoCommentPayload holds the details of a MEMO_COMMENT notification.
-  message MemoCommentPayload {
-    // The comment memo.
-    // Format: memos/{memo}
-    string memo = 1;
+  // NoteCommentPayload holds the details of a NOTE_COMMENT notification.
+  message NoteCommentPayload {
+    // The comment note.
+    // Format: notes/{note}
+    string note = 1;
 
-    // The memo that was commented on.
-    // Format: memos/{memo}
-    string related_memo = 2;
+    // The note that was commented on.
+    // Format: notes/{note}
+    string related_note = 2;
 
-    // Preview text of the comment memo.
-    string memo_snippet = 3;
+    // Preview text of the comment note.
+    string note_snippet = 3;
 
-    // Preview text of the related memo.
-    string related_memo_snippet = 4;
+    // Preview text of the related note.
+    string related_note_snippet = 4;
   }
 
-  // MemoMentionPayload holds the details of a MEMO_MENTION notification.
-  message MemoMentionPayload {
-    // The memo that contains the mention.
-    // Format: memos/{memo}
-    string memo = 1;
+  // NoteMentionPayload holds the details of a NOTE_MENTION notification.
+  message NoteMentionPayload {
+    // The note that contains the mention.
+    // Format: notes/{note}
+    string note = 1;
 
-    // The related parent memo when the mention was created in a comment.
-    // Format: memos/{memo}
-    string related_memo = 2;
+    // The related parent note when the mention was created in a comment.
+    // Format: notes/{note}
+    string related_note = 2;
 
-    // Preview text of the memo that contains the mention.
-    string memo_snippet = 3;
+    // Preview text of the note that contains the mention.
+    string note_snippet = 3;
 
-    // Preview text of the related parent memo.
-    string related_memo_snippet = 4;
+    // Preview text of the related parent note.
+    string related_note_snippet = 4;
   }
 
   // SpaceInvitationPayload holds the details of a SPACE_INVITATION
@@ -943,7 +943,7 @@ message UserNotification {
   message SpaceInvitationPayload {
     // The invitation.
     // Format: spaces/{space}/invitations/{invitation}
-    string space_invitation = 1 [(google.api.resource_reference) = {type: "memos.api/SpaceInvitation"}];
+    string space_invitation = 1 [(google.api.resource_reference) = {type: "roster.api/SpaceInvitation"}];
 
     // The read-only Space summary carried by the invitation.
     Space space = 2;
@@ -971,7 +971,7 @@ message ListUserNotificationsRequest {
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Optional. The maximum number of notifications to return. The service may
@@ -1012,14 +1012,14 @@ message DeleteUserNotificationRequest {
   // Format: users/{user}/notifications/{notification}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/UserNotification"}
+    (google.api.resource_reference) = {type: "roster.api/UserNotification"}
   ];
 }
 
 // UserWebhook is a webhook owned by a user.
 message UserWebhook {
   option (google.api.resource) = {
-    type: "memos.api/UserWebhook"
+    type: "roster.api/UserWebhook"
     pattern: "users/{user}/webhooks/{webhook}"
     singular: "userWebhook"
     plural: "userWebhooks"
@@ -1055,7 +1055,7 @@ message ListUserWebhooksRequest {
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {child_type: "memos.api/UserWebhook"}
+    (google.api.resource_reference) = {child_type: "roster.api/UserWebhook"}
   ];
 }
 
@@ -1071,7 +1071,7 @@ message CreateUserWebhookRequest {
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {child_type: "memos.api/UserWebhook"}
+    (google.api.resource_reference) = {child_type: "roster.api/UserWebhook"}
   ];
 
   // Required. The webhook to create.
@@ -1095,7 +1095,7 @@ message DeleteUserWebhookRequest {
   // Format: users/{user}/webhooks/{webhook}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/UserWebhook"}
+    (google.api.resource_reference) = {type: "roster.api/UserWebhook"}
   ];
 }
 
@@ -1105,7 +1105,7 @@ message GetUserWebhookSigningSecretRequest {
   // Format: users/{user}/webhooks/{webhook}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/UserWebhook"}
+    (google.api.resource_reference) = {type: "roster.api/UserWebhook"}
   ];
 }
 
@@ -1118,7 +1118,7 @@ message GetUserWebhookSigningSecretResponse {
 // LinkedIdentity is an SSO identity linked to a user account.
 message LinkedIdentity {
   option (google.api.resource) = {
-    type: "memos.api/LinkedIdentity"
+    type: "roster.api/LinkedIdentity"
     pattern: "users/{user}/linkedIdentities/{linked_identity}"
     singular: "linkedIdentity"
     plural: "linkedIdentities"
@@ -1133,7 +1133,7 @@ message LinkedIdentity {
   // Format: identity-providers/{idp}
   string identity_provider = 2 [
     (google.api.field_behavior) = OUTPUT_ONLY,
-    (google.api.resource_reference) = {type: "memos.api/IdentityProvider"}
+    (google.api.resource_reference) = {type: "roster.api/IdentityProvider"}
   ];
 
   // Output only. The external user identifier from the identity provider.
@@ -1146,7 +1146,7 @@ message ListLinkedIdentitiesRequest {
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 }
 
@@ -1162,7 +1162,7 @@ message GetLinkedIdentityRequest {
   // Format: users/{user}/linkedIdentities/{linked_identity}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/LinkedIdentity"}
+    (google.api.resource_reference) = {type: "roster.api/LinkedIdentity"}
   ];
 }
 
@@ -1172,14 +1172,14 @@ message CreateLinkedIdentityRequest {
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Required. The identity provider to link.
   // Format: identity-providers/{idp}
   string identity_provider = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/IdentityProvider"}
+    (google.api.resource_reference) = {type: "roster.api/IdentityProvider"}
   ];
 
   // Required. The authorization code from the identity provider.
@@ -1198,7 +1198,7 @@ message DeleteLinkedIdentityRequest {
   // Format: users/{user}/linkedIdentities/{linked_identity}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/LinkedIdentity"}
+    (google.api.resource_reference) = {type: "roster.api/LinkedIdentity"}
   ];
 }
 
@@ -1207,7 +1207,7 @@ message DeleteLinkedIdentityRequest {
 // authentication.
 message PersonalAccessToken {
   option (google.api.resource) = {
-    type: "memos.api/PersonalAccessToken"
+    type: "roster.api/PersonalAccessToken"
     pattern: "users/{user}/personalAccessTokens/{personal_access_token}"
     singular: "personalAccessToken"
     plural: "personalAccessTokens"
@@ -1236,7 +1236,7 @@ message ListPersonalAccessTokensRequest {
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Optional. The maximum number of tokens to return. The service may return
@@ -1263,7 +1263,7 @@ message CreatePersonalAccessTokenRequest {
   // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Optional. The description of the token.
@@ -1289,33 +1289,33 @@ message DeletePersonalAccessTokenRequest {
   // Format: users/{user}/personalAccessTokens/{personal_access_token}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/PersonalAccessToken"}
+    (google.api.resource_reference) = {type: "roster.api/PersonalAccessToken"}
   ];
 }
 
-// Request message for UserService.ExportMemos.
-message ExportMemosRequest {
-  // Required. The user whose memos are exported. Must be the caller.
+// Request message for UserService.ExportNotes.
+message ExportNotesRequest {
+  // Required. The user whose notes are exported. Must be the caller.
   // Format: users/{user}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 }
 
-// Request message for UserService.ImportMemos.
-message ImportMemosRequest {
-  // Required. The user who receives the memos. Must be the caller.
+// Request message for UserService.ImportNotes.
+message ImportNotesRequest {
+  // Required. The user who receives the notes. Must be the caller.
   // Format: users/{user}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Required. Start a new upload or continue an existing one.
   oneof upload {
     // Starts a new upload. The same call may also carry data and finish_write.
-    ImportMemosSpec spec = 2;
+    ImportNotesSpec spec = 2;
 
     // Continues the upload identified by a previous response.
     string upload_id = 3;
@@ -1345,21 +1345,21 @@ message ImportMemosRequest {
   // import it.
   bool validate_only = 8 [(google.api.field_behavior) = OPTIONAL];
 
-  // ConflictPolicy says what the importer does with a memo whose UID the user
+  // ConflictPolicy says what the importer does with a note whose UID the user
   // already holds.
   enum ConflictPolicy {
     CONFLICT_POLICY_UNSPECIFIED = 0;
-    // Leave the existing memo untouched. This is the default.
+    // Leave the existing note untouched. This is the default.
     SKIP = 1;
-    // Update the existing memo's content and metadata from the archive.
+    // Update the existing note's content and metadata from the archive.
     REPLACE = 2;
-    // Keep the existing memo and create the archive version under a fresh UID.
+    // Keep the existing note and create the archive version under a fresh UID.
     DUPLICATE = 3;
   }
 }
 
-// Response message for UserService.ImportMemos.
-message ImportMemosResponse {
+// Response message for UserService.ImportNotes.
+message ImportNotesResponse {
   // Opaque ID for subsequent calls. This is not a resource name.
   string upload_id = 1;
 
@@ -1372,21 +1372,21 @@ message ImportMemosResponse {
   // Set once the upload has been finished.
   oneof result {
     // What the import would do. Set by a finishing call with validate_only.
-    ImportMemosPlan plan = 4;
+    ImportNotesPlan plan = 4;
 
     // What the import did. Set by a finishing call that imported.
-    ImportMemosReport report = 5;
+    ImportNotesReport report = 5;
   }
 }
 
-// ImportMemosSpec describes a new memo import upload.
-message ImportMemosSpec {
+// ImportNotesSpec describes a new note import upload.
+message ImportNotesSpec {
   // Optional. Total size of the archive in bytes.
   int64 total_size = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// ImportMemosPlan describes what importing a staged archive would do.
-message ImportMemosPlan {
+// ImportNotesPlan describes what importing a staged archive would do.
+message ImportNotesPlan {
   // When the archive was written.
   google.protobuf.Timestamp export_time = 1;
 
@@ -1396,51 +1396,51 @@ message ImportMemosPlan {
   // The software that wrote the archive.
   string generator = 3;
 
-  // Number of memo records in the archive.
-  int32 memo_count = 4;
+  // Number of note records in the archive.
+  int32 note_count = 4;
 
   // Number of attachment files in the archive.
   int32 attachment_count = 5;
 
-  // Memos whose UID nobody on the instance holds.
+  // Notes whose UID nobody on the instance holds.
   int32 new = 6;
 
-  // Memos the user already holds; the conflict policy applies to them.
+  // Notes the user already holds; the conflict policy applies to them.
   int32 existing = 7;
 
-  // Memos whose UID another account holds; they are imported under fresh UIDs.
+  // Notes whose UID another account holds; they are imported under fresh UIDs.
   int32 renamed = 8;
 
   // Deviations the archive reader corrected while validating.
-  repeated ImportMemosIssue warnings = 9;
+  repeated ImportNotesIssue warnings = 9;
 }
 
-// ImportMemosReport is the outcome of an import.
-message ImportMemosReport {
-  // Number of memos created.
+// ImportNotesReport is the outcome of an import.
+message ImportNotesReport {
+  // Number of notes created.
   int32 created = 1;
 
-  // Number of existing memos replaced under the REPLACE policy.
+  // Number of existing notes replaced under the REPLACE policy.
   int32 updated = 2;
 
-  // Number of existing memos left untouched under the SKIP policy.
+  // Number of existing notes left untouched under the SKIP policy.
   int32 skipped = 3;
 
-  // Number of memos that could not be imported.
+  // Number of notes that could not be imported.
   int32 failed = 4;
 
   // Deviations the importer corrected or tolerated.
-  repeated ImportMemosIssue warnings = 5;
+  repeated ImportNotesIssue warnings = 5;
 
-  // One entry per failed memo, with the reason.
-  repeated ImportMemosIssue failures = 6;
+  // One entry per failed note, with the reason.
+  repeated ImportNotesIssue failures = 6;
 }
 
-// ImportMemosIssue is one warning or failure of an import, tied to the memo
+// ImportNotesIssue is one warning or failure of an import, tied to the note
 // UID from the archive when there is one.
-message ImportMemosIssue {
-  // The archive memo UID the issue concerns, if any.
-  string memo_uid = 1;
+message ImportNotesIssue {
+  // The archive note UID the issue concerns, if any.
+  string note_uid = 1;
 
   // A description of the issue.
   string message = 2;

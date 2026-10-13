@@ -18,7 +18,7 @@ import (
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 	"github.com/pkg/errors"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 // ErrRangeNotSatisfiable reports a ranged read whose byte range falls outside
@@ -92,7 +92,7 @@ type acceptEncodingKey struct{}
 
 type dropAcceptEncoding struct{}
 
-func (dropAcceptEncoding) ID() string { return "MemosDropAcceptEncoding" }
+func (dropAcceptEncoding) ID() string { return "NotesDropAcceptEncoding" }
 
 func (dropAcceptEncoding) HandleFinalize(ctx context.Context, in middleware.FinalizeInput, next middleware.FinalizeHandler) (middleware.FinalizeOutput, middleware.Metadata, error) {
 	if req, ok := in.Request.(*smithyhttp.Request); ok {
@@ -106,7 +106,7 @@ func (dropAcceptEncoding) HandleFinalize(ctx context.Context, in middleware.Fina
 
 type restoreAcceptEncoding struct{}
 
-func (restoreAcceptEncoding) ID() string { return "MemosRestoreAcceptEncoding" }
+func (restoreAcceptEncoding) ID() string { return "NotesRestoreAcceptEncoding" }
 
 func (restoreAcceptEncoding) HandleFinalize(ctx context.Context, in middleware.FinalizeInput, next middleware.FinalizeHandler) (middleware.FinalizeOutput, middleware.Metadata, error) {
 	if req, ok := in.Request.(*smithyhttp.Request); ok {

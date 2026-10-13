@@ -1,8 +1,8 @@
 services:
-  memos:
-    image: neosmemo/memos:stable
-    container_name: memos
+  roster-tracker:
+    image: anangnovriadi/roster-tracker:stable
+    container_name: roster-tracker
     volumes:
-      - ~/.memos/:/var/opt/memos
+      - ~/.roster-tracker/:/var/opt/roster-tracker
     ports:
       - 5230:5230

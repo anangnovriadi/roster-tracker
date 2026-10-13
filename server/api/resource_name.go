@@ -10,15 +10,15 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/internal/identifier"
-	"github.com/usememos/memos/internal/random"
+	"github.com/anangnovriadi/roster-tracker/internal/identifier"
+	"github.com/anangnovriadi/roster-tracker/internal/random"
 )
 
 const (
 	InstanceSettingNamePrefix  = "instance/settings/"
 	UserNamePrefix             = "users/"
-	MemoNamePrefix             = "memos/"
-	MemoShareNamePrefix        = "shares/"
+	NoteNamePrefix             = "notes/"
+	NoteShareNamePrefix        = "shares/"
 	AttachmentNamePrefix       = "attachments/"
 	ReactionNamePrefix         = "reactions/"
 	InboxNamePrefix            = "inboxes/"
@@ -83,10 +83,10 @@ func ExtractUserIDFromName(name string) (int32, error) {
 	return id, nil
 }
 
-// ExtractMemoUIDFromName returns the memo UID from a resource name.
-// e.g., "memos/uuid" -> "uuid".
-func ExtractMemoUIDFromName(name string) (string, error) {
-	tokens, err := GetNameParentTokens(name, MemoNamePrefix)
+// ExtractNoteUIDFromName returns the note UID from a resource name.
+// e.g., "notes/uuid" -> "uuid".
+func ExtractNoteUIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, NoteNamePrefix)
 	if err != nil {
 		return "", err
 	}
@@ -94,8 +94,8 @@ func ExtractMemoUIDFromName(name string) (string, error) {
 	return id, nil
 }
 
-func buildMemoName(uid string) string {
-	return MemoNamePrefix + uid
+func buildNoteName(uid string) string {
+	return NoteNamePrefix + uid
 }
 
 // ExtractSpaceUIDFromName returns the UID from a Space resource name.
@@ -137,19 +137,19 @@ func ExtractAttachmentUIDFromName(name string) (string, error) {
 	return id, nil
 }
 
-// ExtractMemoReactionIDFromName returns the memo UID and reaction ID from a resource name.
-// e.g., "memos/abc/reactions/123" -> ("abc", 123).
-func ExtractMemoReactionIDFromName(name string) (string, int32, error) {
-	tokens, err := GetNameParentTokens(name, MemoNamePrefix, ReactionNamePrefix)
+// ExtractNoteReactionIDFromName returns the note UID and reaction ID from a resource name.
+// e.g., "notes/abc/reactions/123" -> ("abc", 123).
+func ExtractNoteReactionIDFromName(name string) (string, int32, error) {
+	tokens, err := GetNameParentTokens(name, NoteNamePrefix, ReactionNamePrefix)
 	if err != nil {
 		return "", 0, err
 	}
-	memoUID := tokens[0]
+	noteUID := tokens[0]
 	reactionID, err := parseInt32(tokens[1])
 	if err != nil {
 		return "", 0, errors.Errorf("invalid reaction ID %q", tokens[1])
 	}
-	return memoUID, reactionID, nil
+	return noteUID, reactionID, nil
 }
 
 // ExtractRosterAssignmentIDFromName returns the roster assignment ID from a resource name.
@@ -187,7 +187,7 @@ func ExtractIdentityProviderUIDFromName(name string) (string, error) {
 }
 
 // ExtractUsageLimitIDFromName returns the usage limit ID from a resource name.
-// e.g., "usageLimits/default-memos" -> "default-memos".
+// e.g., "usageLimits/default-notes" -> "default-notes".
 func ExtractUsageLimitIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, UsageLimitNamePrefix)
 	if err != nil {

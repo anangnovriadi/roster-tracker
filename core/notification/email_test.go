@@ -7,50 +7,50 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/internal/profile"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
-	teststore "github.com/usememos/memos/store/test"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
+	teststore "github.com/anangnovriadi/roster-tracker/store/test"
 )
 
-func TestEmailMemoReadCreatorLifecycle(t *testing.T) {
+func TestEmailNoteReadCreatorLifecycle(t *testing.T) {
 	ctx := context.Background()
 	st := teststore.NewTestingStore(ctx, t)
 	defer st.Close()
 	dispatcher := NewEmailDispatcher(nil, st, nil)
 
-	creator, err := st.CreateUser(ctx, &store.User{Username: "email-memo-creator", Role: store.RoleUser, PasswordHash: "hash"})
+	creator, err := st.CreateUser(ctx, &store.User{Username: "email-note-creator", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
-	viewer, err := st.CreateUser(ctx, &store.User{Username: "email-memo-viewer", Role: store.RoleUser, PasswordHash: "hash"})
+	viewer, err := st.CreateUser(ctx, &store.User{Username: "email-note-viewer", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
-	memo, err := st.CreateMemo(ctx, &store.Memo{
-		UID: "email-memo-creator-lifecycle", CreatorID: creator.ID, Content: "memo", Visibility: store.Protected,
+	note, err := st.CreateNote(ctx, &store.Note{
+		UID: "email-note-creator-lifecycle", CreatorID: creator.ID, Content: "note", Visibility: store.Protected,
 	})
 	require.NoError(t, err)
 	archived := store.Archived
 	_, err = st.UpdateUser(ctx, &store.UpdateUser{ID: creator.ID, RowStatus: &archived})
 	require.NoError(t, err)
 
-	readable, err := dispatcher.listMemosByID(ctx, []int32{memo.ID}, viewer.ID)
+	readable, err := dispatcher.listNotesByID(ctx, []int32{note.ID}, viewer.ID)
 	require.NoError(t, err)
-	require.Contains(t, readable, memo.ID, "archiving the creator must not narrow an active PROTECTED memo")
+	require.Contains(t, readable, note.ID, "archiving the creator must not narrow an active PROTECTED note")
 
 	_, err = st.GetDriver().GetDB().ExecContext(ctx,
-		fmt.Sprintf("UPDATE memo SET creator_id = 2147483000 WHERE id = %d", memo.ID))
+		fmt.Sprintf("UPDATE note SET creator_id = 2147483000 WHERE id = %d", note.ID))
 	require.NoError(t, err)
-	danglingMemo, err := st.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	danglingNote, err := st.GetNote(ctx, &store.FindNote{ID: &note.ID})
 	require.NoError(t, err)
-	require.NotNil(t, danglingMemo)
-	readable, err = dispatcher.listMemosByID(ctx, []int32{danglingMemo.ID}, viewer.ID)
+	require.NotNil(t, danglingNote)
+	readable, err = dispatcher.listNotesByID(ctx, []int32{danglingNote.ID}, viewer.ID)
 	require.NoError(t, err)
-	require.NotContains(t, readable, danglingMemo.ID, "email rendering must fail closed for a missing memo creator")
+	require.NotContains(t, readable, danglingNote.ID, "email rendering must fail closed for a missing note creator")
 }
 
 func TestEmailSpaceInvitationFailsClosedWithoutPendingOffer(t *testing.T) {
 	ctx := context.Background()
 	st := teststore.NewTestingStore(ctx, t)
 	defer st.Close()
-	dispatcher := NewEmailDispatcher(&profile.Profile{InstanceURL: "https://memos.example.com/"}, st, nil)
+	dispatcher := NewEmailDispatcher(&profile.Profile{InstanceURL: "https://notes.example.com/"}, st, nil)
 
 	inviter, err := st.CreateUser(ctx, &store.User{Username: "email-space-inviter", Nickname: "Ada", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
@@ -76,7 +76,7 @@ func TestEmailSpaceInvitationFailsClosedWithoutPendingOffer(t *testing.T) {
 	require.Equal(t, []string{"invitee@example.com"}, message.To)
 	require.Equal(t, `[Roster Tracker] Ada invited you to join "Design team"`, message.Subject)
 	require.Contains(t, message.Body, `Ada invited you to join the Space "Design team" as an administrator.`)
-	require.Contains(t, message.Body, "https://memos.example.com/inbox")
+	require.Contains(t, message.Body, "https://notes.example.com/inbox")
 
 	require.NoError(t, st.DeclineSpaceInvitation(ctx, &store.DeclineSpaceInvitation{SpaceID: space.ID, UserID: invitee.ID}, invitee.ID))
 	message, err = dispatcher.buildInboxEmailMessage(ctx, inbox, invitee, inviter, nil)

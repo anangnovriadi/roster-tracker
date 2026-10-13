@@ -3,11 +3,11 @@ package db
 import (
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db/mysql"
-	"github.com/usememos/memos/store/db/postgres"
-	"github.com/usememos/memos/store/db/sqlite"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/store"
+	"github.com/anangnovriadi/roster-tracker/store/db/mysql"
+	"github.com/anangnovriadi/roster-tracker/store/db/postgres"
+	"github.com/anangnovriadi/roster-tracker/store/db/sqlite"
 )
 
 // NewDBDriver creates new db driver based on profile.

@@ -266,7 +266,7 @@ func TestPostSignsRequest(t *testing.T) {
 
 			err := Post(&Request{
 				URL:           server.URL,
-				Label:         "memos.memo.created",
+				Label:         "notes.note.created",
 				SigningSecret: tc.secret,
 			})
 			require.NoError(t, err)
@@ -302,7 +302,7 @@ func TestPostWithoutSecretSetsNoSignatureHeaders(t *testing.T) {
 
 	err := Post(&Request{
 		URL:   server.URL,
-		Label: "memos.memo.created",
+		Label: "notes.note.created",
 	})
 	require.NoError(t, err)
 	require.False(t, hasSignatureHeaders, "no signature headers should be set when no secret is configured")
@@ -325,7 +325,7 @@ func TestPostRejectsUnspecifiedAddressDestination(t *testing.T) {
 
 	err = Post(&Request{
 		URL:   "http://0.0.0.0:" + port,
-		Label: "memos.memo.created",
+		Label: "notes.note.created",
 	})
 	require.Error(t, err)
 	require.False(t, receivedRequest.Load(), "the webhook must not reach a local service through the unspecified address")

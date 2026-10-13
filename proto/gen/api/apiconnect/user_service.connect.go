@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	api "github.com/usememos/memos/proto/gen/api"
+	api "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
@@ -24,7 +24,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// UserServiceName is the fully-qualified name of the UserService service.
-	UserServiceName = "memos.api.UserService"
+	UserServiceName = "roster.api.UserService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -36,102 +36,102 @@ const (
 // period.
 const (
 	// UserServiceListUsersProcedure is the fully-qualified name of the UserService's ListUsers RPC.
-	UserServiceListUsersProcedure = "/memos.api.UserService/ListUsers"
+	UserServiceListUsersProcedure = "/roster.api.UserService/ListUsers"
 	// UserServiceGetUserProcedure is the fully-qualified name of the UserService's GetUser RPC.
-	UserServiceGetUserProcedure = "/memos.api.UserService/GetUser"
+	UserServiceGetUserProcedure = "/roster.api.UserService/GetUser"
 	// UserServiceBatchGetUsersProcedure is the fully-qualified name of the UserService's BatchGetUsers
 	// RPC.
-	UserServiceBatchGetUsersProcedure = "/memos.api.UserService/BatchGetUsers"
+	UserServiceBatchGetUsersProcedure = "/roster.api.UserService/BatchGetUsers"
 	// UserServiceCreateUserProcedure is the fully-qualified name of the UserService's CreateUser RPC.
-	UserServiceCreateUserProcedure = "/memos.api.UserService/CreateUser"
+	UserServiceCreateUserProcedure = "/roster.api.UserService/CreateUser"
 	// UserServiceUpdateUserProcedure is the fully-qualified name of the UserService's UpdateUser RPC.
-	UserServiceUpdateUserProcedure = "/memos.api.UserService/UpdateUser"
+	UserServiceUpdateUserProcedure = "/roster.api.UserService/UpdateUser"
 	// UserServiceDeleteUserProcedure is the fully-qualified name of the UserService's DeleteUser RPC.
-	UserServiceDeleteUserProcedure = "/memos.api.UserService/DeleteUser"
+	UserServiceDeleteUserProcedure = "/roster.api.UserService/DeleteUser"
 	// UserServiceListUserSettingsProcedure is the fully-qualified name of the UserService's
 	// ListUserSettings RPC.
-	UserServiceListUserSettingsProcedure = "/memos.api.UserService/ListUserSettings"
+	UserServiceListUserSettingsProcedure = "/roster.api.UserService/ListUserSettings"
 	// UserServiceGetUserSettingProcedure is the fully-qualified name of the UserService's
 	// GetUserSetting RPC.
-	UserServiceGetUserSettingProcedure = "/memos.api.UserService/GetUserSetting"
+	UserServiceGetUserSettingProcedure = "/roster.api.UserService/GetUserSetting"
 	// UserServiceUpdateUserSettingProcedure is the fully-qualified name of the UserService's
 	// UpdateUserSetting RPC.
-	UserServiceUpdateUserSettingProcedure = "/memos.api.UserService/UpdateUserSetting"
+	UserServiceUpdateUserSettingProcedure = "/roster.api.UserService/UpdateUserSetting"
 	// UserServiceListUserStatsProcedure is the fully-qualified name of the UserService's ListUserStats
 	// RPC.
-	UserServiceListUserStatsProcedure = "/memos.api.UserService/ListUserStats"
+	UserServiceListUserStatsProcedure = "/roster.api.UserService/ListUserStats"
 	// UserServiceGetUserStatsProcedure is the fully-qualified name of the UserService's GetUserStats
 	// RPC.
-	UserServiceGetUserStatsProcedure = "/memos.api.UserService/GetUserStats"
+	UserServiceGetUserStatsProcedure = "/roster.api.UserService/GetUserStats"
 	// UserServiceGetUserUsageProcedure is the fully-qualified name of the UserService's GetUserUsage
 	// RPC.
-	UserServiceGetUserUsageProcedure = "/memos.api.UserService/GetUserUsage"
-	// UserServiceListMemoViewsProcedure is the fully-qualified name of the UserService's ListMemoViews
+	UserServiceGetUserUsageProcedure = "/roster.api.UserService/GetUserUsage"
+	// UserServiceListNoteViewsProcedure is the fully-qualified name of the UserService's ListNoteViews
 	// RPC.
-	UserServiceListMemoViewsProcedure = "/memos.api.UserService/ListMemoViews"
-	// UserServiceGetMemoViewProcedure is the fully-qualified name of the UserService's GetMemoView RPC.
-	UserServiceGetMemoViewProcedure = "/memos.api.UserService/GetMemoView"
-	// UserServiceCreateMemoViewProcedure is the fully-qualified name of the UserService's
-	// CreateMemoView RPC.
-	UserServiceCreateMemoViewProcedure = "/memos.api.UserService/CreateMemoView"
-	// UserServiceUpdateMemoViewProcedure is the fully-qualified name of the UserService's
-	// UpdateMemoView RPC.
-	UserServiceUpdateMemoViewProcedure = "/memos.api.UserService/UpdateMemoView"
-	// UserServiceDeleteMemoViewProcedure is the fully-qualified name of the UserService's
-	// DeleteMemoView RPC.
-	UserServiceDeleteMemoViewProcedure = "/memos.api.UserService/DeleteMemoView"
+	UserServiceListNoteViewsProcedure = "/roster.api.UserService/ListNoteViews"
+	// UserServiceGetNoteViewProcedure is the fully-qualified name of the UserService's GetNoteView RPC.
+	UserServiceGetNoteViewProcedure = "/roster.api.UserService/GetNoteView"
+	// UserServiceCreateNoteViewProcedure is the fully-qualified name of the UserService's
+	// CreateNoteView RPC.
+	UserServiceCreateNoteViewProcedure = "/roster.api.UserService/CreateNoteView"
+	// UserServiceUpdateNoteViewProcedure is the fully-qualified name of the UserService's
+	// UpdateNoteView RPC.
+	UserServiceUpdateNoteViewProcedure = "/roster.api.UserService/UpdateNoteView"
+	// UserServiceDeleteNoteViewProcedure is the fully-qualified name of the UserService's
+	// DeleteNoteView RPC.
+	UserServiceDeleteNoteViewProcedure = "/roster.api.UserService/DeleteNoteView"
 	// UserServiceListUserNotificationsProcedure is the fully-qualified name of the UserService's
 	// ListUserNotifications RPC.
-	UserServiceListUserNotificationsProcedure = "/memos.api.UserService/ListUserNotifications"
+	UserServiceListUserNotificationsProcedure = "/roster.api.UserService/ListUserNotifications"
 	// UserServiceUpdateUserNotificationProcedure is the fully-qualified name of the UserService's
 	// UpdateUserNotification RPC.
-	UserServiceUpdateUserNotificationProcedure = "/memos.api.UserService/UpdateUserNotification"
+	UserServiceUpdateUserNotificationProcedure = "/roster.api.UserService/UpdateUserNotification"
 	// UserServiceDeleteUserNotificationProcedure is the fully-qualified name of the UserService's
 	// DeleteUserNotification RPC.
-	UserServiceDeleteUserNotificationProcedure = "/memos.api.UserService/DeleteUserNotification"
+	UserServiceDeleteUserNotificationProcedure = "/roster.api.UserService/DeleteUserNotification"
 	// UserServiceListUserWebhooksProcedure is the fully-qualified name of the UserService's
 	// ListUserWebhooks RPC.
-	UserServiceListUserWebhooksProcedure = "/memos.api.UserService/ListUserWebhooks"
+	UserServiceListUserWebhooksProcedure = "/roster.api.UserService/ListUserWebhooks"
 	// UserServiceCreateUserWebhookProcedure is the fully-qualified name of the UserService's
 	// CreateUserWebhook RPC.
-	UserServiceCreateUserWebhookProcedure = "/memos.api.UserService/CreateUserWebhook"
+	UserServiceCreateUserWebhookProcedure = "/roster.api.UserService/CreateUserWebhook"
 	// UserServiceUpdateUserWebhookProcedure is the fully-qualified name of the UserService's
 	// UpdateUserWebhook RPC.
-	UserServiceUpdateUserWebhookProcedure = "/memos.api.UserService/UpdateUserWebhook"
+	UserServiceUpdateUserWebhookProcedure = "/roster.api.UserService/UpdateUserWebhook"
 	// UserServiceDeleteUserWebhookProcedure is the fully-qualified name of the UserService's
 	// DeleteUserWebhook RPC.
-	UserServiceDeleteUserWebhookProcedure = "/memos.api.UserService/DeleteUserWebhook"
+	UserServiceDeleteUserWebhookProcedure = "/roster.api.UserService/DeleteUserWebhook"
 	// UserServiceGetUserWebhookSigningSecretProcedure is the fully-qualified name of the UserService's
 	// GetUserWebhookSigningSecret RPC.
-	UserServiceGetUserWebhookSigningSecretProcedure = "/memos.api.UserService/GetUserWebhookSigningSecret"
+	UserServiceGetUserWebhookSigningSecretProcedure = "/roster.api.UserService/GetUserWebhookSigningSecret"
 	// UserServiceListLinkedIdentitiesProcedure is the fully-qualified name of the UserService's
 	// ListLinkedIdentities RPC.
-	UserServiceListLinkedIdentitiesProcedure = "/memos.api.UserService/ListLinkedIdentities"
+	UserServiceListLinkedIdentitiesProcedure = "/roster.api.UserService/ListLinkedIdentities"
 	// UserServiceGetLinkedIdentityProcedure is the fully-qualified name of the UserService's
 	// GetLinkedIdentity RPC.
-	UserServiceGetLinkedIdentityProcedure = "/memos.api.UserService/GetLinkedIdentity"
+	UserServiceGetLinkedIdentityProcedure = "/roster.api.UserService/GetLinkedIdentity"
 	// UserServiceCreateLinkedIdentityProcedure is the fully-qualified name of the UserService's
 	// CreateLinkedIdentity RPC.
-	UserServiceCreateLinkedIdentityProcedure = "/memos.api.UserService/CreateLinkedIdentity"
+	UserServiceCreateLinkedIdentityProcedure = "/roster.api.UserService/CreateLinkedIdentity"
 	// UserServiceDeleteLinkedIdentityProcedure is the fully-qualified name of the UserService's
 	// DeleteLinkedIdentity RPC.
-	UserServiceDeleteLinkedIdentityProcedure = "/memos.api.UserService/DeleteLinkedIdentity"
+	UserServiceDeleteLinkedIdentityProcedure = "/roster.api.UserService/DeleteLinkedIdentity"
 	// UserServiceListPersonalAccessTokensProcedure is the fully-qualified name of the UserService's
 	// ListPersonalAccessTokens RPC.
-	UserServiceListPersonalAccessTokensProcedure = "/memos.api.UserService/ListPersonalAccessTokens"
+	UserServiceListPersonalAccessTokensProcedure = "/roster.api.UserService/ListPersonalAccessTokens"
 	// UserServiceCreatePersonalAccessTokenProcedure is the fully-qualified name of the UserService's
 	// CreatePersonalAccessToken RPC.
-	UserServiceCreatePersonalAccessTokenProcedure = "/memos.api.UserService/CreatePersonalAccessToken"
+	UserServiceCreatePersonalAccessTokenProcedure = "/roster.api.UserService/CreatePersonalAccessToken"
 	// UserServiceDeletePersonalAccessTokenProcedure is the fully-qualified name of the UserService's
 	// DeletePersonalAccessToken RPC.
-	UserServiceDeletePersonalAccessTokenProcedure = "/memos.api.UserService/DeletePersonalAccessToken"
-	// UserServiceExportMemosProcedure is the fully-qualified name of the UserService's ExportMemos RPC.
-	UserServiceExportMemosProcedure = "/memos.api.UserService/ExportMemos"
-	// UserServiceImportMemosProcedure is the fully-qualified name of the UserService's ImportMemos RPC.
-	UserServiceImportMemosProcedure = "/memos.api.UserService/ImportMemos"
+	UserServiceDeletePersonalAccessTokenProcedure = "/roster.api.UserService/DeletePersonalAccessToken"
+	// UserServiceExportNotesProcedure is the fully-qualified name of the UserService's ExportNotes RPC.
+	UserServiceExportNotesProcedure = "/roster.api.UserService/ExportNotes"
+	// UserServiceImportNotesProcedure is the fully-qualified name of the UserService's ImportNotes RPC.
+	UserServiceImportNotesProcedure = "/roster.api.UserService/ImportNotes"
 )
 
-// UserServiceClient is a client for the memos.api.UserService service.
+// UserServiceClient is a client for the roster.api.UserService service.
 type UserServiceClient interface {
 	// ListUsers lists users in every state. Only admins may call it.
 	ListUsers(context.Context, *connect.Request[api.ListUsersRequest]) (*connect.Response[api.ListUsersResponse], error)
@@ -159,30 +159,30 @@ type UserServiceClient interface {
 	// UpdateUserSetting updates a user setting. Only the user may call it, and
 	// only the GENERAL and TAGS settings can be updated.
 	UpdateUserSetting(context.Context, *connect.Request[api.UpdateUserSettingRequest]) (*connect.Response[api.UserSetting], error)
-	// ListUserStats returns memo statistics for every user who created at least
-	// one matching memo the caller can read. Use the parent users/- for all
+	// ListUserStats returns note statistics for every user who created at least
+	// one matching note the caller can read. Use the parent users/- for all
 	// users, or users/{user} for one user.
 	ListUserStats(context.Context, *connect.Request[api.ListUserStatsRequest]) (*connect.Response[api.ListUserStatsResponse], error)
-	// GetUserStats returns memo statistics for one user, counting the user's
-	// memos that the caller can read.
+	// GetUserStats returns note statistics for one user, counting the user's
+	// notes that the caller can read.
 	GetUserStats(context.Context, *connect.Request[api.GetUserStatsRequest]) (*connect.Response[api.UserStats], error)
 	// GetUserUsage returns a user's usage and the usage limits in effect for the
 	// user. Only the user or an admin may call it.
 	GetUserUsage(context.Context, *connect.Request[api.GetUserUsageRequest]) (*connect.Response[api.UserUsage], error)
-	// ListMemoViews lists a user's memo views. Each view is a named, reusable
-	// CEL filter (see MemoView.filter); pass its filter string directly to the
-	// ListMemos `filter` argument. Only the user may call it.
-	ListMemoViews(context.Context, *connect.Request[api.ListMemoViewsRequest]) (*connect.Response[api.ListMemoViewsResponse], error)
-	// GetMemoView gets a memo view. Only the owner may call it.
-	GetMemoView(context.Context, *connect.Request[api.GetMemoViewRequest]) (*connect.Response[api.MemoView], error)
-	// CreateMemoView creates a memo view for a user. Only the user may call it.
-	CreateMemoView(context.Context, *connect.Request[api.CreateMemoViewRequest]) (*connect.Response[api.MemoView], error)
-	// UpdateMemoView updates a memo view. Only the owner may call it.
-	UpdateMemoView(context.Context, *connect.Request[api.UpdateMemoViewRequest]) (*connect.Response[api.MemoView], error)
-	// DeleteMemoView deletes a memo view. Only the owner may call it.
-	DeleteMemoView(context.Context, *connect.Request[api.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error)
+	// ListNoteViews lists a user's note views. Each view is a named, reusable
+	// CEL filter (see NoteView.filter); pass its filter string directly to the
+	// ListNotes `filter` argument. Only the user may call it.
+	ListNoteViews(context.Context, *connect.Request[api.ListNoteViewsRequest]) (*connect.Response[api.ListNoteViewsResponse], error)
+	// GetNoteView gets a note view. Only the owner may call it.
+	GetNoteView(context.Context, *connect.Request[api.GetNoteViewRequest]) (*connect.Response[api.NoteView], error)
+	// CreateNoteView creates a note view for a user. Only the user may call it.
+	CreateNoteView(context.Context, *connect.Request[api.CreateNoteViewRequest]) (*connect.Response[api.NoteView], error)
+	// UpdateNoteView updates a note view. Only the owner may call it.
+	UpdateNoteView(context.Context, *connect.Request[api.UpdateNoteViewRequest]) (*connect.Response[api.NoteView], error)
+	// DeleteNoteView deletes a note view. Only the owner may call it.
+	DeleteNoteView(context.Context, *connect.Request[api.DeleteNoteViewRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListUserNotifications lists a user's notifications. Only the user may call
-	// it. Notifications whose memos or space invitation the user can no longer
+	// it. Notifications whose notes or space invitation the user can no longer
 	// read are left out.
 	ListUserNotifications(context.Context, *connect.Request[api.ListUserNotificationsRequest]) (*connect.Response[api.ListUserNotificationsResponse], error)
 	// UpdateUserNotification updates a notification's status. Only the receiver
@@ -228,22 +228,22 @@ type UserServiceClient interface {
 	// DeletePersonalAccessToken deletes a personal access token, which stops
 	// working immediately. Only the owner may call it.
 	DeletePersonalAccessToken(context.Context, *connect.Request[api.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error)
-	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memos export file (a ZIP file, see
-	// docs/design/memos-export-format.md). Only the user may export their own
-	// memos. The body is the archive; content_type is its media type.
-	ExportMemos(context.Context, *connect.Request[api.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error)
-	// ImportMemos uploads a Memos export file in bounded chunks and imports it
-	// into the user's memos. The first call carries the spec and returns an
+	// ExportNotes writes every note the user created, with comments, archived
+	// notes, and attachment files, as a Roster Tracker export file (a ZIP file, see
+	// docs/design/notes-export-format.md). Only the user may export their own
+	// notes. The body is the archive; content_type is its media type.
+	ExportNotes(context.Context, *connect.Request[api.ExportNotesRequest]) (*connect.Response[httpbody.HttpBody], error)
+	// ImportNotes uploads a Roster Tracker export file in bounded chunks and imports it
+	// into the user's notes. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
 	// validate_only returns the plan and keeps the archive staged; a finishing
 	// call without it imports and returns the report. Uploads are bound to the
 	// authenticated user, expire after 30 minutes of inactivity, and do not
 	// survive a server restart.
-	ImportMemos(context.Context, *connect.Request[api.ImportMemosRequest]) (*connect.Response[api.ImportMemosResponse], error)
+	ImportNotes(context.Context, *connect.Request[api.ImportNotesRequest]) (*connect.Response[api.ImportNotesResponse], error)
 }
 
-// NewUserServiceClient constructs a client for the memos.api.UserService service. By default, it
+// NewUserServiceClient constructs a client for the roster.api.UserService service. By default, it
 // uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
 // uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
 // connect.WithGRPCWeb() options.
@@ -326,34 +326,34 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("GetUserUsage")),
 			connect.WithClientOptions(opts...),
 		),
-		listMemoViews: connect.NewClient[api.ListMemoViewsRequest, api.ListMemoViewsResponse](
+		listNoteViews: connect.NewClient[api.ListNoteViewsRequest, api.ListNoteViewsResponse](
 			httpClient,
-			baseURL+UserServiceListMemoViewsProcedure,
-			connect.WithSchema(userServiceMethods.ByName("ListMemoViews")),
+			baseURL+UserServiceListNoteViewsProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ListNoteViews")),
 			connect.WithClientOptions(opts...),
 		),
-		getMemoView: connect.NewClient[api.GetMemoViewRequest, api.MemoView](
+		getNoteView: connect.NewClient[api.GetNoteViewRequest, api.NoteView](
 			httpClient,
-			baseURL+UserServiceGetMemoViewProcedure,
-			connect.WithSchema(userServiceMethods.ByName("GetMemoView")),
+			baseURL+UserServiceGetNoteViewProcedure,
+			connect.WithSchema(userServiceMethods.ByName("GetNoteView")),
 			connect.WithClientOptions(opts...),
 		),
-		createMemoView: connect.NewClient[api.CreateMemoViewRequest, api.MemoView](
+		createNoteView: connect.NewClient[api.CreateNoteViewRequest, api.NoteView](
 			httpClient,
-			baseURL+UserServiceCreateMemoViewProcedure,
-			connect.WithSchema(userServiceMethods.ByName("CreateMemoView")),
+			baseURL+UserServiceCreateNoteViewProcedure,
+			connect.WithSchema(userServiceMethods.ByName("CreateNoteView")),
 			connect.WithClientOptions(opts...),
 		),
-		updateMemoView: connect.NewClient[api.UpdateMemoViewRequest, api.MemoView](
+		updateNoteView: connect.NewClient[api.UpdateNoteViewRequest, api.NoteView](
 			httpClient,
-			baseURL+UserServiceUpdateMemoViewProcedure,
-			connect.WithSchema(userServiceMethods.ByName("UpdateMemoView")),
+			baseURL+UserServiceUpdateNoteViewProcedure,
+			connect.WithSchema(userServiceMethods.ByName("UpdateNoteView")),
 			connect.WithClientOptions(opts...),
 		),
-		deleteMemoView: connect.NewClient[api.DeleteMemoViewRequest, emptypb.Empty](
+		deleteNoteView: connect.NewClient[api.DeleteNoteViewRequest, emptypb.Empty](
 			httpClient,
-			baseURL+UserServiceDeleteMemoViewProcedure,
-			connect.WithSchema(userServiceMethods.ByName("DeleteMemoView")),
+			baseURL+UserServiceDeleteNoteViewProcedure,
+			connect.WithSchema(userServiceMethods.ByName("DeleteNoteView")),
 			connect.WithClientOptions(opts...),
 		),
 		listUserNotifications: connect.NewClient[api.ListUserNotificationsRequest, api.ListUserNotificationsResponse](
@@ -446,16 +446,16 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("DeletePersonalAccessToken")),
 			connect.WithClientOptions(opts...),
 		),
-		exportMemos: connect.NewClient[api.ExportMemosRequest, httpbody.HttpBody](
+		exportNotes: connect.NewClient[api.ExportNotesRequest, httpbody.HttpBody](
 			httpClient,
-			baseURL+UserServiceExportMemosProcedure,
-			connect.WithSchema(userServiceMethods.ByName("ExportMemos")),
+			baseURL+UserServiceExportNotesProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ExportNotes")),
 			connect.WithClientOptions(opts...),
 		),
-		importMemos: connect.NewClient[api.ImportMemosRequest, api.ImportMemosResponse](
+		importNotes: connect.NewClient[api.ImportNotesRequest, api.ImportNotesResponse](
 			httpClient,
-			baseURL+UserServiceImportMemosProcedure,
-			connect.WithSchema(userServiceMethods.ByName("ImportMemos")),
+			baseURL+UserServiceImportNotesProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ImportNotes")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -475,11 +475,11 @@ type userServiceClient struct {
 	listUserStats               *connect.Client[api.ListUserStatsRequest, api.ListUserStatsResponse]
 	getUserStats                *connect.Client[api.GetUserStatsRequest, api.UserStats]
 	getUserUsage                *connect.Client[api.GetUserUsageRequest, api.UserUsage]
-	listMemoViews               *connect.Client[api.ListMemoViewsRequest, api.ListMemoViewsResponse]
-	getMemoView                 *connect.Client[api.GetMemoViewRequest, api.MemoView]
-	createMemoView              *connect.Client[api.CreateMemoViewRequest, api.MemoView]
-	updateMemoView              *connect.Client[api.UpdateMemoViewRequest, api.MemoView]
-	deleteMemoView              *connect.Client[api.DeleteMemoViewRequest, emptypb.Empty]
+	listNoteViews               *connect.Client[api.ListNoteViewsRequest, api.ListNoteViewsResponse]
+	getNoteView                 *connect.Client[api.GetNoteViewRequest, api.NoteView]
+	createNoteView              *connect.Client[api.CreateNoteViewRequest, api.NoteView]
+	updateNoteView              *connect.Client[api.UpdateNoteViewRequest, api.NoteView]
+	deleteNoteView              *connect.Client[api.DeleteNoteViewRequest, emptypb.Empty]
 	listUserNotifications       *connect.Client[api.ListUserNotificationsRequest, api.ListUserNotificationsResponse]
 	updateUserNotification      *connect.Client[api.UpdateUserNotificationRequest, api.UserNotification]
 	deleteUserNotification      *connect.Client[api.DeleteUserNotificationRequest, emptypb.Empty]
@@ -495,181 +495,181 @@ type userServiceClient struct {
 	listPersonalAccessTokens    *connect.Client[api.ListPersonalAccessTokensRequest, api.ListPersonalAccessTokensResponse]
 	createPersonalAccessToken   *connect.Client[api.CreatePersonalAccessTokenRequest, api.CreatePersonalAccessTokenResponse]
 	deletePersonalAccessToken   *connect.Client[api.DeletePersonalAccessTokenRequest, emptypb.Empty]
-	exportMemos                 *connect.Client[api.ExportMemosRequest, httpbody.HttpBody]
-	importMemos                 *connect.Client[api.ImportMemosRequest, api.ImportMemosResponse]
+	exportNotes                 *connect.Client[api.ExportNotesRequest, httpbody.HttpBody]
+	importNotes                 *connect.Client[api.ImportNotesRequest, api.ImportNotesResponse]
 }
 
-// ListUsers calls memos.api.UserService.ListUsers.
+// ListUsers calls roster.api.UserService.ListUsers.
 func (c *userServiceClient) ListUsers(ctx context.Context, req *connect.Request[api.ListUsersRequest]) (*connect.Response[api.ListUsersResponse], error) {
 	return c.listUsers.CallUnary(ctx, req)
 }
 
-// GetUser calls memos.api.UserService.GetUser.
+// GetUser calls roster.api.UserService.GetUser.
 func (c *userServiceClient) GetUser(ctx context.Context, req *connect.Request[api.GetUserRequest]) (*connect.Response[api.User], error) {
 	return c.getUser.CallUnary(ctx, req)
 }
 
-// BatchGetUsers calls memos.api.UserService.BatchGetUsers.
+// BatchGetUsers calls roster.api.UserService.BatchGetUsers.
 func (c *userServiceClient) BatchGetUsers(ctx context.Context, req *connect.Request[api.BatchGetUsersRequest]) (*connect.Response[api.BatchGetUsersResponse], error) {
 	return c.batchGetUsers.CallUnary(ctx, req)
 }
 
-// CreateUser calls memos.api.UserService.CreateUser.
+// CreateUser calls roster.api.UserService.CreateUser.
 func (c *userServiceClient) CreateUser(ctx context.Context, req *connect.Request[api.CreateUserRequest]) (*connect.Response[api.User], error) {
 	return c.createUser.CallUnary(ctx, req)
 }
 
-// UpdateUser calls memos.api.UserService.UpdateUser.
+// UpdateUser calls roster.api.UserService.UpdateUser.
 func (c *userServiceClient) UpdateUser(ctx context.Context, req *connect.Request[api.UpdateUserRequest]) (*connect.Response[api.User], error) {
 	return c.updateUser.CallUnary(ctx, req)
 }
 
-// DeleteUser calls memos.api.UserService.DeleteUser.
+// DeleteUser calls roster.api.UserService.DeleteUser.
 func (c *userServiceClient) DeleteUser(ctx context.Context, req *connect.Request[api.DeleteUserRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteUser.CallUnary(ctx, req)
 }
 
-// ListUserSettings calls memos.api.UserService.ListUserSettings.
+// ListUserSettings calls roster.api.UserService.ListUserSettings.
 func (c *userServiceClient) ListUserSettings(ctx context.Context, req *connect.Request[api.ListUserSettingsRequest]) (*connect.Response[api.ListUserSettingsResponse], error) {
 	return c.listUserSettings.CallUnary(ctx, req)
 }
 
-// GetUserSetting calls memos.api.UserService.GetUserSetting.
+// GetUserSetting calls roster.api.UserService.GetUserSetting.
 func (c *userServiceClient) GetUserSetting(ctx context.Context, req *connect.Request[api.GetUserSettingRequest]) (*connect.Response[api.UserSetting], error) {
 	return c.getUserSetting.CallUnary(ctx, req)
 }
 
-// UpdateUserSetting calls memos.api.UserService.UpdateUserSetting.
+// UpdateUserSetting calls roster.api.UserService.UpdateUserSetting.
 func (c *userServiceClient) UpdateUserSetting(ctx context.Context, req *connect.Request[api.UpdateUserSettingRequest]) (*connect.Response[api.UserSetting], error) {
 	return c.updateUserSetting.CallUnary(ctx, req)
 }
 
-// ListUserStats calls memos.api.UserService.ListUserStats.
+// ListUserStats calls roster.api.UserService.ListUserStats.
 func (c *userServiceClient) ListUserStats(ctx context.Context, req *connect.Request[api.ListUserStatsRequest]) (*connect.Response[api.ListUserStatsResponse], error) {
 	return c.listUserStats.CallUnary(ctx, req)
 }
 
-// GetUserStats calls memos.api.UserService.GetUserStats.
+// GetUserStats calls roster.api.UserService.GetUserStats.
 func (c *userServiceClient) GetUserStats(ctx context.Context, req *connect.Request[api.GetUserStatsRequest]) (*connect.Response[api.UserStats], error) {
 	return c.getUserStats.CallUnary(ctx, req)
 }
 
-// GetUserUsage calls memos.api.UserService.GetUserUsage.
+// GetUserUsage calls roster.api.UserService.GetUserUsage.
 func (c *userServiceClient) GetUserUsage(ctx context.Context, req *connect.Request[api.GetUserUsageRequest]) (*connect.Response[api.UserUsage], error) {
 	return c.getUserUsage.CallUnary(ctx, req)
 }
 
-// ListMemoViews calls memos.api.UserService.ListMemoViews.
-func (c *userServiceClient) ListMemoViews(ctx context.Context, req *connect.Request[api.ListMemoViewsRequest]) (*connect.Response[api.ListMemoViewsResponse], error) {
-	return c.listMemoViews.CallUnary(ctx, req)
+// ListNoteViews calls roster.api.UserService.ListNoteViews.
+func (c *userServiceClient) ListNoteViews(ctx context.Context, req *connect.Request[api.ListNoteViewsRequest]) (*connect.Response[api.ListNoteViewsResponse], error) {
+	return c.listNoteViews.CallUnary(ctx, req)
 }
 
-// GetMemoView calls memos.api.UserService.GetMemoView.
-func (c *userServiceClient) GetMemoView(ctx context.Context, req *connect.Request[api.GetMemoViewRequest]) (*connect.Response[api.MemoView], error) {
-	return c.getMemoView.CallUnary(ctx, req)
+// GetNoteView calls roster.api.UserService.GetNoteView.
+func (c *userServiceClient) GetNoteView(ctx context.Context, req *connect.Request[api.GetNoteViewRequest]) (*connect.Response[api.NoteView], error) {
+	return c.getNoteView.CallUnary(ctx, req)
 }
 
-// CreateMemoView calls memos.api.UserService.CreateMemoView.
-func (c *userServiceClient) CreateMemoView(ctx context.Context, req *connect.Request[api.CreateMemoViewRequest]) (*connect.Response[api.MemoView], error) {
-	return c.createMemoView.CallUnary(ctx, req)
+// CreateNoteView calls roster.api.UserService.CreateNoteView.
+func (c *userServiceClient) CreateNoteView(ctx context.Context, req *connect.Request[api.CreateNoteViewRequest]) (*connect.Response[api.NoteView], error) {
+	return c.createNoteView.CallUnary(ctx, req)
 }
 
-// UpdateMemoView calls memos.api.UserService.UpdateMemoView.
-func (c *userServiceClient) UpdateMemoView(ctx context.Context, req *connect.Request[api.UpdateMemoViewRequest]) (*connect.Response[api.MemoView], error) {
-	return c.updateMemoView.CallUnary(ctx, req)
+// UpdateNoteView calls roster.api.UserService.UpdateNoteView.
+func (c *userServiceClient) UpdateNoteView(ctx context.Context, req *connect.Request[api.UpdateNoteViewRequest]) (*connect.Response[api.NoteView], error) {
+	return c.updateNoteView.CallUnary(ctx, req)
 }
 
-// DeleteMemoView calls memos.api.UserService.DeleteMemoView.
-func (c *userServiceClient) DeleteMemoView(ctx context.Context, req *connect.Request[api.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
-	return c.deleteMemoView.CallUnary(ctx, req)
+// DeleteNoteView calls roster.api.UserService.DeleteNoteView.
+func (c *userServiceClient) DeleteNoteView(ctx context.Context, req *connect.Request[api.DeleteNoteViewRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.deleteNoteView.CallUnary(ctx, req)
 }
 
-// ListUserNotifications calls memos.api.UserService.ListUserNotifications.
+// ListUserNotifications calls roster.api.UserService.ListUserNotifications.
 func (c *userServiceClient) ListUserNotifications(ctx context.Context, req *connect.Request[api.ListUserNotificationsRequest]) (*connect.Response[api.ListUserNotificationsResponse], error) {
 	return c.listUserNotifications.CallUnary(ctx, req)
 }
 
-// UpdateUserNotification calls memos.api.UserService.UpdateUserNotification.
+// UpdateUserNotification calls roster.api.UserService.UpdateUserNotification.
 func (c *userServiceClient) UpdateUserNotification(ctx context.Context, req *connect.Request[api.UpdateUserNotificationRequest]) (*connect.Response[api.UserNotification], error) {
 	return c.updateUserNotification.CallUnary(ctx, req)
 }
 
-// DeleteUserNotification calls memos.api.UserService.DeleteUserNotification.
+// DeleteUserNotification calls roster.api.UserService.DeleteUserNotification.
 func (c *userServiceClient) DeleteUserNotification(ctx context.Context, req *connect.Request[api.DeleteUserNotificationRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteUserNotification.CallUnary(ctx, req)
 }
 
-// ListUserWebhooks calls memos.api.UserService.ListUserWebhooks.
+// ListUserWebhooks calls roster.api.UserService.ListUserWebhooks.
 func (c *userServiceClient) ListUserWebhooks(ctx context.Context, req *connect.Request[api.ListUserWebhooksRequest]) (*connect.Response[api.ListUserWebhooksResponse], error) {
 	return c.listUserWebhooks.CallUnary(ctx, req)
 }
 
-// CreateUserWebhook calls memos.api.UserService.CreateUserWebhook.
+// CreateUserWebhook calls roster.api.UserService.CreateUserWebhook.
 func (c *userServiceClient) CreateUserWebhook(ctx context.Context, req *connect.Request[api.CreateUserWebhookRequest]) (*connect.Response[api.UserWebhook], error) {
 	return c.createUserWebhook.CallUnary(ctx, req)
 }
 
-// UpdateUserWebhook calls memos.api.UserService.UpdateUserWebhook.
+// UpdateUserWebhook calls roster.api.UserService.UpdateUserWebhook.
 func (c *userServiceClient) UpdateUserWebhook(ctx context.Context, req *connect.Request[api.UpdateUserWebhookRequest]) (*connect.Response[api.UserWebhook], error) {
 	return c.updateUserWebhook.CallUnary(ctx, req)
 }
 
-// DeleteUserWebhook calls memos.api.UserService.DeleteUserWebhook.
+// DeleteUserWebhook calls roster.api.UserService.DeleteUserWebhook.
 func (c *userServiceClient) DeleteUserWebhook(ctx context.Context, req *connect.Request[api.DeleteUserWebhookRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteUserWebhook.CallUnary(ctx, req)
 }
 
-// GetUserWebhookSigningSecret calls memos.api.UserService.GetUserWebhookSigningSecret.
+// GetUserWebhookSigningSecret calls roster.api.UserService.GetUserWebhookSigningSecret.
 func (c *userServiceClient) GetUserWebhookSigningSecret(ctx context.Context, req *connect.Request[api.GetUserWebhookSigningSecretRequest]) (*connect.Response[api.GetUserWebhookSigningSecretResponse], error) {
 	return c.getUserWebhookSigningSecret.CallUnary(ctx, req)
 }
 
-// ListLinkedIdentities calls memos.api.UserService.ListLinkedIdentities.
+// ListLinkedIdentities calls roster.api.UserService.ListLinkedIdentities.
 func (c *userServiceClient) ListLinkedIdentities(ctx context.Context, req *connect.Request[api.ListLinkedIdentitiesRequest]) (*connect.Response[api.ListLinkedIdentitiesResponse], error) {
 	return c.listLinkedIdentities.CallUnary(ctx, req)
 }
 
-// GetLinkedIdentity calls memos.api.UserService.GetLinkedIdentity.
+// GetLinkedIdentity calls roster.api.UserService.GetLinkedIdentity.
 func (c *userServiceClient) GetLinkedIdentity(ctx context.Context, req *connect.Request[api.GetLinkedIdentityRequest]) (*connect.Response[api.LinkedIdentity], error) {
 	return c.getLinkedIdentity.CallUnary(ctx, req)
 }
 
-// CreateLinkedIdentity calls memos.api.UserService.CreateLinkedIdentity.
+// CreateLinkedIdentity calls roster.api.UserService.CreateLinkedIdentity.
 func (c *userServiceClient) CreateLinkedIdentity(ctx context.Context, req *connect.Request[api.CreateLinkedIdentityRequest]) (*connect.Response[api.LinkedIdentity], error) {
 	return c.createLinkedIdentity.CallUnary(ctx, req)
 }
 
-// DeleteLinkedIdentity calls memos.api.UserService.DeleteLinkedIdentity.
+// DeleteLinkedIdentity calls roster.api.UserService.DeleteLinkedIdentity.
 func (c *userServiceClient) DeleteLinkedIdentity(ctx context.Context, req *connect.Request[api.DeleteLinkedIdentityRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteLinkedIdentity.CallUnary(ctx, req)
 }
 
-// ListPersonalAccessTokens calls memos.api.UserService.ListPersonalAccessTokens.
+// ListPersonalAccessTokens calls roster.api.UserService.ListPersonalAccessTokens.
 func (c *userServiceClient) ListPersonalAccessTokens(ctx context.Context, req *connect.Request[api.ListPersonalAccessTokensRequest]) (*connect.Response[api.ListPersonalAccessTokensResponse], error) {
 	return c.listPersonalAccessTokens.CallUnary(ctx, req)
 }
 
-// CreatePersonalAccessToken calls memos.api.UserService.CreatePersonalAccessToken.
+// CreatePersonalAccessToken calls roster.api.UserService.CreatePersonalAccessToken.
 func (c *userServiceClient) CreatePersonalAccessToken(ctx context.Context, req *connect.Request[api.CreatePersonalAccessTokenRequest]) (*connect.Response[api.CreatePersonalAccessTokenResponse], error) {
 	return c.createPersonalAccessToken.CallUnary(ctx, req)
 }
 
-// DeletePersonalAccessToken calls memos.api.UserService.DeletePersonalAccessToken.
+// DeletePersonalAccessToken calls roster.api.UserService.DeletePersonalAccessToken.
 func (c *userServiceClient) DeletePersonalAccessToken(ctx context.Context, req *connect.Request[api.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deletePersonalAccessToken.CallUnary(ctx, req)
 }
 
-// ExportMemos calls memos.api.UserService.ExportMemos.
-func (c *userServiceClient) ExportMemos(ctx context.Context, req *connect.Request[api.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error) {
-	return c.exportMemos.CallUnary(ctx, req)
+// ExportNotes calls roster.api.UserService.ExportNotes.
+func (c *userServiceClient) ExportNotes(ctx context.Context, req *connect.Request[api.ExportNotesRequest]) (*connect.Response[httpbody.HttpBody], error) {
+	return c.exportNotes.CallUnary(ctx, req)
 }
 
-// ImportMemos calls memos.api.UserService.ImportMemos.
-func (c *userServiceClient) ImportMemos(ctx context.Context, req *connect.Request[api.ImportMemosRequest]) (*connect.Response[api.ImportMemosResponse], error) {
-	return c.importMemos.CallUnary(ctx, req)
+// ImportNotes calls roster.api.UserService.ImportNotes.
+func (c *userServiceClient) ImportNotes(ctx context.Context, req *connect.Request[api.ImportNotesRequest]) (*connect.Response[api.ImportNotesResponse], error) {
+	return c.importNotes.CallUnary(ctx, req)
 }
 
-// UserServiceHandler is an implementation of the memos.api.UserService service.
+// UserServiceHandler is an implementation of the roster.api.UserService service.
 type UserServiceHandler interface {
 	// ListUsers lists users in every state. Only admins may call it.
 	ListUsers(context.Context, *connect.Request[api.ListUsersRequest]) (*connect.Response[api.ListUsersResponse], error)
@@ -697,30 +697,30 @@ type UserServiceHandler interface {
 	// UpdateUserSetting updates a user setting. Only the user may call it, and
 	// only the GENERAL and TAGS settings can be updated.
 	UpdateUserSetting(context.Context, *connect.Request[api.UpdateUserSettingRequest]) (*connect.Response[api.UserSetting], error)
-	// ListUserStats returns memo statistics for every user who created at least
-	// one matching memo the caller can read. Use the parent users/- for all
+	// ListUserStats returns note statistics for every user who created at least
+	// one matching note the caller can read. Use the parent users/- for all
 	// users, or users/{user} for one user.
 	ListUserStats(context.Context, *connect.Request[api.ListUserStatsRequest]) (*connect.Response[api.ListUserStatsResponse], error)
-	// GetUserStats returns memo statistics for one user, counting the user's
-	// memos that the caller can read.
+	// GetUserStats returns note statistics for one user, counting the user's
+	// notes that the caller can read.
 	GetUserStats(context.Context, *connect.Request[api.GetUserStatsRequest]) (*connect.Response[api.UserStats], error)
 	// GetUserUsage returns a user's usage and the usage limits in effect for the
 	// user. Only the user or an admin may call it.
 	GetUserUsage(context.Context, *connect.Request[api.GetUserUsageRequest]) (*connect.Response[api.UserUsage], error)
-	// ListMemoViews lists a user's memo views. Each view is a named, reusable
-	// CEL filter (see MemoView.filter); pass its filter string directly to the
-	// ListMemos `filter` argument. Only the user may call it.
-	ListMemoViews(context.Context, *connect.Request[api.ListMemoViewsRequest]) (*connect.Response[api.ListMemoViewsResponse], error)
-	// GetMemoView gets a memo view. Only the owner may call it.
-	GetMemoView(context.Context, *connect.Request[api.GetMemoViewRequest]) (*connect.Response[api.MemoView], error)
-	// CreateMemoView creates a memo view for a user. Only the user may call it.
-	CreateMemoView(context.Context, *connect.Request[api.CreateMemoViewRequest]) (*connect.Response[api.MemoView], error)
-	// UpdateMemoView updates a memo view. Only the owner may call it.
-	UpdateMemoView(context.Context, *connect.Request[api.UpdateMemoViewRequest]) (*connect.Response[api.MemoView], error)
-	// DeleteMemoView deletes a memo view. Only the owner may call it.
-	DeleteMemoView(context.Context, *connect.Request[api.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error)
+	// ListNoteViews lists a user's note views. Each view is a named, reusable
+	// CEL filter (see NoteView.filter); pass its filter string directly to the
+	// ListNotes `filter` argument. Only the user may call it.
+	ListNoteViews(context.Context, *connect.Request[api.ListNoteViewsRequest]) (*connect.Response[api.ListNoteViewsResponse], error)
+	// GetNoteView gets a note view. Only the owner may call it.
+	GetNoteView(context.Context, *connect.Request[api.GetNoteViewRequest]) (*connect.Response[api.NoteView], error)
+	// CreateNoteView creates a note view for a user. Only the user may call it.
+	CreateNoteView(context.Context, *connect.Request[api.CreateNoteViewRequest]) (*connect.Response[api.NoteView], error)
+	// UpdateNoteView updates a note view. Only the owner may call it.
+	UpdateNoteView(context.Context, *connect.Request[api.UpdateNoteViewRequest]) (*connect.Response[api.NoteView], error)
+	// DeleteNoteView deletes a note view. Only the owner may call it.
+	DeleteNoteView(context.Context, *connect.Request[api.DeleteNoteViewRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListUserNotifications lists a user's notifications. Only the user may call
-	// it. Notifications whose memos or space invitation the user can no longer
+	// it. Notifications whose notes or space invitation the user can no longer
 	// read are left out.
 	ListUserNotifications(context.Context, *connect.Request[api.ListUserNotificationsRequest]) (*connect.Response[api.ListUserNotificationsResponse], error)
 	// UpdateUserNotification updates a notification's status. Only the receiver
@@ -766,19 +766,19 @@ type UserServiceHandler interface {
 	// DeletePersonalAccessToken deletes a personal access token, which stops
 	// working immediately. Only the owner may call it.
 	DeletePersonalAccessToken(context.Context, *connect.Request[api.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error)
-	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memos export file (a ZIP file, see
-	// docs/design/memos-export-format.md). Only the user may export their own
-	// memos. The body is the archive; content_type is its media type.
-	ExportMemos(context.Context, *connect.Request[api.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error)
-	// ImportMemos uploads a Memos export file in bounded chunks and imports it
-	// into the user's memos. The first call carries the spec and returns an
+	// ExportNotes writes every note the user created, with comments, archived
+	// notes, and attachment files, as a Roster Tracker export file (a ZIP file, see
+	// docs/design/notes-export-format.md). Only the user may export their own
+	// notes. The body is the archive; content_type is its media type.
+	ExportNotes(context.Context, *connect.Request[api.ExportNotesRequest]) (*connect.Response[httpbody.HttpBody], error)
+	// ImportNotes uploads a Roster Tracker export file in bounded chunks and imports it
+	// into the user's notes. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
 	// validate_only returns the plan and keeps the archive staged; a finishing
 	// call without it imports and returns the report. Uploads are bound to the
 	// authenticated user, expire after 30 minutes of inactivity, and do not
 	// survive a server restart.
-	ImportMemos(context.Context, *connect.Request[api.ImportMemosRequest]) (*connect.Response[api.ImportMemosResponse], error)
+	ImportNotes(context.Context, *connect.Request[api.ImportNotesRequest]) (*connect.Response[api.ImportNotesResponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -860,34 +860,34 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("GetUserUsage")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceListMemoViewsHandler := connect.NewUnaryHandler(
-		UserServiceListMemoViewsProcedure,
-		svc.ListMemoViews,
-		connect.WithSchema(userServiceMethods.ByName("ListMemoViews")),
+	userServiceListNoteViewsHandler := connect.NewUnaryHandler(
+		UserServiceListNoteViewsProcedure,
+		svc.ListNoteViews,
+		connect.WithSchema(userServiceMethods.ByName("ListNoteViews")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceGetMemoViewHandler := connect.NewUnaryHandler(
-		UserServiceGetMemoViewProcedure,
-		svc.GetMemoView,
-		connect.WithSchema(userServiceMethods.ByName("GetMemoView")),
+	userServiceGetNoteViewHandler := connect.NewUnaryHandler(
+		UserServiceGetNoteViewProcedure,
+		svc.GetNoteView,
+		connect.WithSchema(userServiceMethods.ByName("GetNoteView")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceCreateMemoViewHandler := connect.NewUnaryHandler(
-		UserServiceCreateMemoViewProcedure,
-		svc.CreateMemoView,
-		connect.WithSchema(userServiceMethods.ByName("CreateMemoView")),
+	userServiceCreateNoteViewHandler := connect.NewUnaryHandler(
+		UserServiceCreateNoteViewProcedure,
+		svc.CreateNoteView,
+		connect.WithSchema(userServiceMethods.ByName("CreateNoteView")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceUpdateMemoViewHandler := connect.NewUnaryHandler(
-		UserServiceUpdateMemoViewProcedure,
-		svc.UpdateMemoView,
-		connect.WithSchema(userServiceMethods.ByName("UpdateMemoView")),
+	userServiceUpdateNoteViewHandler := connect.NewUnaryHandler(
+		UserServiceUpdateNoteViewProcedure,
+		svc.UpdateNoteView,
+		connect.WithSchema(userServiceMethods.ByName("UpdateNoteView")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceDeleteMemoViewHandler := connect.NewUnaryHandler(
-		UserServiceDeleteMemoViewProcedure,
-		svc.DeleteMemoView,
-		connect.WithSchema(userServiceMethods.ByName("DeleteMemoView")),
+	userServiceDeleteNoteViewHandler := connect.NewUnaryHandler(
+		UserServiceDeleteNoteViewProcedure,
+		svc.DeleteNoteView,
+		connect.WithSchema(userServiceMethods.ByName("DeleteNoteView")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userServiceListUserNotificationsHandler := connect.NewUnaryHandler(
@@ -980,19 +980,19 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("DeletePersonalAccessToken")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceExportMemosHandler := connect.NewUnaryHandler(
-		UserServiceExportMemosProcedure,
-		svc.ExportMemos,
-		connect.WithSchema(userServiceMethods.ByName("ExportMemos")),
+	userServiceExportNotesHandler := connect.NewUnaryHandler(
+		UserServiceExportNotesProcedure,
+		svc.ExportNotes,
+		connect.WithSchema(userServiceMethods.ByName("ExportNotes")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceImportMemosHandler := connect.NewUnaryHandler(
-		UserServiceImportMemosProcedure,
-		svc.ImportMemos,
-		connect.WithSchema(userServiceMethods.ByName("ImportMemos")),
+	userServiceImportNotesHandler := connect.NewUnaryHandler(
+		UserServiceImportNotesProcedure,
+		svc.ImportNotes,
+		connect.WithSchema(userServiceMethods.ByName("ImportNotes")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/memos.api.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/roster.api.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case UserServiceListUsersProcedure:
 			userServiceListUsersHandler.ServeHTTP(w, r)
@@ -1018,16 +1018,16 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceGetUserStatsHandler.ServeHTTP(w, r)
 		case UserServiceGetUserUsageProcedure:
 			userServiceGetUserUsageHandler.ServeHTTP(w, r)
-		case UserServiceListMemoViewsProcedure:
-			userServiceListMemoViewsHandler.ServeHTTP(w, r)
-		case UserServiceGetMemoViewProcedure:
-			userServiceGetMemoViewHandler.ServeHTTP(w, r)
-		case UserServiceCreateMemoViewProcedure:
-			userServiceCreateMemoViewHandler.ServeHTTP(w, r)
-		case UserServiceUpdateMemoViewProcedure:
-			userServiceUpdateMemoViewHandler.ServeHTTP(w, r)
-		case UserServiceDeleteMemoViewProcedure:
-			userServiceDeleteMemoViewHandler.ServeHTTP(w, r)
+		case UserServiceListNoteViewsProcedure:
+			userServiceListNoteViewsHandler.ServeHTTP(w, r)
+		case UserServiceGetNoteViewProcedure:
+			userServiceGetNoteViewHandler.ServeHTTP(w, r)
+		case UserServiceCreateNoteViewProcedure:
+			userServiceCreateNoteViewHandler.ServeHTTP(w, r)
+		case UserServiceUpdateNoteViewProcedure:
+			userServiceUpdateNoteViewHandler.ServeHTTP(w, r)
+		case UserServiceDeleteNoteViewProcedure:
+			userServiceDeleteNoteViewHandler.ServeHTTP(w, r)
 		case UserServiceListUserNotificationsProcedure:
 			userServiceListUserNotificationsHandler.ServeHTTP(w, r)
 		case UserServiceUpdateUserNotificationProcedure:
@@ -1058,10 +1058,10 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceCreatePersonalAccessTokenHandler.ServeHTTP(w, r)
 		case UserServiceDeletePersonalAccessTokenProcedure:
 			userServiceDeletePersonalAccessTokenHandler.ServeHTTP(w, r)
-		case UserServiceExportMemosProcedure:
-			userServiceExportMemosHandler.ServeHTTP(w, r)
-		case UserServiceImportMemosProcedure:
-			userServiceImportMemosHandler.ServeHTTP(w, r)
+		case UserServiceExportNotesProcedure:
+			userServiceExportNotesHandler.ServeHTTP(w, r)
+		case UserServiceImportNotesProcedure:
+			userServiceImportNotesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -1072,137 +1072,137 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 type UnimplementedUserServiceHandler struct{}
 
 func (UnimplementedUserServiceHandler) ListUsers(context.Context, *connect.Request[api.ListUsersRequest]) (*connect.Response[api.ListUsersResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ListUsers is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.ListUsers is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetUser(context.Context, *connect.Request[api.GetUserRequest]) (*connect.Response[api.User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.GetUser is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) BatchGetUsers(context.Context, *connect.Request[api.BatchGetUsersRequest]) (*connect.Response[api.BatchGetUsersResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.BatchGetUsers is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.BatchGetUsers is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) CreateUser(context.Context, *connect.Request[api.CreateUserRequest]) (*connect.Response[api.User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.CreateUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.CreateUser is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) UpdateUser(context.Context, *connect.Request[api.UpdateUserRequest]) (*connect.Response[api.User], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.UpdateUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.UpdateUser is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) DeleteUser(context.Context, *connect.Request[api.DeleteUserRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.DeleteUser is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.DeleteUser is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListUserSettings(context.Context, *connect.Request[api.ListUserSettingsRequest]) (*connect.Response[api.ListUserSettingsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ListUserSettings is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.ListUserSettings is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetUserSetting(context.Context, *connect.Request[api.GetUserSettingRequest]) (*connect.Response[api.UserSetting], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetUserSetting is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.GetUserSetting is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) UpdateUserSetting(context.Context, *connect.Request[api.UpdateUserSettingRequest]) (*connect.Response[api.UserSetting], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.UpdateUserSetting is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.UpdateUserSetting is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListUserStats(context.Context, *connect.Request[api.ListUserStatsRequest]) (*connect.Response[api.ListUserStatsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ListUserStats is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.ListUserStats is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetUserStats(context.Context, *connect.Request[api.GetUserStatsRequest]) (*connect.Response[api.UserStats], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetUserStats is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.GetUserStats is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetUserUsage(context.Context, *connect.Request[api.GetUserUsageRequest]) (*connect.Response[api.UserUsage], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetUserUsage is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.GetUserUsage is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) ListMemoViews(context.Context, *connect.Request[api.ListMemoViewsRequest]) (*connect.Response[api.ListMemoViewsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ListMemoViews is not implemented"))
+func (UnimplementedUserServiceHandler) ListNoteViews(context.Context, *connect.Request[api.ListNoteViewsRequest]) (*connect.Response[api.ListNoteViewsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.ListNoteViews is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) GetMemoView(context.Context, *connect.Request[api.GetMemoViewRequest]) (*connect.Response[api.MemoView], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetMemoView is not implemented"))
+func (UnimplementedUserServiceHandler) GetNoteView(context.Context, *connect.Request[api.GetNoteViewRequest]) (*connect.Response[api.NoteView], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.GetNoteView is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) CreateMemoView(context.Context, *connect.Request[api.CreateMemoViewRequest]) (*connect.Response[api.MemoView], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.CreateMemoView is not implemented"))
+func (UnimplementedUserServiceHandler) CreateNoteView(context.Context, *connect.Request[api.CreateNoteViewRequest]) (*connect.Response[api.NoteView], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.CreateNoteView is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) UpdateMemoView(context.Context, *connect.Request[api.UpdateMemoViewRequest]) (*connect.Response[api.MemoView], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.UpdateMemoView is not implemented"))
+func (UnimplementedUserServiceHandler) UpdateNoteView(context.Context, *connect.Request[api.UpdateNoteViewRequest]) (*connect.Response[api.NoteView], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.UpdateNoteView is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) DeleteMemoView(context.Context, *connect.Request[api.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.DeleteMemoView is not implemented"))
+func (UnimplementedUserServiceHandler) DeleteNoteView(context.Context, *connect.Request[api.DeleteNoteViewRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.DeleteNoteView is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListUserNotifications(context.Context, *connect.Request[api.ListUserNotificationsRequest]) (*connect.Response[api.ListUserNotificationsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ListUserNotifications is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.ListUserNotifications is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) UpdateUserNotification(context.Context, *connect.Request[api.UpdateUserNotificationRequest]) (*connect.Response[api.UserNotification], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.UpdateUserNotification is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.UpdateUserNotification is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) DeleteUserNotification(context.Context, *connect.Request[api.DeleteUserNotificationRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.DeleteUserNotification is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.DeleteUserNotification is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListUserWebhooks(context.Context, *connect.Request[api.ListUserWebhooksRequest]) (*connect.Response[api.ListUserWebhooksResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ListUserWebhooks is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.ListUserWebhooks is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) CreateUserWebhook(context.Context, *connect.Request[api.CreateUserWebhookRequest]) (*connect.Response[api.UserWebhook], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.CreateUserWebhook is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.CreateUserWebhook is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) UpdateUserWebhook(context.Context, *connect.Request[api.UpdateUserWebhookRequest]) (*connect.Response[api.UserWebhook], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.UpdateUserWebhook is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.UpdateUserWebhook is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) DeleteUserWebhook(context.Context, *connect.Request[api.DeleteUserWebhookRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.DeleteUserWebhook is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.DeleteUserWebhook is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetUserWebhookSigningSecret(context.Context, *connect.Request[api.GetUserWebhookSigningSecretRequest]) (*connect.Response[api.GetUserWebhookSigningSecretResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetUserWebhookSigningSecret is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.GetUserWebhookSigningSecret is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListLinkedIdentities(context.Context, *connect.Request[api.ListLinkedIdentitiesRequest]) (*connect.Response[api.ListLinkedIdentitiesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ListLinkedIdentities is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.ListLinkedIdentities is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetLinkedIdentity(context.Context, *connect.Request[api.GetLinkedIdentityRequest]) (*connect.Response[api.LinkedIdentity], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetLinkedIdentity is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.GetLinkedIdentity is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) CreateLinkedIdentity(context.Context, *connect.Request[api.CreateLinkedIdentityRequest]) (*connect.Response[api.LinkedIdentity], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.CreateLinkedIdentity is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.CreateLinkedIdentity is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) DeleteLinkedIdentity(context.Context, *connect.Request[api.DeleteLinkedIdentityRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.DeleteLinkedIdentity is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.DeleteLinkedIdentity is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListPersonalAccessTokens(context.Context, *connect.Request[api.ListPersonalAccessTokensRequest]) (*connect.Response[api.ListPersonalAccessTokensResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ListPersonalAccessTokens is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.ListPersonalAccessTokens is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) CreatePersonalAccessToken(context.Context, *connect.Request[api.CreatePersonalAccessTokenRequest]) (*connect.Response[api.CreatePersonalAccessTokenResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.CreatePersonalAccessToken is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.CreatePersonalAccessToken is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) DeletePersonalAccessToken(context.Context, *connect.Request[api.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.DeletePersonalAccessToken is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.DeletePersonalAccessToken is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) ExportMemos(context.Context, *connect.Request[api.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ExportMemos is not implemented"))
+func (UnimplementedUserServiceHandler) ExportNotes(context.Context, *connect.Request[api.ExportNotesRequest]) (*connect.Response[httpbody.HttpBody], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.ExportNotes is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) ImportMemos(context.Context, *connect.Request[api.ImportMemosRequest]) (*connect.Response[api.ImportMemosResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ImportMemos is not implemented"))
+func (UnimplementedUserServiceHandler) ImportNotes(context.Context, *connect.Request[api.ImportNotesRequest]) (*connect.Response[api.ImportNotesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.UserService.ImportNotes is not implemented"))
 }

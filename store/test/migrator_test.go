@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
-	storedb "github.com/usememos/memos/store/db"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
+	storedb "github.com/anangnovriadi/roster-tracker/store/db"
 )
 
 type delayedInstanceSettingCreateDriver struct {
@@ -54,42 +54,42 @@ func TestFreshInstall(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, currentSchemaVersion, instanceSetting.SchemaVersion)
 
-	// The fresh schema supports memo-local Space placement without adding a
+	// The fresh schema supports note-local Space placement without adding a
 	// canonical thread shape. COMMENT remains an ordinary relation row.
 	driver := getDriverFromEnv()
 	insertSpace := "INSERT INTO space (id, uid, title, description, payload) VALUES (?, ?, ?, ?, '{}')"
-	insertMemo := "INSERT INTO memo (id, uid, creator_id, content, visibility, payload, space_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
-	insertRelation := "INSERT INTO memo_relation (memo_id, related_memo_id, type) VALUES (?, ?, ?)"
+	insertNote := "INSERT INTO note (id, uid, creator_id, content, visibility, payload, space_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	insertRelation := "INSERT INTO note_relation (note_id, related_note_id, type) VALUES (?, ?, ?)"
 	if driver == "postgres" {
 		insertSpace = "INSERT INTO space (id, uid, title, description, payload) VALUES ($1, $2, $3, $4, '{}')"
-		insertMemo = "INSERT INTO memo (id, uid, creator_id, content, visibility, payload, space_id) VALUES ($1, $2, $3, $4, $5, $6, $7)"
-		insertRelation = "INSERT INTO memo_relation (memo_id, related_memo_id, type) VALUES ($1, $2, $3)"
+		insertNote = "INSERT INTO note (id, uid, creator_id, content, visibility, payload, space_id) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+		insertRelation = "INSERT INTO note_relation (note_id, related_note_id, type) VALUES ($1, $2, $3)"
 	}
 	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertSpace, 900001, "fresh-space", "Fresh Space", "schema fixture")
 	require.NoError(t, err)
-	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertMemo, 900001, "fresh-context", 1, "context", store.Public, `{}`, nil)
+	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertNote, 900001, "fresh-context", 1, "context", store.Public, `{}`, nil)
 	require.NoError(t, err)
-	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertMemo, 900002, "fresh-comment", 1, "comment", store.SpaceAudience, `{}`, 900001)
+	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertNote, 900002, "fresh-comment", 1, "comment", store.SpaceAudience, `{}`, 900001)
 	require.NoError(t, err)
-	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertRelation, 900002, 900001, store.MemoRelationComment)
+	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertRelation, 900002, 900001, store.NoteRelationComment)
 	require.NoError(t, err)
 
 	var relationCount int
 	require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx,
-		"SELECT COUNT(*) FROM memo_relation WHERE memo_id = 900002 AND related_memo_id = 900001 AND type = 'COMMENT'",
+		"SELECT COUNT(*) FROM note_relation WHERE note_id = 900002 AND related_note_id = 900001 AND type = 'COMMENT'",
 	).Scan(&relationCount))
 	require.Equal(t, 1, relationCount)
 
-	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0", "fresh memo schema must not contain canonical-root columns")
+	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT parent_note_id, root_note_id FROM note LIMIT 0", "fresh note schema must not contain canonical-root columns")
 	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT row_status FROM space LIMIT 0", "fresh Space schema has no archived state")
 	requireCreatorIndexes(ctx, t, ts, driver)
 }
 
 // requireCreatorIndexes checks the indexes that usage limit checks rely on to
-// count a user's memos and sum a user's attachment sizes.
+// count a user's notes and sum a user's attachment sizes.
 func requireCreatorIndexes(ctx context.Context, t *testing.T, ts *store.Store, driver string) {
 	t.Helper()
-	for _, indexName := range []string{"idx_memo_creator_id", "idx_attachment_creator_id"} {
+	for _, indexName := range []string{"idx_note_creator_id", "idx_attachment_creator_id"} {
 		var query string
 		switch driver {
 		case "sqlite":
@@ -139,26 +139,26 @@ func TestMigrationWithData(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
-	// Create a user and memo before re-running migration
+	// Create a user and note before re-running migration
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err, "should create user")
 
-	originalMemo, err := ts.CreateMemo(ctx, &store.Memo{
+	originalNote, err := ts.CreateNote(ctx, &store.Note{
 		UID:        "migration-data-test",
 		CreatorID:  user.ID,
 		Content:    "Data before migration re-run",
 		Visibility: store.Public,
 	})
-	require.NoError(t, err, "should create memo")
+	require.NoError(t, err, "should create note")
 
 	// Re-run migration
 	err = ts.Migrate(ctx)
 	require.NoError(t, err, "re-running migration should not fail")
 
 	// Verify data is still accessible
-	memo, err := ts.GetMemo(ctx, &store.FindMemo{UID: &originalMemo.UID})
-	require.NoError(t, err, "should retrieve memo after migration")
-	require.Equal(t, "Data before migration re-run", memo.Content, "memo content should be preserved")
+	note, err := ts.GetNote(ctx, &store.FindNote{UID: &originalNote.UID})
+	require.NoError(t, err, "should retrieve note after migration")
+	require.Equal(t, "Data before migration re-run", note.Content, "note content should be preserved")
 }
 
 // TestMigrationMultipleReRuns verifies that migration is idempotent

@@ -15,12 +15,12 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/core/access"
-	"github.com/usememos/memos/internal/motionphoto"
-	"github.com/usememos/memos/internal/ratelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/core/access"
+	"github.com/anangnovriadi/roster-tracker/internal/motionphoto"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 const (
@@ -135,26 +135,26 @@ func (s *APIService) prepareAttachment(ctx context.Context, request *apipb.Creat
 		create.Payload.MediaMetadata = inputMediaMetadata
 	}
 
-	if request.Attachment.Memo != nil {
-		memoUID, err := ExtractMemoUIDFromName(*request.Attachment.Memo)
+	if request.Attachment.Note != nil {
+		noteUID, err := ExtractNoteUIDFromName(*request.Attachment.Note)
 		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+			return nil, status.Errorf(codes.InvalidArgument, "invalid note name: %v", err)
 		}
-		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		note, err := s.Store.GetNote(ctx, &store.FindNote{UID: &noteUID})
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to find memo: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to find note: %v", err)
 		}
-		if memo == nil {
-			return nil, status.Errorf(codes.NotFound, "memo not found: %s", *request.Attachment.Memo)
+		if note == nil {
+			return nil, status.Errorf(codes.NotFound, "note not found: %s", *request.Attachment.Note)
 		}
-		if !access.CanManageMemo(user, memo) {
+		if !access.CanManageNote(user, note) {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
-		if err := s.requireAssignedMemoWritable(ctx, memo, user); err != nil {
+		if err := s.requireAssignedNoteWritable(ctx, note, user); err != nil {
 			return nil, err
 		}
-		create.MemoID = &memo.ID
-		create.Policy = memoWritePolicy(user.ID, false)
+		create.NoteID = &note.ID
+		create.Policy = noteWritePolicy(user.ID, false)
 	}
 
 	return create, nil
@@ -248,7 +248,7 @@ func (s *APIService) processAndSaveAttachment(ctx context.Context, create *store
 func (s *APIService) persistAttachment(ctx context.Context, create *store.Attachment, instanceStorageSetting *storepb.InstanceStorageSetting) (*apipb.Attachment, error) {
 	attachment, err := s.Store.CreateAttachment(ctx, create)
 	if err != nil {
-		createErr := mapMemoWriteError(err, "failed to create attachment")
+		createErr := mapNoteWriteError(err, "failed to create attachment")
 		persistedObject, cleanupErr := cleanupSavedAttachmentBlob(ctx, s.Store, create, instanceStorageSetting)
 		if cleanupErr != nil {
 			slog.Error("failed to compensate attachment storage after database create failure",
@@ -264,8 +264,8 @@ func (s *APIService) persistAttachment(ctx context.Context, create *store.Attach
 		}
 		return nil, createErr
 	}
-	if create.MemoID != nil {
-		s.SSEHub.publishMemoChanged()
+	if create.NoteID != nil {
+		s.SSEHub.publishNoteChanged()
 	}
 
 	return convertAttachmentFromStore(attachment), nil
@@ -298,7 +298,7 @@ func (s *APIService) ListAttachments(ctx context.Context, request *apipb.ListAtt
 	// contract states the token is empty when there are no more pages.
 	limitPlusOne := limit + 1
 	findAttachment := &store.FindAttachment{
-		Access: newMemoAccessScope(user, true),
+		Access: newNoteAccessScope(user, true),
 		Limit:  &limitPlusOne,
 		Offset: &offset,
 	}
@@ -348,7 +348,7 @@ func (s *APIService) GetAttachment(ctx context.Context, request *apipb.GetAttach
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
 
-	// Check access permission based on linked memo visibility.
+	// Check access permission based on linked note visibility.
 	if err := s.checkAttachmentAccess(ctx, attachment); err != nil {
 		return nil, err
 	}
@@ -386,7 +386,7 @@ func (s *APIService) UpdateAttachment(ctx context.Context, request *apipb.Update
 	update := &store.UpdateAttachment{
 		ID:        attachment.ID,
 		UpdatedTs: &currentTsSec,
-		Policy:    memoWritePolicy(user.ID, false),
+		Policy:    noteWritePolicy(user.ID, false),
 	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "filename" {
@@ -398,21 +398,21 @@ func (s *APIService) UpdateAttachment(ctx context.Context, request *apipb.Update
 	}
 
 	if err := s.Store.UpdateAttachment(ctx, update); err != nil {
-		return nil, mapMemoWriteError(err, "failed to update attachment")
+		return nil, mapNoteWriteError(err, "failed to update attachment")
 	}
 	updatedAttachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
 	if err != nil {
-		// The update already committed, and the current memo binding is unknown.
-		// Publish conservatively so clients do not retain stale memo state.
-		s.SSEHub.publishMemoChanged()
+		// The update already committed, and the current note binding is unknown.
+		// Publish conservatively so clients do not retain stale note state.
+		s.SSEHub.publishNoteChanged()
 		return nil, status.Errorf(codes.Internal, "attachment was updated but failed to reload: %v", err)
 	}
 	if updatedAttachment == nil {
-		s.SSEHub.publishMemoChanged()
+		s.SSEHub.publishNoteChanged()
 		return nil, status.Error(codes.Internal, "attachment was updated but no longer exists")
 	}
-	if updatedAttachment.MemoID != nil {
-		s.SSEHub.publishMemoChanged()
+	if updatedAttachment.NoteID != nil {
+		s.SSEHub.publishNoteChanged()
 	}
 	return convertAttachmentFromStore(updatedAttachment), nil
 }
@@ -501,42 +501,42 @@ func (s *APIService) validateAttachmentDeletionPreflight(ctx context.Context, us
 		return nil, err
 	}
 
-	memos := make(map[int32]*store.Memo)
+	notes := make(map[int32]*store.Note)
 	for _, attachment := range attachments {
-		if attachment.MemoID == nil {
+		if attachment.NoteID == nil {
 			continue
 		}
-		memo := memos[*attachment.MemoID]
-		if memo == nil {
+		note := notes[*attachment.NoteID]
+		if note == nil {
 			var err error
-			memo, err = s.Store.GetMemo(ctx, &store.FindMemo{ID: attachment.MemoID})
+			note, err = s.Store.GetNote(ctx, &store.FindNote{ID: attachment.NoteID})
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get attachment memo: %v", err)
+				return nil, status.Errorf(codes.Internal, "failed to get attachment note: %v", err)
 			}
-			if memo == nil {
-				return nil, status.Errorf(codes.FailedPrecondition, "attachment memo no longer exists")
+			if note == nil {
+				return nil, status.Errorf(codes.FailedPrecondition, "attachment note no longer exists")
 			}
-			memos[memo.ID] = memo
+			notes[note.ID] = note
 		}
-		if !access.CanManageMemo(user, memo) {
+		if !access.CanManageNote(user, note) {
 			return nil, status.Error(codes.PermissionDenied, "permission denied")
 		}
 	}
-	expectedMemoContents := make(map[int32]string, len(memos))
-	for _, memo := range memos {
-		expectedMemoContents[memo.ID] = memo.Content
-		references, err := s.extractManagedAttachmentReferences(memo.Content)
+	expectedNoteContents := make(map[int32]string, len(notes))
+	for _, note := range notes {
+		expectedNoteContents[note.ID] = note.Content
+		references, err := s.extractManagedAttachmentReferences(note.Content)
 		if err != nil {
-			return nil, status.Errorf(codes.FailedPrecondition, "memo contains an invalid managed attachment reference: %v", err)
+			return nil, status.Errorf(codes.FailedPrecondition, "note contains an invalid managed attachment reference: %v", err)
 		}
 		for _, reference := range references {
 			if _, deleting := deletingUIDs[reference.UID]; deleting {
-				return nil, status.Errorf(codes.FailedPrecondition, "attachment %s is referenced by memo content", reference.UID)
+				return nil, status.Errorf(codes.FailedPrecondition, "attachment %s is referenced by note content", reference.UID)
 			}
 		}
 	}
 
-	return expectedMemoContents, nil
+	return expectedNoteContents, nil
 }
 
 func (s *APIService) validateAttachmentMotionGroupDeletion(
@@ -585,7 +585,7 @@ func (s *APIService) validateAttachmentMotionGroupDeletion(
 }
 
 func (s *APIService) deleteAttachmentsAtomically(ctx context.Context, user *store.User, attachments []*store.Attachment) error {
-	expectedMemoContents, err := s.validateAttachmentDeletionPreflight(ctx, user, attachments)
+	expectedNoteContents, err := s.validateAttachmentDeletionPreflight(ctx, user, attachments)
 	if err != nil {
 		return err
 	}
@@ -595,12 +595,12 @@ func (s *APIService) deleteAttachmentsAtomically(ctx context.Context, user *stor
 	}
 	if err := s.Store.DeleteAttachmentsWithPolicy(ctx, &store.AttachmentDeletionPolicy{
 		ActorUserID:          user.ID,
-		ExpectedMemoContents: expectedMemoContents,
+		ExpectedNoteContents: expectedNoteContents,
 	}, attachmentIDs); err != nil {
-		return mapMemoWriteError(err, "failed to delete attachments")
+		return mapNoteWriteError(err, "failed to delete attachments")
 	}
-	if attachmentsIncludeMemo(attachments) {
-		s.SSEHub.publishMemoChanged()
+	if attachmentsIncludeNote(attachments) {
+		s.SSEHub.publishNoteChanged()
 	}
 	if err := s.cleanupDeletedAttachmentStorage(ctx, attachments); err != nil {
 		return status.Errorf(codes.Internal, "attachments were deleted but storage cleanup failed: %v", err)
@@ -608,9 +608,9 @@ func (s *APIService) deleteAttachmentsAtomically(ctx context.Context, user *stor
 	return nil
 }
 
-func attachmentsIncludeMemo(attachments []*store.Attachment) bool {
+func attachmentsIncludeNote(attachments []*store.Attachment) bool {
 	for _, attachment := range attachments {
-		if attachment != nil && attachment.MemoID != nil {
+		if attachment != nil && attachment.NoteID != nil {
 			return true
 		}
 	}
@@ -618,11 +618,11 @@ func attachmentsIncludeMemo(attachments []*store.Attachment) bool {
 }
 
 // checkAttachmentAccess verifies the user has permission to access the attachment.
-// For unlinked attachments (no memo), only the creator can access.
-// For linked attachments, access follows the memo's visibility rules.
+// For unlinked attachments (no note), only the creator can access.
+// For linked attachments, access follows the note's visibility rules.
 func (s *APIService) checkAttachmentAccess(ctx context.Context, attachment *store.Attachment) error {
 	// For unlinked attachments, only the creator can access.
-	if attachment.MemoID == nil {
+	if attachment.NoteID == nil {
 		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
 			return status.Errorf(codes.Internal, "failed to get current user")
@@ -636,14 +636,14 @@ func (s *APIService) checkAttachmentAccess(ctx context.Context, attachment *stor
 		return nil
 	}
 
-	// For linked attachments, check memo visibility.
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: attachment.MemoID})
+	// For linked attachments, check note visibility.
+	note, err := s.Store.GetNote(ctx, &store.FindNote{ID: attachment.NoteID})
 	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get memo: %v", err)
+		return status.Errorf(codes.Internal, "failed to get note: %v", err)
 	}
-	if memo == nil {
-		return status.Errorf(codes.NotFound, "memo not found")
+	if note == nil {
+		return status.Errorf(codes.NotFound, "note not found")
 	}
 
-	return s.checkMemoReadAccess(ctx, memo)
+	return s.checkNoteReadAccess(ctx, note)
 }

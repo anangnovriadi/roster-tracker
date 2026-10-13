@@ -4,7 +4,7 @@
     "admin-sign-in-tip": "Log masuk dengan kata laluan kekal tersedia untuk pentadbir.",
     "back-to-sign-in": "Kembali ke log masuk",
     "continue-with": "Teruskan dengan {{provider}}",
-    "explore-public-memos": "Terokai nota awam pada instans ini",
+    "explore-public-notes": "Terokai nota awam pada instans ini",
     "new-password": "Kata laluan baharu",
     "redirecting-to-provider": "Mengalihkan ke {{provider}}…",
     "repeat-new-password": "Ulang kata laluan baharu",
@@ -13,9 +13,9 @@
     "welcome-back": "Selamat kembali."
   },
   "calendar": {
-    "new-memo-on-day": "Nota atau laporan baharu pada hari ini",
+    "new-note-on-day": "Nota atau laporan baharu pada hari ini",
     "next-year": "Tahun depan",
-    "no-memos-on-day": "Tiada nota atau laporan pada hari ini",
+    "no-notes-on-day": "Tiada nota atau laporan pada hari ini",
     "previous-year": "Tahun sebelumnya",
     "select-month": "Pilih bulan",
     "note-count_one": "{{count}} nota",
@@ -75,7 +75,7 @@
     "labels": {
       "live": "Live",
       "live-photo": "Live Photo",
-      "memo": "Nota",
+      "note": "Nota",
       "not-linked": "Tidak dipautkan",
       "unknown-date": "Tarikh tidak diketahui",
       "unused": "Tidak digunakan"
@@ -124,8 +124,8 @@
     "language": "Bahasa",
     "last-updated-at": "Kali terakhir dikemas kini pada",
     "learn-more": "Ketahui lebih lanjut",
-    "memo": "Nota",
-    "memos": "Nota",
+    "note": "Nota",
+    "notes": "Nota",
     "month-navigation": "Navigasi bulan",
     "more": "Lagi",
     "name": "Nama",
@@ -142,7 +142,7 @@
     "save": "Simpan",
     "settings": "Tetapan",
     "sign-in": "Log masuk",
-    "sign-in-to-memos": "Log masuk ke Roster Tracker",
+    "sign-in-to-notes": "Log masuk ke Roster Tracker",
     "sign-out": "Log keluar",
     "statistics": "Statistik",
     "tags": "Tag",
@@ -152,6 +152,7 @@
     "update": "Kemas kini",
     "user": "Pengguna",
     "username": "Nama pengguna",
+    "username-or-email": "Nama pengguna atau e-mel",
     "visibility": "Keterlihatan",
     "view-all": "Lihat semua",
     "yourself": "Diri anda",
@@ -193,7 +194,7 @@
       "uploading-inline-image": "Memuat naik ke kandungan",
       "uploading-images": "Memuat naik imej {{completed}}/{{total}}"
     },
-    "new-memo": "Nota baharu",
+    "new-note": "Nota baharu",
     "no-changes-detected": "Tiada perubahan dikesan",
     "save": "Simpan",
     "saved": "Disimpan",
@@ -218,7 +219,7 @@
       "transcribing": "Mentranskripsi..."
     }
   },
-  "memo": {
+  "note": {
     "pinned": "Disematkan",
     "parent-loading": "Memuatkan nota asal…",
     "parent-load-error": "Tidak dapat memuatkan nota asal.",
@@ -230,8 +231,8 @@
       "self": "Ulasan",
       "write-a-comment": "Tulis ulasan"
     },
-    "count-memos-in-date": "{{count}} {{memos}} pada {{date}}",
-    "count-memos-updated-in-date": "{{count}} {{memos}} dikemas kini pada {{date}}",
+    "count-notes-in-date": "{{count}} {{notes}} pada {{date}}",
+    "count-notes-updated-in-date": "{{count}} {{notes}} dikemas kini pada {{date}}",
     "delete-confirm": "Adakah anda pasti mahu memadam nota ini?",
     "delete-confirm-description": "Tindakan ini tidak boleh dibatalkan. Lampiran, pautan dan rujukan juga akan dibuang.",
     "filters": {
@@ -243,8 +244,8 @@
     "connections": "Sambungan",
     "load-more": "Muatkan lagi",
     "new-badge": "Baharu",
-    "on-this-memo": "Pada nota ini",
-    "parent-memo": "Nota induk",
+    "on-this-note": "Pada nota ini",
+    "parent-note": "Nota induk",
     "show-less": "Tunjukkan kurang",
     "show-more": "Tunjukkan lagi",
     "task-actions": {
@@ -312,7 +313,7 @@
       "attachment-storage": "Storan lampiran",
       "usage-description": "Had yang ditetapkan oleh pentadbir instans ini. Ulasan dan nota yang diarkibkan dikira sebagai nota.",
       "usage-file-size": "Fail terbesar",
-      "usage-memos": "Nota",
+      "usage-notes": "Nota",
       "usage-of": "{{usage}} daripada {{limit}}",
       "usage-storage": "Storan",
       "usage-title": "Had penggunaan",
@@ -358,7 +359,7 @@
       "create-success": "{{name}} telah ditambah",
       "update-success": "{{name}} telah dikemas kini"
     },
-    "memo": {
+    "note": {
       "add-reaction": "Tambah reaksi"
     },
     "my-account": {

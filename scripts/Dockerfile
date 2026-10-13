@@ -21,10 +21,10 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
     go build \
       -trimpath \
-      -ldflags="-s -w -X github.com/usememos/memos/internal/version.Version=${VERSION} -X github.com/usememos/memos/internal/version.Commit=${COMMIT} -extldflags '-static'" \
+      -ldflags="-s -w -X github.com/anangnovriadi/roster-tracker/internal/version.Version=${VERSION} -X github.com/anangnovriadi/roster-tracker/internal/version.Commit=${COMMIT} -extldflags '-static'" \
       -tags netgo,osusergo \
-      -o memos \
-      ./cmd/memos
+      -o roster-tracker \
+      ./cmd/roster-tracker
 
 # Use minimal Alpine with security updates
 FROM alpine:3.21 AS monolithic
@@ -32,26 +32,26 @@ FROM alpine:3.21 AS monolithic
 # Install runtime dependencies and create non-root user in single layer
 RUN apk add --no-cache tzdata ca-certificates su-exec && \
     addgroup -g 10001 -S nonroot && \
-    adduser -u 10001 -S -G nonroot -h /var/opt/memos nonroot && \
-    mkdir -p /var/opt/memos /usr/local/memos && \
-    chown -R nonroot:nonroot /var/opt/memos
+    adduser -u 10001 -S -G nonroot -h /var/opt/roster-tracker nonroot && \
+    mkdir -p /var/opt/roster-tracker /usr/local/roster-tracker && \
+    chown -R nonroot:nonroot /var/opt/roster-tracker
 
-# Copy binary and entrypoint to /usr/local/memos
-COPY --from=backend /backend-build/memos /usr/local/memos/memos
-COPY --from=backend --chmod=755 /backend-build/scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
+# Copy binary and entrypoint to /usr/local/roster-tracker
+COPY --from=backend /backend-build/roster-tracker /usr/local/roster-tracker/roster-tracker
+COPY --from=backend --chmod=755 /backend-build/scripts/entrypoint.sh /usr/local/roster-tracker/entrypoint.sh
 
 # Run as root to fix permissions, entrypoint will drop to nonroot
 USER root
 
 # Set working directory to the writable volume
-WORKDIR /var/opt/memos
+WORKDIR /var/opt/roster-tracker
 
 # Data directory
-VOLUME /var/opt/memos
+VOLUME /var/opt/roster-tracker
 
 ENV TZ="UTC" \
-    MEMOS_PORT="5230"
+    ROSTER_PORT="5230"
 
 EXPOSE 5230
 
-ENTRYPOINT ["/usr/local/memos/entrypoint.sh", "/usr/local/memos/memos"]
+ENTRYPOINT ["/usr/local/roster-tracker/entrypoint.sh", "/usr/local/roster-tracker/roster-tracker"]

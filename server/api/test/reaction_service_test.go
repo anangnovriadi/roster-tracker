@@ -9,11 +9,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
-func TestMemoReactionResourceNames(t *testing.T) {
+func TestNoteReactionResourceNames(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -21,55 +21,55 @@ func TestMemoReactionResourceNames(t *testing.T) {
 	user, err := ts.CreateRegularUser(ctx, "reaction-resource-user")
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
-	memo, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
-		MemoId: "reaction-resource-memo",
-		Memo: &apipb.Memo{
+	note, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{
+		NoteId: "reaction-resource-note",
+		Note: &apipb.Note{
 			Content:    "reaction resource names",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	reaction, err := ts.Service.UpsertMemoReaction(userCtx, &apipb.UpsertMemoReactionRequest{
-		Parent: memo.Name,
+	reaction, err := ts.Service.UpsertNoteReaction(userCtx, &apipb.UpsertNoteReactionRequest{
+		Parent: note.Name,
 		Reaction: &apipb.Reaction{
 			ReactionType: "👍",
 		},
 	})
 	require.NoError(t, err)
-	require.True(t, strings.HasPrefix(reaction.Name, memo.Name+"/reactions/"))
+	require.True(t, strings.HasPrefix(reaction.Name, note.Name+"/reactions/"))
 
-	memoID := parseMemoIDFromNameForTest(t, ts, memo.Name)
-	storedReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{MemoID: &memoID, CreatorID: &user.ID})
+	noteID := parseNoteIDFromNameForTest(t, ts, note.Name)
+	storedReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{NoteID: &noteID, CreatorID: &user.ID})
 	require.NoError(t, err)
 	require.NotNil(t, storedReaction)
-	require.Equal(t, memoID, storedReaction.MemoID)
+	require.Equal(t, noteID, storedReaction.NoteID)
 
-	listed, err := ts.Service.ListMemoReactions(ctx, &apipb.ListMemoReactionsRequest{Parent: memo.Name})
+	listed, err := ts.Service.ListNoteReactions(ctx, &apipb.ListNoteReactionsRequest{Parent: note.Name})
 	require.NoError(t, err)
 	require.Len(t, listed.Reactions, 1)
 	require.Equal(t, reaction.Name, listed.Reactions[0].Name)
 
-	fetchedMemo, err := ts.Service.GetMemo(ctx, &apipb.GetMemoRequest{Name: memo.Name})
+	fetchedNote, err := ts.Service.GetNote(ctx, &apipb.GetNoteRequest{Name: note.Name})
 	require.NoError(t, err)
-	require.Len(t, fetchedMemo.Reactions, 1)
-	require.Equal(t, reaction.Name, fetchedMemo.Reactions[0].Name)
+	require.Len(t, fetchedNote.Reactions, 1)
+	require.Equal(t, reaction.Name, fetchedNote.Reactions[0].Name)
 }
 
-func TestUpsertMemoReactionRequiresReaction(t *testing.T) {
+func TestUpsertNoteReactionRequiresReaction(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 
 	user, err := ts.CreateRegularUser(ctx, "reaction-required-user")
 	require.NoError(t, err)
-	_, err = ts.Service.UpsertMemoReaction(ts.CreateUserContext(ctx, user.ID), &apipb.UpsertMemoReactionRequest{
-		Parent: "memos/missing",
+	_, err = ts.Service.UpsertNoteReaction(ts.CreateUserContext(ctx, user.ID), &apipb.UpsertNoteReactionRequest{
+		Parent: "notes/missing",
 	})
 	require.Equal(t, codes.InvalidArgument, status.Code(err))
 }
 
-func TestListMemoCommentsIncludesReactionResourceNames(t *testing.T) {
+func TestListNoteCommentsIncludesReactionResourceNames(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -77,17 +77,17 @@ func TestListMemoCommentsIncludesReactionResourceNames(t *testing.T) {
 	user, err := ts.CreateRegularUser(ctx, "comment-reaction-user")
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
-	parent, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "parent", Visibility: apipb.Visibility_PUBLIC},
+	parent, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "parent", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
-	comment, err := ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{
+	comment, err := ts.Service.CreateNoteComment(userCtx, &apipb.CreateNoteCommentRequest{
 		Parent:  parent.Name,
-		Comment: &apipb.Memo{Content: "comment", Visibility: apipb.Visibility_PUBLIC},
+		Comment: &apipb.Note{Content: "comment", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.UpsertMemoReaction(userCtx, &apipb.UpsertMemoReactionRequest{
+	_, err = ts.Service.UpsertNoteReaction(userCtx, &apipb.UpsertNoteReactionRequest{
 		Parent: comment.Name,
 		Reaction: &apipb.Reaction{
 			ReactionType: "🔥",
@@ -95,14 +95,14 @@ func TestListMemoCommentsIncludesReactionResourceNames(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	comments, err := ts.Service.ListMemoComments(userCtx, &apipb.ListMemoCommentsRequest{Parent: parent.Name})
+	comments, err := ts.Service.ListNoteComments(userCtx, &apipb.ListNoteCommentsRequest{Parent: parent.Name})
 	require.NoError(t, err)
 	require.Len(t, comments.Comments, 1)
 	require.Len(t, comments.Comments[0].Reactions, 1)
 	require.True(t, strings.HasPrefix(comments.Comments[0].Reactions[0].Name, comment.Name+"/reactions/"))
 }
 
-func TestUpsertMemoReactionRevalidatesSpaceParticipation(t *testing.T) {
+func TestUpsertNoteReactionRevalidatesSpaceParticipation(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -124,36 +124,36 @@ func TestUpsertMemoReactionRevalidatesSpaceParticipation(t *testing.T) {
 		Role:    store.SpaceMemberRoleUser,
 	}, owner.ID)
 	require.NoError(t, err)
-	root, err := ts.Store.CreateMemo(ctx, &store.Memo{
+	root, err := ts.Store.CreateNote(ctx, &store.Note{
 		UID:        "reaction-space-root",
 		CreatorID:  owner.ID,
-		Content:    "assigned public memo",
+		Content:    "assigned public note",
 		Visibility: store.Public,
 		SpaceID:    &space.ID,
 	})
 	require.NoError(t, err)
-	memoName := "memos/" + root.UID
+	noteName := "notes/" + root.UID
 
-	memberReaction, err := ts.Service.UpsertMemoReaction(memberCtx, &apipb.UpsertMemoReactionRequest{
-		Parent:   memoName,
+	memberReaction, err := ts.Service.UpsertNoteReaction(memberCtx, &apipb.UpsertNoteReactionRequest{
+		Parent:   noteName,
 		Reaction: &apipb.Reaction{ReactionType: "👍"},
 	})
 	require.NoError(t, err)
 
 	// An application ADMIN is the superuser and participates without membership.
-	adminReaction, err := ts.Service.UpsertMemoReaction(adminCtx, &apipb.UpsertMemoReactionRequest{
-		Parent:   memoName,
+	adminReaction, err := ts.Service.UpsertNoteReaction(adminCtx, &apipb.UpsertNoteReactionRequest{
+		Parent:   noteName,
 		Reaction: &apipb.Reaction{ReactionType: "🔥"},
 	})
 	require.NoError(t, err)
-	_, err = ts.Service.DeleteMemoReaction(adminCtx, &apipb.DeleteMemoReactionRequest{Name: adminReaction.Name})
+	_, err = ts.Service.DeleteNoteReaction(adminCtx, &apipb.DeleteNoteReactionRequest{Name: adminReaction.Name})
 	require.NoError(t, err)
 
 	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: member.ID}, owner.ID))
-	_, err = ts.Service.DeleteMemoReaction(memberCtx, &apipb.DeleteMemoReactionRequest{Name: memberReaction.Name})
+	_, err = ts.Service.DeleteNoteReaction(memberCtx, &apipb.DeleteNoteReactionRequest{Name: memberReaction.Name})
 	require.NoError(t, err, "the creator may withdraw a reaction after leaving")
-	_, err = ts.Service.UpsertMemoReaction(memberCtx, &apipb.UpsertMemoReactionRequest{
-		Parent:   memoName,
+	_, err = ts.Service.UpsertNoteReaction(memberCtx, &apipb.UpsertNoteReactionRequest{
+		Parent:   noteName,
 		Reaction: &apipb.Reaction{ReactionType: "🔥"},
 	})
 	require.Equal(t, codes.PermissionDenied, status.Code(err))
@@ -165,18 +165,18 @@ func TestUpsertMemoReactionRevalidatesSpaceParticipation(t *testing.T) {
 	}, owner.ID)
 	require.NoError(t, err)
 
-	_, err = ts.Service.UpsertMemoReaction(memberCtx, &apipb.UpsertMemoReactionRequest{
-		Parent:   memoName,
+	_, err = ts.Service.UpsertNoteReaction(memberCtx, &apipb.UpsertNoteReactionRequest{
+		Parent:   noteName,
 		Reaction: &apipb.Reaction{ReactionType: "🔥"},
 	})
 	require.NoError(t, err)
 
-	reactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &root.ID})
+	reactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{NoteID: &root.ID})
 	require.NoError(t, err)
 	require.Len(t, reactions, 1)
 }
 
-func TestAssignedMemoReactionsFollowMemoReadAccess(t *testing.T) {
+func TestAssignedNoteReactionsFollowNoteReadAccess(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -199,59 +199,59 @@ func TestAssignedMemoReactionsFollowMemoReadAccess(t *testing.T) {
 		Role:    store.SpaceMemberRoleAdmin,
 	}, owner.ID)
 	require.NoError(t, err)
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
-		Content:    "assigned public memo with reactions",
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
+		Content:    "assigned public note with reactions",
 		Visibility: apipb.Visibility_PUBLIC,
 		Space:      new("spaces/" + space.UID),
 	}})
 	require.NoError(t, err)
-	_, err = ts.Service.UpsertMemoReaction(ownerCtx, &apipb.UpsertMemoReactionRequest{
-		Parent:   memo.Name,
+	_, err = ts.Service.UpsertNoteReaction(ownerCtx, &apipb.UpsertNoteReactionRequest{
+		Parent:   note.Name,
 		Reaction: &apipb.Reaction{ReactionType: "👍"},
 	})
 	require.NoError(t, err)
 
-	listed, err := ts.Service.ListMemoReactions(memberCtx, &apipb.ListMemoReactionsRequest{Parent: memo.Name})
+	listed, err := ts.Service.ListNoteReactions(memberCtx, &apipb.ListNoteReactionsRequest{Parent: note.Name})
 	require.NoError(t, err)
 	require.Len(t, listed.Reactions, 1)
 
-	listed, err = ts.Service.ListMemoReactions(ctx, &apipb.ListMemoReactionsRequest{Parent: memo.Name})
+	listed, err = ts.Service.ListNoteReactions(ctx, &apipb.ListNoteReactionsRequest{Parent: note.Name})
 	require.NoError(t, err)
-	require.Len(t, listed.Reactions, 1, "anonymous reaction reads follow the PUBLIC memo audience")
-	listed, err = ts.Service.ListMemoReactions(outsiderCtx, &apipb.ListMemoReactionsRequest{Parent: memo.Name})
+	require.Len(t, listed.Reactions, 1, "anonymous reaction reads follow the PUBLIC note audience")
+	listed, err = ts.Service.ListNoteReactions(outsiderCtx, &apipb.ListNoteReactionsRequest{Parent: note.Name})
 	require.NoError(t, err)
 	require.Len(t, listed.Reactions, 1, "Space placement adds no reaction read gate")
 
-	got, err := ts.Service.GetMemo(outsiderCtx, &apipb.GetMemoRequest{Name: memo.Name})
-	require.NoError(t, err, "a non-member may still read an assigned PUBLIC memo")
+	got, err := ts.Service.GetNote(outsiderCtx, &apipb.GetNoteRequest{Name: note.Name})
+	require.NoError(t, err, "a non-member may still read an assigned PUBLIC note")
 	require.Empty(t, got.GetSpace())
-	require.Len(t, got.Reactions, 1, "embedded reactions follow the readable memo")
-	feed, err := ts.Service.ListMemos(outsiderCtx, &apipb.ListMemosRequest{PageSize: 20})
+	require.Len(t, got.Reactions, 1, "embedded reactions follow the readable note")
+	feed, err := ts.Service.ListNotes(outsiderCtx, &apipb.ListNotesRequest{PageSize: 20})
 	require.NoError(t, err)
-	var listedMemo *apipb.Memo
-	for _, candidate := range feed.Memos {
-		if candidate.Name == memo.Name {
-			listedMemo = candidate
+	var listedNote *apipb.Note
+	for _, candidate := range feed.Notes {
+		if candidate.Name == note.Name {
+			listedNote = candidate
 			break
 		}
 	}
-	require.NotNil(t, listedMemo)
-	require.Len(t, listedMemo.Reactions, 1)
+	require.NotNil(t, listedNote)
+	require.Len(t, listedNote.Reactions, 1)
 
 	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: owner.ID}, owner.ID))
-	listed, err = ts.Service.ListMemoReactions(ownerCtx, &apipb.ListMemoReactionsRequest{Parent: memo.Name})
+	listed, err = ts.Service.ListNoteReactions(ownerCtx, &apipb.ListNoteReactionsRequest{Parent: note.Name})
 	require.NoError(t, err)
-	require.Len(t, listed.Reactions, 1, "the removed author still reads a PUBLIC memo and its reactions")
-	got, err = ts.Service.GetMemo(ownerCtx, &apipb.GetMemoRequest{Name: memo.Name})
+	require.Len(t, listed.Reactions, 1, "the removed author still reads a PUBLIC note and its reactions")
+	got, err = ts.Service.GetNote(ownerCtx, &apipb.GetNoteRequest{Name: note.Name})
 	require.NoError(t, err)
 	require.Equal(t, "spaces/"+space.UID, got.GetSpace(), "the author may still see placement")
 	require.Len(t, got.Reactions, 1)
 }
 
-func TestDeleteMemoReaction(t *testing.T) {
+func TestDeleteNoteReaction(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("DeleteMemoReaction success by reaction owner", func(t *testing.T) {
+	t.Run("DeleteNoteReaction success by reaction owner", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -260,19 +260,19 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		// Create memo
-		memo, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
-			Memo: &apipb.Memo{
-				Content:    "Test memo",
+		// Create note
+		note, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{
+			Note: &apipb.Note{
+				Content:    "Test note",
 				Visibility: apipb.Visibility_PUBLIC,
 			},
 		})
 		require.NoError(t, err)
-		require.NotNil(t, memo)
+		require.NotNil(t, note)
 
 		// Create reaction
-		reaction, err := ts.Service.UpsertMemoReaction(userCtx, &apipb.UpsertMemoReactionRequest{
-			Parent: memo.Name,
+		reaction, err := ts.Service.UpsertNoteReaction(userCtx, &apipb.UpsertNoteReactionRequest{
+			Parent: note.Name,
 			Reaction: &apipb.Reaction{
 				ReactionType: "👍",
 			},
@@ -282,48 +282,48 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.Equal(t, "users/user", reaction.Creator)
 
 		// Delete reaction - should succeed
-		_, err = ts.Service.DeleteMemoReaction(userCtx, &apipb.DeleteMemoReactionRequest{
+		_, err = ts.Service.DeleteNoteReaction(userCtx, &apipb.DeleteNoteReactionRequest{
 			Name: reaction.Name,
 		})
 		require.NoError(t, err)
 	})
 
-	t.Run("DeleteMemoReaction fails closed when memo was concurrently deleted", func(t *testing.T) {
+	t.Run("DeleteNoteReaction fails closed when note was concurrently deleted", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
 		user, err := ts.CreateRegularUser(ctx, "concurrent-delete-user")
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, user.ID)
-		memo, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
-			Memo: &apipb.Memo{Content: "concurrent delete", Visibility: apipb.Visibility_PUBLIC},
+		note, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{
+			Note: &apipb.Note{Content: "concurrent delete", Visibility: apipb.Visibility_PUBLIC},
 		})
 		require.NoError(t, err)
-		reaction, err := ts.Service.UpsertMemoReaction(userCtx, &apipb.UpsertMemoReactionRequest{
-			Parent: memo.Name,
+		reaction, err := ts.Service.UpsertNoteReaction(userCtx, &apipb.UpsertNoteReactionRequest{
+			Parent: note.Name,
 			Reaction: &apipb.Reaction{
 				ReactionType: "👍",
 			},
 		})
 		require.NoError(t, err)
 
-		memoID := parseMemoIDFromNameForTest(t, ts, memo.Name)
-		storedReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{MemoID: &memoID, CreatorID: &user.ID})
+		noteID := parseNoteIDFromNameForTest(t, ts, note.Name)
+		storedReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{NoteID: &noteID, CreatorID: &user.ID})
 		require.NoError(t, err)
 		require.NotNil(t, storedReaction)
-		// Simulate the state visible between DeleteMemoReaction's reaction and
-		// memo reads after a concurrent memo deletion commits.
-		_, err = ts.Store.GetDriver().GetDB().ExecContext(ctx, "DELETE FROM memo WHERE id = ?", memoID)
+		// Simulate the state visible between DeleteNoteReaction's reaction and
+		// note reads after a concurrent note deletion commits.
+		_, err = ts.Store.GetDriver().GetDB().ExecContext(ctx, "DELETE FROM note WHERE id = ?", noteID)
 		require.NoError(t, err)
 
-		_, err = ts.Service.DeleteMemoReaction(userCtx, &apipb.DeleteMemoReactionRequest{Name: reaction.Name})
+		_, err = ts.Service.DeleteNoteReaction(userCtx, &apipb.DeleteNoteReactionRequest{Name: reaction.Name})
 		require.Equal(t, codes.PermissionDenied, status.Code(err))
 		remainingReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{ID: &storedReaction.ID})
 		require.NoError(t, err)
-		require.NotNil(t, remainingReaction, "a missing direct memo must not authorize a reaction mutation")
+		require.NotNil(t, remainingReaction, "a missing direct note must not authorize a reaction mutation")
 	})
 
-	t.Run("DeleteMemoReaction host user has no ownership bypass", func(t *testing.T) {
+	t.Run("DeleteNoteReaction host user has no ownership bypass", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -337,19 +337,19 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NoError(t, err)
 		hostCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
-		// Create memo by regular user
-		memo, err := ts.Service.CreateMemo(regularUserCtx, &apipb.CreateMemoRequest{
-			Memo: &apipb.Memo{
-				Content:    "Test memo",
+		// Create note by regular user
+		note, err := ts.Service.CreateNote(regularUserCtx, &apipb.CreateNoteRequest{
+			Note: &apipb.Note{
+				Content:    "Test note",
 				Visibility: apipb.Visibility_PUBLIC,
 			},
 		})
 		require.NoError(t, err)
-		require.NotNil(t, memo)
+		require.NotNil(t, note)
 
 		// Create reaction by regular user
-		reaction, err := ts.Service.UpsertMemoReaction(regularUserCtx, &apipb.UpsertMemoReactionRequest{
-			Parent: memo.Name,
+		reaction, err := ts.Service.UpsertNoteReaction(regularUserCtx, &apipb.UpsertNoteReactionRequest{
+			Parent: note.Name,
 			Reaction: &apipb.Reaction{
 				ReactionType: "👍",
 			},
@@ -358,17 +358,17 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NotNil(t, reaction)
 
 		// Application ADMIN is the superuser and may withdraw any reaction.
-		_, err = ts.Service.DeleteMemoReaction(hostCtx, &apipb.DeleteMemoReactionRequest{
+		_, err = ts.Service.DeleteNoteReaction(hostCtx, &apipb.DeleteNoteReactionRequest{
 			Name: reaction.Name,
 		})
 		require.NoError(t, err)
-		memoID := parseMemoIDFromNameForTest(t, ts, memo.Name)
-		remainingReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{MemoID: &memoID, CreatorID: &regularUser.ID})
+		noteID := parseNoteIDFromNameForTest(t, ts, note.Name)
+		remainingReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{NoteID: &noteID, CreatorID: &regularUser.ID})
 		require.NoError(t, err)
 		require.Nil(t, remainingReaction)
 	})
 
-	t.Run("DeleteMemoReaction permission denied for non-owner", func(t *testing.T) {
+	t.Run("DeleteNoteReaction permission denied for non-owner", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -382,19 +382,19 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NoError(t, err)
 		user2Ctx := ts.CreateUserContext(ctx, user2.ID)
 
-		// Create memo by user1
-		memo, err := ts.Service.CreateMemo(user1Ctx, &apipb.CreateMemoRequest{
-			Memo: &apipb.Memo{
-				Content:    "Test memo",
+		// Create note by user1
+		note, err := ts.Service.CreateNote(user1Ctx, &apipb.CreateNoteRequest{
+			Note: &apipb.Note{
+				Content:    "Test note",
 				Visibility: apipb.Visibility_PUBLIC,
 			},
 		})
 		require.NoError(t, err)
-		require.NotNil(t, memo)
+		require.NotNil(t, note)
 
 		// Create reaction by user1
-		reaction, err := ts.Service.UpsertMemoReaction(user1Ctx, &apipb.UpsertMemoReactionRequest{
-			Parent: memo.Name,
+		reaction, err := ts.Service.UpsertNoteReaction(user1Ctx, &apipb.UpsertNoteReactionRequest{
+			Parent: note.Name,
 			Reaction: &apipb.Reaction{
 				ReactionType: "👍",
 			},
@@ -403,14 +403,14 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NotNil(t, reaction)
 
 		// User2 tries to delete reaction - should fail with permission denied
-		_, err = ts.Service.DeleteMemoReaction(user2Ctx, &apipb.DeleteMemoReactionRequest{
+		_, err = ts.Service.DeleteNoteReaction(user2Ctx, &apipb.DeleteNoteReactionRequest{
 			Name: reaction.Name,
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "permission denied")
 	})
 
-	t.Run("DeleteMemoReaction unauthenticated", func(t *testing.T) {
+	t.Run("DeleteNoteReaction unauthenticated", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -419,19 +419,19 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		// Create memo
-		memo, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{
-			Memo: &apipb.Memo{
-				Content:    "Test memo",
+		// Create note
+		note, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{
+			Note: &apipb.Note{
+				Content:    "Test note",
 				Visibility: apipb.Visibility_PUBLIC,
 			},
 		})
 		require.NoError(t, err)
-		require.NotNil(t, memo)
+		require.NotNil(t, note)
 
 		// Create reaction
-		reaction, err := ts.Service.UpsertMemoReaction(userCtx, &apipb.UpsertMemoReactionRequest{
-			Parent: memo.Name,
+		reaction, err := ts.Service.UpsertNoteReaction(userCtx, &apipb.UpsertNoteReactionRequest{
+			Parent: note.Name,
 			Reaction: &apipb.Reaction{
 				ReactionType: "👍",
 			},
@@ -440,14 +440,14 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NotNil(t, reaction)
 
 		// Unauthenticated user tries to delete reaction - should fail
-		_, err = ts.Service.DeleteMemoReaction(ctx, &apipb.DeleteMemoReactionRequest{
+		_, err = ts.Service.DeleteNoteReaction(ctx, &apipb.DeleteNoteReactionRequest{
 			Name: reaction.Name,
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not authenticated")
 	})
 
-	t.Run("DeleteMemoReaction not found returns permission denied", func(t *testing.T) {
+	t.Run("DeleteNoteReaction not found returns permission denied", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -458,9 +458,9 @@ func TestDeleteMemoReaction(t *testing.T) {
 
 		// Try to delete non-existent reaction - should fail with permission denied
 		// (not "not found" to avoid information disclosure)
-		// Use new nested resource format: memos/{memo}/reactions/{reaction}
-		_, err = ts.Service.DeleteMemoReaction(userCtx, &apipb.DeleteMemoReactionRequest{
-			Name: "memos/nonexistent/reactions/99999",
+		// Use new nested resource format: notes/{note}/reactions/{reaction}
+		_, err = ts.Service.DeleteNoteReaction(userCtx, &apipb.DeleteNoteReactionRequest{
+			Name: "notes/nonexistent/reactions/99999",
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "permission denied")
@@ -468,7 +468,7 @@ func TestDeleteMemoReaction(t *testing.T) {
 	})
 }
 
-func TestListMemoReactionsSkipsMissingCreators(t *testing.T) {
+func TestListNoteReactionsSkipsMissingCreators(t *testing.T) {
 	ctx := context.Background()
 
 	ts := NewTestService(t)
@@ -482,16 +482,16 @@ func TestListMemoReactionsSkipsMissingCreators(t *testing.T) {
 	require.NoError(t, err)
 	reactorCtx := ts.CreateUserContext(ctx, reactor.ID)
 
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "reaction list memo",
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "reaction list note",
 			Visibility: apipb.Visibility_PUBLIC,
 		},
 	})
 	require.NoError(t, err)
 
-	_, err = ts.Service.UpsertMemoReaction(reactorCtx, &apipb.UpsertMemoReactionRequest{
-		Parent: memo.Name,
+	_, err = ts.Service.UpsertNoteReaction(reactorCtx, &apipb.UpsertNoteReactionRequest{
+		Parent: note.Name,
 		Reaction: &apipb.Reaction{
 			ReactionType: "🔥",
 		},
@@ -501,12 +501,12 @@ func TestListMemoReactionsSkipsMissingCreators(t *testing.T) {
 	_, err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: reactor.ID})
 	require.NoError(t, err)
 
-	resp, err := ts.Service.ListMemoReactions(ctx, &apipb.ListMemoReactionsRequest{Parent: memo.Name})
+	resp, err := ts.Service.ListNoteReactions(ctx, &apipb.ListNoteReactionsRequest{Parent: note.Name})
 	require.NoError(t, err)
 	require.Empty(t, resp.Reactions)
 }
 
-func TestUpsertMemoReactionAllowsOneReactionPerMember(t *testing.T) {
+func TestUpsertNoteReactionAllowsOneReactionPerMember(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -517,14 +517,14 @@ func TestUpsertMemoReactionAllowsOneReactionPerMember(t *testing.T) {
 	require.NoError(t, err)
 	authorCtx := ts.CreateUserContext(ctx, author.ID)
 	readerCtx := ts.CreateUserContext(ctx, reader.ID)
-	memo, err := ts.Service.CreateMemo(authorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{Content: "one reaction each", Visibility: apipb.Visibility_PUBLIC},
+	note, err := ts.Service.CreateNote(authorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{Content: "one reaction each", Visibility: apipb.Visibility_PUBLIC},
 	})
 	require.NoError(t, err)
 
 	react := func(ctx context.Context, emoji string) (*apipb.Reaction, error) {
-		return ts.Service.UpsertMemoReaction(ctx, &apipb.UpsertMemoReactionRequest{
-			Parent:   memo.Name,
+		return ts.Service.UpsertNoteReaction(ctx, &apipb.UpsertNoteReactionRequest{
+			Parent:   note.Name,
 			Reaction: &apipb.Reaction{ReactionType: emoji},
 		})
 	}
@@ -541,12 +541,12 @@ func TestUpsertMemoReactionAllowsOneReactionPerMember(t *testing.T) {
 	require.NoError(t, err)
 
 	// Removing the reaction frees the member to react again.
-	_, err = ts.Service.DeleteMemoReaction(readerCtx, &apipb.DeleteMemoReactionRequest{Name: first.Name})
+	_, err = ts.Service.DeleteNoteReaction(readerCtx, &apipb.DeleteNoteReactionRequest{Name: first.Name})
 	require.NoError(t, err)
 	_, err = react(readerCtx, "😄")
 	require.NoError(t, err)
 
-	listed, err := ts.Service.ListMemoReactions(ctx, &apipb.ListMemoReactionsRequest{Parent: memo.Name})
+	listed, err := ts.Service.ListNoteReactions(ctx, &apipb.ListNoteReactionsRequest{Parent: note.Name})
 	require.NoError(t, err)
 	require.Len(t, listed.Reactions, 2)
 }

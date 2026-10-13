@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db/sqlite"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/store"
+	"github.com/anangnovriadi/roster-tracker/store/db/sqlite"
 )
 
 func TestDemoSeedUsesDeploymentAuthenticationPolicy(t *testing.T) {
@@ -36,8 +36,8 @@ func TestDemoSeedUsesDeploymentAuthenticationPolicy(t *testing.T) {
 	require.False(t, generalSetting.DisallowUserRegistration, "SSO first-login provisioning must remain enabled")
 
 	secretDir := t.TempDir()
-	writeDeploymentIdentityProvider(t, filepath.Join(secretDir, "memos-idp-primary-sso.json"), "primary-sso", "Primary SSO", "secret")
-	writeDeploymentGeneralSetting(t, filepath.Join(secretDir, "memos-instance-setting-general.json"), 0, true)
+	writeDeploymentIdentityProvider(t, filepath.Join(secretDir, "roster-tracker-idp-primary-sso.json"), "primary-sso", "Primary SSO", "secret")
+	writeDeploymentGeneralSetting(t, filepath.Join(secretDir, "roster-tracker-instance-setting-general.json"), 0, true)
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, secretDir))
 	generalSetting, err = stores.GetInstanceGeneralSetting(ctx)
 	require.NoError(t, err)
@@ -64,41 +64,41 @@ func TestDemoSeedUsesDeploymentAuthenticationPolicy(t *testing.T) {
 	require.Error(t, bcrypt.CompareHashAndPassword([]byte(johnnyUser.PasswordHash), []byte("demo")))
 	require.NotEqual(t, adminUser.PasswordHash, johnnyUser.PasswordHash)
 
-	memos, err := stores.ListMemos(ctx, &store.FindMemo{})
+	notes, err := stores.ListNotes(ctx, &store.FindNote{})
 	require.NoError(t, err)
-	require.GreaterOrEqual(t, len(memos), 20)
+	require.GreaterOrEqual(t, len(notes), 20)
 
 	var hasPublic, hasProtected, hasLocation, hasNestedTag, hasMention bool
-	for _, memo := range memos {
-		hasPublic = hasPublic || memo.Visibility == store.Public
-		hasProtected = hasProtected || memo.Visibility == store.Protected
-		hasLocation = hasLocation || memo.Payload.GetLocation() != nil
-		for _, tag := range memo.Payload.GetTags() {
+	for _, note := range notes {
+		hasPublic = hasPublic || note.Visibility == store.Public
+		hasProtected = hasProtected || note.Visibility == store.Protected
+		hasLocation = hasLocation || note.Payload.GetLocation() != nil
+		for _, tag := range note.Payload.GetTags() {
 			hasNestedTag = hasNestedTag || strings.Contains(tag, "/")
 		}
-		hasMention = hasMention || strings.Contains(memo.Content, "@steven")
+		hasMention = hasMention || strings.Contains(note.Content, "@steven")
 	}
-	require.True(t, hasPublic, "demo should include public memos")
-	require.True(t, hasProtected, "demo should include protected memos")
+	require.True(t, hasPublic, "demo should include public notes")
+	require.True(t, hasProtected, "demo should include protected notes")
 	require.True(t, hasLocation, "demo should include location metadata")
 	require.True(t, hasNestedTag, "demo should include nested tags")
 	require.True(t, hasMention, "demo should include a mention")
 
-	relations, err := stores.ListMemoRelations(ctx, &store.FindMemoRelation{})
+	relations, err := stores.ListNoteRelations(ctx, &store.FindNoteRelation{})
 	require.NoError(t, err)
 	var hasComment, hasReference bool
 	for _, relation := range relations {
-		hasComment = hasComment || relation.Type == store.MemoRelationComment
-		hasReference = hasReference || relation.Type == store.MemoRelationReference
+		hasComment = hasComment || relation.Type == store.NoteRelationComment
+		hasReference = hasReference || relation.Type == store.NoteRelationReference
 	}
 	require.True(t, hasComment, "demo should include comments")
-	require.True(t, hasReference, "demo should include memo references")
+	require.True(t, hasReference, "demo should include note references")
 
 	reactions, err := stores.ListReactions(ctx, &store.FindReaction{})
 	require.NoError(t, err)
 	require.NotEmpty(t, reactions, "demo should include reactions")
 
-	attachments, err := stores.ListAttachments(ctx, &store.FindAttachment{HasRelatedMemo: true})
+	attachments, err := stores.ListAttachments(ctx, &store.FindAttachment{HasRelatedNote: true})
 	require.NoError(t, err)
-	require.NotEmpty(t, attachments, "demo should include a memo attachment")
+	require.NotEmpty(t, attachments, "demo should include a note attachment")
 }

@@ -11,11 +11,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
-const exifTestMarker = "MEMOS-GPS-MARKER-0123456789"
+const exifTestMarker = "NOTES-GPS-MARKER-0123456789"
 
 // jpegWithExifMarker returns a decodable JPEG whose APP1 segment carries a
 // recognizable marker, standing in for privacy-sensitive EXIF metadata.

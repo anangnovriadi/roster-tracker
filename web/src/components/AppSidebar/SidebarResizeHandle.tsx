@@ -116,7 +116,7 @@ const SidebarResizeHandle = ({
   );
 
   // Hold the resize cursor for the whole gesture, so it does not flicker into a text caret
-  // whenever the pointer outruns the handle and crosses the memo list.
+  // whenever the pointer outruns the handle and crosses the note list.
   useEffect(() => {
     if (!dragging) return;
     const { body } = document;

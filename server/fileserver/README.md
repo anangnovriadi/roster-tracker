@@ -8,7 +8,7 @@ The `fileserver` package serves binary content (attachments, avatars) over plain
 GET /file/attachments/:uid[/:filename]   # attachment binary
     ?thumbnail=true                      # JPEG thumbnail for supported image types
     ?motion=true                         # embedded motion-photo video clip
-    ?share_token={uid}                   # access via a memo share link
+    ?share_token={uid}                   # access via a note share link
 GET /file/users/:identifier/avatar       # user avatar (by username)
 ```
 
@@ -18,13 +18,13 @@ Handled by `server/auth` (see [authenticator.go](../auth/authenticator.go) and [
 
 ## Authorization
 
-Attachment access follows memo visibility, evaluated by `core/access.CheckMemoReadContext`:
+Attachment access follows note visibility, evaluated by `core/access.CheckNoteReadContext`:
 
-- Public memo: no auth required (when the instance allows anonymous access)
-- Protected memo: any authenticated user
-- Private memo: creator only
-- Valid `share_token`: grants access to that memo's attachments
-- Unlinked attachment (no memo): creator or admin only
+- Public note: no auth required (when the instance allows anonymous access)
+- Protected note: any authenticated user
+- Private note: creator only
+- Valid `share_token`: grants access to that note's attachments
+- Unlinked attachment (no note): creator or admin only
 
 Avatars are public on instances that allow anonymous access; private instances require authentication.
 

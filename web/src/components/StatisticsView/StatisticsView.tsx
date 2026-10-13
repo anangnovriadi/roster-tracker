@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MonthCalendar } from "@/components/ActivityCalendar";
-import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { useNoteFilterContext } from "@/contexts/NoteFilterContext";
 import { useDateFilterNavigation } from "@/hooks";
 import { getCurrentMonth } from "@/lib/calendar-utils";
 import type { StatisticsData } from "@/types/statistics";
@@ -14,7 +14,7 @@ interface Props {
 const StatisticsView = (props: Props) => {
   const { statisticsData } = props;
   const { activityStats, timeBasis } = statisticsData;
-  const { filters } = useMemoFilterContext();
+  const { filters } = useNoteFilterContext();
   const navigateToDateFilter = useDateFilterNavigation();
   const [visibleMonthString, setVisibleMonthString] = useState(getCurrentMonth);
   const selectedDate = filters.find((filter) => filter.factor === "displayTime")?.value;

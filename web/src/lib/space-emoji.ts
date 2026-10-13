@@ -8,7 +8,7 @@ export const SPACE_EMOJI = [
   ["🚀", "Rocket launch project"],
   ["🎨", "Artist palette design art"],
   ["✍️", "Writing hand journal"],
-  ["📝", "Memo notes writing"],
+  ["📝", "Note notes writing"],
   ["🧠", "Brain learning knowledge"],
   ["🎯", "Target goals"],
   ["⭐", "Star favorites"],

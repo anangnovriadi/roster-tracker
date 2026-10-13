@@ -52,7 +52,7 @@ Use two terminals.
 
 ```bash
 # Terminal 1: backend API on http://localhost:8081
-go run -buildvcs=true ./cmd/memos --port 8081
+go run -buildvcs=true ./cmd/roster-tracker --port 8081
 ```
 
 ```bash
@@ -68,14 +68,14 @@ Build the frontend into the Go binary, then run only the backend:
 
 ```bash
 cd web && pnpm release && cd ..
-go run -buildvcs=true ./cmd/memos --port 8081
+go run -buildvcs=true ./cmd/roster-tracker --port 8081
 ```
 
 Open http://localhost:8081. Run `pnpm release` again after any UI change.
 
 ### Admin account seeder
 
-On every start, the server checks the database. If it has no users yet, a seeder creates this admin account (see `cmd/memos/defaults.go`):
+On every start, the server checks the database. If it has no users yet, a seeder creates this admin account (see `cmd/roster-tracker/defaults.go`):
 
 | Field | Value |
 | --- | --- |
@@ -90,8 +90,14 @@ The seeder does nothing once any user exists, so restarting never resets or dupl
 
 1. Start the app (Option 1 or Option 2 above).
 2. Open the app and click **Sign in**.
-3. Enter username `admin` and password `12345678`. Sign-in uses the username, not the email.
+3. Enter username `admin` (or email `admin@mail.com`) and password `12345678`.
 4. Change the password right away in Settings → My Account.
+
+The sign-in form accepts either a username or an email address in the same field:
+
+- Usernames match exactly (letter case matters).
+- Email addresses match case-insensitively, so `Admin@Mail.com` also works. Email sign-in only works for members who have an email set in their profile.
+- If a legacy username contains `@` and equals another member's email, the username wins.
 
 Self sign-up is disabled; the admin adds members in Settings → Member. Anyone can read notes and the duty roster without signing in.
 
@@ -104,18 +110,18 @@ To wipe all data and get a fresh admin account from the seeder:
 
 # 2. Delete the SQLite database and uploaded files from the data directory
 #    (the repository root by default, or the folder passed to --data)
-rm -f memos_prod.db memos_prod.db-shm memos_prod.db-wal
+rm -f roster_prod.db roster_prod.db-shm roster_prod.db-wal
 rm -rf assets
 
 # 3. Start the backend again; the seeder recreates the admin account
-go run -buildvcs=true ./cmd/memos --port 8081
+go run -buildvcs=true ./cmd/roster-tracker --port 8081
 ```
 
-Then sign in again with `admin` / `12345678`. This deletes every note, member, roster entry, and upload, so back up `memos_prod.db` first if you might need the data. For MySQL or PostgreSQL, drop and recreate the database instead of deleting files.
+Then sign in again with `admin` (or `admin@mail.com`) / `12345678`. This deletes every note, member, roster entry, and upload, so back up `roster_prod.db` first if you might need the data. For MySQL or PostgreSQL, drop and recreate the database instead of deleting files.
 
 ### Data and configuration
 
-By default, the SQLite database (`memos_prod.db`) and uploaded files are stored in the current directory. Useful flags:
+By default, the SQLite database (`roster_prod.db`) and uploaded files are stored in the current directory. Useful flags:
 
 | Flag | Description | Default |
 | --- | --- | --- |
@@ -126,12 +132,12 @@ By default, the SQLite database (`memos_prod.db`) and uploaded files are stored 
 | `--instance-url` | Public URL of the instance | |
 | `--log-level` | `debug`, `info`, `warn`, `error` | `info` |
 
-Every flag can also be set as an environment variable with the `MEMOS_` prefix, for example `MEMOS_PORT=8081` or `MEMOS_DATA=./data`.
+Every flag can also be set as an environment variable with the `ROSTER_` prefix, for example `ROSTER_PORT=8081` or `ROSTER_DATA=./data`.
 
 Example with PostgreSQL:
 
 ```bash
-go run -buildvcs=true ./cmd/memos --port 8081 \
+go run -buildvcs=true ./cmd/roster-tracker --port 8081 \
   --driver postgres \
   --dsn "postgresql://user:password@localhost:5432/roster_tracker?sslmode=disable"
 ```
@@ -155,7 +161,7 @@ cd proto && buf generate && buf lint
 ```bash
 # Build the frontend into server/frontend/dist, then build the binary
 cd web && pnpm release && cd ..
-go build -o build/roster-tracker ./cmd/memos
+go build -o build/roster-tracker ./cmd/roster-tracker
 
 ./build/roster-tracker --port 8081
 ```

@@ -6,12 +6,12 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.AttachmentDeletionPolicy, attachmentIDs []int32) error {
 	if policy == nil || policy.ActorUserID <= 0 {
-		return store.ErrMemoPermissionDenied
+		return store.ErrNotePermissionDenied
 	}
 	tx, err := d.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -19,7 +19,7 @@ func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.Atta
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	actor, err := requirePostgresActiveMemoActor(ctx, tx, policy.ActorUserID)
+	actor, err := requirePostgresActiveNoteActor(ctx, tx, policy.ActorUserID)
 	if err != nil {
 		return err
 	}
@@ -27,14 +27,14 @@ func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.Atta
 	if err != nil {
 		return errors.Wrap(err, "failed to read attachment delete targets")
 	}
-	memoIDs, err := store.ValidateAttachmentMutationTargets(policy.ActorUserID, actor.Admin, attachmentIDs, attachments)
+	noteIDs, err := store.ValidateAttachmentMutationTargets(policy.ActorUserID, actor.Admin, attachmentIDs, attachments)
 	if err != nil {
 		return err
 	}
-	if err := store.ValidateAttachmentDeletionMemoSnapshots(memoIDs, policy.ExpectedMemoContents); err != nil {
+	if err := store.ValidateAttachmentDeletionNoteSnapshots(noteIDs, policy.ExpectedNoteContents); err != nil {
 		return err
 	}
-	if err := authorizePostgresAttachmentMutation(ctx, tx, policy.ActorUserID, actor.Admin, memoIDs, policy.ExpectedMemoContents); err != nil {
+	if err := authorizePostgresAttachmentMutation(ctx, tx, policy.ActorUserID, actor.Admin, noteIDs, policy.ExpectedNoteContents); err != nil {
 		return err
 	}
 
@@ -46,7 +46,7 @@ func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.Atta
 		if rows, err := result.RowsAffected(); err != nil {
 			return errors.Wrap(err, "failed to count deleted attachment")
 		} else if rows != 1 {
-			return store.ErrMemoMutationConflict
+			return store.ErrNoteMutationConflict
 		}
 	}
 	if err := tx.Commit(); err != nil {
@@ -60,7 +60,7 @@ func listPostgresAttachmentSnapshots(ctx context.Context, tx *sql.Tx, attachment
 	seen := make(map[int32]struct{}, len(attachmentIDs))
 	for _, batch := range deleteUserBatches(attachmentIDs, deleteUserBatchSize) {
 		clause, args := deleteUserInClause(1, batch)
-		if err := appendDeleteUserAttachments(ctx, tx, `SELECT id, uid, creator_id, memo_id, storage_type, reference, payload
+		if err := appendDeleteUserAttachments(ctx, tx, `SELECT id, uid, creator_id, note_id, storage_type, reference, payload
 			FROM attachment WHERE id IN `+clause+` ORDER BY id`, args, seen, &attachments); err != nil {
 			return nil, err
 		}
@@ -73,38 +73,38 @@ func authorizePostgresAttachmentMutation(
 	tx *sql.Tx,
 	actorUserID int32,
 	actorIsAdmin bool,
-	memoIDs []int32,
-	expectedMemoContents map[int32]string,
+	noteIDs []int32,
+	expectedNoteContents map[int32]string,
 ) error {
-	writePolicy := &store.MemoWritePolicy{ActorUserID: actorUserID}
-	for _, memoID := range memoIDs {
-		snapshot := &store.MemoWriteSnapshot{ActorIsAdmin: actorIsAdmin}
-		var memoSpace sql.NullInt64
+	writePolicy := &store.NoteWritePolicy{ActorUserID: actorUserID}
+	for _, noteID := range noteIDs {
+		snapshot := &store.NoteWriteSnapshot{ActorIsAdmin: actorIsAdmin}
+		var noteSpace sql.NullInt64
 		var content string
 		if err := tx.QueryRowContext(ctx, `SELECT creator_id, row_status, space_id, visibility, content
-			FROM memo WHERE id = $1`, memoID).Scan(
-			&snapshot.CreatorID, &snapshot.RowStatus, &memoSpace, &snapshot.Visibility, &content,
+			FROM note WHERE id = $1`, noteID).Scan(
+			&snapshot.CreatorID, &snapshot.RowStatus, &noteSpace, &snapshot.Visibility, &content,
 		); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				return store.ErrMemoMutationConflict
+				return store.ErrNoteMutationConflict
 			}
-			return errors.Wrap(err, "failed to read attachment memo")
+			return errors.Wrap(err, "failed to read attachment note")
 		}
-		snapshot.SpaceID = store.NullInt32Pointer(memoSpace)
+		snapshot.SpaceID = store.NullInt32Pointer(noteSpace)
 		if snapshot.SpaceID != nil {
 			var err error
-			snapshot.SourceSpaceExists, snapshot.SourceMemberActive, err = readPostgresMemoSpaceState(ctx, tx, *snapshot.SpaceID, actorUserID)
+			snapshot.SourceSpaceExists, snapshot.SourceMemberActive, err = readPostgresNoteSpaceState(ctx, tx, *snapshot.SpaceID, actorUserID)
 			if err != nil {
-				return errors.Wrap(err, "failed to read attachment memo space state")
+				return errors.Wrap(err, "failed to read attachment note space state")
 			}
 		}
-		if err := store.ValidateMemoWriteSnapshot(writePolicy, nil, snapshot); err != nil {
+		if err := store.ValidateNoteWriteSnapshot(writePolicy, nil, snapshot); err != nil {
 			return err
 		}
-		if expectedMemoContents != nil {
-			expectedContent, ok := expectedMemoContents[memoID]
+		if expectedNoteContents != nil {
+			expectedContent, ok := expectedNoteContents[noteID]
 			if !ok || content != expectedContent {
-				return store.ErrMemoMutationConflict
+				return store.ErrNoteMutationConflict
 			}
 		}
 	}

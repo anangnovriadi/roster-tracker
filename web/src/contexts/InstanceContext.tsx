@@ -13,8 +13,8 @@ import {
   InstanceSetting_GeneralSetting,
   InstanceSetting_GeneralSettingSchema,
   InstanceSetting_Key,
-  InstanceSetting_MemoRelatedSetting,
-  InstanceSetting_MemoRelatedSettingSchema,
+  InstanceSetting_NoteRelatedSetting,
+  InstanceSetting_NoteRelatedSettingSchema,
   InstanceSetting_NotificationSetting,
   InstanceSetting_NotificationSettingSchema,
   InstanceSetting_StorageSetting,
@@ -45,7 +45,7 @@ interface InstanceState {
 interface InstanceContextValue extends InstanceState {
   accessSetting: InstanceSetting_AccessSetting;
   generalSetting: InstanceSetting_GeneralSetting;
-  memoRelatedSetting: InstanceSetting_MemoRelatedSetting;
+  noteRelatedSetting: InstanceSetting_NoteRelatedSetting;
   storageSetting: InstanceSetting_StorageSetting;
   notificationSetting: InstanceSetting_NotificationSetting;
   aiSetting: InstanceSetting_AISetting;
@@ -87,12 +87,12 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     return create(InstanceSetting_GeneralSettingSchema, {});
   }, [state.settings]);
 
-  const memoRelatedSetting = useMemo((): InstanceSetting_MemoRelatedSetting => {
-    const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}MEMO_RELATED`);
-    if (setting?.value.case === "memoRelatedSetting") {
+  const noteRelatedSetting = useMemo((): InstanceSetting_NoteRelatedSetting => {
+    const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}NOTE_RELATED`);
+    if (setting?.value.case === "noteRelatedSetting") {
       return setting.value.value;
     }
-    return create(InstanceSetting_MemoRelatedSettingSchema, {});
+    return create(InstanceSetting_NoteRelatedSettingSchema, {});
   }, [state.settings]);
 
   const storageSetting = useMemo((): InstanceSetting_StorageSetting => {
@@ -143,7 +143,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
 
     const settingsRequest = instanceServiceClient
       .batchGetInstanceSettings({
-        names: [buildInstanceSettingName(InstanceSetting_Key.GENERAL), buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED)],
+        names: [buildInstanceSettingName(InstanceSetting_Key.GENERAL), buildInstanceSettingName(InstanceSetting_Key.NOTE_RELATED)],
       })
       .then((settingsResponse) => {
         for (const setting of settingsResponse.instanceSettings) {
@@ -243,7 +243,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       ...state,
       accessSetting,
       generalSetting,
-      memoRelatedSetting,
+      noteRelatedSetting,
       storageSetting,
       notificationSetting,
       aiSetting,
@@ -256,7 +256,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       state,
       accessSetting,
       generalSetting,
-      memoRelatedSetting,
+      noteRelatedSetting,
       storageSetting,
       notificationSetting,
       aiSetting,

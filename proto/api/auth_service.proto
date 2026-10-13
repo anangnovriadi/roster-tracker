@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package memos.api;
+package roster.api;
 
 import "api/user_service.proto";
 import "google/api/annotations.proto";
@@ -62,7 +62,7 @@ message SignInRequest {
   // PasswordCredentials are a username and password.
   // Regular users cannot use them when the instance disallows password sign-in.
   message PasswordCredentials {
-    // Required. The username to sign in with.
+    // Required. The username or email address to sign in with.
     string username = 1 [(google.api.field_behavior) = REQUIRED];
 
     // Required. The password to sign in with.
@@ -76,7 +76,7 @@ message SignInRequest {
     // Format: identity-providers/{idp}
     string identity_provider = 1 [
       (google.api.field_behavior) = REQUIRED,
-      (google.api.resource_reference) = {type: "memos.api/IdentityProvider"}
+      (google.api.resource_reference) = {type: "roster.api/IdentityProvider"}
     ];
 
     // Required. The authorization code returned by the identity provider.

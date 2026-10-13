@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db"
+	"github.com/anangnovriadi/roster-tracker/store"
+	"github.com/anangnovriadi/roster-tracker/store/db"
 )
 
 func TestReactionStore(t *testing.T) {
@@ -18,11 +18,11 @@ func TestReactionStore(t *testing.T) {
 
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-store")
+	note := createReactionTestNote(ctx, t, ts, user.ID, "reaction-store")
 
 	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       memo.ID,
+		NoteID:       note.ID,
 		ReactionType: "💗",
 	})
 	require.NoError(t, err)
@@ -30,7 +30,7 @@ func TestReactionStore(t *testing.T) {
 	require.NotEmpty(t, reaction.ID)
 
 	reactions, err := ts.ListReactions(ctx, &store.FindReaction{
-		MemoID: &memo.ID,
+		NoteID: &note.ID,
 	})
 	require.NoError(t, err)
 	require.Len(t, reactions, 1)
@@ -44,7 +44,7 @@ func TestReactionStore(t *testing.T) {
 	require.NotNil(t, gotReaction)
 	require.Equal(t, reaction.ID, gotReaction.ID)
 	require.Equal(t, reaction.CreatorID, gotReaction.CreatorID)
-	require.Equal(t, reaction.MemoID, gotReaction.MemoID)
+	require.Equal(t, reaction.NoteID, gotReaction.NoteID)
 	require.Equal(t, reaction.ReactionType, gotReaction.ReactionType)
 
 	// Test GetReaction with non-existent ID.
@@ -57,7 +57,7 @@ func TestReactionStore(t *testing.T) {
 
 	// An empty delete filter must not remove every reaction.
 	require.NoError(t, ts.DeleteReaction(ctx, &store.DeleteReaction{}))
-	reactions, err = ts.ListReactions(ctx, &store.FindReaction{MemoID: &memo.ID})
+	reactions, err = ts.ListReactions(ctx, &store.FindReaction{NoteID: &note.ID})
 	require.NoError(t, err)
 	require.Len(t, reactions, 1)
 
@@ -67,7 +67,7 @@ func TestReactionStore(t *testing.T) {
 	require.NoError(t, err)
 
 	reactions, err = ts.ListReactions(ctx, &store.FindReaction{
-		MemoID: &memo.ID,
+		NoteID: &note.ID,
 	})
 	require.NoError(t, err)
 	require.Len(t, reactions, 0)
@@ -75,65 +75,65 @@ func TestReactionStore(t *testing.T) {
 	ts.Close()
 }
 
-func TestReactionDeleteByMemoID(t *testing.T) {
+func TestReactionDeleteByNoteID(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo1 := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-delete-memo-1")
-	memo2 := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-delete-memo-2")
+	note1 := createReactionTestNote(ctx, t, ts, user.ID, "reaction-delete-note-1")
+	note2 := createReactionTestNote(ctx, t, ts, user.ID, "reaction-delete-note-2")
 
 	for _, reaction := range []*store.Reaction{
-		{CreatorID: user.ID, MemoID: memo1.ID, ReactionType: "👍"},
-		{CreatorID: user.ID, MemoID: memo1.ID, ReactionType: "❤️"},
-		{CreatorID: user.ID, MemoID: memo2.ID, ReactionType: "👍"},
+		{CreatorID: user.ID, NoteID: note1.ID, ReactionType: "👍"},
+		{CreatorID: user.ID, NoteID: note1.ID, ReactionType: "❤️"},
+		{CreatorID: user.ID, NoteID: note2.ID, ReactionType: "👍"},
 	} {
 		_, err := ts.UpsertReaction(ctx, reaction)
 		require.NoError(t, err)
 	}
 
-	require.NoError(t, ts.DeleteReaction(ctx, &store.DeleteReaction{MemoID: &memo1.ID}))
+	require.NoError(t, ts.DeleteReaction(ctx, &store.DeleteReaction{NoteID: &note1.ID}))
 	reactions, err := ts.ListReactions(ctx, &store.FindReaction{})
 	require.NoError(t, err)
 	require.Len(t, reactions, 1)
-	require.Equal(t, memo2.ID, reactions[0].MemoID)
+	require.Equal(t, note2.ID, reactions[0].NoteID)
 
 	ts.Close()
 }
 
-func TestReactionRejectsDeletedMemo(t *testing.T) {
+func TestReactionRejectsDeletedNote(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-deleted-memo")
-	require.NoError(t, ts.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}))
+	note := createReactionTestNote(ctx, t, ts, user.ID, "reaction-deleted-note")
+	require.NoError(t, ts.DeleteNote(ctx, &store.DeleteNote{ID: note.ID}))
 
 	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       memo.ID,
+		NoteID:       note.ID,
 		ReactionType: "👍",
 	})
-	require.ErrorIs(t, err, store.ErrReactionMemoNotFound)
+	require.ErrorIs(t, err, store.ErrReactionNoteNotFound)
 	require.Nil(t, reaction)
 
-	reactions, err := ts.ListReactions(ctx, &store.FindReaction{MemoID: &memo.ID})
+	reactions, err := ts.ListReactions(ctx, &store.FindReaction{NoteID: &note.ID})
 	require.NoError(t, err)
 	require.Empty(t, reactions)
 
-	existingMemo := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-existing-after-rejection")
+	existingNote := createReactionTestNote(ctx, t, ts, user.ID, "reaction-existing-after-rejection")
 	reaction, err = ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       existingMemo.ID,
+		NoteID:       existingNote.ID,
 		ReactionType: "👍",
 	})
 	require.NoError(t, err)
 	require.NotNil(t, reaction)
-	require.Equal(t, existingMemo.ID, reaction.MemoID)
+	require.Equal(t, existingNote.ID, reaction.NoteID)
 
 	ts.Close()
 }
@@ -148,12 +148,12 @@ func TestReactionListByCreatorID(t *testing.T) {
 
 	user2, err := createTestingUserWithRole(ctx, ts, "user2", store.RoleUser)
 	require.NoError(t, err)
-	memo := createReactionTestMemo(ctx, t, ts, user1.ID, "reaction-list-by-creator")
+	note := createReactionTestNote(ctx, t, ts, user1.ID, "reaction-list-by-creator")
 
 	// User 1 creates reaction
 	_, err = ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user1.ID,
-		MemoID:       memo.ID,
+		NoteID:       note.ID,
 		ReactionType: "👍",
 	})
 	require.NoError(t, err)
@@ -161,14 +161,14 @@ func TestReactionListByCreatorID(t *testing.T) {
 	// User 2 creates reaction
 	_, err = ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user2.ID,
-		MemoID:       memo.ID,
+		NoteID:       note.ID,
 		ReactionType: "❤️",
 	})
 	require.NoError(t, err)
 
-	// List all reactions for the memo.
+	// List all reactions for the note.
 	reactions, err := ts.ListReactions(ctx, &store.FindReaction{
-		MemoID: &memo.ID,
+		NoteID: &note.ID,
 	})
 	require.NoError(t, err)
 	require.Len(t, reactions, 2)
@@ -184,50 +184,50 @@ func TestReactionListByCreatorID(t *testing.T) {
 	ts.Close()
 }
 
-func TestReactionMultipleMemoIDs(t *testing.T) {
+func TestReactionMultipleNoteIDs(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo1 := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-memo-1")
-	memo2 := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-memo-2")
-	memo3 := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-memo-3")
+	note1 := createReactionTestNote(ctx, t, ts, user.ID, "reaction-note-1")
+	note2 := createReactionTestNote(ctx, t, ts, user.ID, "reaction-note-2")
+	note3 := createReactionTestNote(ctx, t, ts, user.ID, "reaction-note-3")
 
-	// Create reactions for different memos.
+	// Create reactions for different notes.
 	_, err = ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       memo1.ID,
+		NoteID:       note1.ID,
 		ReactionType: "👍",
 	})
 	require.NoError(t, err)
 
 	_, err = ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       memo2.ID,
+		NoteID:       note2.ID,
 		ReactionType: "❤️",
 	})
 	require.NoError(t, err)
 	_, err = ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       memo3.ID,
+		NoteID:       note3.ID,
 		ReactionType: "🔥",
 	})
 	require.NoError(t, err)
 
-	// List by memo ID list, excluding the third memo.
+	// List by note ID list, excluding the third note.
 	reactions, err := ts.ListReactions(ctx, &store.FindReaction{
-		MemoIDList: []int32{memo1.ID, memo2.ID},
+		NoteIDList: []int32{note1.ID, note2.ID},
 	})
 	require.NoError(t, err)
 	require.Len(t, reactions, 2)
-	require.ElementsMatch(t, []int32{memo1.ID, memo2.ID}, []int32{reactions[0].MemoID, reactions[1].MemoID})
+	require.ElementsMatch(t, []int32{note1.ID, note2.ID}, []int32{reactions[0].NoteID, reactions[1].NoteID})
 
-	reaction, err := ts.GetReaction(ctx, &store.FindReaction{MemoIDList: []int32{memo2.ID}})
+	reaction, err := ts.GetReaction(ctx, &store.FindReaction{NoteIDList: []int32{note2.ID}})
 	require.NoError(t, err)
 	require.NotNil(t, reaction)
-	require.Equal(t, memo2.ID, reaction.MemoID)
+	require.Equal(t, note2.ID, reaction.NoteID)
 
 	ts.Close()
 }
@@ -239,12 +239,12 @@ func TestReactionUpsertDifferentTypes(t *testing.T) {
 
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-different-types")
+	note := createReactionTestNote(ctx, t, ts, user.ID, "reaction-different-types")
 
 	// Create first reaction
 	reaction1, err := ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       memo.ID,
+		NoteID:       note.ID,
 		ReactionType: "👍",
 	})
 	require.NoError(t, err)
@@ -252,7 +252,7 @@ func TestReactionUpsertDifferentTypes(t *testing.T) {
 	// Create second reaction with different type (should create new, not update)
 	reaction2, err := ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       memo.ID,
+		NoteID:       note.ID,
 		ReactionType: "❤️",
 	})
 	require.NoError(t, err)
@@ -261,7 +261,7 @@ func TestReactionUpsertDifferentTypes(t *testing.T) {
 	require.NotEqual(t, reaction1.ID, reaction2.ID)
 
 	reactions, err := ts.ListReactions(ctx, &store.FindReaction{
-		MemoID: &memo.ID,
+		NoteID: &note.ID,
 	})
 	require.NoError(t, err)
 	require.Len(t, reactions, 2)
@@ -269,22 +269,22 @@ func TestReactionUpsertDifferentTypes(t *testing.T) {
 	ts.Close()
 }
 
-func TestReactionDeletedWithMemo(t *testing.T) {
+func TestReactionDeletedWithNote(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-delete-with-memo")
+	note := createReactionTestNote(ctx, t, ts, user.ID, "reaction-delete-with-note")
 	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       memo.ID,
+		NoteID:       note.ID,
 		ReactionType: "👍",
 	})
 	require.NoError(t, err)
 
-	require.NoError(t, ts.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}))
+	require.NoError(t, ts.DeleteNote(ctx, &store.DeleteNote{ID: note.ID}))
 	got, err := ts.GetReaction(ctx, &store.FindReaction{ID: &reaction.ID})
 	require.NoError(t, err)
 	require.Nil(t, got)
@@ -292,9 +292,9 @@ func TestReactionDeletedWithMemo(t *testing.T) {
 	ts.Close()
 }
 
-func TestReactionInsertedAfterMemoCleanupStartsIsRemoved(t *testing.T) {
+func TestReactionInsertedAfterNoteCleanupStartsIsRemoved(t *testing.T) {
 	setupContext := context.Background()
-	barrierDriver := &memoDeleteBarrierDriver{
+	barrierDriver := &noteDeleteBarrierDriver{
 		deleteStarted:  make(chan struct{}),
 		continueDelete: make(chan struct{}),
 	}
@@ -307,11 +307,11 @@ func TestReactionInsertedAfterMemoCleanupStartsIsRemoved(t *testing.T) {
 
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-insert-during-delete")
+	note := createReactionTestNote(ctx, t, ts, user.ID, "reaction-insert-during-delete")
 
 	deleteResult := make(chan error, 1)
 	go func() {
-		deleteResult <- ts.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID})
+		deleteResult <- ts.DeleteNote(ctx, &store.DeleteNote{ID: note.ID})
 	}()
 	deleteReleased := false
 	defer func() {
@@ -323,16 +323,16 @@ func TestReactionInsertedAfterMemoCleanupStartsIsRemoved(t *testing.T) {
 	select {
 	case <-barrierDriver.deleteStarted:
 	case err := <-deleteResult:
-		require.FailNowf(t, "memo delete returned before reaching barrier", "error: %v", err)
+		require.FailNowf(t, "note delete returned before reaching barrier", "error: %v", err)
 	case <-ctx.Done():
-		require.FailNow(t, "timed out waiting for memo delete barrier")
+		require.FailNow(t, "timed out waiting for note delete barrier")
 	}
 
 	// The deletion transaction has not started yet. A reaction created in this
-	// window must still be removed by the compound memo deletion.
+	// window must still be removed by the compound note deletion.
 	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       memo.ID,
+		NoteID:       note.ID,
 		ReactionType: "👍",
 	})
 	require.NoError(t, err)
@@ -344,15 +344,15 @@ func TestReactionInsertedAfterMemoCleanupStartsIsRemoved(t *testing.T) {
 	case err := <-deleteResult:
 		require.NoError(t, err)
 	case <-ctx.Done():
-		require.FailNow(t, "timed out waiting for memo delete")
+		require.FailNow(t, "timed out waiting for note delete")
 	}
 
-	reactions, err := ts.ListReactions(ctx, &store.FindReaction{MemoID: &memo.ID})
+	reactions, err := ts.ListReactions(ctx, &store.FindReaction{NoteID: &note.ID})
 	require.NoError(t, err)
 	require.Empty(t, reactions)
 }
 
-func TestReactionUpsertBlocksWhileMemoDeleteIsUncommitted(t *testing.T) {
+func TestReactionUpsertBlocksWhileNoteDeleteIsUncommitted(t *testing.T) {
 	setupContext := context.Background()
 	ts := NewTestingStore(setupContext, t)
 	t.Cleanup(func() {
@@ -363,7 +363,7 @@ func TestReactionUpsertBlocksWhileMemoDeleteIsUncommitted(t *testing.T) {
 
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo := createReactionTestMemo(ctx, t, ts, user.ID, "reaction-waits-for-delete")
+	note := createReactionTestNote(ctx, t, ts, user.ID, "reaction-waits-for-delete")
 
 	dbTx, err := ts.GetDriver().GetDB().BeginTx(ctx, nil)
 	require.NoError(t, err)
@@ -374,11 +374,11 @@ func TestReactionUpsertBlocksWhileMemoDeleteIsUncommitted(t *testing.T) {
 		}
 	}()
 
-	deleteMemoQuery := "DELETE FROM memo WHERE id = ?"
+	deleteNoteQuery := "DELETE FROM note WHERE id = ?"
 	if getDriverFromEnv() == "postgres" {
-		deleteMemoQuery = "DELETE FROM memo WHERE id = $1"
+		deleteNoteQuery = "DELETE FROM note WHERE id = $1"
 	}
-	_, err = dbTx.ExecContext(ctx, deleteMemoQuery, memo.ID)
+	_, err = dbTx.ExecContext(ctx, deleteNoteQuery, note.ID)
 	require.NoError(t, err)
 
 	var reaction *store.Reaction
@@ -392,7 +392,7 @@ func TestReactionUpsertBlocksWhileMemoDeleteIsUncommitted(t *testing.T) {
 		go func() {
 			reaction, err := ts.UpsertReaction(ctx, &store.Reaction{
 				CreatorID:    user.ID,
-				MemoID:       memo.ID,
+				NoteID:       note.ID,
 				ReactionType: "👍",
 			})
 			resultChannel <- upsertResult{reaction: reaction, err: err}
@@ -403,7 +403,7 @@ func TestReactionUpsertBlocksWhileMemoDeleteIsUncommitted(t *testing.T) {
 		for ts.GetDriver().GetDB().Stats().InUse < 2 {
 			select {
 			case result := <-resultChannel:
-				require.FailNowf(t, "reaction upsert completed before memo delete committed", "reaction: %+v, error: %v", result.reaction, result.err)
+				require.FailNowf(t, "reaction upsert completed before note delete committed", "reaction: %+v, error: %v", result.reaction, result.err)
 			case <-poll.C:
 			case <-ctx.Done():
 				require.FailNow(t, "timed out waiting for reaction upsert to reach SQLite")
@@ -420,49 +420,49 @@ func TestReactionUpsertBlocksWhileMemoDeleteIsUncommitted(t *testing.T) {
 		}
 	} else {
 		// Both client/server database engines must wait for the uncommitted
-		// parent deletion before deciding whether the memo still exists.
+		// parent deletion before deciding whether the note still exists.
 		lockWaitContext, lockWaitCancel := context.WithTimeout(ctx, 500*time.Millisecond)
 		startTime := time.Now()
 		reaction, upsertErr = ts.UpsertReaction(lockWaitContext, &store.Reaction{
 			CreatorID:    user.ID,
-			MemoID:       memo.ID,
+			NoteID:       note.ID,
 			ReactionType: "👍",
 		})
 		lockWaitCancel()
 		require.Error(t, upsertErr)
 		require.Nil(t, reaction)
-		require.GreaterOrEqual(t, time.Since(startTime), 450*time.Millisecond, "reaction upsert must wait for the memo delete transaction")
+		require.GreaterOrEqual(t, time.Since(startTime), 450*time.Millisecond, "reaction upsert must wait for the note delete transaction")
 
 		require.NoError(t, dbTx.Commit())
 		txOpen = false
 		reaction, upsertErr = ts.UpsertReaction(ctx, &store.Reaction{
 			CreatorID:    user.ID,
-			MemoID:       memo.ID,
+			NoteID:       note.ID,
 			ReactionType: "👍",
 		})
 	}
-	require.ErrorIs(t, upsertErr, store.ErrReactionMemoNotFound)
+	require.ErrorIs(t, upsertErr, store.ErrReactionNoteNotFound)
 	require.Nil(t, reaction)
 
-	reactions, err := ts.ListReactions(ctx, &store.FindReaction{MemoID: &memo.ID})
+	reactions, err := ts.ListReactions(ctx, &store.FindReaction{NoteID: &note.ID})
 	require.NoError(t, err)
 	require.Empty(t, reactions)
 }
 
-type memoDeleteBarrierDriver struct {
+type noteDeleteBarrierDriver struct {
 	store.Driver
 	deleteStarted  chan struct{}
 	continueDelete chan struct{}
 }
 
-func (d *memoDeleteBarrierDriver) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoWithPolicy) (*store.DeleteMemoWithPolicyResult, error) {
+func (d *noteDeleteBarrierDriver) DeleteNoteWithPolicy(ctx context.Context, delete *store.DeleteNoteWithPolicy) (*store.DeleteNoteWithPolicyResult, error) {
 	close(d.deleteStarted)
 	select {
 	case <-d.continueDelete:
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
-	return d.Driver.DeleteMemoWithPolicy(ctx, delete)
+	return d.Driver.DeleteNoteWithPolicy(ctx, delete)
 }
 
 func newReactionTestingStoreWithDriver(ctx context.Context, t *testing.T, wrap func(store.Driver) store.Driver) *store.Store {
@@ -479,14 +479,14 @@ func newReactionTestingStoreWithDriver(ctx context.Context, t *testing.T, wrap f
 	return ts
 }
 
-func createReactionTestMemo(ctx context.Context, t *testing.T, ts *store.Store, creatorID int32, uid string) *store.Memo {
+func createReactionTestNote(ctx context.Context, t *testing.T, ts *store.Store, creatorID int32, uid string) *store.Note {
 	t.Helper()
-	memo, err := ts.CreateMemo(ctx, &store.Memo{
+	note, err := ts.CreateNote(ctx, &store.Note{
 		UID:        uid,
 		CreatorID:  creatorID,
 		Content:    uid,
 		Visibility: store.Private,
 	})
 	require.NoError(t, err)
-	return memo
+	return note
 }

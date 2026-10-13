@@ -7,7 +7,7 @@ import { AttachmentService } from "./types/proto/api/attachment_service_pb";
 import { AuthService } from "./types/proto/api/auth_service_pb";
 import { IdentityProviderService } from "./types/proto/api/idp_service_pb";
 import { InstanceService } from "./types/proto/api/instance_service_pb";
-import { MemoService } from "./types/proto/api/memo_service_pb";
+import { NoteService } from "./types/proto/api/note_service_pb";
 import { RosterService } from "./types/proto/api/roster_service_pb";
 import { SpaceService } from "./types/proto/api/space_service_pb";
 import { UserService } from "./types/proto/api/user_service_pb";
@@ -135,7 +135,7 @@ export async function getRequestToken(): Promise<string | null> {
   }
 
   // Preflight refresh: avoid sending requests with expired access tokens.
-  // This is especially important for public endpoints (e.g. ListMemos), where
+  // This is especially important for public endpoints (e.g. ListNotes), where
   // an expired token could otherwise be treated as anonymous and return
   // guest-scoped data before the reactive 401 refresh path runs.
   if (isTokenExpired(REQUEST_TOKEN_EXPIRY_BUFFER_MS)) {
@@ -195,7 +195,7 @@ export const authServiceClient = createClient(AuthService, transport);
 export const userServiceClient = createClient(UserService, transport);
 
 // Content service clients
-export const memoServiceClient = createClient(MemoService, transport);
+export const noteServiceClient = createClient(NoteService, transport);
 export const attachmentServiceClient = createClient(AttachmentService, transport);
 export const aiServiceClient = createClient(AIService, transport);
 export const spaceServiceClient = createClient(SpaceService, transport);

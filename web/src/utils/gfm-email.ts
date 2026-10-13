@@ -2,7 +2,7 @@ import { parser as markdownParser } from "@lezer/markdown";
 import { decodeString } from "micromark-util-decode-string";
 import { isValidMarkdownLinkReference, resolvedMarkdownLinkRanges } from "@/utils/markdown-link";
 import { decodedMarkdownCharacterReferenceAt } from "@/utils/markdown-source-boundaries";
-import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
+import { noteMarkdownExtensions } from "@/utils/note-markdown-extension";
 
 export interface GFMEmailSourceRange {
   from: number;
@@ -25,7 +25,7 @@ interface MarkdownSourceRange {
 
 const DOMAIN_AT_START = /^@(?:[A-Za-z0-9_-]+\.)+[A-Za-z0-9_-]*[A-Za-z0-9]/;
 const REFERENCE_LABEL_PREFIX = "x ";
-const sourceParser = markdownParser.configure(memoMarkdownExtensions);
+const sourceParser = markdownParser.configure(noteMarkdownExtensions);
 
 const TEXT_CONTAINERS = new Set([
   "ATXHeading1",

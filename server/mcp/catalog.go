@@ -10,31 +10,31 @@ import (
 )
 
 var curatedOperationIDs = []string{
-	"MemoService_ListMemos",
-	"MemoService_CreateMemo",
-	"MemoService_GetMemo",
-	"MemoService_UpdateMemo",
-	"MemoService_DeleteMemo",
-	"MemoService_ListMemoComments",
-	"MemoService_CreateMemoComment",
-	"MemoService_ListMemoAttachments",
-	"MemoService_SetMemoAttachments",
-	"MemoService_ListMemoReactions",
-	"MemoService_UpsertMemoReaction",
-	"MemoService_DeleteMemoReaction",
-	"MemoService_ListMemoRelations",
-	"MemoService_SetMemoRelations",
+	"NoteService_ListNotes",
+	"NoteService_CreateNote",
+	"NoteService_GetNote",
+	"NoteService_UpdateNote",
+	"NoteService_DeleteNote",
+	"NoteService_ListNoteComments",
+	"NoteService_CreateNoteComment",
+	"NoteService_ListNoteAttachments",
+	"NoteService_SetNoteAttachments",
+	"NoteService_ListNoteReactions",
+	"NoteService_UpsertNoteReaction",
+	"NoteService_DeleteNoteReaction",
+	"NoteService_ListNoteRelations",
+	"NoteService_SetNoteRelations",
 	"AttachmentService_ListAttachments",
 	"AttachmentService_CreateAttachment",
 	"AttachmentService_GetAttachment",
 	"AttachmentService_DeleteAttachment",
-	"UserService_ListMemoViews",
+	"UserService_ListNoteViews",
 	// The only allowed auth/identity operation: a read-only "whoami" so agents
-	// can resolve the current user (e.g. for UserService_ListMemoViews).
+	// can resolve the current user (e.g. for UserService_ListNoteViews).
 	"AuthService_GetCurrentUser",
-	// Spaces: memos carry a placement (Memo.space) and a SPACE audience, so an
+	// Spaces: notes carry a placement (Note.space) and a SPACE audience, so an
 	// agent needs to discover, create, and administer the spaces it can place
-	// memos in, and to handle the invitations that grant membership.
+	// notes in, and to handle the invitations that grant membership.
 	"SpaceService_ListSpaces",
 	"SpaceService_GetSpace",
 	"SpaceService_CreateSpace",
@@ -83,26 +83,26 @@ type requestBodySchemaOverride struct {
 // strict for partial updates, while body: "*" schemas include fields already
 // supplied by the path.
 var requestBodySchemaOverrides = map[string]requestBodySchemaOverride{
-	"MemoService_CreateMemo": {
+	"NoteService_CreateNote": {
 		required: []string{"content"},
 	},
-	"MemoService_UpdateMemo": {
+	"NoteService_UpdateNote": {
 		clearRequired:     true,
 		omittedProperties: []string{"name"},
 		minProperties:     1,
 	},
-	"MemoService_CreateMemoComment": {
+	"NoteService_CreateNoteComment": {
 		required: []string{"content"},
 	},
-	"MemoService_SetMemoAttachments": {
+	"NoteService_SetNoteAttachments": {
 		required:          []string{"attachments"},
 		omittedProperties: []string{"name"},
 	},
-	"MemoService_SetMemoRelations": {
+	"NoteService_SetNoteRelations": {
 		required:          []string{"relations"},
 		omittedProperties: []string{"name"},
 	},
-	"MemoService_UpsertMemoReaction": {
+	"NoteService_UpsertNoteReaction": {
 		required:          []string{"reaction"},
 		omittedProperties: []string{"name"},
 	},
@@ -344,20 +344,20 @@ func extractSchemaDefs(schema jsonSchema) map[string]any {
 
 // idempotentOperationIDs lists operations whose idempotency the HTTP-method
 // heuristic gets wrong. The "Set*" operations declaratively replace the full
-// set on a memo, so repeating an identical call converges to the same state —
+// set on a note, so repeating an identical call converges to the same state —
 // idempotent — even though they are served over PATCH (which the heuristic
 // treats as non-idempotent).
 var idempotentOperationIDs = map[string]bool{
-	"MemoService_SetMemoAttachments": true,
-	"MemoService_SetMemoRelations":   true,
+	"NoteService_SetNoteAttachments": true,
+	"NoteService_SetNoteRelations":   true,
 }
 
 // destructiveOperationIDs lists mutating operations that can overwrite or
 // remove existing user data despite not using DELETE.
 var destructiveOperationIDs = map[string]bool{
-	"MemoService_UpdateMemo":         true,
-	"MemoService_SetMemoAttachments": true,
-	"MemoService_SetMemoRelations":   true,
+	"NoteService_UpdateNote":         true,
+	"NoteService_SetNoteAttachments": true,
+	"NoteService_SetNoteRelations":   true,
 	"SpaceService_UpdateSpace":       true,
 	"SpaceService_UpdateSpaceMember": true,
 }

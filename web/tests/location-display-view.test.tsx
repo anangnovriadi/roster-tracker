@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import LocationDisplayView from "@/components/MemoMetadata/Location/LocationDisplayView";
-import type { Location } from "@/types/proto/api/memo_service_pb";
+import LocationDisplayView from "@/components/NoteMetadata/Location/LocationDisplayView";
+import type { Location } from "@/types/proto/api/note_service_pb";
 
 vi.mock("@/components/map/LazyLocationPicker", () => ({
   LazyLocationPicker: () => <div data-testid="location-picker" />,
@@ -31,7 +31,7 @@ describe("LocationDisplayView", () => {
   });
 
   it("truncates the visible address while preserving the full value as a title", () => {
-    const placeholder = "A very long street address that should not force the memo metadata row wider than its container";
+    const placeholder = "A very long street address that should not force the note metadata row wider than its container";
     const location = { latitude: 1.3521, longitude: 103.8198, placeholder } as Location;
 
     render(<LocationDisplayView location={location} />);

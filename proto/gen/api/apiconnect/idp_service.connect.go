@@ -8,7 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	api "github.com/usememos/memos/proto/gen/api"
+	api "github.com/anangnovriadi/roster-tracker/proto/gen/api"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
@@ -23,7 +23,7 @@ const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// IdentityProviderServiceName is the fully-qualified name of the IdentityProviderService service.
-	IdentityProviderServiceName = "memos.api.IdentityProviderService"
+	IdentityProviderServiceName = "roster.api.IdentityProviderService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -36,22 +36,22 @@ const (
 const (
 	// IdentityProviderServiceListIdentityProvidersProcedure is the fully-qualified name of the
 	// IdentityProviderService's ListIdentityProviders RPC.
-	IdentityProviderServiceListIdentityProvidersProcedure = "/memos.api.IdentityProviderService/ListIdentityProviders"
+	IdentityProviderServiceListIdentityProvidersProcedure = "/roster.api.IdentityProviderService/ListIdentityProviders"
 	// IdentityProviderServiceGetIdentityProviderProcedure is the fully-qualified name of the
 	// IdentityProviderService's GetIdentityProvider RPC.
-	IdentityProviderServiceGetIdentityProviderProcedure = "/memos.api.IdentityProviderService/GetIdentityProvider"
+	IdentityProviderServiceGetIdentityProviderProcedure = "/roster.api.IdentityProviderService/GetIdentityProvider"
 	// IdentityProviderServiceCreateIdentityProviderProcedure is the fully-qualified name of the
 	// IdentityProviderService's CreateIdentityProvider RPC.
-	IdentityProviderServiceCreateIdentityProviderProcedure = "/memos.api.IdentityProviderService/CreateIdentityProvider"
+	IdentityProviderServiceCreateIdentityProviderProcedure = "/roster.api.IdentityProviderService/CreateIdentityProvider"
 	// IdentityProviderServiceUpdateIdentityProviderProcedure is the fully-qualified name of the
 	// IdentityProviderService's UpdateIdentityProvider RPC.
-	IdentityProviderServiceUpdateIdentityProviderProcedure = "/memos.api.IdentityProviderService/UpdateIdentityProvider"
+	IdentityProviderServiceUpdateIdentityProviderProcedure = "/roster.api.IdentityProviderService/UpdateIdentityProvider"
 	// IdentityProviderServiceDeleteIdentityProviderProcedure is the fully-qualified name of the
 	// IdentityProviderService's DeleteIdentityProvider RPC.
-	IdentityProviderServiceDeleteIdentityProviderProcedure = "/memos.api.IdentityProviderService/DeleteIdentityProvider"
+	IdentityProviderServiceDeleteIdentityProviderProcedure = "/roster.api.IdentityProviderService/DeleteIdentityProvider"
 )
 
-// IdentityProviderServiceClient is a client for the memos.api.IdentityProviderService service.
+// IdentityProviderServiceClient is a client for the roster.api.IdentityProviderService service.
 type IdentityProviderServiceClient interface {
 	// ListIdentityProviders lists identity providers.
 	// Public, so the sign-in page can show SSO options. Client secrets are never returned.
@@ -72,7 +72,7 @@ type IdentityProviderServiceClient interface {
 	DeleteIdentityProvider(context.Context, *connect.Request[api.DeleteIdentityProviderRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
-// NewIdentityProviderServiceClient constructs a client for the memos.api.IdentityProviderService
+// NewIdentityProviderServiceClient constructs a client for the roster.api.IdentityProviderService
 // service. By default, it uses the Connect protocol with the binary Protobuf Codec, asks for
 // gzipped responses, and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply
 // the connect.WithGRPC() or connect.WithGRPCWeb() options.
@@ -125,32 +125,32 @@ type identityProviderServiceClient struct {
 	deleteIdentityProvider *connect.Client[api.DeleteIdentityProviderRequest, emptypb.Empty]
 }
 
-// ListIdentityProviders calls memos.api.IdentityProviderService.ListIdentityProviders.
+// ListIdentityProviders calls roster.api.IdentityProviderService.ListIdentityProviders.
 func (c *identityProviderServiceClient) ListIdentityProviders(ctx context.Context, req *connect.Request[api.ListIdentityProvidersRequest]) (*connect.Response[api.ListIdentityProvidersResponse], error) {
 	return c.listIdentityProviders.CallUnary(ctx, req)
 }
 
-// GetIdentityProvider calls memos.api.IdentityProviderService.GetIdentityProvider.
+// GetIdentityProvider calls roster.api.IdentityProviderService.GetIdentityProvider.
 func (c *identityProviderServiceClient) GetIdentityProvider(ctx context.Context, req *connect.Request[api.GetIdentityProviderRequest]) (*connect.Response[api.IdentityProvider], error) {
 	return c.getIdentityProvider.CallUnary(ctx, req)
 }
 
-// CreateIdentityProvider calls memos.api.IdentityProviderService.CreateIdentityProvider.
+// CreateIdentityProvider calls roster.api.IdentityProviderService.CreateIdentityProvider.
 func (c *identityProviderServiceClient) CreateIdentityProvider(ctx context.Context, req *connect.Request[api.CreateIdentityProviderRequest]) (*connect.Response[api.IdentityProvider], error) {
 	return c.createIdentityProvider.CallUnary(ctx, req)
 }
 
-// UpdateIdentityProvider calls memos.api.IdentityProviderService.UpdateIdentityProvider.
+// UpdateIdentityProvider calls roster.api.IdentityProviderService.UpdateIdentityProvider.
 func (c *identityProviderServiceClient) UpdateIdentityProvider(ctx context.Context, req *connect.Request[api.UpdateIdentityProviderRequest]) (*connect.Response[api.IdentityProvider], error) {
 	return c.updateIdentityProvider.CallUnary(ctx, req)
 }
 
-// DeleteIdentityProvider calls memos.api.IdentityProviderService.DeleteIdentityProvider.
+// DeleteIdentityProvider calls roster.api.IdentityProviderService.DeleteIdentityProvider.
 func (c *identityProviderServiceClient) DeleteIdentityProvider(ctx context.Context, req *connect.Request[api.DeleteIdentityProviderRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteIdentityProvider.CallUnary(ctx, req)
 }
 
-// IdentityProviderServiceHandler is an implementation of the memos.api.IdentityProviderService
+// IdentityProviderServiceHandler is an implementation of the roster.api.IdentityProviderService
 // service.
 type IdentityProviderServiceHandler interface {
 	// ListIdentityProviders lists identity providers.
@@ -209,7 +209,7 @@ func NewIdentityProviderServiceHandler(svc IdentityProviderServiceHandler, opts 
 		connect.WithSchema(identityProviderServiceMethods.ByName("DeleteIdentityProvider")),
 		connect.WithHandlerOptions(opts...),
 	)
-	return "/memos.api.IdentityProviderService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/roster.api.IdentityProviderService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case IdentityProviderServiceListIdentityProvidersProcedure:
 			identityProviderServiceListIdentityProvidersHandler.ServeHTTP(w, r)
@@ -231,21 +231,21 @@ func NewIdentityProviderServiceHandler(svc IdentityProviderServiceHandler, opts 
 type UnimplementedIdentityProviderServiceHandler struct{}
 
 func (UnimplementedIdentityProviderServiceHandler) ListIdentityProviders(context.Context, *connect.Request[api.ListIdentityProvidersRequest]) (*connect.Response[api.ListIdentityProvidersResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.IdentityProviderService.ListIdentityProviders is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.IdentityProviderService.ListIdentityProviders is not implemented"))
 }
 
 func (UnimplementedIdentityProviderServiceHandler) GetIdentityProvider(context.Context, *connect.Request[api.GetIdentityProviderRequest]) (*connect.Response[api.IdentityProvider], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.IdentityProviderService.GetIdentityProvider is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.IdentityProviderService.GetIdentityProvider is not implemented"))
 }
 
 func (UnimplementedIdentityProviderServiceHandler) CreateIdentityProvider(context.Context, *connect.Request[api.CreateIdentityProviderRequest]) (*connect.Response[api.IdentityProvider], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.IdentityProviderService.CreateIdentityProvider is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.IdentityProviderService.CreateIdentityProvider is not implemented"))
 }
 
 func (UnimplementedIdentityProviderServiceHandler) UpdateIdentityProvider(context.Context, *connect.Request[api.UpdateIdentityProviderRequest]) (*connect.Response[api.IdentityProvider], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.IdentityProviderService.UpdateIdentityProvider is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.IdentityProviderService.UpdateIdentityProvider is not implemented"))
 }
 
 func (UnimplementedIdentityProviderServiceHandler) DeleteIdentityProvider(context.Context, *connect.Request[api.DeleteIdentityProviderRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.IdentityProviderService.DeleteIdentityProvider is not implemented"))
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("roster.api.IdentityProviderService.DeleteIdentityProvider is not implemented"))
 }

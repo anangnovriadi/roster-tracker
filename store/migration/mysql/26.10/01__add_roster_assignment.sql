@@ -6,5 +6,5 @@ CREATE TABLE `roster_assignment` (
   UNIQUE(`duty_date`,`user_id`)
 );
 
--- Roster Tracker has no private notes: every memo is readable by everyone.
-UPDATE `memo` SET `visibility` = 'PUBLIC' WHERE `visibility` <> 'PUBLIC';
+-- Roster Tracker has no private notes: every note is readable by everyone.
+UPDATE `note` SET `visibility` = 'PUBLIC' WHERE `visibility` <> 'PUBLIC';

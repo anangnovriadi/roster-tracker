@@ -12,9 +12,9 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/server/auth"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
 )
 
 func TestSSEHandler_Authentication(t *testing.T) {
@@ -104,10 +104,10 @@ func TestSSEHandler_Authentication(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, "\n", line)
 
-		_, err = ts.Service.CreateMemo(ts.CreateUserContext(ctx, user.ID), &apipb.CreateMemoRequest{
-			MemoId: "streamed",
-			Memo: &apipb.Memo{
-				Content:    "streamed memo",
+		_, err = ts.Service.CreateNote(ts.CreateUserContext(ctx, user.ID), &apipb.CreateNoteRequest{
+			NoteId: "streamed",
+			Note: &apipb.Note{
+				Content:    "streamed note",
 				Visibility: apipb.Visibility_PUBLIC,
 			},
 		})
@@ -115,7 +115,7 @@ func TestSSEHandler_Authentication(t *testing.T) {
 
 		line, err = reader.ReadString('\n')
 		require.NoError(t, err)
-		require.Equal(t, "data: {\"type\":\"memo.changed\"}\n", line)
+		require.Equal(t, "data: {\"type\":\"note.changed\"}\n", line)
 		line, err = reader.ReadString('\n')
 		require.NoError(t, err)
 		require.Equal(t, "\n", line)

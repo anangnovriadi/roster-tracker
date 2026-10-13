@@ -60,7 +60,7 @@ const PreferencesSection = () => {
     generalSetting ||
     create(UserSetting_GeneralSettingSchema, {
       locale: "en",
-      memoVisibility: "PRIVATE",
+      noteVisibility: "PRIVATE",
       theme: "system",
       saveMediaMetadata: false,
     });

@@ -1,5 +1,5 @@
-import type { MemoFilter } from "@/contexts/MemoFilterContext";
-import type { SuggestionSource } from "@/lib/memo-suggestions";
+import type { NoteFilter } from "@/contexts/NoteFilterContext";
+import type { SuggestionSource } from "@/lib/note-suggestions";
 import { isCompleteTagValue } from "@/utils/tag-grammar";
 import { parseSuggestionExpression, readStringList, type SuggestionExpression, type SuggestionToken } from "./suggestion-expression";
 
@@ -42,7 +42,7 @@ export function extractTagConditions(source: string): TagConditions {
 }
 
 /** Tag provider: extraction and tag-specific exclusions, without presentation policy. */
-export function getTagSuggestionCandidates(filters: MemoFilter[], viewFilter?: string): { tag: string; source: SuggestionSource }[] {
+export function getTagSuggestionCandidates(filters: NoteFilter[], viewFilter?: string): { tag: string; source: SuggestionSource }[] {
   const conditions = [
     ...filters
       .filter((filter) => filter.factor === "celSearch")

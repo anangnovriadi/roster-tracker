@@ -11,8 +11,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 func TestGetInstanceProfile(t *testing.T) {
@@ -199,25 +199,25 @@ func TestGetInstanceSetting(t *testing.T) {
 		require.NotNil(t, storageSetting)
 	})
 
-	t.Run("GetInstanceSetting - memo related setting", func(t *testing.T) {
+	t.Run("GetInstanceSetting - note related setting", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		// Call GetInstanceSetting for memo related setting
+		// Call GetInstanceSetting for note related setting
 		req := &apipb.GetInstanceSettingRequest{
-			Name: "instance/settings/MEMO_RELATED",
+			Name: "instance/settings/NOTE_RELATED",
 		}
 		resp, err := ts.Service.GetInstanceSetting(ctx, req)
 
 		// Verify response
 		require.NoError(t, err)
 		require.NotNil(t, resp)
-		require.Equal(t, "instance/settings/MEMO_RELATED", resp.Name)
+		require.Equal(t, "instance/settings/NOTE_RELATED", resp.Name)
 
-		// The memo related setting should have a memo_related_setting field
-		memoRelatedSetting := resp.GetMemoRelatedSetting()
-		require.NotNil(t, memoRelatedSetting)
+		// The note related setting should have a note_related_setting field
+		noteRelatedSetting := resp.GetNoteRelatedSetting()
+		require.NotNil(t, noteRelatedSetting)
 	})
 
 	t.Run("GetInstanceSetting - tags setting", func(t *testing.T) {
@@ -340,7 +340,7 @@ func TestBatchGetInstanceSettings(t *testing.T) {
 			Names: []string{
 				"instance/settings/TAGS",
 				"instance/settings/GENERAL",
-				"instance/settings/MEMO_RELATED",
+				"instance/settings/NOTE_RELATED",
 			},
 		})
 
@@ -351,8 +351,8 @@ func TestBatchGetInstanceSettings(t *testing.T) {
 		require.NotNil(t, resp.InstanceSettings[0].GetTagsSetting())
 		require.Equal(t, "instance/settings/GENERAL", resp.InstanceSettings[1].Name)
 		require.NotNil(t, resp.InstanceSettings[1].GetGeneralSetting())
-		require.Equal(t, "instance/settings/MEMO_RELATED", resp.InstanceSettings[2].Name)
-		require.NotNil(t, resp.InstanceSettings[2].GetMemoRelatedSetting())
+		require.Equal(t, "instance/settings/NOTE_RELATED", resp.InstanceSettings[2].Name)
+		require.NotNil(t, resp.InstanceSettings[2].GetNoteRelatedSetting())
 	})
 
 	t.Run("BatchGetInstanceSettings - admin-only setting requires admin", func(t *testing.T) {
@@ -468,18 +468,18 @@ func TestTestInstanceEmailSettingRequiresPasswordWhenSMTPIdentityChanges(t *test
 func TestUpdateInstanceSetting(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("UpdateInstanceSetting - memo related content length limit", func(t *testing.T) {
+	t.Run("UpdateInstanceSetting - note related content length limit", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		admin, err := ts.CreateHostUser(ctx, "memo-setting-admin")
+		admin, err := ts.CreateHostUser(ctx, "note-setting-admin")
 		require.NoError(t, err)
 		adminCtx := ts.CreateUserContext(ctx, admin.ID)
 		settingForLimit := func(limit int32) *apipb.InstanceSetting {
 			return &apipb.InstanceSetting{
-				Name: "instance/settings/MEMO_RELATED",
-				Value: &apipb.InstanceSetting_MemoRelatedSetting_{
-					MemoRelatedSetting: &apipb.InstanceSetting_MemoRelatedSetting{
+				Name: "instance/settings/NOTE_RELATED",
+				Value: &apipb.InstanceSetting_NoteRelatedSetting_{
+					NoteRelatedSetting: &apipb.InstanceSetting_NoteRelatedSetting{
 						ContentLengthLimit: limit,
 					},
 				},
@@ -488,10 +488,10 @@ func TestUpdateInstanceSetting(t *testing.T) {
 
 		updated, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: settingForLimit(0)})
 		require.NoError(t, err)
-		require.Equal(t, int32(8192), updated.GetMemoRelatedSetting().GetContentLengthLimit())
-		got, err := ts.Service.GetInstanceSetting(ctx, &apipb.GetInstanceSettingRequest{Name: "instance/settings/MEMO_RELATED"})
+		require.Equal(t, int32(8192), updated.GetNoteRelatedSetting().GetContentLengthLimit())
+		got, err := ts.Service.GetInstanceSetting(ctx, &apipb.GetInstanceSettingRequest{Name: "instance/settings/NOTE_RELATED"})
 		require.NoError(t, err)
-		require.Equal(t, int32(8192), got.GetMemoRelatedSetting().GetContentLengthLimit())
+		require.Equal(t, int32(8192), got.GetNoteRelatedSetting().GetContentLengthLimit())
 
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: settingForLimit(8191)})
 		require.Equal(t, codes.InvalidArgument, status.Code(err))
@@ -499,11 +499,11 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		for _, limit := range []int32{8192, 16384} {
 			updated, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: settingForLimit(limit)})
 			require.NoError(t, err, "limit %d", limit)
-			require.Equal(t, limit, updated.GetMemoRelatedSetting().GetContentLengthLimit())
+			require.Equal(t, limit, updated.GetNoteRelatedSetting().GetContentLengthLimit())
 
-			got, err := ts.Service.GetInstanceSetting(ctx, &apipb.GetInstanceSettingRequest{Name: "instance/settings/MEMO_RELATED"})
+			got, err := ts.Service.GetInstanceSetting(ctx, &apipb.GetInstanceSettingRequest{Name: "instance/settings/NOTE_RELATED"})
 			require.NoError(t, err, "limit %d", limit)
-			require.Equal(t, limit, got.GetMemoRelatedSetting().GetContentLengthLimit())
+			require.Equal(t, limit, got.GetNoteRelatedSetting().GetContentLengthLimit())
 		}
 	})
 
@@ -749,7 +749,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 							SmtpUsername: "bot@example.com",
 							SmtpPassword: "secret",
 							FromEmail:    "bot@example.com",
-							FromName:     "Memos Bot",
+							FromName:     "Roster Tracker Bot",
 							ReplyTo:      "support@example.com",
 							UseTls:       true,
 						},
@@ -870,7 +870,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 							AccessKeySecret:       "super-secret",
 							Endpoint:              "s3.example.com",
 							Region:                "us-east-1",
-							Bucket:                "memos",
+							Bucket:                "notes",
 							InsecureSkipTlsVerify: true,
 						},
 					},
@@ -909,7 +909,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 							AccessKeySecret:       "", // omitted / not changed
 							Endpoint:              "s3-v2.example.com",
 							Region:                "us-east-1",
-							Bucket:                "memos",
+							Bucket:                "notes",
 							InsecureSkipTlsVerify: true,
 						},
 					},

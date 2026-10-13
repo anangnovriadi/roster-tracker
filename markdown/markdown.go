@@ -14,11 +14,11 @@ import (
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
 
-	"github.com/usememos/memos/internal/identifier"
-	mast "github.com/usememos/memos/markdown/ast"
-	"github.com/usememos/memos/markdown/extensions"
-	"github.com/usememos/memos/markdown/renderer"
-	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/internal/identifier"
+	mast "github.com/anangnovriadi/roster-tracker/markdown/ast"
+	"github.com/anangnovriadi/roster-tracker/markdown/extensions"
+	"github.com/anangnovriadi/roster-tracker/markdown/renderer"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 // ManagedAttachmentReference is an attachment URL embedded using Markdown image syntax.
@@ -33,7 +33,7 @@ type ExtractedData struct {
 	ImageDestinations                  []string
 	ManagedAttachmentReferences        []ManagedAttachmentReference
 	InvalidManagedAttachmentReferences []string
-	Property                           *storepb.MemoPayload_Property
+	Property                           *storepb.NotePayload_Property
 }
 
 // Service handles markdown metadata extraction.
@@ -46,7 +46,7 @@ type Service interface {
 	ExtractTags(content []byte) ([]string, error)
 
 	// ExtractProperties computes boolean properties
-	ExtractProperties(content []byte) (*storepb.MemoPayload_Property, error)
+	ExtractProperties(content []byte) (*storepb.NotePayload_Property, error)
 
 	// RenderMarkdown renders goldmark AST back to markdown text
 	RenderMarkdown(content []byte) (string, error)
@@ -144,7 +144,7 @@ func isTagNodeInLinkOrImage(n gast.Node) bool {
 	return false
 }
 
-func asMemoTagNode(n gast.Node) (*mast.TagNode, bool) {
+func asNoteTagNode(n gast.Node) (*mast.TagNode, bool) {
 	tagNode, ok := n.(*mast.TagNode)
 	if !ok || isTagNodeInLinkOrImage(n) {
 		return nil, false
@@ -177,7 +177,7 @@ func (s *service) ExtractTags(content []byte) ([]string, error) {
 			return gast.WalkContinue, nil
 		}
 
-		if tagNode, ok := asMemoTagNode(n); ok {
+		if tagNode, ok := asNoteTagNode(n); ok {
 			tags = appendTagHierarchy(tags, string(tagNode.Tag))
 		}
 
@@ -221,13 +221,13 @@ func extractTextFromNode(n gast.Node, source []byte, buf *strings.Builder) {
 }
 
 // ExtractProperties computes boolean properties about the content.
-func (s *service) ExtractProperties(content []byte) (*storepb.MemoPayload_Property, error) {
+func (s *service) ExtractProperties(content []byte) (*storepb.NotePayload_Property, error) {
 	root, err := s.parse(content)
 	if err != nil {
 		return nil, err
 	}
 
-	prop := &storepb.MemoPayload_Property{}
+	prop := &storepb.NotePayload_Property{}
 	firstBlockChecked := false
 
 	err = gast.Walk(root, func(n gast.Node, entering bool) (gast.WalkStatus, error) {
@@ -397,7 +397,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 		Mentions:                    []string{},
 		ImageDestinations:           []string{},
 		ManagedAttachmentReferences: []ManagedAttachmentReference{},
-		Property:                    &storepb.MemoPayload_Property{},
+		Property:                    &storepb.NotePayload_Property{},
 	}
 
 	firstBlockChecked := false
@@ -407,7 +407,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 			return gast.WalkContinue, nil
 		}
 
-		if tagNode, ok := asMemoTagNode(n); ok {
+		if tagNode, ok := asNoteTagNode(n); ok {
 			data.Tags = appendTagHierarchy(data.Tags, string(tagNode.Tag))
 		}
 		if mentionNode, ok := n.(*mast.MentionNode); ok {
@@ -545,7 +545,7 @@ func (s *service) RenameTag(content []byte, oldTag, newTag string) (string, erro
 			return gast.WalkContinue, nil
 		}
 
-		if tagNode, ok := asMemoTagNode(n); ok {
+		if tagNode, ok := asNoteTagNode(n); ok {
 			if string(tagNode.Tag) == oldTag && len(tagNode.Source) > 0 {
 				ranges = append(ranges, sourceRange{start: tagNode.Pos(), end: tagNode.Pos() + len(tagNode.Source)})
 			}

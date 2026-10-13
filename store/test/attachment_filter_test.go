@@ -244,40 +244,40 @@ func TestAttachmentFilterAllComparisonOperators(t *testing.T) {
 }
 
 // =============================================================================
-// Memo ID Field Tests
-// Schema: memo_id (int, ==, !=)
+// Note ID Field Tests
+// Schema: note_id (int, ==, !=)
 // =============================================================================
 
-func TestAttachmentFilterMemoIdEquals(t *testing.T) {
+func TestAttachmentFilterNoteIdEquals(t *testing.T) {
 	t.Parallel()
 	tc := NewAttachmentFilterTestContextWithUser(t)
 	defer tc.Close()
 
-	memo1 := tc.CreateMemo("memo-1", "Memo 1")
-	memo2 := tc.CreateMemo("memo-2", "Memo 2")
+	note1 := tc.CreateNote("note-1", "Note 1")
+	note2 := tc.CreateNote("note-2", "Note 2")
 
-	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("memo1_attachment.png").MimeType("image/png").MemoID(&memo1.ID))
-	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("memo2_attachment.png").MimeType("image/png").MemoID(&memo2.ID))
+	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("note1_attachment.png").MimeType("image/png").NoteID(&note1.ID))
+	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("note2_attachment.png").MimeType("image/png").NoteID(&note2.ID))
 
-	attachments := tc.ListWithFilter(`memo_id == ` + formatInt32(memo1.ID))
+	attachments := tc.ListWithFilter(`note_id == ` + formatInt32(note1.ID))
 	require.Len(t, attachments, 1)
-	require.Equal(t, &memo1.ID, attachments[0].MemoID)
+	require.Equal(t, &note1.ID, attachments[0].NoteID)
 }
 
-func TestAttachmentFilterMemoIdNotEquals(t *testing.T) {
+func TestAttachmentFilterNoteIdNotEquals(t *testing.T) {
 	t.Parallel()
 	tc := NewAttachmentFilterTestContextWithUser(t)
 	defer tc.Close()
 
-	memo1 := tc.CreateMemo("memo-1", "Memo 1")
-	memo2 := tc.CreateMemo("memo-2", "Memo 2")
+	note1 := tc.CreateNote("note-1", "Note 1")
+	note2 := tc.CreateNote("note-2", "Note 2")
 
-	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("memo1_attachment.png").MimeType("image/png").MemoID(&memo1.ID))
-	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("memo2_attachment.png").MimeType("image/png").MemoID(&memo2.ID))
+	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("note1_attachment.png").MimeType("image/png").NoteID(&note1.ID))
+	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("note2_attachment.png").MimeType("image/png").NoteID(&note2.ID))
 
-	attachments := tc.ListWithFilter(`memo_id != ` + formatInt32(memo1.ID))
+	attachments := tc.ListWithFilter(`note_id != ` + formatInt32(note1.ID))
 	require.Len(t, attachments, 1)
-	require.Equal(t, &memo2.ID, attachments[0].MemoID)
+	require.Equal(t, &note2.ID, attachments[0].NoteID)
 }
 
 // =============================================================================
@@ -373,28 +373,28 @@ func TestAttachmentFilterNoMatches(t *testing.T) {
 	require.Len(t, attachments, 0)
 }
 
-func TestAttachmentFilterNullMemoId(t *testing.T) {
+func TestAttachmentFilterNullNoteId(t *testing.T) {
 	t.Parallel()
 	tc := NewAttachmentFilterTestContextWithUser(t)
 	defer tc.Close()
 
-	memo := tc.CreateMemo("memo-1", "Memo 1")
+	note := tc.CreateNote("note-1", "Note 1")
 
-	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("with_memo.png").MimeType("image/png").MemoID(&memo.ID))
-	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("no_memo.png").MimeType("image/png"))
+	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("with_note.png").MimeType("image/png").NoteID(&note.ID))
+	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("no_note.png").MimeType("image/png"))
 
-	// Test: memo_id == null
-	attachments := tc.ListWithFilter(`memo_id == null`)
+	// Test: note_id == null
+	attachments := tc.ListWithFilter(`note_id == null`)
 	require.Len(t, attachments, 1)
-	require.Equal(t, "no_memo.png", attachments[0].Filename)
-	require.Nil(t, attachments[0].MemoID)
+	require.Equal(t, "no_note.png", attachments[0].Filename)
+	require.Nil(t, attachments[0].NoteID)
 
-	// Test: memo_id != null
-	attachments = tc.ListWithFilter(`memo_id != null`)
+	// Test: note_id != null
+	attachments = tc.ListWithFilter(`note_id != null`)
 	require.Len(t, attachments, 1)
-	require.Equal(t, "with_memo.png", attachments[0].Filename)
-	require.NotNil(t, attachments[0].MemoID)
-	require.Equal(t, memo.ID, *attachments[0].MemoID)
+	require.Equal(t, "with_note.png", attachments[0].Filename)
+	require.NotNil(t, attachments[0].NoteID)
+	require.Equal(t, note.ID, *attachments[0].NoteID)
 }
 
 func TestAttachmentFilterEmptyFilename(t *testing.T) {

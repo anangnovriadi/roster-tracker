@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/internal/version"
+	"github.com/anangnovriadi/roster-tracker/internal/version"
 )
 
 func TestDevelopmentVersion(t *testing.T) {
@@ -113,7 +113,7 @@ func TestPreviousReleaseImage(t *testing.T) {
 		require.Equal(t, want+"\n", string(out))
 		out, err = exec.Command("bash", "release_version.sh", "previous-image", repo).CombinedOutput()
 		require.NoError(t, err, string(out))
-		require.Equal(t, "neosmemo/memos:"+strings.TrimPrefix(want, "v")+"\n", string(out))
+		require.Equal(t, "anangnovriadi/roster-tracker:"+strings.TrimPrefix(want, "v")+"\n", string(out))
 	}
 	runGit("init", "-b", "main")
 	runGit("commit", "--allow-empty", "-m", "old")

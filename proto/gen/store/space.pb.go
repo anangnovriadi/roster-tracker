@@ -154,15 +154,15 @@ var File_store_space_proto protoreflect.FileDescriptor
 
 const file_store_space_proto_rawDesc = "" +
 	"\n" +
-	"\x11store/space.proto\x12\vmemos.store\"\x85\x01\n" +
-	"\fSpacePayload\x122\n" +
-	"\x04icon\x18\x01 \x01(\v2\x1e.memos.store.SpacePayload.IconR\x04icon\x1aA\n" +
+	"\x11store/space.proto\x12\froster.store\"\x86\x01\n" +
+	"\fSpacePayload\x123\n" +
+	"\x04icon\x18\x01 \x01(\v2\x1f.roster.store.SpacePayload.IconR\x04icon\x1aA\n" +
 	"\x04Icon\x12\x16\n" +
 	"\x05emoji\x18\x01 \x01(\tH\x00R\x05emoji\x12\x18\n" +
 	"\x06lucide\x18\x02 \x01(\tH\x00R\x06lucideB\a\n" +
-	"\x05valueB\x95\x01\n" +
-	"\x0fcom.memos.storeB\n" +
-	"SpaceProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
+	"\x05valueB\xa8\x01\n" +
+	"\x10com.roster.storeB\n" +
+	"SpaceProtoP\x01Z7github.com/anangnovriadi/roster-tracker/proto/gen/store\xa2\x02\x03RSX\xaa\x02\fRoster.Store\xca\x02\fRoster\\Store\xe2\x02\x18Roster\\Store\\GPBMetadata\xea\x02\rRoster::Storeb\x06proto3"
 
 var (
 	file_store_space_proto_rawDescOnce sync.Once
@@ -178,11 +178,11 @@ func file_store_space_proto_rawDescGZIP() []byte {
 
 var file_store_space_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_store_space_proto_goTypes = []any{
-	(*SpacePayload)(nil),      // 0: memos.store.SpacePayload
-	(*SpacePayload_Icon)(nil), // 1: memos.store.SpacePayload.Icon
+	(*SpacePayload)(nil),      // 0: roster.store.SpacePayload
+	(*SpacePayload_Icon)(nil), // 1: roster.store.SpacePayload.Icon
 }
 var file_store_space_proto_depIdxs = []int32{
-	1, // 0: memos.store.SpacePayload.icon:type_name -> memos.store.SpacePayload.Icon
+	1, // 0: roster.store.SpacePayload.icon:type_name -> roster.store.SpacePayload.Icon
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

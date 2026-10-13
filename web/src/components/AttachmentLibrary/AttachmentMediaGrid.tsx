@@ -78,7 +78,7 @@ const AttachmentMediaCard = ({ item, creator, onPreview }: { item: AttachmentLib
         />
         <AttachmentCreator creatorName={item.primaryAttachment.creator} user={creator} />
         <div className="flex items-center justify-between gap-2">
-          <AttachmentSourceChip memoName={item.memoName} />
+          <AttachmentSourceChip noteName={item.noteName} />
           <AttachmentOpenButton href={item.sourceUrl} />
         </div>
       </div>

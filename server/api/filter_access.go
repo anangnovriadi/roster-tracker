@@ -8,11 +8,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	filterpkg "github.com/usememos/memos/filter"
-	"github.com/usememos/memos/store"
+	filterpkg "github.com/anangnovriadi/roster-tracker/filter"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
-func (s *APIService) validateMemoFilterForUser(ctx context.Context, filterText string, user *store.User) error {
+func (s *APIService) validateNoteFilterForUser(ctx context.Context, filterText string, user *store.User) error {
 	engine, err := filterpkg.DefaultEngine()
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to initialize filter: %v", err)

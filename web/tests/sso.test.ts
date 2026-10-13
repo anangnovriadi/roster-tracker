@@ -19,7 +19,7 @@ const provider = create(IdentityProviderSchema, {
 describe("SSO initiation", () => {
   beforeEach(() => sessionStorage.clear());
   it("preserves URL parameters and destination with state and PKCE", async () => {
-    const url = new URL(await prepareSSOSignIn(provider, "/memos/example?view=full#comment"));
+    const url = new URL(await prepareSSOSignIn(provider, "/notes/example?view=full#comment"));
     expect(url.origin).toBe("https://sso.example.com");
     expect(url.searchParams.get("tenant")).toBe("team");
     expect(url.searchParams.get("client_id")).toBe("client&one");
@@ -31,7 +31,7 @@ describe("SSO initiation", () => {
     expect(state).toMatchObject({
       identityProviderName: provider.name,
       flowMode: "signin",
-      returnUrl: "/memos/example?view=full#comment",
+      returnUrl: "/notes/example?view=full#comment",
       codeVerifier: expect.any(String),
     });
     const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(state!.codeVerifier));

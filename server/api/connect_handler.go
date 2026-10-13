@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/proto/gen/api/apiconnect"
+	"github.com/anangnovriadi/roster-tracker/proto/gen/api/apiconnect"
 )
 
 // ConnectServiceHandler wraps APIService to implement Connect handler interfaces.
@@ -38,7 +38,7 @@ func (s *ConnectServiceHandler) RegisterConnectHandlers(mux *http.ServeMux, opts
 		wrap(apiconnect.NewInstanceServiceHandler(s, opts...)),
 		wrap(apiconnect.NewAuthServiceHandler(s, opts...)),
 		wrap(apiconnect.NewUserServiceHandler(s, opts...)),
-		wrap(apiconnect.NewMemoServiceHandler(s, opts...)),
+		wrap(apiconnect.NewNoteServiceHandler(s, opts...)),
 		wrap(apiconnect.NewSpaceServiceHandler(s, opts...)),
 		wrap(apiconnect.NewAttachmentServiceHandler(s, opts...)),
 		wrap(apiconnect.NewAIServiceHandler(s, opts...)),

@@ -14,11 +14,11 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	"github.com/usememos/memos/internal/testutil"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/testutil"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestCreateAttachment(t *testing.T) {
@@ -195,7 +195,7 @@ func TestCreateAttachmentCleansSavedBlobWhenStoreCreateFails(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, []byte("kept"), kept)
 
-	memo, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "attachment compensation policy"}})
+	note, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{Content: "attachment compensation policy"}})
 	require.NoError(t, err)
 	policyRejectionPath := filepath.Join(ts.Profile.Data, "assets", "policy-rejected.txt")
 	_, err = ts.Service.CreateAttachment(store.WithCreateAttachmentPolicyFailpoint(userCtx), &apipb.CreateAttachmentRequest{
@@ -204,7 +204,7 @@ func TestCreateAttachmentCleansSavedBlobWhenStoreCreateFails(t *testing.T) {
 			Filename: "policy-rejected.txt",
 			Type:     "text/plain",
 			Content:  []byte("must be removed"),
-			Memo:     &memo.Name,
+			Note:     &note.Name,
 		},
 	})
 	require.Equal(t, codes.PermissionDenied, status.Code(err))
@@ -242,7 +242,7 @@ func TestCreateAttachmentCleansSavedBlobWhenStoreCreateFails(t *testing.T) {
 			Filename: "cleanup-failure.txt",
 			Type:     "text/plain",
 			Content:  []byte("cleanup failure"),
-			Memo:     &memo.Name,
+			Note:     &note.Name,
 		},
 	})
 	require.Equal(t, codes.PermissionDenied, status.Code(err))
@@ -250,7 +250,7 @@ func TestCreateAttachmentCleansSavedBlobWhenStoreCreateFails(t *testing.T) {
 	require.FileExists(t, cleanupFailurePath, "the failpoint must prove compensation was attempted")
 }
 
-func TestAttachmentMetadataFollowsMemoVisibility(t *testing.T) {
+func TestAttachmentMetadataFollowsNoteVisibility(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -263,7 +263,7 @@ func TestAttachmentMetadataFollowsMemoVisibility(t *testing.T) {
 		Content:  []byte("metadata image"),
 	}})
 	require.NoError(t, err)
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+	note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
 		Content:     "public metadata",
 		Visibility:  apipb.Visibility_PUBLIC,
 		Attachments: []*apipb.Attachment{{Name: attachment.Name}},
@@ -272,28 +272,28 @@ func TestAttachmentMetadataFollowsMemoVisibility(t *testing.T) {
 
 	_, err = ts.Service.GetAttachment(ctx, &apipb.GetAttachmentRequest{Name: attachment.Name})
 	require.NoError(t, err)
-	listed, err := ts.Service.ListMemoAttachments(ctx, &apipb.ListMemoAttachmentsRequest{Parent: memo.Name})
+	listed, err := ts.Service.ListNoteAttachments(ctx, &apipb.ListNoteAttachmentsRequest{Parent: note.Name})
 	require.NoError(t, err)
 	require.Len(t, listed.Attachments, 1)
 
 	protected := store.Protected
-	memoID := memoIDFromName(ctx, t, ts, memo.Name)
-	require.NoError(t, ts.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memoID, Visibility: &protected}))
+	noteID := noteIDFromName(ctx, t, ts, note.Name)
+	require.NoError(t, ts.Store.UpdateNote(ctx, &store.UpdateNote{ID: noteID, Visibility: &protected}))
 	_, err = ts.Service.GetAttachment(ctx, &apipb.GetAttachmentRequest{Name: attachment.Name})
 	require.Equal(t, codes.Unauthenticated, status.Code(err))
-	_, err = ts.Service.ListMemoAttachments(ctx, &apipb.ListMemoAttachmentsRequest{Parent: memo.Name})
+	_, err = ts.Service.ListNoteAttachments(ctx, &apipb.ListNoteAttachmentsRequest{Parent: note.Name})
 	require.Equal(t, codes.Unauthenticated, status.Code(err))
 
 	archived := store.Archived
-	require.NoError(t, ts.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memoID, RowStatus: &archived}))
+	require.NoError(t, ts.Store.UpdateNote(ctx, &store.UpdateNote{ID: noteID, RowStatus: &archived}))
 	_, err = ts.Service.GetAttachment(ctx, &apipb.GetAttachmentRequest{Name: attachment.Name})
 	require.Equal(t, codes.NotFound, status.Code(err))
 }
 
-func TestCreateAttachmentMemoPermission(t *testing.T) {
+func TestCreateAttachmentNotePermission(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("owner can create attachment directly linked to memo", func(t *testing.T) {
+	t.Run("owner can create attachment directly linked to note", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -301,9 +301,9 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 		require.NoError(t, err)
 		ownerCtx := ts.CreateUserContext(ctx, owner.ID)
 
-		memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-			Memo: &apipb.Memo{
-				Content: "memo with direct attachment",
+		note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+			Note: &apipb.Note{
+				Content: "note with direct attachment",
 			},
 		})
 		require.NoError(t, err)
@@ -313,7 +313,7 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 				Filename: "owner.txt",
 				Type:     "text/plain",
 				Content:  []byte("owner"),
-				Memo:     &memo.Name,
+				Note:     &note.Name,
 			},
 		})
 		require.NoError(t, err)
@@ -321,11 +321,11 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 		require.NoError(t, err)
 		stored, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
 		require.NoError(t, err)
-		require.NotNil(t, stored.MemoID)
-		require.Equal(t, memoIDFromName(ctx, t, ts, memo.Name), *stored.MemoID)
+		require.NotNil(t, stored.NoteID)
+		require.Equal(t, noteIDFromName(ctx, t, ts, note.Name), *stored.NoteID)
 	})
 
-	t.Run("admin creates an admin-owned attachment linked to another user's memo", func(t *testing.T) {
+	t.Run("admin creates an admin-owned attachment linked to another user's note", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -336,9 +336,9 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 		require.NoError(t, err)
 		adminCtx := ts.CreateUserContext(ctx, admin.ID)
 
-		memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-			Memo: &apipb.Memo{
-				Content: "memo with admin attachment",
+		note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+			Note: &apipb.Note{
+				Content: "note with admin attachment",
 			},
 		})
 		require.NoError(t, err)
@@ -348,24 +348,24 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 				Filename: "admin.txt",
 				Type:     "text/plain",
 				Content:  []byte("admin"),
-				Memo:     &memo.Name,
+				Note:     &note.Name,
 			},
 		})
-		require.NoError(t, err, "an instance administrator is the superuser for named memo operations")
+		require.NoError(t, err, "an instance administrator is the superuser for named note operations")
 		attachments, err := ts.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &admin.ID})
 		require.NoError(t, err)
 		require.Len(t, attachments, 1, "the attachment stays owned by the administrator")
-		require.NotNil(t, attachments[0].MemoID)
+		require.NotNil(t, attachments[0].NoteID)
 
-		// Removal deletes the attachment, so the memo author cannot remove a
+		// Removal deletes the attachment, so the note author cannot remove a
 		// file the administrator owns; the administrator can.
-		_, err = ts.Service.SetMemoAttachments(ownerCtx, &apipb.SetMemoAttachmentsRequest{
-			Name:        memo.Name,
+		_, err = ts.Service.SetNoteAttachments(ownerCtx, &apipb.SetNoteAttachmentsRequest{
+			Name:        note.Name,
 			Attachments: []*apipb.Attachment{},
 		})
 		require.Equal(t, codes.PermissionDenied, status.Code(err))
-		_, err = ts.Service.SetMemoAttachments(adminCtx, &apipb.SetMemoAttachmentsRequest{
-			Name:        memo.Name,
+		_, err = ts.Service.SetNoteAttachments(adminCtx, &apipb.SetNoteAttachmentsRequest{
+			Name:        note.Name,
 			Attachments: []*apipb.Attachment{},
 		})
 		require.NoError(t, err)
@@ -374,7 +374,7 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 		require.Empty(t, attachments, "removal deletes the bound attachment: %s", created.Name)
 	})
 
-	t.Run("non-owner cannot create attachment directly linked to memo", func(t *testing.T) {
+	t.Run("non-owner cannot create attachment directly linked to note", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -385,9 +385,9 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 		require.NoError(t, err)
 		otherCtx := ts.CreateUserContext(ctx, other.ID)
 
-		memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-			Memo: &apipb.Memo{
-				Content: "memo with blocked attachment",
+		note, err := ts.Service.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+			Note: &apipb.Note{
+				Content: "note with blocked attachment",
 			},
 		})
 		require.NoError(t, err)
@@ -397,7 +397,7 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 				Filename: "blocked.txt",
 				Type:     "text/plain",
 				Content:  []byte("blocked"),
-				Memo:     &memo.Name,
+				Note:     &note.Name,
 			},
 		})
 		require.Error(t, err)
@@ -411,7 +411,7 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 	})
 }
 
-func TestLinkedAttachmentMutationsRevalidateMemoSpaceMembership(t *testing.T) {
+func TestLinkedAttachmentMutationsRevalidateNoteSpaceMembership(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -427,15 +427,15 @@ func TestLinkedAttachmentMutationsRevalidateMemoSpaceMembership(t *testing.T) {
 		SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser,
 	}, owner.ID)
 	require.NoError(t, err)
-	root, err := ts.Store.CreateMemo(ctx, &store.Memo{
+	root, err := ts.Store.CreateNote(ctx, &store.Note{
 		UID: "attachment-lifecycle-root", CreatorID: member.ID, Content: "root", Visibility: store.SpaceAudience, SpaceID: &space.ID,
 	})
 	require.NoError(t, err)
-	comment, err := ts.Store.CreateMemoComment(ctx, &store.Memo{
+	comment, err := ts.Store.CreateNoteComment(ctx, &store.Note{
 		UID: "attachment-lifecycle-comment", CreatorID: member.ID, Content: "comment", Visibility: store.SpaceAudience, SpaceID: &space.ID,
 	}, root.ID, member.ID)
 	require.NoError(t, err)
-	memoName := api.MemoNamePrefix + comment.UID
+	noteName := api.NoteNamePrefix + comment.UID
 
 	createLinked := func(filename string) *apipb.Attachment {
 		t.Helper()
@@ -443,7 +443,7 @@ func TestLinkedAttachmentMutationsRevalidateMemoSpaceMembership(t *testing.T) {
 			Filename: filename,
 			Type:     "text/plain",
 			Content:  []byte(filename),
-			Memo:     &memoName,
+			Note:     &noteName,
 		}})
 		require.NoError(t, createErr)
 		return attachment
@@ -460,7 +460,7 @@ func TestLinkedAttachmentMutationsRevalidateMemoSpaceMembership(t *testing.T) {
 	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: member.ID}, owner.ID))
 
 	_, err = ts.Service.CreateAttachment(memberCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
-		Filename: "create-after-revoke.txt", Type: "text/plain", Content: []byte("blocked"), Memo: &memoName,
+		Filename: "create-after-revoke.txt", Type: "text/plain", Content: []byte("blocked"), Note: &noteName,
 	}})
 	require.Equal(t, codes.PermissionDenied, status.Code(err))
 	_, err = ts.Service.UpdateAttachment(memberCtx, &apipb.UpdateAttachmentRequest{
@@ -479,8 +479,8 @@ func TestLinkedAttachmentMutationsRevalidateMemoSpaceMembership(t *testing.T) {
 		stored, getErr := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
 		require.NoError(t, getErr)
 		require.NotNil(t, stored)
-		require.NotNil(t, stored.MemoID)
-		require.Equal(t, comment.ID, *stored.MemoID)
+		require.NotNil(t, stored.NoteID)
+		require.Equal(t, comment.ID, *stored.NoteID)
 	}
 	updateUID, err := api.ExtractAttachmentUIDFromName(updateTarget.Name)
 	require.NoError(t, err)
@@ -519,35 +519,35 @@ func TestListAttachmentsSpaceFilter(t *testing.T) {
 	spaceB, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "attachment-api-scope-b", Title: "B"}, owner.ID)
 	require.NoError(t, err)
 
-	unassignedMemo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+	unassignedNote, err := ts.Store.CreateNote(ctx, &store.Note{
 		UID: "attachment-api-unassigned", CreatorID: owner.ID, Content: "unassigned", Visibility: store.Private,
 	})
 	require.NoError(t, err)
-	spaceAMemo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+	spaceANote, err := ts.Store.CreateNote(ctx, &store.Note{
 		UID: "attachment-api-space-a", CreatorID: owner.ID, Content: "a", Visibility: store.Private, SpaceID: &spaceA.ID,
 	})
 	require.NoError(t, err)
-	sharedMemo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+	sharedNote, err := ts.Store.CreateNote(ctx, &store.Note{
 		UID: "attachment-api-space-a-shared", CreatorID: owner.ID, Content: "shared", Visibility: store.SpaceAudience, SpaceID: &spaceA.ID,
 	})
 	require.NoError(t, err)
-	spaceBMemo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+	spaceBNote, err := ts.Store.CreateNote(ctx, &store.Note{
 		UID: "attachment-api-space-b", CreatorID: owner.ID, Content: "b", Visibility: store.Public, SpaceID: &spaceB.ID,
 	})
 	require.NoError(t, err)
 
-	createAttachment := func(uid string, memoID *int32) {
+	createAttachment := func(uid string, noteID *int32) {
 		t.Helper()
 		_, createErr := ts.Store.CreateAttachment(ctx, &store.Attachment{
-			UID: uid, CreatorID: owner.ID, Filename: uid + ".txt", Type: "text/plain", MemoID: memoID,
+			UID: uid, CreatorID: owner.ID, Filename: uid + ".txt", Type: "text/plain", NoteID: noteID,
 		})
 		require.NoError(t, createErr)
 	}
 	createAttachment("attachment-api-unlinked", nil)
-	createAttachment("attachment-api-unassigned-file", &unassignedMemo.ID)
-	createAttachment("attachment-api-space-a-file", &spaceAMemo.ID)
-	createAttachment("attachment-api-space-a-shared-file", &sharedMemo.ID)
-	createAttachment("attachment-api-space-b-file", &spaceBMemo.ID)
+	createAttachment("attachment-api-unassigned-file", &unassignedNote.ID)
+	createAttachment("attachment-api-space-a-file", &spaceANote.ID)
+	createAttachment("attachment-api-space-a-shared-file", &sharedNote.ID)
+	createAttachment("attachment-api-space-b-file", &spaceBNote.ID)
 
 	attachmentFilenames := func(response *apipb.ListAttachmentsResponse) []string {
 		t.Helper()
@@ -576,15 +576,15 @@ func TestListAttachmentsSpaceFilter(t *testing.T) {
 	require.NoError(t, err)
 	require.ElementsMatch(t, []string{"attachment-api-unlinked.txt", "attachment-api-unassigned-file.txt"}, attachmentFilenames(unassignedResponse))
 
-	unusedInMemos, err := ts.Service.ListAttachments(ownerCtx, &apipb.ListAttachmentsRequest{
+	unusedInNotes, err := ts.Service.ListAttachments(ownerCtx, &apipb.ListAttachmentsRequest{
 		PageSize: 100,
-		Filter:   "memo_id == null && space == null",
+		Filter:   "note_id == null && space == null",
 	})
 	require.NoError(t, err)
-	require.Equal(t, []string{"attachment-api-unlinked.txt"}, attachmentFilenames(unusedInMemos))
+	require.Equal(t, []string{"attachment-api-unlinked.txt"}, attachmentFilenames(unusedInNotes))
 	unusedInSpace, err := ts.Service.ListAttachments(ownerCtx, &apipb.ListAttachmentsRequest{
 		PageSize: 100,
-		Filter:   `memo_id == null && space == "spaces/` + spaceA.UID + `"`,
+		Filter:   `note_id == null && space == "spaces/` + spaceA.UID + `"`,
 	})
 	require.NoError(t, err)
 	require.Empty(t, unusedInSpace.Attachments)
@@ -619,22 +619,22 @@ func TestAttachmentCreatorIsUploader(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 
-	memoAuthor, err := ts.CreateRegularUser(ctx, "attachment-memo-author")
+	noteAuthor, err := ts.CreateRegularUser(ctx, "attachment-note-author")
 	require.NoError(t, err)
 	uploader, err := ts.CreateRegularUser(ctx, "attachment-uploader")
 	require.NoError(t, err)
-	memo, err := ts.Store.CreateMemo(ctx, &store.Memo{
-		UID: "attachment-attribution-memo", CreatorID: memoAuthor.ID, Content: "shared", Visibility: store.Public,
+	note, err := ts.Store.CreateNote(ctx, &store.Note{
+		UID: "attachment-attribution-note", CreatorID: noteAuthor.ID, Content: "shared", Visibility: store.Public,
 	})
 	require.NoError(t, err)
 	_, err = ts.Store.CreateAttachment(ctx, &store.Attachment{
-		UID: "attachment-attribution-file", CreatorID: uploader.ID, Filename: "shared.txt", Type: "text/plain", MemoID: &memo.ID,
+		UID: "attachment-attribution-file", CreatorID: uploader.ID, Filename: "shared.txt", Type: "text/plain", NoteID: &note.ID,
 	})
 	require.NoError(t, err)
 
-	authorCtx := ts.CreateUserContext(ctx, memoAuthor.ID)
+	authorCtx := ts.CreateUserContext(ctx, noteAuthor.ID)
 	listed, err := ts.Service.ListAttachments(authorCtx, &apipb.ListAttachmentsRequest{
-		Filter: `creator == "users/` + memoAuthor.Username + `"`,
+		Filter: `creator == "users/` + noteAuthor.Username + `"`,
 	})
 	require.NoError(t, err)
 	require.Len(t, listed.Attachments, 1)
@@ -645,14 +645,14 @@ func TestAttachmentCreatorIsUploader(t *testing.T) {
 	require.Equal(t, api.BuildUserName(uploader.Username), got.Creator)
 }
 
-func memoIDFromName(ctx context.Context, t *testing.T, ts *TestService, name string) int32 {
+func noteIDFromName(ctx context.Context, t *testing.T, ts *TestService, name string) int32 {
 	t.Helper()
-	memoUID, err := api.ExtractMemoUIDFromName(name)
+	noteUID, err := api.ExtractNoteUIDFromName(name)
 	require.NoError(t, err)
-	memo, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	note, err := ts.Store.GetNote(ctx, &store.FindNote{UID: &noteUID})
 	require.NoError(t, err)
-	require.NotNil(t, memo)
-	return memo.ID
+	require.NotNil(t, note)
+	return note.ID
 }
 
 func TestCreateAttachmentMotionMedia(t *testing.T) {
@@ -768,14 +768,14 @@ func TestCreateAttachmentMediaMetadata(t *testing.T) {
 	require.NotNil(t, listedPhoto)
 	require.True(t, proto.Equal(photoMetadata, listedPhoto.MediaMetadata))
 
-	memo, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
-		Content:     "memo with metadata",
+	note, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
+		Content:     "note with metadata",
 		Visibility:  apipb.Visibility_PRIVATE,
 		Attachments: []*apipb.Attachment{{Name: photo.Name}},
 	}})
 	require.NoError(t, err)
-	require.Len(t, memo.Attachments, 1)
-	require.True(t, proto.Equal(photoMetadata, memo.Attachments[0].MediaMetadata))
+	require.Len(t, note.Attachments, 1)
+	require.True(t, proto.Equal(photoMetadata, note.Attachments[0].MediaMetadata))
 
 	video, err := ts.Service.CreateAttachment(userCtx, &apipb.CreateAttachmentRequest{
 		Attachment: &apipb.Attachment{
@@ -894,7 +894,7 @@ func TestBatchDeleteAttachmentsReportsPostCommitStorageCleanupFailure(t *testing
 		require.NoError(t, err)
 		attachments = append(attachments, attachment)
 	}
-	memo, err := ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+	note, err := ts.Service.CreateNote(userCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
 		Content:     "batch deletion retry",
 		Attachments: []*apipb.Attachment{{Name: attachments[0].Name}, {Name: attachments[1].Name}},
 	}})
@@ -930,7 +930,7 @@ func TestBatchDeleteAttachmentsReportsPostCommitStorageCleanupFailure(t *testing
 		require.NoError(t, err)
 		require.Nil(t, stored)
 	}
-	listed, err := ts.Service.ListMemoAttachments(userCtx, &apipb.ListMemoAttachmentsRequest{Parent: memo.Name})
+	listed, err := ts.Service.ListNoteAttachments(userCtx, &apipb.ListNoteAttachmentsRequest{Parent: note.Name})
 	require.NoError(t, err)
 	require.Empty(t, listed.Attachments)
 	for _, path := range localPaths {

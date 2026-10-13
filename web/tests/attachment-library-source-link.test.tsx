@@ -16,12 +16,12 @@ const LocationStateProbe = () => {
 };
 
 describe("<AttachmentMediaGrid>", () => {
-  it("links a media attachment to its source memo without replacing the direct file action", () => {
+  it("links a media attachment to its source note without replacing the direct file action", () => {
     const attachment = create(AttachmentSchema, {
       name: "attachments/photo",
       filename: "photo.jpg",
       type: "image/jpeg",
-      memo: "memos/source-memo",
+      note: "notes/source-note",
       creator: "users/steven",
     });
     const creator = create(UserSchema, { name: "users/steven", username: "steven", displayName: "Steven" });
@@ -48,7 +48,7 @@ describe("<AttachmentMediaGrid>", () => {
             primaryAttachment: attachment,
             createdLabel: "Jul 29, 2026",
             fileTypeLabel: "JPEG",
-            memoName: attachment.memo,
+            noteName: attachment.note,
           },
         ],
       },
@@ -62,8 +62,8 @@ describe("<AttachmentMediaGrid>", () => {
       </MemoryRouter>,
     );
 
-    const memoLink = screen.getByRole("link", { name: "attachment-library.labels.memo" });
-    expect(memoLink).toHaveAttribute("href", "/notes/source-memo");
+    const noteLink = screen.getByRole("link", { name: "attachment-library.labels.note" });
+    expect(noteLink).toHaveAttribute("href", "/notes/source-note");
     expect(screen.getByText("Steven")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Steven" })).not.toBeInTheDocument();
 
@@ -71,7 +71,7 @@ describe("<AttachmentMediaGrid>", () => {
     expect(fileLink).toHaveAttribute("href", "/file/attachments/photo/photo.jpg");
     expect(fileLink).toHaveAttribute("target", "_blank");
 
-    fireEvent.click(memoLink);
+    fireEvent.click(noteLink);
     expect(onPreview).not.toHaveBeenCalled();
     expect(screen.getByTestId("location-state")).toHaveTextContent('{"from":"/spaces/product/attachments?filter=tagSearch%3Awork"}');
   });
@@ -82,13 +82,13 @@ describe("<AttachmentMediaGrid>", () => {
       filename: "plan.pdf",
       type: "application/pdf",
       creator: "users/steven",
-      memo: "memos/source-memo",
+      note: "notes/source-note",
     });
 
     render(
       <MemoryRouter>
         <AttachmentDocumentRows
-          items={[{ attachment, createdLabel: "Jul 29, 2026", fileTypeLabel: "PDF", memoName: attachment.memo, sourceUrl: "/plan.pdf" }]}
+          items={[{ attachment, createdLabel: "Jul 29, 2026", fileTypeLabel: "PDF", noteName: attachment.note, sourceUrl: "/plan.pdf" }]}
         />
       </MemoryRouter>,
     );
@@ -102,7 +102,7 @@ describe("<AttachmentMediaGrid>", () => {
       name: "attachments/video",
       filename: "clip.mp4",
       type: "video/mp4",
-      memo: "memos/source-memo",
+      note: "notes/source-note",
       mediaMetadata: create(MediaMetadataSchema, {
         details: {
           case: "video",
@@ -134,7 +134,7 @@ describe("<AttachmentMediaGrid>", () => {
             primaryAttachment: attachment,
             createdLabel: "Jul 29, 2026",
             fileTypeLabel: "MP4",
-            memoName: attachment.memo,
+            noteName: attachment.note,
           },
         ],
       },

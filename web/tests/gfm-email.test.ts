@@ -2,11 +2,11 @@ import { parser as markdownParser } from "@lezer/markdown";
 import { describe, expect, it } from "vitest";
 import { findGFMEmailMatches, findMarkdownGFMEmailRanges, type MarkdownSourceNode } from "@/utils/gfm-email";
 import { resolvedMarkdownLinkRanges } from "@/utils/markdown-link";
-import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
+import { noteMarkdownExtensions } from "@/utils/note-markdown-extension";
 
 describe("GFM email source ranges", () => {
   const range = (from: number, to: number, value: string) => ({ from, to, value });
-  const sourceParser = markdownParser.configure(memoMarkdownExtensions);
+  const sourceParser = markdownParser.configure(noteMarkdownExtensions);
 
   it.each([
     ["#foo/bar_baz@example.com", [range(5, 24, "bar_baz@example.com")]],

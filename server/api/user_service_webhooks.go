@@ -11,11 +11,11 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/internal/ratelimit"
-	"github.com/usememos/memos/internal/webhook"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	"github.com/anangnovriadi/roster-tracker/internal/webhook"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (s *APIService) ListUserWebhooks(ctx context.Context, request *apipb.ListUserWebhooksRequest) (*apipb.ListUserWebhooksResponse, error) {

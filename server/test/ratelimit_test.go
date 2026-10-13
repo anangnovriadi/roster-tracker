@@ -80,7 +80,7 @@ func TestStartupRateLimitOnBothTransports(t *testing.T) {
 	require.Contains(t, types, "type.googleapis.com/google.rpc.RetryInfo")
 
 	// The Connect transport shares the same budget and speaks the same contract.
-	connectResp := post("/memos.api.AuthService/SignIn", nextBody(), map[string]string{"Connect-Protocol-Version": "1"})
+	connectResp := post("/roster.api.AuthService/SignIn", nextBody(), map[string]string{"Connect-Protocol-Version": "1"})
 	defer connectResp.Body.Close()
 	require.Equal(t, http.StatusTooManyRequests, connectResp.StatusCode)
 	require.NotEmpty(t, connectResp.Header.Get("Retry-After"))

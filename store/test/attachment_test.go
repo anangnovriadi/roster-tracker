@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestAttachmentNeedsInstanceStorageSetting(t *testing.T) {
@@ -163,21 +163,21 @@ func TestAttachmentStore(t *testing.T) {
 	ts.Close()
 }
 
-func TestMemoMutationRollsBackOnBindingConflict(t *testing.T) {
+func TestNoteMutationRollsBackOnBindingConflict(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo, err := ts.CreateMemo(ctx, &store.Memo{
+	note, err := ts.CreateNote(ctx, &store.Note{
 		UID:        shortuuid.New(),
 		CreatorID:  user.ID,
 		Content:    "original",
 		Visibility: store.Private,
 	})
 	require.NoError(t, err)
-	otherMemo, err := ts.CreateMemo(ctx, &store.Memo{
+	otherNote, err := ts.CreateNote(ctx, &store.Note{
 		UID:        shortuuid.New(),
 		CreatorID:  user.ID,
 		Content:    "other",
@@ -196,36 +196,36 @@ func TestMemoMutationRollsBackOnBindingConflict(t *testing.T) {
 		CreatorID: user.ID,
 		Filename:  "conflicting.png",
 		Type:      "image/png",
-		MemoID:    &otherMemo.ID,
+		NoteID:    &otherNote.ID,
 	})
 	require.NoError(t, err)
 
 	updatedContent := "updated"
-	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
-		MemoID:              memo.ID,
-		MemoCreatorID:       user.ID,
-		ExpectedMemoContent: memo.Content,
-		MemoUpdate:          &store.UpdateMemo{ID: memo.ID, Content: &updatedContent},
-		Bindings: []*store.MemoAttachmentBinding{
+	err = ts.ApplyNoteMutation(ctx, &store.NoteMutation{
+		NoteID:              note.ID,
+		NoteCreatorID:       user.ID,
+		ExpectedNoteContent: note.Content,
+		NoteUpdate:          &store.UpdateNote{ID: note.ID, Content: &updatedContent},
+		Bindings: []*store.NoteAttachmentBinding{
 			{ID: available.ID, UID: available.UID, UpdatedTs: time.Now().Unix()},
 			{ID: conflicting.ID, UID: conflicting.UID, UpdatedTs: time.Now().Unix() + 1},
 		},
 	})
-	require.ErrorIs(t, err, store.ErrMemoMutationConflict)
+	require.ErrorIs(t, err, store.ErrNoteMutationConflict)
 
-	storedMemo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	storedNote, err := ts.GetNote(ctx, &store.FindNote{ID: &note.ID})
 	require.NoError(t, err)
-	require.Equal(t, "original", storedMemo.Content)
+	require.Equal(t, "original", storedNote.Content)
 	storedAvailable, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &available.ID})
 	require.NoError(t, err)
-	require.Nil(t, storedAvailable.MemoID)
+	require.Nil(t, storedAvailable.NoteID)
 	storedConflicting, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &conflicting.ID})
 	require.NoError(t, err)
-	require.NotNil(t, storedConflicting.MemoID)
-	require.Equal(t, otherMemo.ID, *storedConflicting.MemoID)
+	require.NotNil(t, storedConflicting.NoteID)
+	require.Equal(t, otherNote.ID, *storedConflicting.NoteID)
 }
 
-func TestMemoCreationMutationRollsBackDependentWrites(t *testing.T) {
+func TestNoteCreationMutationRollsBackDependentWrites(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
@@ -234,60 +234,60 @@ func TestMemoCreationMutationRollsBackDependentWrites(t *testing.T) {
 	require.NoError(t, err)
 
 	topLevelUID := shortuuid.New()
-	topLevel := &store.Memo{UID: topLevelUID, CreatorID: user.ID, Content: "top level", Visibility: store.Private}
-	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
-		MemoCreate:            topLevel,
-		MemoCreatorID:         user.ID,
-		ExpectedMemoContent:   topLevel.Content,
+	topLevel := &store.Note{UID: topLevelUID, CreatorID: user.ID, Content: "top level", Visibility: store.Private}
+	err = ts.ApplyNoteMutation(ctx, &store.NoteMutation{
+		NoteCreate:            topLevel,
+		NoteCreatorID:         user.ID,
+		ExpectedNoteContent:   topLevel.Content,
 		RequiredAttachmentIDs: []int32{2147483000},
 	})
-	require.ErrorIs(t, err, store.ErrMemoMutationConflict)
-	storedTopLevel, err := ts.GetMemo(ctx, &store.FindMemo{UID: &topLevelUID})
+	require.ErrorIs(t, err, store.ErrNoteMutationConflict)
+	storedTopLevel, err := ts.GetNote(ctx, &store.FindNote{UID: &topLevelUID})
 	require.NoError(t, err)
-	require.Nil(t, storedTopLevel, "dependent write failure must roll back the top-level memo row")
+	require.Nil(t, storedTopLevel, "dependent write failure must roll back the top-level note row")
 
-	root, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "root", Visibility: store.Public})
+	root, err := ts.CreateNote(ctx, &store.Note{UID: shortuuid.New(), CreatorID: user.ID, Content: "root", Visibility: store.Public})
 	require.NoError(t, err)
 	commentUID := shortuuid.New()
-	comment := &store.Memo{UID: commentUID, CreatorID: user.ID, Content: "comment", Visibility: store.Public}
-	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
-		MemoCreate:            comment,
-		CommentContextMemoID:  &root.ID,
-		MemoCreatorID:         user.ID,
-		ExpectedMemoContent:   comment.Content,
+	comment := &store.Note{UID: commentUID, CreatorID: user.ID, Content: "comment", Visibility: store.Public}
+	err = ts.ApplyNoteMutation(ctx, &store.NoteMutation{
+		NoteCreate:            comment,
+		CommentContextNoteID:  &root.ID,
+		NoteCreatorID:         user.ID,
+		ExpectedNoteContent:   comment.Content,
 		RequiredAttachmentIDs: []int32{2147483000},
 	})
-	require.ErrorIs(t, err, store.ErrMemoMutationConflict)
-	storedComment, err := ts.GetMemo(ctx, &store.FindMemo{UID: &commentUID})
+	require.ErrorIs(t, err, store.ErrNoteMutationConflict)
+	storedComment, err := ts.GetNote(ctx, &store.FindNote{UID: &commentUID})
 	require.NoError(t, err)
 	require.Nil(t, storedComment, "dependent write failure must roll back the comment row")
 }
 
-func TestMemoCreationMutationCommitsMemoBindingsAndRelationsTogether(t *testing.T) {
+func TestNoteCreationMutationCommitsNoteBindingsAndRelationsTogether(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	target, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "target", Visibility: store.Private})
+	target, err := ts.CreateNote(ctx, &store.Note{UID: shortuuid.New(), CreatorID: user.ID, Content: "target", Visibility: store.Private})
 	require.NoError(t, err)
 	attachment, err := ts.CreateAttachment(ctx, &store.Attachment{
 		UID: shortuuid.New(), CreatorID: user.ID, Filename: "created.png", Type: "image/png",
 	})
 	require.NoError(t, err)
 
-	created := &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "created", Visibility: store.Private}
-	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
-		MemoCreate:                created,
-		MemoCreatorID:             user.ID,
-		ExpectedMemoContent:       created.Content,
-		Bindings:                  []*store.MemoAttachmentBinding{{ID: attachment.ID, UID: attachment.UID, UpdatedTs: time.Now().Unix()}},
+	created := &store.Note{UID: shortuuid.New(), CreatorID: user.ID, Content: "created", Visibility: store.Private}
+	err = ts.ApplyNoteMutation(ctx, &store.NoteMutation{
+		NoteCreate:                created,
+		NoteCreatorID:             user.ID,
+		ExpectedNoteContent:       created.Content,
+		Bindings:                  []*store.NoteAttachmentBinding{{ID: attachment.ID, UID: attachment.UID, UpdatedTs: time.Now().Unix()}},
 		RequiredAttachmentIDs:     []int32{attachment.ID},
 		ReplaceReferenceRelations: true,
-		ReferenceRelations: []*store.MemoRelation{{
-			RelatedMemoID: target.ID,
-			Type:          store.MemoRelationReference,
+		ReferenceRelations: []*store.NoteRelation{{
+			RelatedNoteID: target.ID,
+			Type:          store.NoteRelationReference,
 		}},
 	})
 	require.NoError(t, err)
@@ -295,26 +295,26 @@ func TestMemoCreationMutationCommitsMemoBindingsAndRelationsTogether(t *testing.
 
 	storedAttachment, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID})
 	require.NoError(t, err)
-	require.NotNil(t, storedAttachment.MemoID)
-	require.Equal(t, created.ID, *storedAttachment.MemoID)
-	relations, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{MemoIDList: []int32{created.ID}})
+	require.NotNil(t, storedAttachment.NoteID)
+	require.Equal(t, created.ID, *storedAttachment.NoteID)
+	relations, err := ts.ListNoteRelations(ctx, &store.FindNoteRelation{NoteIDList: []int32{created.ID}})
 	require.NoError(t, err)
 	require.Len(t, relations, 1)
-	require.Equal(t, created.ID, relations[0].MemoID)
-	require.Equal(t, target.ID, relations[0].RelatedMemoID)
+	require.Equal(t, created.ID, relations[0].NoteID)
+	require.Equal(t, target.ID, relations[0].RelatedNoteID)
 }
 
-func TestMemoMutationUpdatesMemoAndBindingsTogether(t *testing.T) {
+func TestNoteMutationUpdatesNoteAndBindingsTogether(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "old", Visibility: store.Private})
+	note, err := ts.CreateNote(ctx, &store.Note{UID: shortuuid.New(), CreatorID: user.ID, Content: "old", Visibility: store.Private})
 	require.NoError(t, err)
 	removed, err := ts.CreateAttachment(ctx, &store.Attachment{
-		UID: shortuuid.New(), CreatorID: user.ID, Filename: "removed.png", Type: "image/png", MemoID: &memo.ID,
+		UID: shortuuid.New(), CreatorID: user.ID, Filename: "removed.png", Type: "image/png", NoteID: &note.ID,
 	})
 	require.NoError(t, err)
 	added, err := ts.CreateAttachment(ctx, &store.Attachment{
@@ -323,12 +323,12 @@ func TestMemoMutationUpdatesMemoAndBindingsTogether(t *testing.T) {
 	require.NoError(t, err)
 
 	updatedContent := "new"
-	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
-		MemoID:              memo.ID,
-		MemoCreatorID:       user.ID,
-		ExpectedMemoContent: memo.Content,
-		MemoUpdate:          &store.UpdateMemo{ID: memo.ID, Content: &updatedContent},
-		Bindings: []*store.MemoAttachmentBinding{
+	err = ts.ApplyNoteMutation(ctx, &store.NoteMutation{
+		NoteID:              note.ID,
+		NoteCreatorID:       user.ID,
+		ExpectedNoteContent: note.Content,
+		NoteUpdate:          &store.UpdateNote{ID: note.ID, Content: &updatedContent},
+		Bindings: []*store.NoteAttachmentBinding{
 			{ID: added.ID, UID: added.UID, UpdatedTs: time.Now().Unix()},
 		},
 		RemovedAttachmentIDs:  []int32{removed.ID},
@@ -336,29 +336,29 @@ func TestMemoMutationUpdatesMemoAndBindingsTogether(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	storedMemo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	storedNote, err := ts.GetNote(ctx, &store.FindNote{ID: &note.ID})
 	require.NoError(t, err)
-	require.Equal(t, "new", storedMemo.Content)
+	require.Equal(t, "new", storedNote.Content)
 	storedAdded, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &added.ID})
 	require.NoError(t, err)
-	require.NotNil(t, storedAdded.MemoID)
-	require.Equal(t, memo.ID, *storedAdded.MemoID)
+	require.NotNil(t, storedAdded.NoteID)
+	require.Equal(t, note.ID, *storedAdded.NoteID)
 	storedRemoved, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &removed.ID})
 	require.NoError(t, err)
 	require.Nil(t, storedRemoved)
 }
 
-func TestMemoMutationRollsBackWhenRequiredAttachmentIsMissing(t *testing.T) {
+func TestNoteMutationRollsBackWhenRequiredAttachmentIsMissing(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "old", Visibility: store.Private})
+	note, err := ts.CreateNote(ctx, &store.Note{UID: shortuuid.New(), CreatorID: user.ID, Content: "old", Visibility: store.Private})
 	require.NoError(t, err)
 	removed, err := ts.CreateAttachment(ctx, &store.Attachment{
-		UID: shortuuid.New(), CreatorID: user.ID, Filename: "kept.png", Type: "image/png", MemoID: &memo.ID,
+		UID: shortuuid.New(), CreatorID: user.ID, Filename: "kept.png", Type: "image/png", NoteID: &note.ID,
 	})
 	require.NoError(t, err)
 	added, err := ts.CreateAttachment(ctx, &store.Attachment{
@@ -367,71 +367,71 @@ func TestMemoMutationRollsBackWhenRequiredAttachmentIsMissing(t *testing.T) {
 	require.NoError(t, err)
 
 	updatedContent := "new"
-	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
-		MemoID:              memo.ID,
-		MemoCreatorID:       user.ID,
-		ExpectedMemoContent: memo.Content,
-		MemoUpdate:          &store.UpdateMemo{ID: memo.ID, Content: &updatedContent},
-		Bindings: []*store.MemoAttachmentBinding{
+	err = ts.ApplyNoteMutation(ctx, &store.NoteMutation{
+		NoteID:              note.ID,
+		NoteCreatorID:       user.ID,
+		ExpectedNoteContent: note.Content,
+		NoteUpdate:          &store.UpdateNote{ID: note.ID, Content: &updatedContent},
+		Bindings: []*store.NoteAttachmentBinding{
 			{ID: added.ID, UID: added.UID, UpdatedTs: time.Now().Unix()},
 		},
 		RemovedAttachmentIDs:  []int32{removed.ID},
 		RequiredAttachmentIDs: []int32{added.ID + removed.ID + 1000},
 	})
-	require.ErrorIs(t, err, store.ErrMemoMutationConflict)
+	require.ErrorIs(t, err, store.ErrNoteMutationConflict)
 
-	storedMemo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	storedNote, err := ts.GetNote(ctx, &store.FindNote{ID: &note.ID})
 	require.NoError(t, err)
-	require.Equal(t, "old", storedMemo.Content)
+	require.Equal(t, "old", storedNote.Content)
 	storedAdded, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &added.ID})
 	require.NoError(t, err)
-	require.Nil(t, storedAdded.MemoID)
+	require.Nil(t, storedAdded.NoteID)
 	storedRemoved, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &removed.ID})
 	require.NoError(t, err)
-	require.NotNil(t, storedRemoved.MemoID)
-	require.Equal(t, memo.ID, *storedRemoved.MemoID)
+	require.NotNil(t, storedRemoved.NoteID)
+	require.Equal(t, note.ID, *storedRemoved.NoteID)
 }
 
-func TestMemoMutationRejectsCommentInReferenceReplacement(t *testing.T) {
+func TestNoteMutationRejectsCommentInReferenceReplacement(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	source, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "original", Visibility: store.Private})
+	source, err := ts.CreateNote(ctx, &store.Note{UID: shortuuid.New(), CreatorID: user.ID, Content: "original", Visibility: store.Private})
 	require.NoError(t, err)
-	originalTarget, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "original target", Visibility: store.Private})
+	originalTarget, err := ts.CreateNote(ctx, &store.Note{UID: shortuuid.New(), CreatorID: user.ID, Content: "original target", Visibility: store.Private})
 	require.NoError(t, err)
-	replacementTarget, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "replacement target", Visibility: store.Private})
+	replacementTarget, err := ts.CreateNote(ctx, &store.Note{UID: shortuuid.New(), CreatorID: user.ID, Content: "replacement target", Visibility: store.Private})
 	require.NoError(t, err)
-	_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{
-		MemoID: source.ID, RelatedMemoID: originalTarget.ID, Type: store.MemoRelationReference,
+	_, err = ts.UpsertNoteRelation(ctx, &store.NoteRelation{
+		NoteID: source.ID, RelatedNoteID: originalTarget.ID, Type: store.NoteRelationReference,
 	})
 	require.NoError(t, err)
 
 	updatedContent := "must roll back"
-	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
-		MemoID:                    source.ID,
-		MemoCreatorID:             user.ID,
-		ExpectedMemoContent:       source.Content,
-		MemoUpdate:                &store.UpdateMemo{ID: source.ID, Content: &updatedContent},
+	err = ts.ApplyNoteMutation(ctx, &store.NoteMutation{
+		NoteID:                    source.ID,
+		NoteCreatorID:             user.ID,
+		ExpectedNoteContent:       source.Content,
+		NoteUpdate:                &store.UpdateNote{ID: source.ID, Content: &updatedContent},
 		ReplaceReferenceRelations: true,
-		ReferenceRelations: []*store.MemoRelation{
-			{MemoID: source.ID, RelatedMemoID: replacementTarget.ID, Type: store.MemoRelationReference},
-			{MemoID: source.ID, RelatedMemoID: originalTarget.ID, Type: store.MemoRelationComment},
+		ReferenceRelations: []*store.NoteRelation{
+			{NoteID: source.ID, RelatedNoteID: replacementTarget.ID, Type: store.NoteRelationReference},
+			{NoteID: source.ID, RelatedNoteID: originalTarget.ID, Type: store.NoteRelationComment},
 		},
 	})
 	require.Error(t, err)
 
-	stored, err := ts.GetMemo(ctx, &store.FindMemo{ID: &source.ID})
+	stored, err := ts.GetNote(ctx, &store.FindNote{ID: &source.ID})
 	require.NoError(t, err)
 	require.Equal(t, "original", stored.Content)
-	referenceType := store.MemoRelationReference
-	relations, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{MemoID: &source.ID, Type: &referenceType})
+	referenceType := store.NoteRelationReference
+	relations, err := ts.ListNoteRelations(ctx, &store.FindNoteRelation{NoteID: &source.ID, Type: &referenceType})
 	require.NoError(t, err)
 	require.Len(t, relations, 1)
-	require.Equal(t, originalTarget.ID, relations[0].RelatedMemoID)
+	require.Equal(t, originalTarget.ID, relations[0].RelatedNoteID)
 }
 
 func TestAttachmentStoreWithFilter(t *testing.T) {
@@ -616,8 +616,8 @@ func TestAttachmentInvalidUID(t *testing.T) {
 	ts.Close()
 }
 
-// TestMemoMutationConcurrentUpdatesNoSQLiteBusy: concurrent distinct-memo mutations all succeed (issue #6186).
-func TestMemoMutationConcurrentUpdatesNoSQLiteBusy(t *testing.T) {
+// TestNoteMutationConcurrentUpdatesNoSQLiteBusy: concurrent distinct-note mutations all succeed (issue #6186).
+func TestNoteMutationConcurrentUpdatesNoSQLiteBusy(t *testing.T) {
 	if getDriverFromEnv() != "sqlite" {
 		t.Skip("skipping sqlite lock regression test for non-sqlite driver")
 	}
@@ -629,13 +629,13 @@ func TestMemoMutationConcurrentUpdatesNoSQLiteBusy(t *testing.T) {
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 
-	// One memo per goroutine: writers don't share rows, so all must succeed.
+	// One note per goroutine: writers don't share rows, so all must succeed.
 	const workers = 10
-	memos := make([]*store.Memo, workers)
-	for i := range memos {
-		memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "original", Visibility: store.Private})
+	notes := make([]*store.Note, workers)
+	for i := range notes {
+		note, err := ts.CreateNote(ctx, &store.Note{UID: shortuuid.New(), CreatorID: user.ID, Content: "original", Visibility: store.Private})
 		require.NoError(t, err)
-		memos[i] = memo
+		notes[i] = note
 	}
 
 	start := make(chan struct{})
@@ -645,11 +645,11 @@ func TestMemoMutationConcurrentUpdatesNoSQLiteBusy(t *testing.T) {
 	for i := range workers {
 		wg.Go(func() {
 			<-start
-			errs[i] = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
-				MemoID:              memos[i].ID,
-				MemoCreatorID:       user.ID,
-				ExpectedMemoContent: memos[i].Content,
-				MemoUpdate:          &store.UpdateMemo{ID: memos[i].ID, Content: &content},
+			errs[i] = ts.ApplyNoteMutation(ctx, &store.NoteMutation{
+				NoteID:              notes[i].ID,
+				NoteCreatorID:       user.ID,
+				ExpectedNoteContent: notes[i].Content,
+				NoteUpdate:          &store.UpdateNote{ID: notes[i].ID, Content: &content},
 			})
 		})
 	}
@@ -661,8 +661,8 @@ func TestMemoMutationConcurrentUpdatesNoSQLiteBusy(t *testing.T) {
 	}
 }
 
-// TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy: same-memo races only yield success or ErrMemoMutationConflict.
-func TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy(t *testing.T) {
+// TestNoteMutationConcurrentUpdatesSameNoteNoSQLiteBusy: same-note races only yield success or ErrNoteMutationConflict.
+func TestNoteMutationConcurrentUpdatesSameNoteNoSQLiteBusy(t *testing.T) {
 	if getDriverFromEnv() != "sqlite" {
 		t.Skip("skipping sqlite lock regression test for non-sqlite driver")
 	}
@@ -673,7 +673,7 @@ func TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy(t *testing.T) {
 	defer ts.Close()
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "original", Visibility: store.Private})
+	note, err := ts.CreateNote(ctx, &store.Note{UID: shortuuid.New(), CreatorID: user.ID, Content: "original", Visibility: store.Private})
 	require.NoError(t, err)
 
 	const workers = 10
@@ -684,11 +684,11 @@ func TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy(t *testing.T) {
 	for i := range workers {
 		wg.Go(func() {
 			<-start
-			errs[i] = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
-				MemoID:              memo.ID,
-				MemoCreatorID:       user.ID,
-				ExpectedMemoContent: memo.Content,
-				MemoUpdate:          &store.UpdateMemo{ID: memo.ID, Content: &content},
+			errs[i] = ts.ApplyNoteMutation(ctx, &store.NoteMutation{
+				NoteID:              note.ID,
+				NoteCreatorID:       user.ID,
+				ExpectedNoteContent: note.Content,
+				NoteUpdate:          &store.UpdateNote{ID: note.ID, Content: &content},
 			})
 		})
 	}
@@ -699,7 +699,7 @@ func TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy(t *testing.T) {
 		if err == nil {
 			continue
 		}
-		require.ErrorIs(t, err, store.ErrMemoMutationConflict)
+		require.ErrorIs(t, err, store.ErrNoteMutationConflict)
 	}
 }
 
@@ -742,9 +742,9 @@ func TestAttachmentStorageUsage(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, expected, size, "external links do not count")
 
-	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: creator.ID, Content: "memo", Visibility: store.Private})
+	note, err := ts.CreateNote(ctx, &store.Note{UID: shortuuid.New(), CreatorID: creator.ID, Content: "note", Visibility: store.Private})
 	require.NoError(t, err)
-	require.NoError(t, ts.UpdateAttachment(ctx, &store.UpdateAttachment{ID: first.ID, MemoID: &memo.ID}))
+	require.NoError(t, ts.UpdateAttachment(ctx, &store.UpdateAttachment{ID: first.ID, NoteID: &note.ID}))
 	size, err = ts.GetAttachmentStorageUsage(ctx, creator.ID)
 	require.NoError(t, err)
 	require.Equal(t, expected, size, "binding does not change storage usage")

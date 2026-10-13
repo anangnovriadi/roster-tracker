@@ -8,7 +8,7 @@ import { buildAuthRoute, isPublicRoute } from "./redirect-safety";
 export {
   AUTH_AUTO_SIGN_IN_PARAM,
   AUTH_REASON_PARAM,
-  AUTH_REASON_PROTECTED_MEMO,
+  AUTH_REASON_PROTECTED_NOTE,
   AUTH_REDIRECT_PARAM,
   appendSearchParams,
   buildAuthRoute,

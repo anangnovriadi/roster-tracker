@@ -20,11 +20,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	IdentityProviderService_ListIdentityProviders_FullMethodName  = "/memos.api.IdentityProviderService/ListIdentityProviders"
-	IdentityProviderService_GetIdentityProvider_FullMethodName    = "/memos.api.IdentityProviderService/GetIdentityProvider"
-	IdentityProviderService_CreateIdentityProvider_FullMethodName = "/memos.api.IdentityProviderService/CreateIdentityProvider"
-	IdentityProviderService_UpdateIdentityProvider_FullMethodName = "/memos.api.IdentityProviderService/UpdateIdentityProvider"
-	IdentityProviderService_DeleteIdentityProvider_FullMethodName = "/memos.api.IdentityProviderService/DeleteIdentityProvider"
+	IdentityProviderService_ListIdentityProviders_FullMethodName  = "/roster.api.IdentityProviderService/ListIdentityProviders"
+	IdentityProviderService_GetIdentityProvider_FullMethodName    = "/roster.api.IdentityProviderService/GetIdentityProvider"
+	IdentityProviderService_CreateIdentityProvider_FullMethodName = "/roster.api.IdentityProviderService/CreateIdentityProvider"
+	IdentityProviderService_UpdateIdentityProvider_FullMethodName = "/roster.api.IdentityProviderService/UpdateIdentityProvider"
+	IdentityProviderService_DeleteIdentityProvider_FullMethodName = "/roster.api.IdentityProviderService/DeleteIdentityProvider"
 )
 
 // IdentityProviderServiceClient is the client API for IdentityProviderService service.
@@ -274,7 +274,7 @@ func _IdentityProviderService_DeleteIdentityProvider_Handler(srv interface{}, ct
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var IdentityProviderService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "memos.api.IdentityProviderService",
+	ServiceName: "roster.api.IdentityProviderService",
 	HandlerType: (*IdentityProviderServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

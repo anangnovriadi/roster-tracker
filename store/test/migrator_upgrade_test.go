@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/usememos/memos/internal/profile"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
-	storedb "github.com/usememos/memos/store/db"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
+	storedb "github.com/anangnovriadi/roster-tracker/store/db"
 )
 
 // TestUpgradeFromBaselineRelease tests a database initialized by v0.31.0
@@ -25,7 +25,7 @@ func TestUpgradeFromBaselineRelease(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
 	cfg, hostDSN := prepareUpgradeFixture(t, driver, "0.31.0")
-	container, err := StartMemosContainer(ctx, cfg)
+	container, err := StartNotesContainer(ctx, cfg)
 	require.NoError(t, err)
 	t.Cleanup(func() {
 		if container != nil {
@@ -85,16 +85,16 @@ func requireUpgradePreservesData(ctx context.Context, t *testing.T, previous *st
 	t.Helper()
 	user, err := createTestingHostUser(ctx, previous)
 	require.NoError(t, err)
-	memo, err := previous.CreateMemo(ctx, &store.Memo{
+	note, err := previous.CreateNote(ctx, &store.Note{
 		UID: "upgrade-sentinel", CreatorID: user.ID, Content: "#upgrade\n- [ ] preserved task", Visibility: store.Private, Pinned: true,
 	})
 	require.NoError(t, err)
-	memo, err = previous.GetMemo(ctx, &store.FindMemo{UID: &memo.UID})
+	note, err = previous.GetNote(ctx, &store.FindNote{UID: &note.UID})
 	require.NoError(t, err)
 	view, err := previous.UpsertUserSetting(ctx, &storepb.UserSetting{
-		UserId: user.ID, Key: storepb.UserSetting_MEMO_VIEWS,
-		Value: &storepb.UserSetting_MemoViews{MemoViews: &storepb.MemoViewsUserSetting{
-			MemoViews: []*storepb.MemoViewsUserSetting_MemoView{{Id: "upgrade", Title: "Upgrade sentinel", Filter: "has_incomplete_tasks"}},
+		UserId: user.ID, Key: storepb.UserSetting_NOTE_VIEWS,
+		Value: &storepb.UserSetting_NoteViews{NoteViews: &storepb.NoteViewsUserSetting{
+			NoteViews: []*storepb.NoteViewsUserSetting_NoteView{{Id: "upgrade", Title: "Upgrade sentinel", Filter: "has_incomplete_tasks"}},
 		}},
 	})
 	require.NoError(t, err)
@@ -117,10 +117,10 @@ func requireUpgradePreservesData(ctx context.Context, t *testing.T, previous *st
 		preservedUser, err := candidate.GetUser(ctx, &store.FindUser{ID: &user.ID})
 		require.NoError(t, err)
 		require.Equal(t, user, preservedUser)
-		preservedMemo, err := candidate.GetMemo(ctx, &store.FindMemo{UID: &memo.UID})
+		preservedNote, err := candidate.GetNote(ctx, &store.FindNote{UID: &note.UID})
 		require.NoError(t, err)
-		require.Equal(t, memo, preservedMemo)
-		preservedView, err := candidate.GetUserSetting(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_MEMO_VIEWS})
+		require.Equal(t, note, preservedNote)
+		preservedView, err := candidate.GetUserSetting(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_NOTE_VIEWS})
 		require.NoError(t, err)
 		require.True(t, proto.Equal(view, preservedView), "saved Views must survive the upgrade")
 		preservedAccess, err := candidate.GetInstanceAccessSetting(ctx)
@@ -135,7 +135,7 @@ func requireUpgradePreservesData(ctx context.Context, t *testing.T, previous *st
 	t.Cleanup(func() { _ = candidate.Close() })
 	require.NoError(t, candidate.Migrate(ctx))
 	verify(candidate)
-	written, err := candidate.CreateMemo(ctx, &store.Memo{
+	written, err := candidate.CreateNote(ctx, &store.Note{
 		UID: "after-upgrade", CreatorID: user.ID, Content: "created after upgrade", Visibility: store.Private,
 	})
 	require.NoError(t, err, "upgraded database must remain writable")
@@ -147,30 +147,30 @@ func requireUpgradePreservesData(ctx context.Context, t *testing.T, previous *st
 	t.Cleanup(func() { _ = restarted.Close() })
 	require.NoError(t, restarted.Migrate(ctx), "restart after upgrade must be idempotent")
 	verify(restarted)
-	persisted, err := restarted.GetMemo(ctx, &store.FindMemo{UID: &written.UID})
+	persisted, err := restarted.GetNote(ctx, &store.FindNote{UID: &written.UID})
 	require.NoError(t, err)
 	require.NotNil(t, persisted)
 	require.Equal(t, written.Content, persisted.Content, "post-upgrade writes must survive restart")
 }
 
 // prepareUpgradeFixture returns the container config needed to bootstrap a real
-// schema for the given Memos version, plus the DSN the host uses to reach it.
-func prepareUpgradeFixture(t *testing.T, driver, version string) (MemosContainerConfig, string) {
+// schema for the given Roster Tracker version, plus the DSN the host uses to reach it.
+func prepareUpgradeFixture(t *testing.T, driver, version string) (NotesContainerConfig, string) {
 	t.Helper()
 
 	switch driver {
 	case "sqlite":
 		dataDir := t.TempDir()
-		return MemosContainerConfig{
+		return NotesContainerConfig{
 			Version: version,
 			Driver:  driver,
 			DataDir: dataDir,
-		}, fmt.Sprintf("%s/memos_prod.db", dataDir)
+		}, fmt.Sprintf("%s/notes_prod.db", dataDir)
 	case "mysql":
 		hostDSN := GetMySQLDSN(t)
 		containerDSN, err := getContainerDSN(driver, hostDSN)
 		require.NoError(t, err)
-		return MemosContainerConfig{
+		return NotesContainerConfig{
 			Version: version,
 			Driver:  driver,
 			DSN:     containerDSN,
@@ -179,13 +179,13 @@ func prepareUpgradeFixture(t *testing.T, driver, version string) (MemosContainer
 		hostDSN := GetPostgresDSN(t)
 		containerDSN, err := getContainerDSN(driver, hostDSN)
 		require.NoError(t, err)
-		return MemosContainerConfig{
+		return NotesContainerConfig{
 			Version: version,
 			Driver:  driver,
 			DSN:     containerDSN,
 		}, hostDSN
 	default:
 		t.Fatalf("unsupported driver: %s", driver)
-		return MemosContainerConfig{}, ""
+		return NotesContainerConfig{}, ""
 	}
 }

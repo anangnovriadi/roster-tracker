@@ -3,7 +3,7 @@ import { EditorSelection, EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { GFM } from "@lezer/markdown";
 import { describe, expect, it } from "vitest";
-import { createFormattingController } from "@/components/MemoEditor/Editor/formatting";
+import { createFormattingController } from "@/components/NoteEditor/Editor/formatting";
 
 function setup(doc: string, from: number, to: number) {
   const view = new EditorView({

@@ -9,48 +9,48 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/core/access"
-	"github.com/usememos/memos/internal/ratelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/core/access"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
-func (s *APIService) ListMemoReactions(ctx context.Context, request *apipb.ListMemoReactionsRequest) (*apipb.ListMemoReactionsResponse, error) {
-	// Extract memo UID and check visibility.
-	memoUID, err := ExtractMemoUIDFromName(request.Parent)
+func (s *APIService) ListNoteReactions(ctx context.Context, request *apipb.ListNoteReactionsRequest) (*apipb.ListNoteReactionsResponse, error) {
+	// Extract note UID and check visibility.
+	noteUID, err := ExtractNoteUIDFromName(request.Parent)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid note name: %v", err)
 	}
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	note, err := s.Store.GetNote(ctx, &store.FindNote{UID: &noteUID})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get note: %v", err)
 	}
-	if memo == nil {
-		return nil, status.Errorf(codes.NotFound, "memo not found")
+	if note == nil {
+		return nil, status.Errorf(codes.NotFound, "note not found")
 	}
 
-	if err := s.checkMemoReadAccess(ctx, memo); err != nil {
+	if err := s.checkNoteReadAccess(ctx, note); err != nil {
 		return nil, err
 	}
 
 	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		MemoID: &memo.ID,
+		NoteID: &note.ID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list reactions")
 	}
 
-	response := &apipb.ListMemoReactionsResponse{
+	response := &apipb.ListNoteReactionsResponse{
 		Reactions: []*apipb.Reaction{},
 	}
-	response.Reactions, err = s.convertReactionsFromStoreWithCreators(ctx, reactions, nil, buildMemoName(memo.UID))
+	response.Reactions, err = s.convertReactionsFromStoreWithCreators(ctx, reactions, nil, buildNoteName(note.UID))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to convert reactions")
 	}
 	return response, nil
 }
 
-func (s *APIService) UpsertMemoReaction(ctx context.Context, request *apipb.UpsertMemoReactionRequest) (*apipb.Reaction, error) {
+func (s *APIService) UpsertNoteReaction(ctx context.Context, request *apipb.UpsertNoteReactionRequest) (*apipb.Reaction, error) {
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
@@ -65,24 +65,24 @@ func (s *APIService) UpsertMemoReaction(ctx context.Context, request *apipb.Upse
 		return nil, status.Error(codes.InvalidArgument, "reaction is required")
 	}
 
-	// Extract memo UID and check visibility before allowing reaction.
-	memoUID, err := ExtractMemoUIDFromName(request.Parent)
+	// Extract note UID and check visibility before allowing reaction.
+	noteUID, err := ExtractNoteUIDFromName(request.Parent)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid note name: %v", err)
 	}
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	note, err := s.Store.GetNote(ctx, &store.FindNote{UID: &noteUID})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get note: %v", err)
 	}
-	if memo == nil {
-		return nil, status.Errorf(codes.NotFound, "memo not found")
+	if note == nil {
+		return nil, status.Errorf(codes.NotFound, "note not found")
 	}
 
-	if err := s.checkMemoReadAccess(ctx, memo); err != nil {
+	if err := s.checkNoteReadAccess(ctx, note); err != nil {
 		return nil, err
 	}
 	// Each member reacts to a note at most once; removing the reaction frees the slot.
-	existing, err := s.Store.ListReactions(ctx, &store.FindReaction{CreatorID: &user.ID, MemoID: &memo.ID})
+	existing, err := s.Store.ListReactions(ctx, &store.FindReaction{CreatorID: &user.ID, NoteID: &note.ID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list reactions: %v", err)
 	}
@@ -91,7 +91,7 @@ func (s *APIService) UpsertMemoReaction(ctx context.Context, request *apipb.Upse
 	}
 	reaction, err := s.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		MemoID:       memo.ID,
+		NoteID:       note.ID,
 		ReactionType: request.Reaction.ReactionType,
 		Policy:       reactionWritePolicy(user.ID),
 	})
@@ -99,18 +99,18 @@ func (s *APIService) UpsertMemoReaction(ctx context.Context, request *apipb.Upse
 		return nil, mapReactionMutationError(err, "failed to upsert reaction")
 	}
 
-	memoName := buildMemoName(memo.UID)
-	reactionMessage, err := s.convertReactionFromStore(ctx, reaction, memoName)
+	noteName := buildNoteName(note.UID)
+	reactionMessage, err := s.convertReactionFromStore(ctx, reaction, noteName)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to convert reaction")
 	}
 
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishNoteChanged()
 
 	return reactionMessage, nil
 }
 
-func (s *APIService) DeleteMemoReaction(ctx context.Context, request *apipb.DeleteMemoReactionRequest) (*emptypb.Empty, error) {
+func (s *APIService) DeleteNoteReaction(ctx context.Context, request *apipb.DeleteNoteReactionRequest) (*emptypb.Empty, error) {
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -119,7 +119,7 @@ func (s *APIService) DeleteMemoReaction(ctx context.Context, request *apipb.Dele
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
-	memoUID, reactionID, err := ExtractMemoReactionIDFromName(request.Name)
+	noteUID, reactionID, err := ExtractNoteReactionIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid reaction name: %v", err)
 	}
@@ -139,23 +139,23 @@ func (s *APIService) DeleteMemoReaction(ctx context.Context, request *apipb.Dele
 	if reaction.CreatorID != user.ID && !access.IsInstanceAdmin(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &reaction.MemoID})
+	note, err := s.Store.GetNote(ctx, &store.FindNote{ID: &reaction.NoteID})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get memo")
+		return nil, status.Errorf(codes.Internal, "failed to get note")
 	}
-	if memo == nil || memo.UID != memoUID {
+	if note == nil || note.UID != noteUID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	if err := s.Store.DeleteReaction(ctx, &store.DeleteReaction{
 		ID:          &reactionID,
-		MemoID:      &reaction.MemoID,
+		NoteID:      &reaction.NoteID,
 		ActorUserID: &user.ID,
 		Policy:      reactionWritePolicy(user.ID),
 	}); err != nil {
 		return nil, mapReactionMutationError(err, "failed to delete reaction")
 	}
 
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishNoteChanged()
 
 	return &emptypb.Empty{}, nil
 }
@@ -166,26 +166,26 @@ func reactionWritePolicy(actorUserID int32) *store.ReactionWritePolicy {
 
 func mapReactionMutationError(err error, operation string) error {
 	switch {
-	case stderrors.Is(err, store.ErrReactionMemoNotFound):
-		return status.Error(codes.NotFound, "memo not found")
+	case stderrors.Is(err, store.ErrReactionNoteNotFound):
+		return status.Error(codes.NotFound, "note not found")
 	case stderrors.Is(err, store.ErrReactionPermissionDenied):
 		return status.Error(codes.PermissionDenied, "permission denied")
 	default:
-		return mapMemoWriteError(err, operation)
+		return mapNoteWriteError(err, operation)
 	}
 }
 
-func (s *APIService) convertReactionFromStore(ctx context.Context, reaction *store.Reaction, memoName string) (*apipb.Reaction, error) {
+func (s *APIService) convertReactionFromStore(ctx context.Context, reaction *store.Reaction, noteName string) (*apipb.Reaction, error) {
 	creatorsByID, err := s.listUsersByIDWithExisting(ctx, []int32{reaction.CreatorID}, nil)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get reaction creator")
 	}
-	reactionMessage, err := convertReactionFromStoreWithCreators(reaction, creatorsByID, memoName)
+	reactionMessage, err := convertReactionFromStoreWithCreators(reaction, creatorsByID, noteName)
 	if err != nil {
 		slog.Warn("Failed to convert reaction with missing creator",
 			slog.Int64("reaction_id", int64(reaction.ID)),
 			slog.Int64("creator_id", int64(reaction.CreatorID)),
-			slog.Int64("memo_id", int64(reaction.MemoID)),
+			slog.Int64("note_id", int64(reaction.NoteID)),
 		)
 		return nil, status.Errorf(codes.NotFound, "reaction creator not found")
 	}

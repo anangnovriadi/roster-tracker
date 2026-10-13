@@ -6,14 +6,14 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import SidebarRow, { sidebarRowStateClasses } from "@/components/AppSidebar/SidebarRow";
 import TagsSection from "@/components/AppSidebar/TagsSection";
-import MemoFilters from "@/components/MemoFilters";
+import NoteFilters from "@/components/NoteFilters";
 import { AppSidebarProvider } from "@/contexts/AppSidebarContext";
-import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { NoteFilterProvider, useNoteFilterContext } from "@/contexts/NoteFilterContext";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));
 vi.mock("@/hooks/useUserQueries", () => ({
-  useMemoViews: () => ({ data: [{ name: "users/1/memoViews/abc", title: "Last week", filter: "pinned" }] }),
+  useNoteViews: () => ({ data: [{ name: "users/1/noteViews/abc", title: "Last week", filter: "pinned" }] }),
 }));
 
 const tokens = (classes: string) => classes.split(" ");
@@ -45,9 +45,9 @@ describe("sidebar selected grammar", () => {
   it("checks a tag row instead of filling it", () => {
     render(
       <MemoryRouter>
-        <MemoFilterProvider>
+        <NoteFilterProvider>
           <TagsSection tagCount={{ work: 2 }} scope="home" />
-        </MemoFilterProvider>
+        </NoteFilterProvider>
       </MemoryRouter>,
     );
 
@@ -60,8 +60,8 @@ describe("sidebar selected grammar", () => {
 });
 
 const SelectView = ({ id }: { id: string }) => {
-  const { setMemoView } = useMemoFilterContext();
-  useEffect(() => setMemoView(id), [id, setMemoView]);
+  const { setNoteView } = useNoteFilterContext();
+  useEffect(() => setNoteView(id), [id, setNoteView]);
   return null;
 };
 
@@ -70,16 +70,16 @@ const renderChips = (path: string, viewId?: string) =>
     <QueryClientProvider client={new QueryClient()}>
       <MemoryRouter initialEntries={[path]}>
         <AppSidebarProvider>
-          <MemoFilterProvider>
+          <NoteFilterProvider>
             {viewId && <SelectView id={viewId} />}
-            <MemoFilters />
-          </MemoFilterProvider>
+            <NoteFilters />
+          </NoteFilterProvider>
         </AppSidebarProvider>
       </MemoryRouter>
     </QueryClientProvider>,
   );
 
-describe("MemoFilters", () => {
+describe("NoteFilters", () => {
   it("echoes the active view like any other filter, and clears it from the chip", () => {
     renderChips("/", "abc");
 
@@ -93,7 +93,7 @@ describe("MemoFilters", () => {
     expect(screen.getByText("Last week")).toBeInTheDocument();
   });
 
-  it("announces a view on a creator collection, where it narrows that user's memos", () => {
+  it("announces a view on a creator collection, where it narrows that user's notes", () => {
     renderChips("/?creator=alice", "abc");
     expect(screen.getByText("Last week")).toBeInTheDocument();
   });

@@ -7,9 +7,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (s *APIService) GetUserSetting(ctx context.Context, request *apipb.GetUserSettingRequest) (*apipb.UserSetting, error) {
@@ -102,13 +102,13 @@ func (s *APIService) UpdateUserSetting(ctx context.Context, request *apipb.Updat
 		}
 		for _, field := range request.UpdateMask.Paths {
 			switch field {
-			case "memo_visibility":
-				switch incomingGeneral.MemoVisibility {
+			case "note_visibility":
+				switch incomingGeneral.NoteVisibility {
 				case store.Private.String(), store.Protected.String(), store.Public.String():
 				default:
-					return nil, status.Errorf(codes.InvalidArgument, "memo_visibility must be PRIVATE, PROTECTED, or PUBLIC")
+					return nil, status.Errorf(codes.InvalidArgument, "note_visibility must be PRIVATE, PROTECTED, or PUBLIC")
 				}
-				updatedGeneral.MemoVisibility = incomingGeneral.MemoVisibility
+				updatedGeneral.NoteVisibility = incomingGeneral.NoteVisibility
 			case "theme":
 				updatedGeneral.Theme = incomingGeneral.Theme
 			case "locale":

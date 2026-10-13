@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func TestInboxStore(t *testing.T) {
@@ -22,7 +22,7 @@ func TestInboxStore(t *testing.T) {
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Type: storepb.InboxMessage_MEMO_COMMENT,
+			Type: storepb.InboxMessage_NOTE_COMMENT,
 		},
 	}
 	inbox, err := ts.CreateInbox(ctx, create)
@@ -65,7 +65,7 @@ func TestInboxListByID(t *testing.T) {
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 
@@ -98,7 +98,7 @@ func TestInboxListBySenderID(t *testing.T) {
 		SenderID:   0,
 		ReceiverID: user1.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 
@@ -107,7 +107,7 @@ func TestInboxListBySenderID(t *testing.T) {
 		SenderID:   user2.ID,
 		ReceiverID: user1.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 
@@ -139,7 +139,7 @@ func TestInboxListByStatus(t *testing.T) {
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 
@@ -148,7 +148,7 @@ func TestInboxListByStatus(t *testing.T) {
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 	_, err = ts.UpdateInbox(ctx, &store.UpdateInbox{ID: inbox2.ID, Status: store.ARCHIVED})
@@ -178,12 +178,12 @@ func TestInboxListByMessageType(t *testing.T) {
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 
-	// Create MEMO_COMMENT inboxes
+	// Create NOTE_COMMENT inboxes
 	_, err = ts.CreateInbox(ctx, &store.Inbox{
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 
@@ -191,17 +191,17 @@ func TestInboxListByMessageType(t *testing.T) {
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 
-	// List by MEMO_COMMENT type
-	memoCommentType := storepb.InboxMessage_MEMO_COMMENT
-	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{MessageType: &memoCommentType})
+	// List by NOTE_COMMENT type
+	noteCommentType := storepb.InboxMessage_NOTE_COMMENT
+	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{MessageType: &noteCommentType})
 	require.NoError(t, err)
 	require.Len(t, inboxes, 2)
 	for _, inbox := range inboxes {
-		require.Equal(t, storepb.InboxMessage_MEMO_COMMENT, inbox.Message.Type)
+		require.Equal(t, storepb.InboxMessage_NOTE_COMMENT, inbox.Message.Type)
 	}
 
 	ts.Close()
@@ -220,7 +220,7 @@ func TestInboxListPagination(t *testing.T) {
 			SenderID:   0,
 			ReceiverID: user.ID,
 			Status:     store.UNREAD,
-			Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+			Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 		})
 		require.NoError(t, err)
 	}
@@ -269,12 +269,12 @@ func TestInboxListCombinedFilters(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create various inboxes
-	// user2 -> user1, MEMO_COMMENT, UNREAD
+	// user2 -> user1, NOTE_COMMENT, UNREAD
 	_, err = ts.CreateInbox(ctx, &store.Inbox{
 		SenderID:   user2.ID,
 		ReceiverID: user1.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 
@@ -287,12 +287,12 @@ func TestInboxListCombinedFilters(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// system -> user1, MEMO_COMMENT, ARCHIVED
+	// system -> user1, NOTE_COMMENT, ARCHIVED
 	inbox3, err := ts.CreateInbox(ctx, &store.Inbox{
 		SenderID:   0,
 		ReceiverID: user1.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 	_, err = ts.UpdateInbox(ctx, &store.UpdateInbox{ID: inbox3.ID, Status: store.ARCHIVED})
@@ -309,10 +309,10 @@ func TestInboxListCombinedFilters(t *testing.T) {
 	require.Len(t, inboxes, 2)
 
 	// Combined filter: ReceiverID + MessageType + Status
-	memoCommentType := storepb.InboxMessage_MEMO_COMMENT
+	noteCommentType := storepb.InboxMessage_NOTE_COMMENT
 	inboxes, err = ts.ListInboxes(ctx, &store.FindInbox{
 		ReceiverID:  &user1.ID,
-		MessageType: &memoCommentType,
+		MessageType: &noteCommentType,
 		Status:      &unreadStatus,
 	})
 	require.NoError(t, err)
@@ -329,37 +329,37 @@ func TestInboxMessagePayload(t *testing.T) {
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 
-	// Create inbox with message payload containing memo references.
-	memoID := int32(123)
-	relatedMemoID := int32(456)
+	// Create inbox with message payload containing note references.
+	noteID := int32(123)
+	relatedNoteID := int32(456)
 	inbox, err := ts.CreateInbox(ctx, &store.Inbox{
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Type: storepb.InboxMessage_MEMO_COMMENT,
-			Payload: &storepb.InboxMessage_MemoComment{
-				MemoComment: &storepb.InboxMessage_MemoCommentPayload{
-					MemoId:        memoID,
-					RelatedMemoId: relatedMemoID,
+			Type: storepb.InboxMessage_NOTE_COMMENT,
+			Payload: &storepb.InboxMessage_NoteComment{
+				NoteComment: &storepb.InboxMessage_NoteCommentPayload{
+					NoteId:        noteID,
+					RelatedNoteId: relatedNoteID,
 				},
 			},
 		},
 	})
 	require.NoError(t, err)
 	require.NotNil(t, inbox.Message)
-	require.Equal(t, storepb.InboxMessage_MEMO_COMMENT, inbox.Message.Type)
-	require.NotNil(t, inbox.Message.GetMemoComment())
-	require.Equal(t, memoID, inbox.Message.GetMemoComment().MemoId)
-	require.Equal(t, relatedMemoID, inbox.Message.GetMemoComment().RelatedMemoId)
+	require.Equal(t, storepb.InboxMessage_NOTE_COMMENT, inbox.Message.Type)
+	require.NotNil(t, inbox.Message.GetNoteComment())
+	require.Equal(t, noteID, inbox.Message.GetNoteComment().NoteId)
+	require.Equal(t, relatedNoteID, inbox.Message.GetNoteComment().RelatedNoteId)
 
 	// List and verify payload is preserved
 	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{ReceiverID: &user.ID})
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
-	require.NotNil(t, inboxes[0].Message.GetMemoComment())
-	require.Equal(t, memoID, inboxes[0].Message.GetMemoComment().MemoId)
-	require.Equal(t, relatedMemoID, inboxes[0].Message.GetMemoComment().RelatedMemoId)
+	require.NotNil(t, inboxes[0].Message.GetNoteComment())
+	require.Equal(t, noteID, inboxes[0].Message.GetNoteComment().NoteId)
+	require.Equal(t, relatedNoteID, inboxes[0].Message.GetNoteComment().RelatedNoteId)
 
 	ts.Close()
 }
@@ -375,7 +375,7 @@ func TestInboxUpdateStatus(t *testing.T) {
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 	require.Equal(t, store.UNREAD, inbox.Status)
@@ -410,7 +410,7 @@ func TestInboxListByMessageTypeMultipleTypes(t *testing.T) {
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 
@@ -426,20 +426,20 @@ func TestInboxListByMessageTypeMultipleTypes(t *testing.T) {
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 
-	// Filter by MEMO_COMMENT - should get 2
-	memoCommentType := storepb.InboxMessage_MEMO_COMMENT
+	// Filter by NOTE_COMMENT - should get 2
+	noteCommentType := storepb.InboxMessage_NOTE_COMMENT
 	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{
 		ReceiverID:  &user.ID,
-		MessageType: &memoCommentType,
+		MessageType: &noteCommentType,
 	})
 	require.NoError(t, err)
 	require.Len(t, inboxes, 2)
 	for _, inbox := range inboxes {
-		require.Equal(t, storepb.InboxMessage_MEMO_COMMENT, inbox.Message.Type)
+		require.Equal(t, storepb.InboxMessage_NOTE_COMMENT, inbox.Message.Type)
 	}
 
 	// Filter by TYPE_UNSPECIFIED - should get 1
@@ -463,17 +463,17 @@ func TestInboxMessageTypeFilterWithPayload(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create inbox with full payload.
-	memoID := int32(456)
+	noteID := int32(456)
 	_, err = ts.CreateInbox(ctx, &store.Inbox{
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Type: storepb.InboxMessage_MEMO_COMMENT,
-			Payload: &storepb.InboxMessage_MemoComment{
-				MemoComment: &storepb.InboxMessage_MemoCommentPayload{
-					MemoId:        memoID,
-					RelatedMemoId: 654,
+			Type: storepb.InboxMessage_NOTE_COMMENT,
+			Payload: &storepb.InboxMessage_NoteComment{
+				NoteComment: &storepb.InboxMessage_NoteCommentPayload{
+					NoteId:        noteID,
+					RelatedNoteId: 654,
 				},
 			},
 		},
@@ -481,17 +481,17 @@ func TestInboxMessageTypeFilterWithPayload(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create inbox with different type but also has payload.
-	otherMemoID := int32(789)
+	otherNoteID := int32(789)
 	_, err = ts.CreateInbox(ctx, &store.Inbox{
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
 			Type: storepb.InboxMessage_TYPE_UNSPECIFIED,
-			Payload: &storepb.InboxMessage_MemoComment{
-				MemoComment: &storepb.InboxMessage_MemoCommentPayload{
-					MemoId:        otherMemoID,
-					RelatedMemoId: 987,
+			Payload: &storepb.InboxMessage_NoteComment{
+				NoteComment: &storepb.InboxMessage_NoteCommentPayload{
+					NoteId:        otherNoteID,
+					RelatedNoteId: 987,
 				},
 			},
 		},
@@ -499,15 +499,15 @@ func TestInboxMessageTypeFilterWithPayload(t *testing.T) {
 	require.NoError(t, err)
 
 	// Filter by type should work correctly even with complex JSON payload.
-	memoCommentType := storepb.InboxMessage_MEMO_COMMENT
+	noteCommentType := storepb.InboxMessage_NOTE_COMMENT
 	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{
 		ReceiverID:  &user.ID,
-		MessageType: &memoCommentType,
+		MessageType: &noteCommentType,
 	})
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
-	require.NotNil(t, inboxes[0].Message.GetMemoComment())
-	require.Equal(t, memoID, inboxes[0].Message.GetMemoComment().MemoId)
+	require.NotNil(t, inboxes[0].Message.GetNoteComment())
+	require.Equal(t, noteID, inboxes[0].Message.GetNoteComment().NoteId)
 
 	ts.Close()
 }
@@ -525,7 +525,7 @@ func TestInboxMessageTypeFilterWithStatusAndPagination(t *testing.T) {
 			SenderID:   0,
 			ReceiverID: user.ID,
 			Status:     store.UNREAD,
-			Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+			Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 		})
 		require.NoError(t, err)
 	}
@@ -539,19 +539,19 @@ func TestInboxMessageTypeFilterWithStatusAndPagination(t *testing.T) {
 	}
 
 	// Filter by type + status + pagination
-	memoCommentType := storepb.InboxMessage_MEMO_COMMENT
+	noteCommentType := storepb.InboxMessage_NOTE_COMMENT
 	unreadStatus := store.UNREAD
 	limit := 2
 	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{
 		ReceiverID:  &user.ID,
-		MessageType: &memoCommentType,
+		MessageType: &noteCommentType,
 		Status:      &unreadStatus,
 		Limit:       &limit,
 	})
 	require.NoError(t, err)
 	require.Len(t, inboxes, 2)
 	for _, inbox := range inboxes {
-		require.Equal(t, storepb.InboxMessage_MEMO_COMMENT, inbox.Message.Type)
+		require.Equal(t, storepb.InboxMessage_NOTE_COMMENT, inbox.Message.Type)
 		require.Equal(t, store.UNREAD, inbox.Status)
 	}
 
@@ -559,7 +559,7 @@ func TestInboxMessageTypeFilterWithStatusAndPagination(t *testing.T) {
 	offset := 2
 	inboxes, err = ts.ListInboxes(ctx, &store.FindInbox{
 		ReceiverID:  &user.ID,
-		MessageType: &memoCommentType,
+		MessageType: &noteCommentType,
 		Status:      &unreadStatus,
 		Limit:       &limit,
 		Offset:      &offset,
@@ -584,7 +584,7 @@ func TestInboxMultipleReceivers(t *testing.T) {
 		SenderID:   0,
 		ReceiverID: user1.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 
@@ -593,7 +593,7 @@ func TestInboxMultipleReceivers(t *testing.T) {
 		SenderID:   0,
 		ReceiverID: user2.ID,
 		Status:     store.UNREAD,
-		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_COMMENT},
+		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_NOTE_COMMENT},
 	})
 	require.NoError(t, err)
 

@@ -6,10 +6,10 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/clientip"
-	"github.com/usememos/memos/internal/ratelimit"
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // ErrUnauthenticated is returned by the Authorizer when a request must be rejected

@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
 )
 
 // DeleteUserFailpoint is a test-only hook for forcing a delete-user rollback.

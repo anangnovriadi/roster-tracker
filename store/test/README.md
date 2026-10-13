@@ -19,7 +19,7 @@ all three drivers before release.
 - Before `v0.31.0`: `TestUpgradeThroughBaselineRelease` initializes a database with released `0.30.0`, verifies the current
   migrator refuses a direct upgrade without modifying data or settings, then upgrades through released `0.31.0` to current.
 - From `v0.31.0`: `TestUpgradeFromBaselineRelease` initializes a database with released `0.31.0`, then checks preservation of
-  the account, memo, saved View, and access mode, post-upgrade writes, and reopening the database after upgrade.
+  the account, note, saved View, and access mode, post-upgrade writes, and reopening the database after upgrade.
 - From CalVer: `TestUpgradeFromCalendarRelease` uses local store fixtures for month changes, point releases, RC promotion,
   and year changes. It checks the same preservation and restart behavior. These are fixtures, not published CalVer binaries;
   application versions advance while the database schema changes only with migrations.

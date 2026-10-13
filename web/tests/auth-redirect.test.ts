@@ -92,9 +92,9 @@ describe("redirectOnAuthFailure", () => {
   it("embeds the reason parameter when provided", () => {
     const nav = installLocation("http://localhost/home");
 
-    redirectOnAuthFailure(false, { reason: "protected-memo" });
+    redirectOnAuthFailure(false, { reason: "protected-note" });
 
-    expect(nav.replace).toHaveBeenCalledWith("/auth?redirect=%2Fhome&reason=protected-memo");
+    expect(nav.replace).toHaveBeenCalledWith("/auth?redirect=%2Fhome&reason=protected-note");
   });
 
   it("prefers an explicitly provided redirect target over the current location", () => {

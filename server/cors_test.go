@@ -8,11 +8,11 @@ import (
 
 	"github.com/labstack/echo/v5"
 
-	"github.com/usememos/memos/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
 )
 
 func TestAllowedCORSOrigin(t *testing.T) {
-	p := &profile.Profile{InstanceURL: "https://memos.example"}
+	p := &profile.Profile{InstanceURL: "https://notes.example"}
 
 	tests := []struct {
 		name        string
@@ -29,31 +29,31 @@ func TestAllowedCORSOrigin(t *testing.T) {
 		{
 			name:        "instance URL",
 			requestHost: "localhost",
-			origin:      "https://memos.example",
+			origin:      "https://notes.example",
 			allowed:     true,
 		},
 		{
-			name:        "usememos apex",
+			name:        "roster-tracker apex",
 			requestHost: "localhost",
-			origin:      "https://usememos.com",
+			origin:      "https://github.com/anangnovriadi/roster-tracker#readme",
 			allowed:     false,
 		},
 		{
-			name:        "usememos subdomain",
+			name:        "roster-tracker subdomain",
 			requestHost: "localhost",
-			origin:      "https://demo.usememos.com",
+			origin:      "https://demo.example.com",
 			allowed:     false,
 		},
 		{
-			name:        "nested usememos subdomain",
+			name:        "nested roster-tracker subdomain",
 			requestHost: "localhost",
-			origin:      "https://preview.demo.usememos.com",
+			origin:      "https://preview.demo.example.com",
 			allowed:     false,
 		},
 		{
-			name:        "usememos subdomain with port",
+			name:        "roster-tracker subdomain with port",
 			requestHost: "localhost",
-			origin:      "http://localhost.usememos.com:3001",
+			origin:      "http://localhost.example.com:3001",
 			allowed:     false,
 		},
 		{
@@ -65,7 +65,7 @@ func TestAllowedCORSOrigin(t *testing.T) {
 		{
 			name:        "lookalike domain",
 			requestHost: "localhost",
-			origin:      "https://evilusememos.com",
+			origin:      "https://evilexample.com",
 			allowed:     false,
 		},
 	}
@@ -81,14 +81,14 @@ func TestAllowedCORSOrigin(t *testing.T) {
 
 func TestCORSMiddleware(t *testing.T) {
 	e := echo.New()
-	e.Use(newCORSMiddleware(&profile.Profile{InstanceURL: "https://memos.example"}))
+	e.Use(newCORSMiddleware(&profile.Profile{InstanceURL: "https://notes.example"}))
 	e.POST("/api/test", func(c *echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	})
 
 	t.Run("trusted origin gets credentialed access", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodOptions, "/api/test", nil)
-		req.Header.Set("Origin", "https://memos.example")
+		req.Header.Set("Origin", "https://notes.example")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
 		rec := httptest.NewRecorder()
 
@@ -97,7 +97,7 @@ func TestCORSMiddleware(t *testing.T) {
 		if rec.Code != http.StatusNoContent {
 			t.Fatalf("expected status %d, got %d", http.StatusNoContent, rec.Code)
 		}
-		if got := rec.Header().Get("Access-Control-Allow-Origin"); got != "https://memos.example" {
+		if got := rec.Header().Get("Access-Control-Allow-Origin"); got != "https://notes.example" {
 			t.Fatalf("unexpected Access-Control-Allow-Origin: %q", got)
 		}
 		if got := rec.Header().Get("Access-Control-Allow-Credentials"); got != "true" {

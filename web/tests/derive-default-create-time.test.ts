@@ -4,8 +4,8 @@ import {
   deriveDefaultCreateTimeFromFilters,
   restampDefaultCreateTime,
   withTimeOfDay,
-} from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
-import type { MemoFilter } from "@/contexts/MemoFilterContext";
+} from "@/components/NoteEditor/utils/deriveDefaultCreateTime";
+import type { NoteFilter } from "@/contexts/NoteFilterContext";
 
 describe("deriveDefaultCreateTimeFromFilters", () => {
   const now = new Date(2026, 4, 2, 14, 32, 10); // 2026-05-02 14:32:10 local
@@ -15,7 +15,7 @@ describe("deriveDefaultCreateTimeFromFilters", () => {
   });
 
   it("returns undefined when no displayTime filter is present", () => {
-    const filters: MemoFilter[] = [
+    const filters: NoteFilter[] = [
       { factor: "tagSearch", value: "work" },
       { factor: "pinned", value: "true" },
     ];
@@ -23,7 +23,7 @@ describe("deriveDefaultCreateTimeFromFilters", () => {
   });
 
   it("merges the displayTime date with the current local hh:mm:ss", () => {
-    const filters: MemoFilter[] = [{ factor: "displayTime", value: "2025-05-01" }];
+    const filters: NoteFilter[] = [{ factor: "displayTime", value: "2025-05-01" }];
     const result = deriveDefaultCreateTimeFromFilters(filters, now);
     expect(result).toBeDefined();
     expect(result!.getFullYear()).toBe(2025);
@@ -35,7 +35,7 @@ describe("deriveDefaultCreateTimeFromFilters", () => {
   });
 
   it("ignores extra non-displayTime filters", () => {
-    const filters: MemoFilter[] = [
+    const filters: NoteFilter[] = [
       { factor: "tagSearch", value: "work" },
       { factor: "displayTime", value: "2025-05-01" },
       { factor: "pinned", value: "true" },
@@ -45,7 +45,7 @@ describe("deriveDefaultCreateTimeFromFilters", () => {
   });
 
   it("returns undefined for a malformed YYYY-MM-DD value", () => {
-    const cases: MemoFilter[][] = [
+    const cases: NoteFilter[][] = [
       [{ factor: "displayTime", value: "not-a-date" }],
       [{ factor: "displayTime", value: "2025-13-40" }],
       [{ factor: "displayTime", value: "" }],
@@ -57,7 +57,7 @@ describe("deriveDefaultCreateTimeFromFilters", () => {
   });
 
   it("uses real `new Date()` when `now` is omitted", () => {
-    const filters: MemoFilter[] = [{ factor: "displayTime", value: "2025-05-01" }];
+    const filters: NoteFilter[] = [{ factor: "displayTime", value: "2025-05-01" }];
     const before = new Date();
     const result = deriveDefaultCreateTimeFromFilters(filters);
     const after = new Date();

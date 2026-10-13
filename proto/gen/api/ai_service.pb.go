@@ -223,9 +223,10 @@ var File_api_ai_service_proto protoreflect.FileDescriptor
 
 const file_api_ai_service_proto_rawDesc = "" +
 	"\n" +
-	"\x14api/ai_service.proto\x12\tmemos.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"M\n" +
-	"\x11TranscribeRequest\x128\n" +
-	"\x05audio\x18\x01 \x01(\v2\x1d.memos.api.TranscriptionAudioB\x03\xe0A\x02R\x05audio\"(\n" +
+	"\x14api/ai_service.proto\x12\n" +
+	"roster.api\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"N\n" +
+	"\x11TranscribeRequest\x129\n" +
+	"\x05audio\x18\x01 \x01(\v2\x1e.roster.api.TranscriptionAudioB\x03\xe0A\x02R\x05audio\"(\n" +
 	"\x12TranscribeResponse\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\"\x9c\x01\n" +
 	"\x12TranscriptionAudio\x12\x1f\n" +
@@ -233,12 +234,13 @@ const file_api_ai_service_proto_rawDesc = "" +
 	"\x03uri\x18\x02 \x01(\tH\x00R\x03uri\x12\x1f\n" +
 	"\bfilename\x18\x03 \x01(\tB\x03\xe0A\x01R\bfilename\x12&\n" +
 	"\fcontent_type\x18\x04 \x01(\tB\x03\xe0A\x01R\vcontentTypeB\b\n" +
-	"\x06source2}\n" +
-	"\tAIService\x12p\n" +
+	"\x06source2\x7f\n" +
+	"\tAIService\x12r\n" +
 	"\n" +
-	"Transcribe\x12\x1c.memos.api.TranscribeRequest\x1a\x1d.memos.api.TranscribeResponse\"%\xdaA\x05audio\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/ai:transcribeB\x8d\x01\n" +
-	"\rcom.memos.apiB\x0eAiServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
-	"Memos::Apib\x06proto3"
+	"Transcribe\x12\x1d.roster.api.TranscribeRequest\x1a\x1e.roster.api.TranscribeResponse\"%\xdaA\x05audio\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/ai:transcribeB\xa0\x01\n" +
+	"\x0ecom.roster.apiB\x0eAiServiceProtoP\x01Z5github.com/anangnovriadi/roster-tracker/proto/gen/api\xa2\x02\x03RAX\xaa\x02\n" +
+	"Roster.Api\xca\x02\n" +
+	"Roster\\Api\xe2\x02\x16Roster\\Api\\GPBMetadata\xea\x02\vRoster::Apib\x06proto3"
 
 var (
 	file_api_ai_service_proto_rawDescOnce sync.Once
@@ -254,14 +256,14 @@ func file_api_ai_service_proto_rawDescGZIP() []byte {
 
 var file_api_ai_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_api_ai_service_proto_goTypes = []any{
-	(*TranscribeRequest)(nil),  // 0: memos.api.TranscribeRequest
-	(*TranscribeResponse)(nil), // 1: memos.api.TranscribeResponse
-	(*TranscriptionAudio)(nil), // 2: memos.api.TranscriptionAudio
+	(*TranscribeRequest)(nil),  // 0: roster.api.TranscribeRequest
+	(*TranscribeResponse)(nil), // 1: roster.api.TranscribeResponse
+	(*TranscriptionAudio)(nil), // 2: roster.api.TranscriptionAudio
 }
 var file_api_ai_service_proto_depIdxs = []int32{
-	2, // 0: memos.api.TranscribeRequest.audio:type_name -> memos.api.TranscriptionAudio
-	0, // 1: memos.api.AIService.Transcribe:input_type -> memos.api.TranscribeRequest
-	1, // 2: memos.api.AIService.Transcribe:output_type -> memos.api.TranscribeResponse
+	2, // 0: roster.api.TranscribeRequest.audio:type_name -> roster.api.TranscriptionAudio
+	0, // 1: roster.api.AIService.Transcribe:input_type -> roster.api.TranscribeRequest
+	1, // 2: roster.api.AIService.Transcribe:output_type -> roster.api.TranscribeResponse
 	2, // [2:3] is the sub-list for method output_type
 	1, // [1:2] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

@@ -21,7 +21,7 @@ export interface CalendarGridProps {
   monthLabel: string;
   /** `YYYY-MM-DD` */
   today: string;
-  /** Per-day counts from statistics: instant, and the skeleton layer while memos load. */
+  /** Per-day counts from statistics: instant, and the skeleton layer while notes load. */
   counts: CalendarData;
   model: CalendarMonthModel;
   pending: boolean;

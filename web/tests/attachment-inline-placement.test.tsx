@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import AttachmentListEditor from "@/components/MemoMetadata/Attachment/AttachmentListEditor";
+import AttachmentListEditor from "@/components/NoteMetadata/Attachment/AttachmentListEditor";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 const image = create(AttachmentSchema, {

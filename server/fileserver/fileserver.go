@@ -20,14 +20,14 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/sync/semaphore"
 
-	"github.com/usememos/memos/core/access"
-	"github.com/usememos/memos/internal/imagelimit"
-	"github.com/usememos/memos/internal/motionphoto"
-	"github.com/usememos/memos/internal/profile"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/provider/storage"
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/core/access"
+	"github.com/anangnovriadi/roster-tracker/internal/imagelimit"
+	"github.com/anangnovriadi/roster-tracker/internal/motionphoto"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/provider/storage"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // Constants for file serving configuration.
@@ -159,7 +159,7 @@ func (s *FileServerService) serveAttachmentFile(c *echo.Context) error {
 	if err != nil {
 		return err
 	}
-	if readClass == access.MemoReadClassPublic {
+	if readClass == access.NoteReadClassPublic {
 		c.Response().Header().Set(echo.HeaderCacheControl, publicAttachmentCacheControl)
 	}
 	if attachment.StorageType != storepb.AttachmentStorageType_LOCAL && attachment.StorageType != storepb.AttachmentStorageType_S3 {
@@ -656,79 +656,79 @@ func (s *FileServerService) getMotionPath(attachment *store.Attachment) (string,
 // =============================================================================
 
 // checkAttachmentPermission verifies the user has permission to access the attachment.
-func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *echo.Context, attachment *store.Attachment) (access.MemoReadClass, error) {
+func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *echo.Context, attachment *store.Attachment) (access.NoteReadClass, error) {
 	// For unlinked attachments, only the creator or an admin can access, as in
 	// the API's GetAttachment.
-	if attachment.MemoID == nil {
+	if attachment.NoteID == nil {
 		user, err := s.getCurrentUser(ctx, c)
 		if err != nil {
-			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
+			return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
 		}
 		if user == nil {
-			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
+			return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
 		}
 		if !access.CanManageAttachment(user, attachment) {
-			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusForbidden, "forbidden access")
+			return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusForbidden, "forbidden access")
 		}
-		return access.MemoReadClassPrivate, nil
+		return access.NoteReadClassPrivate, nil
 	}
 
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: attachment.MemoID})
+	note, err := s.Store.GetNote(ctx, &store.FindNote{ID: attachment.NoteID})
 	if err != nil {
-		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to find memo").Wrap(err)
+		return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to find note").Wrap(err)
 	}
-	if memo == nil {
-		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "memo not found")
+	if note == nil {
+		return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "note not found")
 	}
 
 	allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
 	if err != nil {
-		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
+		return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
 	}
-	var sharedMemoID *int32
+	var sharedNoteID *int32
 	if shareToken := (*c).QueryParam("share_token"); shareToken != "" {
-		ms, err := s.Store.GetMemoShare(ctx, &store.FindMemoShare{UID: &shareToken})
+		ms, err := s.Store.GetNoteShare(ctx, &store.FindNoteShare{UID: &shareToken})
 		if err != nil {
-			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get memo share").Wrap(err)
+			return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get note share").Wrap(err)
 		}
-		if ms != nil && !isMemoShareExpired(ms) {
-			sharedMemoID = &ms.MemoID
+		if ms != nil && !isNoteShareExpired(ms) {
+			sharedNoteID = &ms.NoteID
 		}
 	}
 
-	facts, err := access.ResolveMemoReadFacts(ctx, s.Store, memo)
+	facts, err := access.ResolveNoteReadFacts(ctx, s.Store, note)
 	if err != nil {
-		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve memo access").Wrap(err)
+		return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve note access").Wrap(err)
 	}
 	// Public and exact share-token reads do not depend on browser credentials.
 	// Decide those first so an expired cookie cannot turn an otherwise valid
 	// anonymous file request into a server error.
-	anonymousContext, err := facts.WithViewer(ctx, s.Store, nil, allowAnonymous, sharedMemoID)
+	anonymousContext, err := facts.WithViewer(ctx, s.Store, nil, allowAnonymous, sharedNoteID)
 	if err != nil {
-		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve memo access").Wrap(err)
+		return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve note access").Wrap(err)
 	}
-	if anonymousDecision := access.CheckMemoReadContext(anonymousContext); anonymousDecision.Allowed() {
+	if anonymousDecision := access.CheckNoteReadContext(anonymousContext); anonymousDecision.Allowed() {
 		return anonymousDecision.Class, nil
 	}
 
 	user, err := s.getCurrentUser(ctx, c)
 	if err != nil {
-		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
+		return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
 	}
-	readContext, err := facts.WithViewer(ctx, s.Store, user, allowAnonymous, sharedMemoID)
+	readContext, err := facts.WithViewer(ctx, s.Store, user, allowAnonymous, sharedNoteID)
 	if err != nil {
-		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to find space membership").Wrap(err)
+		return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to find space membership").Wrap(err)
 	}
-	decision := access.CheckMemoReadContext(readContext)
+	decision := access.CheckNoteReadContext(readContext)
 	switch decision.Denial {
-	case access.MemoReadDenialNone:
+	case access.NoteReadDenialNone:
 		return decision.Class, nil
-	case access.MemoReadDenialNotFound:
-		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "memo not found")
-	case access.MemoReadDenialUnauthenticated:
-		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
+	case access.NoteReadDenialNotFound:
+		return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "note not found")
+	case access.NoteReadDenialUnauthenticated:
+		return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
 	default:
-		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusForbidden, "forbidden access")
+		return access.NoteReadClassPrivate, echo.NewHTTPError(http.StatusForbidden, "forbidden access")
 	}
 }
 
@@ -800,7 +800,7 @@ func setMediaHeaders(c *echo.Context, contentType, originalType string) {
 	}
 }
 
-// isMemoShareExpired returns true if the share has a defined expiry that has already passed.
-func isMemoShareExpired(ms *store.MemoShare) bool {
+// isNoteShareExpired returns true if the share has a defined expiry that has already passed.
+func isNoteShareExpired(ms *store.NoteShare) bool {
 	return ms.ExpiresTs != nil && time.Now().Unix() > *ms.ExpiresTs
 }

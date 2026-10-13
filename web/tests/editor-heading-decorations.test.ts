@@ -2,7 +2,7 @@ import { markdown } from "@codemirror/lang-markdown";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { describe, expect, it } from "vitest";
-import { headingDecorations } from "@/components/MemoEditor/Editor/headingDecorations";
+import { headingDecorations } from "@/components/NoteEditor/Editor/headingDecorations";
 
 function hasClass(doc: string, cls: string): boolean {
   const view = new EditorView({ state: EditorState.create({ doc, extensions: [markdown(), headingDecorations] }), parent: document.body });

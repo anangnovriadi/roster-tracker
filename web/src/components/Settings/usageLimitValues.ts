@@ -4,9 +4,9 @@ import { formatFileSize } from "@/utils/format";
 const MIB = 1024 * 1024;
 
 /** Whether the metric counts bytes. Forms enter byte limits in MiB. */
-export const isByteMetric = (metric: UsageLimit_Metric) => metric !== UsageLimit_Metric.MEMOS;
+export const isByteMetric = (metric: UsageLimit_Metric) => metric !== UsageLimit_Metric.NOTES;
 
-/** Formats a limit for a form field: memos as a count, bytes in MiB. Unlimited is empty. */
+/** Formats a limit for a form field: notes as a count, bytes in MiB. Unlimited is empty. */
 export function toLimitInput(metric: UsageLimit_Metric, value: bigint | undefined): string {
   if (value === undefined || value === 0n) return "";
   if (!isByteMetric(metric)) return value.toString();

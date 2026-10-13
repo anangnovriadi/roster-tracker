@@ -7,7 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func (d *DB) UpsertReaction(ctx context.Context, upsert *store.Reaction) (*store.Reaction, error) {
@@ -38,18 +38,18 @@ type postgresReactionUpsertQuerier interface {
 
 func upsertPostgresReaction(ctx context.Context, querier postgresReactionUpsertQuerier, upsert *store.Reaction) (*store.Reaction, error) {
 	if err := querier.QueryRowContext(ctx, `
-		INSERT INTO reaction (creator_id, memo_id, reaction_type)
-		SELECT $1, memo.id, $2
-		FROM memo
-		WHERE memo.id = $3
-		FOR KEY SHARE OF memo
+		INSERT INTO reaction (creator_id, note_id, reaction_type)
+		SELECT $1, note.id, $2
+		FROM note
+		WHERE note.id = $3
+		FOR KEY SHARE OF note
 		RETURNING id, created_ts
-	`, upsert.CreatorID, upsert.ReactionType, upsert.MemoID).Scan(
+	`, upsert.CreatorID, upsert.ReactionType, upsert.NoteID).Scan(
 		&upsert.ID,
 		&upsert.CreatedTs,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.Wrap(store.ErrReactionMemoNotFound, "failed to create reaction")
+			return nil, errors.Wrap(store.ErrReactionNoteNotFound, "failed to create reaction")
 		}
 		return nil, err
 	}
@@ -66,16 +66,16 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	if find.CreatorID != nil {
 		where, args = append(where, "creator_id = "+placeholder(len(args)+1)), append(args, *find.CreatorID)
 	}
-	if find.MemoID != nil {
-		where, args = append(where, "memo_id = "+placeholder(len(args)+1)), append(args, *find.MemoID)
+	if find.NoteID != nil {
+		where, args = append(where, "note_id = "+placeholder(len(args)+1)), append(args, *find.NoteID)
 	}
-	if len(find.MemoIDList) > 0 {
-		holders := make([]string, 0, len(find.MemoIDList))
-		for _, id := range find.MemoIDList {
+	if len(find.NoteIDList) > 0 {
+		holders := make([]string, 0, len(find.NoteIDList))
+		for _, id := range find.NoteIDList {
 			holders = append(holders, placeholder(len(args)+1))
 			args = append(args, id)
 		}
-		where = append(where, "memo_id IN ("+strings.Join(holders, ", ")+")")
+		where = append(where, "note_id IN ("+strings.Join(holders, ", ")+")")
 	}
 
 	rows, err := d.db.QueryContext(ctx, `
@@ -83,7 +83,7 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 			id,
 			created_ts,
 			creator_id,
-			memo_id,
+			note_id,
 			reaction_type
 		FROM reaction
 		WHERE `+strings.Join(where, " AND ")+`
@@ -102,7 +102,7 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 			&reaction.ID,
 			&reaction.CreatedTs,
 			&reaction.CreatorID,
-			&reaction.MemoID,
+			&reaction.NoteID,
 			&reaction.ReactionType,
 		); err != nil {
 			return nil, err
@@ -138,8 +138,8 @@ func (d *DB) DeleteReaction(ctx context.Context, delete *store.DeleteReaction) e
 	if delete.ID != nil {
 		where, args = append(where, "id = "+placeholder(len(args)+1)), append(args, *delete.ID)
 	}
-	if delete.MemoID != nil {
-		where, args = append(where, "memo_id = "+placeholder(len(args)+1)), append(args, *delete.MemoID)
+	if delete.NoteID != nil {
+		where, args = append(where, "note_id = "+placeholder(len(args)+1)), append(args, *delete.NoteID)
 	}
 	if len(where) == 0 {
 		return nil
@@ -159,7 +159,7 @@ func (d *DB) deleteReactionAsCreator(ctx context.Context, delete *store.DeleteRe
 	if delete.Policy != nil {
 		participation, err := validatePostgresReactionDeletePolicy(ctx, tx, &store.Reaction{
 			CreatorID: *delete.ActorUserID,
-			MemoID:    *delete.MemoID,
+			NoteID:    *delete.NoteID,
 			Policy:    delete.Policy,
 		})
 		if err != nil {
@@ -168,15 +168,15 @@ func (d *DB) deleteReactionAsCreator(ctx context.Context, delete *store.DeleteRe
 		actorIsAdmin = participation.Actor.Admin
 	}
 
-	var creatorID, memoID int32
-	if err := tx.QueryRowContext(ctx, "SELECT creator_id, memo_id FROM reaction WHERE id = $1", *delete.ID).Scan(&creatorID, &memoID); err != nil {
+	var creatorID, noteID int32
+	if err := tx.QueryRowContext(ctx, "SELECT creator_id, note_id FROM reaction WHERE id = $1", *delete.ID).Scan(&creatorID, &noteID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil
 		}
 		return errors.Wrap(err, "failed to read reaction for deletion")
 	}
-	// An instance administrator may withdraw any reaction on the named memo.
-	if (creatorID != *delete.ActorUserID && !actorIsAdmin) || (delete.MemoID != nil && memoID != *delete.MemoID) {
+	// An instance administrator may withdraw any reaction on the named note.
+	if (creatorID != *delete.ActorUserID && !actorIsAdmin) || (delete.NoteID != nil && noteID != *delete.NoteID) {
 		return store.ErrReactionPermissionDenied
 	}
 	if _, err := tx.ExecContext(ctx, "DELETE FROM reaction WHERE id = $1", *delete.ID); err != nil {

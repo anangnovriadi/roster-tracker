@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // TestListsAcceptLongIDLists lists by id lists of a few hundred entries.
@@ -20,11 +20,11 @@ func TestListsAcceptLongIDLists(t *testing.T) {
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "long-lists", Title: "Long lists"}, user.ID)
 	require.NoError(t, err)
-	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: "long-lists-memo", CreatorID: user.ID, Content: "listed", Visibility: store.Private})
+	note, err := ts.CreateNote(ctx, &store.Note{UID: "long-lists-note", CreatorID: user.ID, Content: "listed", Visibility: store.Private})
 	require.NoError(t, err)
-	attachment, err := ts.CreateAttachment(ctx, &store.Attachment{UID: "long-lists-attachment", CreatorID: user.ID, Filename: "listed.png", Type: "image/png", MemoID: &memo.ID})
+	attachment, err := ts.CreateAttachment(ctx, &store.Attachment{UID: "long-lists-attachment", CreatorID: user.ID, Filename: "listed.png", Type: "image/png", NoteID: &note.ID})
 	require.NoError(t, err)
-	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{CreatorID: user.ID, MemoID: memo.ID, ReactionType: "👍"})
+	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{CreatorID: user.ID, NoteID: note.ID, ReactionType: "👍"})
 	require.NoError(t, err)
 
 	const length = 250
@@ -36,19 +36,19 @@ func TestListsAcceptLongIDLists(t *testing.T) {
 		uids = append(uids, fmt.Sprintf("absent-%d", i))
 		usernames = append(usernames, fmt.Sprintf("absent-%d", i))
 	}
-	uids[0] = memo.UID
+	uids[0] = note.UID
 	usernames[0] = user.Username
 
-	memos, err := ts.ListMemos(ctx, &store.FindMemo{UIDList: uids})
+	notes, err := ts.ListNotes(ctx, &store.FindNote{UIDList: uids})
 	require.NoError(t, err)
-	require.Len(t, memos, 1)
-	require.Equal(t, memo.ID, memos[0].ID)
+	require.Len(t, notes, 1)
+	require.Equal(t, note.ID, notes[0].ID)
 
-	memos, err = ts.ListMemos(ctx, &store.FindMemo{IDList: ids})
+	notes, err = ts.ListNotes(ctx, &store.FindNote{IDList: ids})
 	require.NoError(t, err)
-	require.Len(t, memos, 1)
+	require.Len(t, notes, 1)
 
-	attachments, err := ts.ListAttachments(ctx, &store.FindAttachment{MemoIDList: ids})
+	attachments, err := ts.ListAttachments(ctx, &store.FindAttachment{NoteIDList: ids})
 	require.NoError(t, err)
 	require.Len(t, attachments, 1)
 	require.Equal(t, attachment.ID, attachments[0].ID)
@@ -67,12 +67,12 @@ func TestListsAcceptLongIDLists(t *testing.T) {
 	require.Len(t, spaces, 1)
 	require.Equal(t, space.ID, spaces[0].ID)
 
-	reactions, err := ts.ListReactions(ctx, &store.FindReaction{MemoIDList: ids})
+	reactions, err := ts.ListReactions(ctx, &store.FindReaction{NoteIDList: ids})
 	require.NoError(t, err)
 	require.Len(t, reactions, 1)
 	require.Equal(t, reaction.ID, reactions[0].ID)
 
-	relations, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{MemoIDList: ids})
+	relations, err := ts.ListNoteRelations(ctx, &store.FindNoteRelation{NoteIDList: ids})
 	require.NoError(t, err)
 	require.Empty(t, relations)
 }

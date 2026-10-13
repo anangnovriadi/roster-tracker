@@ -34,16 +34,16 @@ describe("SSO callback recovery", () => {
   });
 
   it("offers manual recovery after cancellation while retaining the validated destination", async () => {
-    const { state } = await storeOAuthState("identityProviders/company", "signin", "/memos/example#comment");
+    const { state } = await storeOAuthState("identityProviders/company", "signin", "/notes/example#comment");
     renderCallback(`error=access_denied&state=${state}`);
-    await expectRecovery("/memos/example#comment");
+    await expectRecovery("/notes/example#comment");
     expect(screen.getByRole("alert")).toHaveTextContent("access_denied");
     expect(mocks.signIn).not.toHaveBeenCalled();
     expect(sessionStorage.getItem("oauth_state")).toBeNull();
   });
 
   it("does not trust the return path when cancellation state does not match", async () => {
-    await storeOAuthState("identityProviders/company", "signin", "/memos/example");
+    await storeOAuthState("identityProviders/company", "signin", "/notes/example");
     renderCallback("error=access_denied&state=wrong");
     await expectRecovery();
     expect(mocks.signIn).not.toHaveBeenCalled();
@@ -56,19 +56,19 @@ describe("SSO callback recovery", () => {
   });
 
   it("retains the destination after the sign-in RPC fails without retrying", async () => {
-    const { state } = await storeOAuthState("identityProviders/company", "signin", "/memos/example");
+    const { state } = await storeOAuthState("identityProviders/company", "signin", "/notes/example");
     mocks.signIn.mockRejectedValueOnce(new Error("Provider unavailable"));
     renderCallback(`code=example&state=${state}`);
-    await expectRecovery("/memos/example");
+    await expectRecovery("/notes/example");
     expect(mocks.signIn).toHaveBeenCalledOnce();
     expect(screen.getByRole("alert")).toHaveTextContent("Provider unavailable");
   });
 
   it("completes a successful callback once and returns to the requested destination", async () => {
-    const { state } = await storeOAuthState("identityProviders/company", "signin", "/memos/example");
+    const { state } = await storeOAuthState("identityProviders/company", "signin", "/notes/example");
     mocks.signIn.mockResolvedValueOnce({});
     renderCallback(`code=example&state=${state}`);
-    await waitFor(() => expect(mocks.navigateTo).toHaveBeenCalledWith("/memos/example"));
+    await waitFor(() => expect(mocks.navigateTo).toHaveBeenCalledWith("/notes/example"));
     expect(mocks.signIn).toHaveBeenCalledOnce();
     expect(mocks.signIn).toHaveBeenCalledWith({
       credentials: {

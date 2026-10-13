@@ -16,10 +16,10 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/internal/clientip"
-	"github.com/usememos/memos/internal/ratelimit"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	"github.com/usememos/memos/store"
+	"github.com/anangnovriadi/roster-tracker/internal/clientip"
+	"github.com/anangnovriadi/roster-tracker/internal/ratelimit"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 const maxBatchGetUsers = 100
@@ -551,7 +551,7 @@ func convertUserWriteError(err error, context string) error {
 func getDefaultUserGeneralSetting() *apipb.UserSetting_GeneralSetting {
 	return &apipb.UserSetting_GeneralSetting{
 		Locale:         "en",
-		MemoVisibility: "PRIVATE",
+		NoteVisibility: "PRIVATE",
 		Theme:          "",
 	}
 }

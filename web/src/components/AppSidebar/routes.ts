@@ -1,8 +1,8 @@
 import { matchPath } from "react-router-dom";
-import { isCalendarRoute, isMemoScopeRoute, type MemoScope, resolveMemoScope } from "@/lib/memo-views";
+import { isCalendarRoute, isNoteScopeRoute, type NoteScope, resolveNoteScope } from "@/lib/note-views";
 import { getCollectionCreator, ROUTES, resolveCollectionRoute, withCollectionCreator } from "@/router/routes";
 
-export type SidebarRouteKind = MemoScope | "calendar" | "attachments" | "settings" | "memo" | "common";
+export type SidebarRouteKind = NoteScope | "calendar" | "attachments" | "settings" | "note" | "common";
 
 export type RouteSearchScope = "route-collection" | "user-collection" | "all";
 
@@ -14,11 +14,11 @@ export interface RouteActionPolicy {
 
 export const getSidebarRouteKind = (path: string): SidebarRouteKind => {
   const normalizedPath = resolveCollectionRoute(path).pathname;
-  if (isMemoScopeRoute(normalizedPath)) return resolveMemoScope(normalizedPath);
+  if (isNoteScopeRoute(normalizedPath)) return resolveNoteScope(normalizedPath);
   if (isCalendarRoute(normalizedPath)) return "calendar";
   if (matchPath(ROUTES.ATTACHMENTS, normalizedPath)) return "attachments";
   if (matchPath(ROUTES.SETTING, normalizedPath)) return "settings";
-  if (matchPath(`${ROUTES.NOTE}/:uid`, normalizedPath) || matchPath(`${ROUTES.SHARED_MEMO}/:token`, normalizedPath)) return "memo";
+  if (matchPath(`${ROUTES.NOTE}/:uid`, normalizedPath) || matchPath(`${ROUTES.SHARED_NOTE}/:token`, normalizedPath)) return "note";
   return "common";
 };
 

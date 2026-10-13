@@ -1,13 +1,13 @@
 import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
-import { Visibility } from "@/types/proto/api/memo_service_pb";
+import { Visibility } from "@/types/proto/api/note_service_pb";
 import { UserSetting_Key } from "@/types/proto/api/user_service_pb";
 
 export const instanceSettingNamePrefix = "instance/settings/";
 export const userNamePrefix = "users/";
-export const memoNamePrefix = "memos/";
+export const noteNamePrefix = "notes/";
 export const identityProviderNamePrefix = "identity-providers/";
 
-export const buildMemoCreatorFilter = (name: string) => {
+export const buildNoteCreatorFilter = (name: string) => {
   if (!name) {
     return undefined;
   }
@@ -15,8 +15,8 @@ export const buildMemoCreatorFilter = (name: string) => {
   return `creator == ${JSON.stringify(normalizedName)}`;
 };
 
-export const extractMemoIdFromName = (name: string) => {
-  return name.split(memoNamePrefix).pop() || "";
+export const extractNoteIdFromName = (name: string) => {
+  return name.split(noteNamePrefix).pop() || "";
 };
 
 export const extractUsernameFromName = (name: string) => {

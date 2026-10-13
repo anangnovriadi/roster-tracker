@@ -2,8 +2,8 @@
 /build/
 /bin/
 /tmp/
-/memos
-/memos.exe
+/roster-tracker
+/roster-tracker.exe
 coverage.out
 # Frontend bundles: web/dist from `pnpm build`, and
 # server/frontend/dist from `pnpm release`, which go:embed bakes

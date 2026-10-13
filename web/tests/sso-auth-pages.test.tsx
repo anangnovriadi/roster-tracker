@@ -34,7 +34,7 @@ const provider = create(IdentityProviderSchema, {
   name: "identityProviders/company",
   title: "Company SSO",
   type: IdentityProvider_Type.OAUTH2,
-  config: { config: { case: "oauth2Config", value: { authUrl: "https://sso.example.com/authorize", clientId: "memos" } } },
+  config: { config: { case: "oauth2Config", value: { authUrl: "https://sso.example.com/authorize", clientId: "notes" } } },
 });
 const renderPage = (path = "/auth", element = <SignIn />) => {
   const router = createMemoryRouter([{ path: "*", element }], { initialEntries: [path] });
@@ -59,12 +59,12 @@ describe("automatic SSO auth pages", () => {
   it.each([
     { path: "/auth", element: <SignIn /> },
   ])("starts once on $path and replaces the entry with a bypass preserving the destination", async ({ path, element }) => {
-    const router = renderPage(`${path}?redirect=%2Fmemos%2Fexample&reason=protected-memo`, element);
+    const router = renderPage(`${path}?redirect=%2Fnotes%2Fexample&reason=protected-note`, element);
     await waitFor(() => expect(signInWithSSO).toHaveBeenCalledOnce());
-    expect(signInWithSSO).toHaveBeenCalledWith(provider, "/memos/example");
+    expect(signInWithSSO).toHaveBeenCalledWith(provider, "/notes/example");
     expect(router.state.historyAction).toBe("REPLACE");
     expect(new URLSearchParams(router.state.location.search).get("auto_sign_in")).toBe("false");
-    expect(new URLSearchParams(router.state.location.search).get("reason")).toBe("protected-memo");
+    expect(new URLSearchParams(router.state.location.search).get("reason")).toBe("protected-note");
     expect(screen.getByText("auth.redirecting-to-provider: Company SSO")).toBeInTheDocument();
   });
   it.each([
@@ -140,10 +140,10 @@ describe("automatic SSO auth pages", () => {
     expect(signInWithSSO).not.toHaveBeenCalled();
   });
   it("honors the bypass while allowing an explicit manual attempt", () => {
-    renderPage("/auth?auto_sign_in=false&redirect=%2Fmemos%2Fexample");
+    renderPage("/auth?auto_sign_in=false&redirect=%2Fnotes%2Fexample");
     expect(signInWithSSO).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "auth.continue-with: Company SSO" }));
-    expect(signInWithSSO).toHaveBeenCalledWith(provider, "/memos/example");
+    expect(signInWithSSO).toHaveBeenCalledWith(provider, "/notes/example");
   });
   it("returns to manual controls after initiation fails without automatically retrying", async () => {
     vi.mocked(signInWithSSO).mockRejectedValueOnce(new Error("Storage unavailable"));

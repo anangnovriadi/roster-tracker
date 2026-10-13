@@ -3,7 +3,7 @@ import { createContext, type ReactNode, useContext } from "react";
 interface SpaceContextValue {
   /** The creator a collection is narrowed to. Roster Tracker always shows everyone's notes. */
   creatorUsername?: string;
-  memoFilter?: string;
+  noteFilter?: string;
 }
 
 const SpaceContext = createContext<SpaceContextValue | null>(null);

@@ -362,7 +362,7 @@ func (r *renderer) renderBoolColumnComparison(field Field, op ComparisonOperator
 	}, nil
 }
 
-// renderJSONBoolComparison compares a JSON boolean flag with a literal. Memo
+// renderJSONBoolComparison compares a JSON boolean flag with a literal. Note
 // payloads omit false flags, so a missing key means false: comparisons reuse
 // jsonBoolPredicate, which already treats a missing key or a NULL payload as
 // false on every dialect.
@@ -525,9 +525,9 @@ func (r *renderer) renderRegex(cond *RegexCondition) (renderResult, error) {
 func (r *renderer) foldedLike(colExpr, pattern string) string {
 	switch r.dialect {
 	case DialectSQLite:
-		// memos_unicode_lower gives Unicode-aware folding; ESCAPE '\' is required
+		// notes_unicode_lower gives Unicode-aware folding; ESCAPE '\' is required
 		// because SQLite has no default LIKE escape character.
-		return fmt.Sprintf(`memos_unicode_lower(%s) LIKE memos_unicode_lower(%s) ESCAPE '\'`, colExpr, r.addArg(pattern))
+		return fmt.Sprintf(`notes_unicode_lower(%s) LIKE notes_unicode_lower(%s) ESCAPE '\'`, colExpr, r.addArg(pattern))
 	case DialectPostgres:
 		// ILIKE is case-insensitive; backslash is the default escape character.
 		return fmt.Sprintf("%s ILIKE %s", colExpr, r.addArg(pattern))

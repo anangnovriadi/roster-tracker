@@ -4,13 +4,13 @@ import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { buildEditorExtensions } from "@/components/MemoEditor/Editor/extensions";
-import { makeTagCompletionSource } from "@/components/MemoEditor/Editor/tagAutocomplete";
-import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
+import { buildEditorExtensions } from "@/components/NoteEditor/Editor/extensions";
+import { makeTagCompletionSource } from "@/components/NoteEditor/Editor/tagAutocomplete";
+import { noteMarkdownExtensions } from "@/utils/note-markdown-extension";
 
 function complete(doc: string, pos: number, tags: string[], explicit = false) {
   const source = makeTagCompletionSource(() => tags);
-  const state = EditorState.create({ doc, extensions: [markdown({ extensions: memoMarkdownExtensions })] });
+  const state = EditorState.create({ doc, extensions: [markdown({ extensions: noteMarkdownExtensions })] });
   return source(new CompletionContext(state, pos, explicit));
 }
 
@@ -90,7 +90,7 @@ describe("tag autocomplete", () => {
   });
 
   it("matches a segment of a nested tag path without its parents", () => {
-    expect(complete("hello #Mem", 10, ["software/hosted/Memos"])?.options.map((o) => o.label)).toEqual(["software/hosted/Memos"]);
+    expect(complete("hello #Not", 10, ["software/hosted/Notes"])?.options.map((o) => o.label)).toEqual(["software/hosted/Notes"]);
   });
 
   it("ranks full-path prefixes above segment starts above loose substrings", () => {
@@ -106,8 +106,8 @@ describe("tag autocomplete", () => {
   });
 
   it.each(["#hosted/", "#software/hosted/"])("matches nested paths at any depth: %s", (doc) => {
-    const result = complete(doc, doc.length, ["software/hosted/Memos"]);
-    expect(result?.options.map((o) => o.label)).toEqual(["software/hosted/Memos"]);
+    const result = complete(doc, doc.length, ["software/hosted/Notes"]);
+    expect(result?.options.map((o) => o.label)).toEqual(["software/hosted/Notes"]);
     expect(result?.from).toBe(1);
   });
 
@@ -141,9 +141,9 @@ describe("tag autocomplete", () => {
 // Exercise automatic activation and insertion through the real editor extensions.
 describe("tag completion popup", () => {
   it.each([
-    ["hello ", "#", "hello #software/hosted/Memos"],
-    ["", "#Mem", "#software/hosted/Memos"],
-    ["", "#software/hosted/", "#software/hosted/Memos"],
+    ["hello ", "#", "hello #software/hosted/Notes"],
+    ["", "#Not", "#software/hosted/Notes"],
+    ["", "#software/hosted/", "#software/hosted/Notes"],
   ])("opens and inserts a full nested tag after typing %s%s", async (initial, input, expected) => {
     const view = new EditorView({
       state: EditorState.create({
@@ -155,7 +155,7 @@ describe("tag completion popup", () => {
           onFiles: () => {},
           onUpdate: () => {},
           onSubmit: () => {},
-          getTags: () => ["software/hosted/Memos"],
+          getTags: () => ["software/hosted/Notes"],
         }),
       }),
       parent: document.body,
@@ -170,7 +170,7 @@ describe("tag completion popup", () => {
         });
       }
       await waitFor(() => expect(completionStatus(view.state)).toBe("active"));
-      expect(currentCompletions(view.state).map((o) => o.label)).toEqual(["software/hosted/Memos"]);
+      expect(currentCompletions(view.state).map((o) => o.label)).toEqual(["software/hosted/Notes"]);
       // CodeMirror briefly ignores acceptance just after the popup opens.
       await waitFor(() => expect(acceptCompletion(view)).toBe(true));
       expect(view.state.doc.toString()).toBe(expected);

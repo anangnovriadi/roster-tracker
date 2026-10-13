@@ -1,6 +1,6 @@
 # provider
 
-Backends that memos talks to on behalf of an instance, each configured by an
+Backends that notes talks to on behalf of an instance, each configured by an
 instance setting and reached through an interface so the implementation can be
 swapped.
 

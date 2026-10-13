@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // TestUpgradeThroughBaselineRelease verifies the required intermediate upgrade
@@ -23,10 +23,10 @@ func TestUpgradeThroughBaselineRelease(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
 
-	cfg, hostDSN := prepareUpgradeFixture(t, driver, PreBaselineMemosVersion)
-	t.Logf("Starting Memos %s container for %s schema bootstrap...", cfg.Version, driver)
-	container, err := StartMemosContainer(ctx, cfg)
-	require.NoError(t, err, "failed to start memos %s container", PreBaselineMemosVersion)
+	cfg, hostDSN := prepareUpgradeFixture(t, driver, PreBaselineNotesVersion)
+	t.Logf("Starting Roster Tracker %s container for %s schema bootstrap...", cfg.Version, driver)
+	container, err := StartNotesContainer(ctx, cfg)
+	require.NoError(t, err, "failed to start notes %s container", PreBaselineNotesVersion)
 	t.Cleanup(func() {
 		if container != nil {
 			_ = container.Terminate(ctx)
@@ -41,9 +41,9 @@ func TestUpgradeThroughBaselineRelease(t *testing.T) {
 
 	settingBeforeUpgrade, err := legacyStore.GetInstanceBasicSetting(ctx)
 	require.NoError(t, err)
-	t.Logf("Schema version written by %s: %s", PreBaselineMemosVersion, settingBeforeUpgrade.SchemaVersion)
+	t.Logf("Schema version written by %s: %s", PreBaselineNotesVersion, settingBeforeUpgrade.SchemaVersion)
 
-	require.NoError(t, container.Terminate(ctx), "failed to stop memos %s container", PreBaselineMemosVersion)
+	require.NoError(t, container.Terminate(ctx), "failed to stop notes %s container", PreBaselineNotesVersion)
 	container = nil
 	require.NoError(t, legacyStore.Close())
 
@@ -69,11 +69,11 @@ func TestUpgradeThroughBaselineRelease(t *testing.T) {
 		insertSetting = fmt.Sprintf("INSERT INTO user_setting (user_id, %[1]s, value) VALUES ($1, $2, $3)", settingKeyColumn)
 	}
 	db := seedStore.GetDriver().GetDB()
-	insertMemo := "INSERT INTO memo (uid, creator_id, content, payload) VALUES (?, ?, ?, '{}')"
+	insertNote := "INSERT INTO note (uid, creator_id, content, payload) VALUES (?, ?, ?, '{}')"
 	if driver == "postgres" {
-		insertMemo = "INSERT INTO memo (uid, creator_id, content, payload) VALUES ($1, $2, $3, '{}')"
+		insertNote = "INSERT INTO note (uid, creator_id, content, payload) VALUES ($1, $2, $3, '{}')"
 	}
-	_, err = db.ExecContext(ctx, insertMemo, "before-baseline", renamedUser.ID, "memo from v0.30.0")
+	_, err = db.ExecContext(ctx, insertNote, "before-baseline", renamedUser.ID, "note from v0.30.0")
 	require.NoError(t, err)
 	_, err = db.ExecContext(ctx, insertSetting, renamedUser.ID, "SHORTCUTS",
 		`{"shortcuts":[{"id":"legacy","title":"legacy shortcut","filter":"tag in [\"legacy\"]"}]}`)
@@ -82,27 +82,27 @@ func TestUpgradeThroughBaselineRelease(t *testing.T) {
 		`{"shortcuts":[{"id":"stale","title":"stale","filter":"tag in [\"stale\"]"}]}`)
 	require.NoError(t, err, "should seed a conflicting legacy SHORTCUTS setting")
 
-	// One user already has a MEMO_VIEWS setting; the migration must not clobber it.
+	// One user already has a NOTE_VIEWS setting; the migration must not clobber it.
 	_, err = seedStore.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: keepsOwnUser.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
-		Value: &storepb.UserSetting_MemoViews{
-			MemoViews: &storepb.MemoViewsUserSetting{
-				MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
+		Key:    storepb.UserSetting_NOTE_VIEWS,
+		Value: &storepb.UserSetting_NoteViews{
+			NoteViews: &storepb.NoteViewsUserSetting{
+				NoteViews: []*storepb.NoteViewsUserSetting_NoteView{
 					{Id: "own", Title: "own view", Filter: `tag in ["own"]`},
 				},
 			},
 		},
 	})
-	require.NoError(t, err, "should seed a pre-existing MEMO_VIEWS setting")
+	require.NoError(t, err, "should seed a pre-existing NOTE_VIEWS setting")
 
 	// The user whose setting should be renamed must not have one yet.
 	preExisting, err := seedStore.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &renamedUser.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Key:    storepb.UserSetting_NOTE_VIEWS,
 	})
 	require.NoError(t, err)
-	require.Nil(t, preExisting, "the seeded user should not have a MEMO_VIEWS setting before the upgrade")
+	require.Nil(t, preExisting, "the seeded user should not have a NOTE_VIEWS setting before the upgrade")
 
 	// The current binary must refuse the old schema before modifying settings.
 	before, err := seedStore.GetDriver().ListInstanceSettings(ctx, &store.FindInstanceSetting{})
@@ -112,13 +112,13 @@ func TestUpgradeThroughBaselineRelease(t *testing.T) {
 	require.NoError(t, err)
 	require.ElementsMatch(t, before, after)
 	var preservedContent string
-	require.NoError(t, db.QueryRowContext(ctx, "SELECT content FROM memo WHERE uid = 'before-baseline'").Scan(&preservedContent))
-	require.Equal(t, "memo from v0.30.0", preservedContent)
+	require.NoError(t, db.QueryRowContext(ctx, "SELECT content FROM note WHERE uid = 'before-baseline'").Scan(&preservedContent))
+	require.Equal(t, "note from v0.30.0", preservedContent)
 	require.NoError(t, seedStore.Close())
 
 	// Only the released intermediate binary carries the historical migrations.
 	cfg.Version = "0.31.0"
-	container, err = StartMemosContainer(ctx, cfg)
+	container, err = StartNotesContainer(ctx, cfg)
 	require.NoError(t, err, "failed to start the required intermediate release")
 	require.NoError(t, container.Terminate(ctx))
 	container = nil
@@ -136,46 +136,46 @@ func TestUpgradeThroughBaselineRelease(t *testing.T) {
 	upgradedSetting, err := ts.GetInstanceBasicSetting(ctx)
 	require.NoError(t, err)
 	require.Equal(t, currentVersion, upgradedSetting.SchemaVersion, "schema version should advance")
-	memoUID := "before-baseline"
-	preservedMemo, err := ts.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	noteUID := "before-baseline"
+	preservedNote, err := ts.GetNote(ctx, &store.FindNote{UID: &noteUID})
 	require.NoError(t, err)
-	require.NotNil(t, preservedMemo)
-	require.Equal(t, "memo from v0.30.0", preservedMemo.Content)
-	require.Equal(t, renamedUser.ID, preservedMemo.CreatorID)
+	require.NotNil(t, preservedNote)
+	require.Equal(t, "note from v0.30.0", preservedNote.Content)
+	require.Equal(t, renamedUser.ID, preservedNote.CreatorID)
 
-	// The legacy SHORTCUTS setting is now readable as MEMO_VIEWS.
+	// The legacy SHORTCUTS setting is now readable as NOTE_VIEWS.
 	renamed, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &renamedUser.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Key:    storepb.UserSetting_NOTE_VIEWS,
 	})
 	require.NoError(t, err)
-	require.NotNil(t, renamed, "legacy shortcuts should be renamed to memo views")
-	require.Len(t, renamed.GetMemoViews().GetMemoViews(), 1)
-	require.Equal(t, "legacy", renamed.GetMemoViews().GetMemoViews()[0].GetId())
-	require.Equal(t, "legacy shortcut", renamed.GetMemoViews().GetMemoViews()[0].GetTitle())
-	require.Equal(t, `tag in ["legacy"]`, renamed.GetMemoViews().GetMemoViews()[0].GetFilter())
+	require.NotNil(t, renamed, "legacy shortcuts should be renamed to note views")
+	require.Len(t, renamed.GetNoteViews().GetNoteViews(), 1)
+	require.Equal(t, "legacy", renamed.GetNoteViews().GetNoteViews()[0].GetId())
+	require.Equal(t, "legacy shortcut", renamed.GetNoteViews().GetNoteViews()[0].GetTitle())
+	require.Equal(t, `tag in ["legacy"]`, renamed.GetNoteViews().GetNoteViews()[0].GetFilter())
 
 	// The user with their own setting keeps it untouched.
 	kept, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &keepsOwnUser.ID,
-		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Key:    storepb.UserSetting_NOTE_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, kept)
-	require.Len(t, kept.GetMemoViews().GetMemoViews(), 1)
-	require.Equal(t, "own", kept.GetMemoViews().GetMemoViews()[0].GetId(), "existing memo views should not be overwritten")
+	require.Len(t, kept.GetNoteViews().GetNoteViews(), 1)
+	require.Equal(t, "own", kept.GetNoteViews().GetNoteViews()[0].GetId(), "existing note views should not be overwritten")
 
 	// Re-running the upgrade must stay a no-op, which is what a container
 	// restart on an already-upgraded volume does.
 	require.NoError(t, ts.Migrate(ctx), "re-running the upgrade should be idempotent")
 
 	// The upgraded database must still accept writes.
-	postUpgradeMemo, err := ts.CreateMemo(ctx, &store.Memo{
-		UID:        "post-stable-upgrade-memo",
+	postUpgradeNote, err := ts.CreateNote(ctx, &store.Note{
+		UID:        "post-stable-upgrade-note",
 		CreatorID:  renamedUser.ID,
 		Content:    "created after upgrading from previous stable",
 		Visibility: store.Private,
 	})
 	require.NoError(t, err)
-	require.Equal(t, "created after upgrading from previous stable", postUpgradeMemo.Content)
+	require.Equal(t, "created after upgrading from previous stable", postUpgradeNote.Content)
 }

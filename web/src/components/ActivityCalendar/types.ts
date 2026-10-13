@@ -1,6 +1,6 @@
-import type { MemoTimeBasis } from "@/contexts/ViewContext";
+import type { NoteTimeBasis } from "@/contexts/ViewContext";
 
-/** Memo counts keyed by ISO date (`YYYY-MM-DD`). */
+/** Note counts keyed by ISO date (`YYYY-MM-DD`). */
 export type CalendarData = Record<string, number>;
 
 export interface CalendarDayCell {
@@ -22,5 +22,5 @@ export interface MonthCalendarProps {
   /** ISO date of the day currently used as a filter, if any. */
   selectedDate?: string;
   onClick?: (date: string) => void;
-  timeBasis?: MemoTimeBasis;
+  timeBasis?: NoteTimeBasis;
 }

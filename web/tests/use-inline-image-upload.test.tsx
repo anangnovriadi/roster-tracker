@@ -2,12 +2,12 @@ import { create } from "@bufbuild/protobuf";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import type { PropsWithChildren, RefObject } from "react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import type { UploadAnchorDescriptor } from "@/components/MemoEditor/Editor/uploadAnchors";
-import { useInlineImageUpload } from "@/components/MemoEditor/hooks/useInlineImageUpload";
-import { uploadService } from "@/components/MemoEditor/services";
-import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
-import type { LocalFile } from "@/components/MemoEditor/types/attachment";
-import type { EditorController } from "@/components/MemoEditor/types/editorController";
+import type { UploadAnchorDescriptor } from "@/components/NoteEditor/Editor/uploadAnchors";
+import { useInlineImageUpload } from "@/components/NoteEditor/hooks/useInlineImageUpload";
+import { uploadService } from "@/components/NoteEditor/services";
+import { EditorProvider, useEditorContext } from "@/components/NoteEditor/state";
+import type { LocalFile } from "@/components/NoteEditor/types/attachment";
+import type { EditorController } from "@/components/NoteEditor/types/editorController";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 vi.mock("@/utils/i18n", async (importOriginal) => ({

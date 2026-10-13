@@ -23,18 +23,18 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/internal/random"
-	"github.com/usememos/memos/internal/testutil"
-	"github.com/usememos/memos/internal/testutil/fakes3"
-	"github.com/usememos/memos/markdown"
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/api"
-	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db"
-	teststore "github.com/usememos/memos/store/test"
+	"github.com/anangnovriadi/roster-tracker/internal/profile"
+	"github.com/anangnovriadi/roster-tracker/internal/random"
+	"github.com/anangnovriadi/roster-tracker/internal/testutil"
+	"github.com/anangnovriadi/roster-tracker/internal/testutil/fakes3"
+	"github.com/anangnovriadi/roster-tracker/markdown"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/server/api"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
+	"github.com/anangnovriadi/roster-tracker/store"
+	"github.com/anangnovriadi/roster-tracker/store/db"
+	teststore "github.com/anangnovriadi/roster-tracker/store/test"
 )
 
 func TestServeAttachmentFile_S3(t *testing.T) {
@@ -73,7 +73,7 @@ func TestServeAttachmentFile_S3(t *testing.T) {
 		Content:  content,
 	}})
 	require.NoError(t, err)
-	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+	_, err = svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
 		Content:     "public S3 attachment",
 		Visibility:  apipb.Visibility_PUBLIC,
 		Attachments: []*apipb.Attachment{{Name: attachment.Name}},
@@ -101,7 +101,7 @@ func TestServeAttachmentFile_S3(t *testing.T) {
 	require.Empty(t, multiRangeRecorder.Header().Get("Content-Range"))
 }
 
-func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) {
+func TestServeAttachmentFile_ShareTokenAllowsDirectNoteAttachment(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
 	defer cleanup()
@@ -117,15 +117,15 @@ func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) 
 
 	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{
 		Attachment: &apipb.Attachment{
-			Filename: "memo.txt",
+			Filename: "note.txt",
 			Type:     "text/plain",
-			Content:  []byte("memo attachment"),
+			Content:  []byte("note attachment"),
 		},
 	})
 	require.NoError(t, err)
 
-	parentMemo, err := svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
+	parentNote, err := svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
 			Content:    "shared parent",
 			Visibility: apipb.Visibility_PROTECTED,
 			Attachments: []*apipb.Attachment{
@@ -135,9 +135,9 @@ func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) 
 	})
 	require.NoError(t, err)
 
-	share, err := svc.CreateMemoShare(creatorCtx, &apipb.CreateMemoShareRequest{
-		Parent:    parentMemo.Name,
-		MemoShare: &apipb.MemoShare{},
+	share, err := svc.CreateNoteShare(creatorCtx, &apipb.CreateNoteShareRequest{
+		Parent:    parentNote.Name,
+		NoteShare: &apipb.NoteShare{},
 	})
 	require.NoError(t, err)
 	shareToken := share.Name[strings.LastIndex(share.Name, "/")+1:]
@@ -151,7 +151,7 @@ func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) 
 	e.ServeHTTP(rec, req)
 
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.Equal(t, "memo attachment", rec.Body.String())
+	require.Equal(t, "note attachment", rec.Body.String())
 }
 
 func TestServeAttachmentFile_CanonicalRouteAndVisibilityAwareCache(t *testing.T) {
@@ -172,7 +172,7 @@ func TestServeAttachmentFile_CanonicalRouteAndVisibilityAwareCache(t *testing.T)
 		Content:  []byte("canonical image"),
 	}})
 	require.NoError(t, err)
-	memo, err := svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+	note, err := svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
 		Content:     "canonical route",
 		Visibility:  apipb.Visibility_PUBLIC,
 		Attachments: []*apipb.Attachment{{Name: attachment.Name}},
@@ -188,8 +188,8 @@ func TestServeAttachmentFile_CanonicalRouteAndVisibilityAwareCache(t *testing.T)
 	require.Equal(t, "canonical image", rec.Body.String())
 	require.Equal(t, publicAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
 
-	_, err = svc.UpdateMemo(creatorCtx, &apipb.UpdateMemoRequest{
-		Memo:       &apipb.Memo{Name: memo.Name, Visibility: apipb.Visibility_PROTECTED},
+	_, err = svc.UpdateNote(creatorCtx, &apipb.UpdateNoteRequest{
+		Note:       &apipb.Note{Name: note.Name, Visibility: apipb.Visibility_PROTECTED},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
 	})
 	require.NoError(t, err)
@@ -199,13 +199,13 @@ func TestServeAttachmentFile_CanonicalRouteAndVisibilityAwareCache(t *testing.T)
 	require.Equal(t, privateAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
 }
 
-func TestServeAttachmentFileMemoCreatorLifecycle(t *testing.T) {
+func TestServeAttachmentFileNoteCreatorLifecycle(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
 	defer cleanup()
 
 	creator, err := stores.CreateUser(ctx, &store.User{
-		Username: "file-memo-creator-lifecycle", Role: store.RoleUser, Email: "file-creator@example.com",
+		Username: "file-note-creator-lifecycle", Role: store.RoleUser, Email: "file-creator@example.com",
 	})
 	require.NoError(t, err)
 	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
@@ -213,7 +213,7 @@ func TestServeAttachmentFileMemoCreatorLifecycle(t *testing.T) {
 		Filename: "creator-lifecycle.txt", Type: "text/plain", Content: []byte("creator lifecycle"),
 	}})
 	require.NoError(t, err)
-	memo, err := svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+	note, err := svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
 		Content: "public file", Visibility: apipb.Visibility_PUBLIC, Attachments: []*apipb.Attachment{{Name: attachment.Name}},
 	}})
 	require.NoError(t, err)
@@ -226,18 +226,18 @@ func TestServeAttachmentFileMemoCreatorLifecycle(t *testing.T) {
 	require.NoError(t, err)
 	recorder := httptest.NewRecorder()
 	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, url, nil))
-	require.Equal(t, http.StatusOK, recorder.Code, "an archived creator does not invalidate the memo's PUBLIC audience")
+	require.Equal(t, http.StatusOK, recorder.Code, "an archived creator does not invalidate the note's PUBLIC audience")
 
-	memoUID := strings.TrimPrefix(memo.Name, "memos/")
-	storedMemo, err := stores.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	noteUID := strings.TrimPrefix(note.Name, "notes/")
+	storedNote, err := stores.GetNote(ctx, &store.FindNote{UID: &noteUID})
 	require.NoError(t, err)
-	require.NotNil(t, storedMemo)
+	require.NotNil(t, storedNote)
 	_, err = stores.GetDriver().GetDB().ExecContext(ctx,
-		fmt.Sprintf("UPDATE memo SET creator_id = 2147483000 WHERE id = %d", storedMemo.ID))
+		fmt.Sprintf("UPDATE note SET creator_id = 2147483000 WHERE id = %d", storedNote.ID))
 	require.NoError(t, err)
 	recorder = httptest.NewRecorder()
 	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, url, nil))
-	require.Equal(t, http.StatusNotFound, recorder.Code, "a dangling memo creator must fail closed for files")
+	require.Equal(t, http.StatusNotFound, recorder.Code, "a dangling note creator must fail closed for files")
 }
 
 func TestServeAttachmentFile_CommentUsesOwnVisibility(t *testing.T) {
@@ -251,7 +251,7 @@ func TestServeAttachmentFile_CommentUsesOwnVisibility(t *testing.T) {
 	require.NoError(t, err)
 	ownerCtx := context.WithValue(ctx, auth.UserIDContextKey, owner.ID)
 	commenterCtx := context.WithValue(ctx, auth.UserIDContextKey, commenter.ID)
-	parent, err := svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "parent", Visibility: apipb.Visibility_PUBLIC}})
+	parent, err := svc.CreateNote(ownerCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{Content: "parent", Visibility: apipb.Visibility_PUBLIC}})
 	require.NoError(t, err)
 	attachment, err := svc.CreateAttachment(commenterCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
 		Filename: "comment.png",
@@ -259,9 +259,9 @@ func TestServeAttachmentFile_CommentUsesOwnVisibility(t *testing.T) {
 		Content:  []byte("comment image"),
 	}})
 	require.NoError(t, err)
-	comment, err := svc.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
+	comment, err := svc.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
 		Parent: parent.Name,
-		Comment: &apipb.Memo{
+		Comment: &apipb.Note{
 			Content:     "comment",
 			Visibility:  apipb.Visibility_PUBLIC,
 			Attachments: []*apipb.Attachment{{Name: attachment.Name}},
@@ -276,18 +276,18 @@ func TestServeAttachmentFile_CommentUsesOwnVisibility(t *testing.T) {
 	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
 	require.Equal(t, http.StatusOK, rec.Code)
 
-	_, err = svc.UpdateMemo(ownerCtx, &apipb.UpdateMemoRequest{
-		Memo:       &apipb.Memo{Name: parent.Name, Visibility: apipb.Visibility_PRIVATE},
+	_, err = svc.UpdateNote(ownerCtx, &apipb.UpdateNoteRequest{
+		Note:       &apipb.Note{Name: parent.Name, Visibility: apipb.Visibility_PRIVATE},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
 	})
 	require.NoError(t, err)
 	rec = httptest.NewRecorder()
 	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
-	require.Equal(t, http.StatusOK, rec.Code, "changing the context memo must not change attachment access")
+	require.Equal(t, http.StatusOK, rec.Code, "changing the context note must not change attachment access")
 	require.Equal(t, publicAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
 
-	_, err = svc.UpdateMemo(commenterCtx, &apipb.UpdateMemoRequest{
-		Memo:       &apipb.Memo{Name: comment.Name, Visibility: apipb.Visibility_PROTECTED},
+	_, err = svc.UpdateNote(commenterCtx, &apipb.UpdateNoteRequest{
+		Note:       &apipb.Note{Name: comment.Name, Visibility: apipb.Visibility_PROTECTED},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
 	})
 	require.NoError(t, err)
@@ -319,9 +319,9 @@ func TestServeAttachmentFile_LocalStaticFileSupportsRangeRequests(t *testing.T) 
 	})
 	require.NoError(t, err)
 
-	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "range memo",
+	_, err = svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "range note",
 			Visibility: apipb.Visibility_PUBLIC,
 			Attachments: []*apipb.Attachment{
 				{Name: attachment.Name},
@@ -364,8 +364,8 @@ func TestServeAttachmentFile_ShareTokenRejectsCommentAttachment(t *testing.T) {
 	require.NoError(t, err)
 	commenterCtx := context.WithValue(ctx, auth.UserIDContextKey, commenter.ID)
 
-	parentMemo, err := svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
+	parentNote, err := svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
 			Content:    "shared parent",
 			Visibility: apipb.Visibility_PROTECTED,
 		},
@@ -381,9 +381,9 @@ func TestServeAttachmentFile_ShareTokenRejectsCommentAttachment(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = svc.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
-		Parent: parentMemo.Name,
-		Comment: &apipb.Memo{
+	_, err = svc.CreateNoteComment(commenterCtx, &apipb.CreateNoteCommentRequest{
+		Parent: parentNote.Name,
+		Comment: &apipb.Note{
 			Content:    "comment with attachment",
 			Visibility: apipb.Visibility_PROTECTED,
 			Attachments: []*apipb.Attachment{
@@ -393,9 +393,9 @@ func TestServeAttachmentFile_ShareTokenRejectsCommentAttachment(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	share, err := svc.CreateMemoShare(creatorCtx, &apipb.CreateMemoShareRequest{
-		Parent:    parentMemo.Name,
-		MemoShare: &apipb.MemoShare{},
+	share, err := svc.CreateNoteShare(creatorCtx, &apipb.CreateNoteShareRequest{
+		Parent:    parentNote.Name,
+		NoteShare: &apipb.NoteShare{},
 	})
 	require.NoError(t, err)
 	shareToken := share.Name[strings.LastIndex(share.Name, "/")+1:]
@@ -432,9 +432,9 @@ func TestServeAttachmentFile_MotionClip(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "motion memo",
+	_, err = svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "motion note",
 			Visibility: apipb.Visibility_PUBLIC,
 			Attachments: []*apipb.Attachment{
 				{Name: attachment.Name},
@@ -468,7 +468,7 @@ func TestServeAttachmentFile_SVGThumbnailServedAsImageWithSecurityHeaders(t *tes
 	require.NoError(t, err)
 	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
 
-	svgContent := []byte(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40"><text x="0" y="20">memos</text></svg>`)
+	svgContent := []byte(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40"><text x="0" y="20">notes</text></svg>`)
 	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{
 		Attachment: &apipb.Attachment{
 			Filename: "preview.svg",
@@ -478,9 +478,9 @@ func TestServeAttachmentFile_SVGThumbnailServedAsImageWithSecurityHeaders(t *tes
 	})
 	require.NoError(t, err)
 
-	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "svg memo",
+	_, err = svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "svg note",
 			Visibility: apipb.Visibility_PUBLIC,
 			Attachments: []*apipb.Attachment{
 				{Name: attachment.Name},
@@ -527,9 +527,9 @@ func TestServeAttachmentFile_ThumbnailWithSensitiveMetadataServesOriginal(t *tes
 	})
 	require.NoError(t, err)
 
-	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:    "hdr memo",
+	_, err = svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:    "hdr note",
 			Visibility: apipb.Visibility_PUBLIC,
 			Attachments: []*apipb.Attachment{
 				{Name: attachment.Name},
@@ -665,7 +665,7 @@ func makePNGDataURI(t *testing.T) string {
 }
 
 // TestServeAttachmentFile_PrivateInstanceDeniesAnonymous verifies that a public
-// memo's attachment is served to anonymous visitors on an open instance but denied
+// note's attachment is served to anonymous visitors on an open instance but denied
 // when the instance access policy is private.
 func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
 	ctx := context.Background()
@@ -689,9 +689,9 @@ func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:     "public memo",
+	_, err = svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:     "public note",
 			Visibility:  apipb.Visibility_PUBLIC,
 			Attachments: []*apipb.Attachment{{Name: attachment.Name}},
 		},
@@ -708,7 +708,7 @@ func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
 		return rec.Code
 	}
 
-	// Open instance: anonymous access to a public memo's attachment is allowed.
+	// Open instance: anonymous access to a public note's attachment is allowed.
 	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 	require.Equal(t, http.StatusOK, anonymousGet())
 
@@ -791,7 +791,7 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 // TestServeAttachmentFile_RefreshCookieAuthenticatesOwner verifies that the file
 // server authenticates a request via the refresh-token cookie (the browser <img>
 // flow) — the AuthenticateToUser cookie fallback — letting the owner fetch their own
-// private memo's attachment without an Authorization header.
+// private note's attachment without an Authorization header.
 func TestServeAttachmentFile_RefreshCookieAuthenticatesOwner(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
@@ -814,9 +814,9 @@ func TestServeAttachmentFile_RefreshCookieAuthenticatesOwner(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
-		Memo: &apipb.Memo{
-			Content:     "private memo",
+	_, err = svc.CreateNote(ownerCtx, &apipb.CreateNoteRequest{
+		Note: &apipb.Note{
+			Content:     "private note",
 			Visibility:  apipb.Visibility_PRIVATE,
 			Attachments: []*apipb.Attachment{{Name: attachment.Name}},
 		},
@@ -852,7 +852,7 @@ func TestServeAttachmentFile_RefreshCookieAuthenticatesOwner(t *testing.T) {
 }
 
 // TestServeAttachmentFile_UnlinkedAttachmentOwnerOrAdmin verifies an
-// attachment not linked to a memo follows the API's GetAttachment rule: its
+// attachment not linked to a note follows the API's GetAttachment rule: its
 // creator and an instance admin may read it, other users may not.
 func TestServeAttachmentFile_UnlinkedAttachmentOwnerOrAdmin(t *testing.T) {
 	ctx := context.Background()
@@ -941,7 +941,7 @@ func oversizedPNGHeader(width, height uint32) []byte {
 	return buf.Bytes()
 }
 
-func createPublicImageMemo(ctx context.Context, t *testing.T, svc *api.APIService, username, filename, mimeType string, content []byte) *apipb.Attachment {
+func createPublicImageNote(ctx context.Context, t *testing.T, svc *api.APIService, username, filename, mimeType string, content []byte) *apipb.Attachment {
 	t.Helper()
 	creator, err := svc.Store.CreateUser(ctx, &store.User{Username: username, Role: store.RoleUser, Email: username + "@example.com"})
 	require.NoError(t, err)
@@ -950,8 +950,8 @@ func createPublicImageMemo(ctx context.Context, t *testing.T, svc *api.APIServic
 		Filename: filename, Type: mimeType, Content: content,
 	}})
 	require.NoError(t, err)
-	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
-		Content: "image memo", Visibility: apipb.Visibility_PUBLIC, Attachments: []*apipb.Attachment{{Name: attachment.Name}},
+	_, err = svc.CreateNote(creatorCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{
+		Content: "image note", Visibility: apipb.Visibility_PUBLIC, Attachments: []*apipb.Attachment{{Name: attachment.Name}},
 	}})
 	require.NoError(t, err)
 	return attachment
@@ -966,7 +966,7 @@ func TestServeAttachmentFile_ThumbnailRefusesOversizedImage(t *testing.T) {
 	defer cleanup()
 
 	bomb := oversizedPNGHeader(100_000, 100_000)
-	attachment := createPublicImageMemo(ctx, t, svc, "bomb-owner", "bomb.png", "image/png", bomb)
+	attachment := createPublicImageNote(ctx, t, svc, "bomb-owner", "bomb.png", "image/png", bomb)
 
 	e := echo.New()
 	fs.RegisterRoutes(e)
@@ -993,7 +993,7 @@ func newSharedProfileTestServices(ctx context.Context, t *testing.T) (*api.APISe
 		Version:     "test-1.0.0",
 		InstanceURL: "http://localhost:8080",
 		Driver:      "sqlite",
-		DSN:         filepath.Join(dataDir, "memos_test.db"),
+		DSN:         filepath.Join(dataDir, "notes_test.db"),
 		Data:        dataDir,
 	}
 	dbDriver, err := db.NewDBDriver(testProfile)
@@ -1020,7 +1020,7 @@ func TestDeleteAttachmentRemovesCachedThumbnail(t *testing.T) {
 
 	var pngBuf bytes.Buffer
 	require.NoError(t, png.Encode(&pngBuf, image.NewRGBA(image.Rect(0, 0, 8, 8))))
-	attachment := createPublicImageMemo(ctx, t, svc, "thumb-owner", "small.png", "image/png", pngBuf.Bytes())
+	attachment := createPublicImageNote(ctx, t, svc, "thumb-owner", "small.png", "image/png", pngBuf.Bytes())
 	owner, err := svc.Store.GetUser(ctx, &store.FindUser{Username: func() *string { s := "thumb-owner"; return &s }()})
 	require.NoError(t, err)
 
@@ -1057,7 +1057,7 @@ func TestThumbnailFailureMarkerOnlyForUnsupportedImages(t *testing.T) {
 
 	var pngBuf bytes.Buffer
 	require.NoError(t, png.Encode(&pngBuf, image.NewRGBA(image.Rect(0, 0, 8, 8))))
-	attachment := createPublicImageMemo(ctx, t, svc, "transient-owner", "gone.png", "image/png", pngBuf.Bytes())
+	attachment := createPublicImageNote(ctx, t, svc, "transient-owner", "gone.png", "image/png", pngBuf.Bytes())
 	uid := strings.TrimPrefix(attachment.Name, "attachments/")
 	stored, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
 	require.NoError(t, err)

@@ -23,14 +23,14 @@ func TestValidateToolArgumentsRejectsMissingRequiredArguments(t *testing.T) {
 	schema := jsonSchema{
 		"type": "object",
 		"properties": map[string]any{
-			"memo": map[string]any{"type": "string"},
+			"note": map[string]any{"type": "string"},
 		},
-		"required":             []string{"memo"},
+		"required":             []string{"note"},
 		"additionalProperties": false,
 	}
 
 	err := validateToolArguments(schema, map[string]any{})
-	require.ErrorContains(t, err, `missing required argument "memo"`)
+	require.ErrorContains(t, err, `missing required argument "note"`)
 }
 
 func TestValidateToolArgumentsRejectsWrongPrimitiveTypes(t *testing.T) {

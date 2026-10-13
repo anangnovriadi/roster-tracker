@@ -11,7 +11,7 @@ import (
 	pkgerrors "github.com/pkg/errors"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/usememos/memos/server/auth"
+	"github.com/anangnovriadi/roster-tracker/server/auth"
 )
 
 // MetadataInterceptor converts Connect HTTP headers to gRPC metadata.
@@ -66,7 +66,7 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 		resp, err := next(ctx, req)
 
 		// Prevent browser caching of API responses to avoid stale data issues
-		// See: https://github.com/usememos/memos/issues/5470
+		// See: https://github.com/anangnovriadi/roster-tracker/issues/5470
 		if !isNilAnyResponse(resp) && resp.Header() != nil {
 			setAPIResponseNoStoreHeaders(resp.Header())
 		}

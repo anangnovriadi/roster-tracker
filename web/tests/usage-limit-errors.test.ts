@@ -1,13 +1,13 @@
 import { BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
-import { errorService } from "@/components/MemoEditor/services/errorService";
+import { errorService } from "@/components/NoteEditor/services/errorService";
 import { ERROR_REASON_QUOTA_EXCEEDED, getErrorMessage, getRetryAfterSeconds } from "@/lib/error";
 
 function quotaError(metadata: Record<string, string>): ConnectError {
   const writer = new BinaryWriter();
   writer.tag(1, 2).string(ERROR_REASON_QUOTA_EXCEEDED);
-  writer.tag(2, 2).string("memos.api");
+  writer.tag(2, 2).string("roster.api");
   for (const [key, value] of Object.entries(metadata)) {
     const entry = new BinaryWriter();
     entry.tag(1, 2).string(key);
@@ -20,9 +20,9 @@ function quotaError(metadata: Record<string, string>): ConnectError {
 }
 
 describe("usage limit refusals", () => {
-  it("names the memo limit", () => {
-    const error = quotaError({ metric: "MEMOS", limit: "1000", usage: "1000", usage_limit: "usageLimits/default-memos" });
-    expect(getErrorMessage(error)).toBe("You have reached your limit of 1000 memos. Delete memos to create new ones.");
+  it("names the note limit", () => {
+    const error = quotaError({ metric: "NOTES", limit: "1000", usage: "1000", usage_limit: "usageLimits/default-notes" });
+    expect(getErrorMessage(error)).toBe("You have reached your limit of 1000 notes. Delete notes to create new ones.");
   });
 
   it("names the storage limit and the current usage", () => {
@@ -36,7 +36,7 @@ describe("usage limit refusals", () => {
   });
 
   it("is not a rate limit, so it carries no wait", () => {
-    const error = quotaError({ metric: "MEMOS", limit: "1", usage: "1" });
+    const error = quotaError({ metric: "NOTES", limit: "1", usage: "1" });
     expect(getRetryAfterSeconds(error)).toBeUndefined();
   });
 

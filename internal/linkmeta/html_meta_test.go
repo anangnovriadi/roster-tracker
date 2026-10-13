@@ -231,7 +231,7 @@ func TestHTMLMetaFetcherBotAwareSPA(t *testing.T) {
 		assert.Contains(t, req.Header.Get("Accept"), "text/html")
 		if req.Header.Get("User-Agent") == defaultLinkPreviewUserAgent {
 			return htmlResponse(req, `<meta property="og:title" content="Rich SPA title">
-				<meta property="og:description" content="Prerendered for MemosBot">`), nil
+				<meta property="og:description" content="Prerendered for RosterTrackerBot">`), nil
 		}
 		return htmlResponse(req, `<title>Application shell</title><div id="root"></div>`), nil
 	})
@@ -240,7 +240,7 @@ func TestHTMLMetaFetcherBotAwareSPA(t *testing.T) {
 	meta, err := fetcher.Get(context.Background(), "http://93.184.216.34/spa")
 	require.NoError(t, err)
 	require.Equal(t, "Rich SPA title", meta.Title)
-	require.Equal(t, "Prerendered for MemosBot", meta.Description)
+	require.Equal(t, "Prerendered for RosterTrackerBot", meta.Description)
 }
 
 func TestHTMLMetaFetcherDefaultHeadersAndDeadline(t *testing.T) {

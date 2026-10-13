@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { useView, ViewProvider } from "@/contexts/ViewContext";
 
-const LOCAL_STORAGE_KEY = "memos-view-setting";
+const LOCAL_STORAGE_KEY = "notes-view-setting";
 
 const wrapper = ({ children }: { children: ReactNode }) => <ViewProvider>{children}</ViewProvider>;
 

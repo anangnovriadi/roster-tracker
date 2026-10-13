@@ -38,8 +38,8 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 		return resp
 	}
 
-	status, body := inst.do(t, http.MethodPost, "/api/usageLimits?usageLimitId=default-memos", token, map[string]any{
-		"metric": "MEMOS",
+	status, body := inst.do(t, http.MethodPost, "/api/usageLimits?usageLimitId=default-notes", token, map[string]any{
+		"metric": "NOTES",
 		"value":  "1",
 	})
 	require.Equal(t, http.StatusOK, status, "creating a usage limit should succeed: %s", body)
@@ -55,26 +55,26 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 	}
 	require.NoError(t, json.Unmarshal(body, &listed))
 	require.Len(t, listed.UsageLimits, 1)
-	require.Equal(t, "usageLimits/default-memos", listed.UsageLimits[0].Name)
+	require.Equal(t, "usageLimits/default-notes", listed.UsageLimits[0].Name)
 
-	inst.createMemo(t, token, "first", "the only memo the limit allows")
+	inst.createNote(t, token, "first", "the only note the limit allows")
 
 	userName := "users/" + testAdminUsername
 	status, body = inst.do(t, http.MethodGet, "/api/"+userName+"/usage", token, nil)
 	require.Equal(t, http.StatusOK, status, "%s", body)
 	var usage struct {
 		Name       string `json:"name"`
-		MemoCount  string `json:"memoCount"`
-		MemosLimit struct {
+		NoteCount  string `json:"noteCount"`
+		NotesLimit struct {
 			Value      string `json:"value"`
 			UsageLimit string `json:"usageLimit"`
-		} `json:"memosLimit"`
+		} `json:"notesLimit"`
 	}
 	require.NoError(t, json.Unmarshal(body, &usage))
 	require.Equal(t, userName+"/usage", usage.Name)
-	require.Equal(t, "1", usage.MemoCount)
-	require.Equal(t, "1", usage.MemosLimit.Value)
-	require.Equal(t, "usageLimits/default-memos", usage.MemosLimit.UsageLimit)
+	require.Equal(t, "1", usage.NoteCount)
+	require.Equal(t, "1", usage.NotesLimit.Value)
+	require.Equal(t, "usageLimits/default-notes", usage.NotesLimit.UsageLimit)
 
 	requireNoWaitHeaders := func(resp *http.Response) {
 		t.Helper()
@@ -82,9 +82,9 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 		require.Empty(t, resp.Header.Get("RateLimit"))
 		require.Empty(t, resp.Header.Get("RateLimit-Policy"))
 	}
-	memo := map[string]any{"content": "over the limit", "visibility": "PRIVATE"}
+	note := map[string]any{"content": "over the limit", "visibility": "PRIVATE"}
 
-	refused := send(http.MethodPost, "/api/memos", memo, nil)
+	refused := send(http.MethodPost, "/api/notes", note, nil)
 	defer refused.Body.Close()
 	require.Equal(t, http.StatusTooManyRequests, refused.StatusCode)
 	requireNoWaitHeaders(refused)
@@ -110,8 +110,8 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 		switch detail.Type {
 		case "type.googleapis.com/google.rpc.ErrorInfo":
 			require.Equal(t, "QUOTA_EXCEEDED", detail.Reason)
-			require.Equal(t, "memos.api", detail.Domain)
-			require.Equal(t, map[string]string{"metric": "MEMOS", "limit": "1", "usage": "1", "usage_limit": "usageLimits/default-memos"}, detail.Metadata)
+			require.Equal(t, "roster.api", detail.Domain)
+			require.Equal(t, map[string]string{"metric": "NOTES", "limit": "1", "usage": "1", "usage_limit": "usageLimits/default-notes"}, detail.Metadata)
 		case "type.googleapis.com/google.rpc.QuotaFailure":
 			require.Len(t, detail.Violations, 1)
 			require.Equal(t, userName, detail.Violations[0].Subject)
@@ -121,7 +121,7 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 	}
 	require.ElementsMatch(t, []string{"type.googleapis.com/google.rpc.ErrorInfo", "type.googleapis.com/google.rpc.QuotaFailure"}, types)
 
-	connectResp := send(http.MethodPost, "/memos.api.MemoService/CreateMemo", map[string]any{"memo": memo}, map[string]string{"Connect-Protocol-Version": "1"})
+	connectResp := send(http.MethodPost, "/roster.api.NoteService/CreateNote", map[string]any{"note": note}, map[string]string{"Connect-Protocol-Version": "1"})
 	defer connectResp.Body.Close()
 	require.Equal(t, http.StatusTooManyRequests, connectResp.StatusCode)
 	requireNoWaitHeaders(connectResp)
@@ -142,7 +142,7 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 	require.ElementsMatch(t, []string{"google.rpc.ErrorInfo", "google.rpc.QuotaFailure"}, connectTypes)
 
 	// Deleting the limit lifts the refusal at once: checks skip the cache.
-	status, body = inst.do(t, http.MethodDelete, "/api/usageLimits/default-memos", token, nil)
+	status, body = inst.do(t, http.MethodDelete, "/api/usageLimits/default-notes", token, nil)
 	require.Equal(t, http.StatusOK, status, "%s", body)
-	inst.createMemo(t, token, "second", "allowed again")
+	inst.createNote(t, token, "second", "allowed again")
 }

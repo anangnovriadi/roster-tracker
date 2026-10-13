@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package memos.api;
+package roster.api;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
@@ -12,15 +12,15 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api";
 
-// AttachmentService manages files attached to memos.
+// AttachmentService manages files attached to notes.
 service AttachmentService {
-  // ListAttachments lists attachments linked to memos the caller can read, plus the caller's unlinked uploads.
+  // ListAttachments lists attachments linked to notes the caller can read, plus the caller's unlinked uploads.
   rpc ListAttachments(ListAttachmentsRequest) returns (ListAttachmentsResponse) {
     option (google.api.http) = {get: "/api/attachments"};
   }
 
   // GetAttachment gets an attachment by name. An unlinked attachment is visible only to its uploader and admins;
-  // a linked attachment follows the read access of its memo.
+  // a linked attachment follows the read access of its note.
   rpc GetAttachment(GetAttachmentRequest) returns (Attachment) {
     option (google.api.http) = {get: "/api/{name=attachments/*}"};
     option (google.api.method_signature) = "name";
@@ -71,10 +71,10 @@ service AttachmentService {
   }
 }
 
-// Attachment is a file uploaded by a user, optionally linked to a memo.
+// Attachment is a file uploaded by a user, optionally linked to a note.
 message Attachment {
   option (google.api.resource) = {
-    type: "memos.api/Attachment"
+    type: "roster.api/Attachment"
     pattern: "attachments/{attachment}"
     singular: "attachment"
     plural: "attachments"
@@ -84,11 +84,11 @@ message Attachment {
   // Format: attachments/{attachment}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // Output only. The user who uploaded the attachment, which may differ from the creator of the linked memo.
+  // Output only. The user who uploaded the attachment, which may differ from the creator of the linked note.
   // Format: users/{user}
   string creator = 2 [
     (google.api.field_behavior) = OUTPUT_ONLY,
-    (google.api.resource_reference) = {type: "memos.api/User"}
+    (google.api.resource_reference) = {type: "roster.api/User"}
   ];
 
   // Required. The filename of the attachment.
@@ -114,9 +114,9 @@ message Attachment {
     (google.api.field_behavior) = IMMUTABLE
   ];
 
-  // Optional. The memo the attachment is linked to. On create, the caller must be able to manage the memo.
-  // Format: memos/{memo}
-  optional string memo = 9 [(google.api.field_behavior) = OPTIONAL];
+  // Optional. The note the attachment is linked to. On create, the caller must be able to manage the note.
+  // Format: notes/{note}
+  optional string note = 9 [(google.api.field_behavior) = OPTIONAL];
 
   // Output only. The size of the stored content in bytes.
   int64 size = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -137,10 +137,10 @@ message ListAttachmentsRequest {
   // Optional. A CEL filter over the results.
   // Example: `mime_type == "image/png"` or `filename.contains("test")`.
   // Supported operators: ==, !=, <, <=, >, >=, : (contains), in.
-  // Supported fields: creator, filename, mime_type, create_time, memo_id, space.
-  // `creator` is the linked memo's creator, or the uploader for an unlinked attachment. It supports equality with a
+  // Supported fields: creator, filename, mime_type, create_time, note_id, space.
+  // `creator` is the linked note's creator, or the uploader for an unlinked attachment. It supports equality with a
   // User resource name.
-  // `space` is the linked memo's Space resource name, or null when the attachment is unlinked or its memo has no
+  // `space` is the linked note's Space resource name, or null when the attachment is unlinked or its note has no
   // space. It supports only a non-negated `==` comparison with a Space resource name or null.
   string filter = 3 [(google.api.field_behavior) = OPTIONAL];
 
@@ -164,7 +164,7 @@ message GetAttachmentRequest {
   // Format: attachments/{attachment}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/Attachment"}
+    (google.api.resource_reference) = {type: "roster.api/Attachment"}
   ];
 }
 
@@ -193,7 +193,7 @@ message DeleteAttachmentRequest {
   // Format: attachments/{attachment}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/Attachment"}
+    (google.api.resource_reference) = {type: "roster.api/Attachment"}
   ];
 }
 

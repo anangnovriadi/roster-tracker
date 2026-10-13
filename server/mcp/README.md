@@ -2,7 +2,7 @@
 
 This package serves an [OpenAPI](https://www.openapis.org/)-driven
 [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) endpoint at
-`/mcp`. It exposes a curated, memo-focused toolset over the **Streamable HTTP**
+`/mcp`. It exposes a curated, note-focused toolset over the **Streamable HTTP**
 transport using the official `github.com/modelcontextprotocol/go-sdk`.
 
 The core design principle: **tool calls execute in-process against the existing
@@ -94,7 +94,7 @@ use `$ref`. `openapi.go` resolves these into local definitions:
   to `required`. Body `$defs` are lifted to the schema's top-level `$defs`.
 - Per-operation overrides relax resource-level requirements for create and
   partial-update bodies and remove fields already supplied by a path binding
-  from `body: "*"` schemas. Memo and space updates may omit `updateMask` so the
+  from `body: "*"` schemas. Note and space updates may omit `updateMask` so the
   REST gateway can infer it from the fields present in the request body. A
   `body: "*"` binding whose only field is path-bound (accepting or declining a
   space invitation) has its `body` made optional instead of demanding `{}`.
@@ -146,7 +146,7 @@ a personal access token as a bearer credential. Example client config:
 ```json
 {
   "mcpServers": {
-    "memos": {
+    "notes": {
       "type": "http",
       "url": "https://<your-instance>/mcp",
       "headers": {
@@ -160,34 +160,34 @@ a personal access token as a bearer credential. Example client config:
 ## Tool surface
 
 The server exposes a curated allowlist (`curatedOperationIDs` in `catalog.go`),
-centered on memos and attachments, plus the space service (memos carry a
+centered on notes and attachments, plus the space service (notes carry a
 placement and a `SPACE` audience, so agents must be able to discover and
 administer spaces and answer invitations) and two read-only orientation tools:
-`user_list_memo_views` (surfaces a user's named CEL filters for reuse with
-`memo_list_memos`) and `auth_get_current_user` (a "whoami" so an agent can
+`user_list_note_views` (surfaces a user's named CEL filters for reuse with
+`note_list_notes`) and `auth_get_current_user` (a "whoami" so an agent can
 resolve its own user — the single allowed auth/identity operation):
 
 | OpenAPI operation | MCP tool |
 | --- | --- |
-| `MemoService_ListMemos` | `memo_list_memos` |
-| `MemoService_CreateMemo` | `memo_create_memo` |
-| `MemoService_GetMemo` | `memo_get_memo` |
-| `MemoService_UpdateMemo` | `memo_update_memo` |
-| `MemoService_DeleteMemo` | `memo_delete_memo` |
-| `MemoService_ListMemoComments` | `memo_list_memo_comments` |
-| `MemoService_CreateMemoComment` | `memo_create_memo_comment` |
-| `MemoService_ListMemoAttachments` | `memo_list_memo_attachments` |
-| `MemoService_SetMemoAttachments` | `memo_set_memo_attachments` |
-| `MemoService_ListMemoReactions` | `memo_list_memo_reactions` |
-| `MemoService_UpsertMemoReaction` | `memo_upsert_memo_reaction` |
-| `MemoService_DeleteMemoReaction` | `memo_delete_memo_reaction` |
-| `MemoService_ListMemoRelations` | `memo_list_memo_relations` |
-| `MemoService_SetMemoRelations` | `memo_set_memo_relations` |
+| `NoteService_ListNotes` | `note_list_notes` |
+| `NoteService_CreateNote` | `note_create_note` |
+| `NoteService_GetNote` | `note_get_note` |
+| `NoteService_UpdateNote` | `note_update_note` |
+| `NoteService_DeleteNote` | `note_delete_note` |
+| `NoteService_ListNoteComments` | `note_list_note_comments` |
+| `NoteService_CreateNoteComment` | `note_create_note_comment` |
+| `NoteService_ListNoteAttachments` | `note_list_note_attachments` |
+| `NoteService_SetNoteAttachments` | `note_set_note_attachments` |
+| `NoteService_ListNoteReactions` | `note_list_note_reactions` |
+| `NoteService_UpsertNoteReaction` | `note_upsert_note_reaction` |
+| `NoteService_DeleteNoteReaction` | `note_delete_note_reaction` |
+| `NoteService_ListNoteRelations` | `note_list_note_relations` |
+| `NoteService_SetNoteRelations` | `note_set_note_relations` |
 | `AttachmentService_ListAttachments` | `attachment_list_attachments` |
 | `AttachmentService_CreateAttachment` | `attachment_create_attachment` |
 | `AttachmentService_GetAttachment` | `attachment_get_attachment` |
 | `AttachmentService_DeleteAttachment` | `attachment_delete_attachment` |
-| `UserService_ListMemoViews` | `user_list_memo_views` |
+| `UserService_ListNoteViews` | `user_list_note_views` |
 | `AuthService_GetCurrentUser` | `auth_get_current_user` |
 | `SpaceService_ListSpaces` | `space_list_spaces` |
 | `SpaceService_GetSpace` | `space_get_space` |
@@ -208,7 +208,7 @@ resolve its own user — the single allowed auth/identity operation):
 
 **Naming rule** (`toolNameFromOperationID`): drop the `Service` suffix from the
 subject and convert both subject and method from camelCase to snake_case, joined
-by `_`. So `MemoService_ListMemos → memo_list_memos`.
+by `_`. So `NoteService_ListNotes → note_list_notes`.
 
 **Annotations** (`annotationsForOperation`) start from the HTTP method:
 
@@ -219,13 +219,13 @@ by `_`. So `MemoService_ListMemos → memo_list_memos`.
 | other (POST, PATCH, …) | false | false | false |
 
 Per-operation overrides then correct cases the method heuristic gets wrong.
-`MemoService_SetMemoAttachments` and `MemoService_SetMemoRelations` are PATCH
-but declaratively replace the full set on a memo, so they report both
-`IdempotentHint: true` and `DestructiveHint: true`. `MemoService_UpdateMemo`,
+`NoteService_SetNoteAttachments` and `NoteService_SetNoteRelations` are PATCH
+but declaratively replace the full set on a note, so they report both
+`IdempotentHint: true` and `DestructiveHint: true`. `NoteService_UpdateNote`,
 `SpaceService_UpdateSpace`, and `SpaceService_UpdateSpaceMember` also report
 `DestructiveHint: true` because they overwrite existing fields (a member's role
 included). `SpaceService_DeleteSpace` is destructive by method, and the API
-also deletes every memo placed in the space.
+also deletes every note placed in the space.
 
 `OpenWorldHint` is `false` for all tools. Annotations are client hints; they do
 not replace API authorization.
@@ -238,7 +238,7 @@ not replace API authorization.
 - a bare array becomes `{ "result": [...] }`;
 - a scalar becomes `{ "result": value }`.
 
-This is deliberate: it fixes [#6022](https://github.com/usememos/memos/issues/6022),
+This is deliberate: it fixes [#6022](https://github.com/anangnovriadi/roster-tracker/issues/6022),
 where collection tools returned a bare array that strict MCP clients reject.
 
 Inside that envelope the API's JSON is passed through verbatim, so the gateway's
@@ -247,7 +247,7 @@ the output schema resolved from the same OpenAPI spec. grpc-gateway's stock
 marshaler emits `null` for unset message fields, which no schema declares as
 nullable — `RegisterGateway` therefore installs a marshaler that omits them
 (`newGatewayMarshaler` in `server/api/api.go`). That fixes
-[#6139](https://github.com/usememos/memos/issues/6139), where `"motionMedia": null`
+[#6139](https://github.com/anangnovriadi/roster-tracker/issues/6139), where `"motionMedia": null`
 failed every tool call returning an attachment.
 
 ## Error handling

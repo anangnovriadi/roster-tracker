@@ -12,7 +12,7 @@ const state = vi.hoisted(() => ({
 }));
 
 vi.mock("@/components/AboutDialog", () => ({ default: () => null }));
-vi.mock("@/components/MemosLogo", () => ({ default: () => <span>Memos</span> }));
+vi.mock("@/components/NotesLogo", () => ({ default: () => <span>Notes</span> }));
 vi.mock("@/components/UserMenu", () => ({
   default: () => <button type="button">Steven account</button>,
 }));
@@ -70,8 +70,8 @@ describe("SpaceSwitcher", () => {
 
   it("shows the brand and only the account panel on the calendar", () => {
     renderAt("/calendar/2026/09", "header");
-    expect(switcherTrigger()).toHaveAccessibleName("common.memos");
-    expect(within(switcherTrigger()).getByText("Memos")).toBeInTheDocument();
+    expect(switcherTrigger()).toHaveAccessibleName("common.notes");
+    expect(within(switcherTrigger()).getByText("Notes")).toBeInTheDocument();
     openSwitcher();
     expect(screen.queryByRole("navigation", { name: "common.browse" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
@@ -82,7 +82,7 @@ describe("SpaceSwitcher", () => {
 
   it("offers no way back to a narrowed calendar, since notes are not browsed per member", () => {
     renderAt("/calendar/2026/09?creator=alice", "header");
-    expect(switcherTrigger()).toHaveAccessibleName("common.memos");
+    expect(switcherTrigger()).toHaveAccessibleName("common.notes");
     openSwitcher();
     expect(screen.queryByRole("link", { name: /Back to/ })).not.toBeInTheDocument();
   });

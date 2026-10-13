@@ -10,8 +10,8 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 // Authenticator provides shared authentication and authorization logic.

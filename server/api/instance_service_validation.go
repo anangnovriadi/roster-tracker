@@ -10,17 +10,17 @@ import (
 	"github.com/pkg/errors"
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 
-	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
+	apipb "github.com/anangnovriadi/roster-tracker/proto/gen/api"
+	storepb "github.com/anangnovriadi/roster-tracker/proto/gen/store"
+	"github.com/anangnovriadi/roster-tracker/store"
 )
 
 func applyInstanceSettingDefaults(setting *apipb.InstanceSetting) {
-	memoRelatedSetting := setting.GetMemoRelatedSetting()
-	if memoRelatedSetting == nil || memoRelatedSetting.ContentLengthLimit != 0 {
+	noteRelatedSetting := setting.GetNoteRelatedSetting()
+	if noteRelatedSetting == nil || noteRelatedSetting.ContentLengthLimit != 0 {
 		return
 	}
-	memoRelatedSetting.ContentLengthLimit = store.DefaultContentLengthLimit
+	noteRelatedSetting.ContentLengthLimit = store.DefaultContentLengthLimit
 }
 
 func validateInstanceSetting(setting *apipb.InstanceSetting) error {
@@ -29,8 +29,8 @@ func validateInstanceSetting(setting *apipb.InstanceSetting) error {
 		return err
 	}
 	switch key {
-	case storepb.InstanceSettingKey_MEMO_RELATED.String():
-		return validateInstanceMemoRelatedSetting(setting.GetMemoRelatedSetting())
+	case storepb.InstanceSettingKey_NOTE_RELATED.String():
+		return validateInstanceNoteRelatedSetting(setting.GetNoteRelatedSetting())
 	case storepb.InstanceSettingKey_TAGS.String():
 		return validateInstanceTagsSetting(setting.GetTagsSetting())
 	case storepb.InstanceSettingKey_ACCESS.String():
@@ -40,9 +40,9 @@ func validateInstanceSetting(setting *apipb.InstanceSetting) error {
 	}
 }
 
-func validateInstanceMemoRelatedSetting(setting *apipb.InstanceSetting_MemoRelatedSetting) error {
+func validateInstanceNoteRelatedSetting(setting *apipb.InstanceSetting_NoteRelatedSetting) error {
 	if setting == nil {
-		return errors.New("memo related setting is required")
+		return errors.New("note related setting is required")
 	}
 	if setting.ContentLengthLimit < store.DefaultContentLengthLimit {
 		return errors.Errorf("content_length_limit must be at least %d bytes", store.DefaultContentLengthLimit)
