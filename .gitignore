@@ -27,3 +27,6 @@ dist/
 *.db
 *.db-shm
 *.db-wal
+
+# Logs
+backend.log
