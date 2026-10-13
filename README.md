@@ -1,7 +1,5 @@
 # Roster Tracker
 
-<img src="./web/public/logo.svg" alt="" width="96" align="right">
-
 Self-hosted web app with a Go backend and a React frontend, served from a single binary.
 
 ## Tech Stack
