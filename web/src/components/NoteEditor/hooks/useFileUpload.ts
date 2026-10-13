@@ -1,7 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useAuth } from "@/contexts/AuthContext";
 import { type MotionMedia, MotionMediaFamily, MotionMediaRole, MotionMediaSchema } from "@/types/proto/api/attachment_service_pb";
 import { mediaMetadataService } from "../services/mediaMetadataService";
 import type { LocalFile } from "../types/attachment";
@@ -28,8 +27,8 @@ export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void
   // Track preview blob URLs so they're revoked on unmount instead of leaking
   // (matches the paste/drop/audio paths, which all go through useBlobUrls).
   const { createBlobUrl } = useBlobUrls();
-  const { userGeneralSetting } = useAuth();
-  const saveMediaMetadata = userGeneralSetting?.saveMediaMetadata ?? false;
+  // Uploads keep their media metadata (camera, capture time, location); there is no opt-out.
+  const saveMediaMetadata = true;
 
   const handleFileInputChange = (event?: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(fileInputRef.current?.files || event?.target.files || []);

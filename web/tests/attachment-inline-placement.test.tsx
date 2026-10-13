@@ -34,9 +34,9 @@ describe("attachment inline placement actions", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Insert image" }));
+    fireEvent.click(screen.getByRole("button", { name: "Insert Image" }));
     expect(onInsertAttachments).toHaveBeenCalledWith([image]);
-    expect(screen.getByRole("button", { name: "Remove attachment" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove Attachment" })).toBeInTheDocument();
   });
 
   it("hides an inline image and restores it after its Markdown reference is removed", () => {
@@ -48,13 +48,13 @@ describe("attachment inline placement actions", () => {
 
     expect(screen.queryByText("Attachments")).not.toBeInTheDocument();
     expect(screen.queryByText("photo.png")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Remove attachment" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Remove Attachment" })).not.toBeInTheDocument();
 
     rerender(<AttachmentListEditor {...props} inlineAttachmentUIDs={new Set()} />);
 
     expect(screen.getByText(/Attachments/)).toBeInTheDocument();
     expect(screen.getByText("photo.png")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Remove attachment" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove Attachment" })).toBeInTheDocument();
   });
 
   it("preserves hidden inline attachments when visible attachments are reordered", () => {
@@ -69,7 +69,7 @@ describe("attachment inline placement actions", () => {
       />,
     );
 
-    fireEvent.click(screen.getAllByRole("button", { name: "Move attachment down" })[0]!);
+    fireEvent.click(screen.getAllByRole("button", { name: "Move Attachment Down" })[0]!);
     expect(onAttachmentsChange).toHaveBeenCalledWith([image, third, second]);
   });
 
@@ -81,7 +81,7 @@ describe("attachment inline placement actions", () => {
       />,
     );
 
-    expect(screen.queryByRole("button", { name: "Insert image" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Insert Image" })).not.toBeInTheDocument();
   });
 
   it("shows local inline-upload status and prevents removal while uploading", () => {
@@ -102,7 +102,7 @@ describe("attachment inline placement actions", () => {
     );
 
     expect(screen.getByText("Uploading to content")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Insert image" })).toBeDisabled();
-    expect(screen.queryByRole("button", { name: "Remove attachment" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Insert Image" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Remove Attachment" })).not.toBeInTheDocument();
   });
 });

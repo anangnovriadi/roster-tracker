@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useLocalStorage } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -66,10 +65,10 @@ const NoteEditorImpl: React.FC<NoteEditorProps> = ({
   }, [isFocusMode, onFocusModeChange]);
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
   const hasTimestamp = useEditorSelector((s) => Boolean(s.timestamps.createTime));
-  const { userGeneralSetting } = useAuth();
   const { aiSetting, fetchSetting } = useInstance();
   const { createBlobUrl } = useBlobUrls();
-  const saveMediaMetadata = userGeneralSetting?.saveMediaMetadata ?? false;
+  // Uploads keep their media metadata (camera, capture time, location); there is no opt-out.
+  const saveMediaMetadata = true;
   const inlineImageUpload = useInlineImageUpload(editorRef);
   // Persisted preference: also show the formatting toolbar in normal mode. Focus
   // mode always shows it regardless; this only governs the non-focus layout.

@@ -1,40 +1,40 @@
 {
   "auth": {
-    "admin-sign-in": "Administrator sign-in",
+    "admin-sign-in": "Administrator Sign-In",
     "admin-sign-in-tip": "Password sign-in stays available for administrators.",
-    "back-to-sign-in": "Back to sign in",
+    "back-to-sign-in": "Back to Sign In",
     "continue-with": "Continue with {{provider}}",
     "explore-public-notes": "Go to Public Dashboard",
-    "new-password": "New password",
+    "new-password": "New Password",
     "redirecting-to-provider": "Redirecting to {{provider}}…",
-    "repeat-new-password": "Repeat the new password",
+    "repeat-new-password": "Repeat the New Password",
     "signin-unavailable-description": "Password sign-in is turned off and no identity providers are configured. Ask your administrator to enable a sign-in method.",
-    "signin-unavailable-title": "Sign-in is unavailable",
+    "signin-unavailable-title": "Sign-In Is Unavailable",
     "welcome-back": "Welcome back."
   },
   "calendar": {
     "loading": "Loading calendar…",
-    "new-note-on-day": "New note or report on this day",
-    "next-year": "Next year",
+    "new-note-on-day": "New Note or Report on This Day",
+    "next-year": "Next Year",
     "no-notes-on-day": "No notes or reports on this day",
-    "previous-year": "Previous year",
-    "select-month": "Select month",
+    "previous-year": "Previous Year",
+    "select-month": "Select Month",
     "note-count_one": "{{count}} note",
     "note-count_other": "{{count}} notes"
   },
   "demo": {
     "banner-description": "Feel free to explore! This demo is reset periodically.",
-    "banner-title": "Roster Tracker demo",
-    "deploy-link": "Deploy your own Roster Tracker"
+    "banner-title": "Roster Tracker Demo",
+    "deploy-link": "Deploy Your Own Roster Tracker"
   },
   "attachment-details": {
     "actions": {
       "copied": "Coordinates copied",
-      "copy-coordinates": "Copy coordinates",
-      "hide": "Hide attachment details",
-      "hide-map": "Hide map",
-      "show": "Show attachment details",
-      "show-map": "Show map"
+      "copy-coordinates": "Copy Coordinates",
+      "hide": "Hide Attachment Details",
+      "hide-map": "Hide Map",
+      "show": "Show Attachment Details",
+      "show-map": "Show Map"
     },
     "empty": "No saved capture metadata.",
     "fields": {
@@ -47,7 +47,7 @@
       "file": "File",
       "lens": "Lens",
       "location": "Coordinates",
-      "source-orientation": "Source EXIF orientation",
+      "source-orientation": "Source EXIF Orientation",
       "uploaded": "Uploaded"
     },
     "sections": {
@@ -55,7 +55,7 @@
       "capture": "Capture",
       "file": "File",
       "location": "Location",
-      "technical": "Technical details"
+      "technical": "Technical Details"
     },
     "timezone-unknown": "Time zone unknown",
     "title": "Details"
@@ -77,8 +77,8 @@
       "live": "Live",
       "live-photo": "Live Photo",
       "note": "Note",
-      "not-linked": "Not linked",
-      "unknown-date": "Unknown date"
+      "not-linked": "Not Linked",
+      "unknown-date": "Unknown Date"
     },
     "tabs": {
       "documents": "Documents",
@@ -86,6 +86,7 @@
     }
   },
   "common": {
+    "about": "About",
     "actions": "Actions",
     "add": "Add",
     "admin": "Admin",
@@ -96,7 +97,8 @@
     "cancel": "Cancel",
     "close": "Close",
     "collapse": "Collapse",
-    "collapse-panel": "Collapse panel",
+    "collapse-panel": "Collapse Panel",
+    "collapse-sidebar": "Collapse Sidebar",
     "confirm": "Confirm",
     "copy": "Copy",
     "create": "Create",
@@ -114,48 +116,46 @@
     "edit": "Edit",
     "email": "Email",
     "expand": "Expand",
-    "expand-panel": "Expand panel",
+    "expand-panel": "Expand Panel",
+    "expand-sidebar": "Expand Sidebar",
+    "hide-password": "Hide Password",
     "language": "Language",
-    "last-updated-at": "Last updated at",
-    "learn-more": "Learn more",
+    "last-updated-at": "Last Updated At",
+    "learn-more": "Learn More",
     "menu": "Menu",
-    "note": "Note",
-    "notes": "Notes",
-    "month-navigation": "Month navigation",
+    "month-navigation": "Month Navigation",
     "more": "More",
     "name": "Name",
-    "next-month": "Next month",
+    "next-month": "Next Month",
+    "note": "Note",
+    "notes": "Notes",
     "or": "or",
     "password": "Password",
-    "hide-password": "Hide password",
-    "show-password": "Show password",
-    "previous-month": "Previous month",
+    "previous-month": "Previous Month",
     "referenced-by": "Referenced by",
     "referencing": "Referencing",
     "relations": "Relations",
-    "resize-panel": "Resize panel",
-    "resize-sidebar": "Resize sidebar",
+    "resize-panel": "Resize Panel",
+    "resize-sidebar": "Resize Sidebar",
     "restore": "Restore",
     "save": "Save",
     "settings": "Settings",
+    "show-password": "Show Password",
     "sign-in": "Sign in",
     "sign-in-to-notes": "Sign in to Roster Tracker",
     "sign-out": "Sign out",
     "statistics": "Statistics",
+    "submit": "Submit",
     "tags": "Tags",
     "today": "Today",
-    "tree-mode": "Show as tree",
+    "tree-mode": "Show as Tree",
     "type": "Type",
     "update": "Update",
-    "user": "User",
     "username": "Username",
     "username-or-email": "Username or Email",
+    "view-all": "View All",
     "visibility": "Visibility",
-    "view-all": "View all",
-    "yourself": "Yourself",
-    "collapse-sidebar": "Collapse sidebar",
-    "expand-sidebar": "Expand sidebar",
-    "about": "About"
+    "yourself": "Yourself"
   },
   "editor": {
     "suggestions": "Suggestions",
@@ -164,7 +164,7 @@
     "exit-focus-mode": "Exit Focus Mode",
     "focus-mode": "Focus Mode",
     "comment": "Comment",
-    "formatting-toolbar": "Formatting toolbar",
+    "formatting-toolbar": "Formatting Toolbar",
     "format": {
       "heading": "Heading",
       "paragraph": "Paragraph",
@@ -174,24 +174,24 @@
       "bold": "Bold",
       "italic": "Italic",
       "strikethrough": "Strikethrough",
-      "code-block": "Code block",
-      "bullet-list": "Bullet list",
-      "ordered-list": "Numbered list",
-      "task-list": "To-do list",
+      "code-block": "Code Block",
+      "bullet-list": "Bullet List",
+      "ordered-list": "Numbered List",
+      "task-list": "To-Do List",
       "link": "Link",
-      "more": "More formatting"
+      "more": "More Formatting"
     },
     "insert-menu": {
-      "add-attachment": "Add attachment",
+      "add-attachment": "Add Attachment",
       "image-upload-failed": "Some images could not be uploaded. Retry or keep the uploaded files as attachments.",
       "image-upload-stopped": "Image upload stopped {{completed}}/{{total}}",
-      "insert-image": "Insert image",
-      "keep-as-attachments": "Keep as attachments",
+      "insert-image": "Insert Image",
+      "keep-as-attachments": "Keep as Attachments",
       "retry-image-upload": "Retry",
       "uploading-inline-image": "Uploading to content",
       "uploading-images": "Uploading images {{completed}}/{{total}}"
     },
-    "new-note": "New note",
+    "new-note": "New Note",
     "no-changes-detected": "No changes detected",
     "save": "Save",
     "saved": "Saved",
@@ -205,10 +205,10 @@
       "wait-for-upload": "Wait for upload to complete"
     },
     "audio-recorder": {
-      "attachment-label": "Audio recording",
-      "attachment-label-with-time": "Audio recording {{time}}",
-      "pause-recording": "Pause audio recording",
-      "play-recording": "Play audio recording",
+      "attachment-label": "Audio Recording",
+      "attachment-label-with-time": "Audio Recording {{time}}",
+      "pause-recording": "Pause Audio Recording",
+      "play-recording": "Play Audio Recording",
       "transcribe": "Transcribe",
       "transcribe-empty": "No speech detected",
       "transcribe-error": "Failed to transcribe audio",
@@ -226,7 +226,7 @@
     "click-to-show-sensitive-content": "Click to show sensitive content",
     "comment": {
       "self": "Comments",
-      "write-a-comment": "Write a comment"
+      "write-a-comment": "Write a Comment"
     },
     "count-notes-in-date": "{{count}} {{notes}} in {{date}}",
     "count-notes-updated-in-date": "{{count}} {{notes}} updated on {{date}}",
@@ -239,15 +239,15 @@
       "has-task-list": "hasTaskList"
     },
     "connections": "Connections",
-    "load-more": "Load more",
+    "load-more": "Load More",
     "new-badge": "New",
-    "on-this-note": "On this note",
-    "parent-note": "Parent note",
-    "show-less": "Show less",
-    "show-more": "Show more",
+    "on-this-note": "On This Note",
+    "parent-note": "Parent Note",
+    "show-less": "Show Less",
+    "show-more": "Show More",
     "task-actions": {
-      "check-all": "Check all tasks",
-      "uncheck-all": "Uncheck all tasks",
+      "check-all": "Check All Tasks",
+      "uncheck-all": "Uncheck All Tasks",
       "updated": "Tasks updated"
     },
     "visibility": {
@@ -283,8 +283,8 @@
     "back-to-top": "Back to Top"
   },
   "search": {
-    "clear-query": "Clear query",
-    "edit-query": "Edit query",
+    "clear-query": "Clear Query",
+    "edit-query": "Edit Query",
     "invalid-expression": "Search expression couldn’t be applied",
     "load-error": "Couldn’t load notes",
     "retry": "Retry"
@@ -303,18 +303,18 @@
       "token": "Token"
     },
     "account": {
-      "attachment-storage": "Attachment storage",
+      "attachment-storage": "Attachment Storage",
       "usage-description": "Limits set by the admin of this instance. Comments and archived notes count as notes.",
-      "usage-file-size": "Largest file",
+      "usage-file-size": "Largest File",
       "usage-notes": "Notes",
       "usage-of": "{{usage}} of {{limit}}",
       "usage-storage": "Storage",
-      "usage-title": "Usage limits",
+      "usage-title": "Usage Limits",
       "storage-usage-error": "Your attachment storage is unavailable.",
-      "change-password": "Change password",
-      "danger-area": "Danger area",
+      "change-password": "Change Password",
+      "danger-area": "Danger Area",
       "danger-area-description": "Irreversible account actions live here. Review them carefully before continuing.",
-      "delete-account": "Delete account",
+      "delete-account": "Delete Account",
       "delete-account-description": "Permanently remove this account and all associated access from this instance. This action cannot be undone.",
       "email-in-use": "This email is already used by another account.",
       "title": "Account Information",
@@ -324,60 +324,55 @@
     "member": {
       "active": "Active",
       "admin": "Admin",
-      "archive-member": "Archive member",
-      "archived": "Archived",
+      "archive-member": "Archive Member",
       "archive-success": "{{username}} archived successfully",
       "archive-warning": "Are you sure you want to archive {{username}}?",
       "archive-warning-description": "Archiving disables the account. You can restore or delete it later.",
+      "archived": "Archived",
+      "create-member": "Create Member",
+      "create-success": "{{name}} was added",
       "delete-member": "Delete Member",
       "delete-success": "{{username}} deleted successfully",
       "delete-warning": "Are you sure you want to delete {{username}}?",
       "delete-warning-description": "THIS ACTION IS IRREVERSIBLE",
-      "label": "Member",
-      "list-title": "Member list",
-      "member-column": "Member",
-      "restore-success": "{{username}} restored successfully",
-      "summary-column": "Summary",
-      "user": "User",
-      "no-members-found": "No members found",
+      "edit-member": "Edit Member",
+      "email-invalid": "Enter a valid email address.",
+      "email-required": "Email is required.",
+      "email-taken": "This email is already used by another member.",
       "full-name": "Full Name",
       "full-name-required": "Full name is required.",
-      "email-required": "Email is required.",
-      "email-invalid": "Enter a valid email address.",
-      "email-taken": "This email is already used by another member.",
-      "password-required": "Password is required.",
+      "label": "Member",
+      "list-title": "Member List",
+      "no-members-found": "No members found",
+      "number-column": "#",
       "password-keep": "Leave blank to keep the current password",
-      "username-generated": "Generated from the full name. Members sign in with this username.",
+      "password-required": "Password is required.",
+      "restore-success": "{{username}} restored successfully",
+      "role-column": "Role",
+      "status-column": "Status",
+      "update-success": "{{name}} was updated",
+      "user": "User",
       "username-fixed": "The username cannot be changed.",
-      "create-success": "{{name}} was added",
-      "update-success": "{{name}} was updated"
+      "username-generated": "Generated from the full name. Members sign in with this username."
     },
     "note": {
-      "add-reaction": "Add reaction"
+      "add-reaction": "Add Reaction"
     },
     "my-account": {
       "label": "My Account"
     },
     "preference": {
-      "appearance-description": "Choose how the app looks and which language it uses for your account.",
-      "appearance-title": "Appearance",
       "label": "Preferences",
-      "language-description": "Updates the interface language immediately and saves it to your account.",
-      "save-media-metadata": "Save media metadata",
-      "save-media-metadata-description": "For future uploads, save available camera, capture time, location, image dimensions, and basic video details. Anyone who can view the attachment can receive this metadata. Existing attachments are unchanged.",
-      "theme-description": "Applies the selected theme immediately on this device.",
-      "theme": "Theme",
-      "uploads-privacy-description": "Control privacy-sensitive information submitted with uploaded media.",
-      "uploads-privacy-title": "Uploads & privacy"
+      "theme": "Theme"
     },
     "sso": {
       "account": "Account",
-      "authorization-endpoint": "Authorization endpoint",
+      "authorization-endpoint": "Authorization Endpoint",
       "avatar-url": "Avatar URL",
-      "basic-settings": "Basic settings",
+      "basic-settings": "Basic Settings",
       "basic-settings-description": "Set the provider identity, display name, and optional identifier rules before filling in the OAuth details.",
       "client-id": "Client ID",
-      "client-secret": "Client secret",
+      "client-secret": "Client Secret",
       "client-secret-optional-description": "Leave blank to keep the existing client secret unchanged.",
       "create-sso": "Create SSO",
       "create-sso-description": "Create a new identity provider for administrator-managed single sign-on.",
@@ -385,10 +380,10 @@
       "identifier": "Identifier",
       "identifier-filter": "Identifier Filter",
       "identifier-filter-description": "Optional regex used to allow or restrict which external identifiers may sign in.",
-      "field-mapping": "Claims mapping",
+      "field-mapping": "Claims Mapping",
       "field-mapping-description": "Map the upstream profile fields used to identify the user and prefill profile data.",
       "field-mapping-identifier-description": "Used as the stable external identifier when signing in or linking an account.",
-      "oauth-configuration": "OAuth configuration",
+      "oauth-configuration": "OAuth Configuration",
       "oauth-configuration-description": "Fill in the OAuth client credentials and the provider endpoints used during sign-in.",
       "provider-id": "Provider ID",
       "provider-id-description": "Lowercase letters, numbers, and hyphens only. This value becomes part of the provider resource name.",
@@ -400,10 +395,10 @@
       "sso-updated": "SSO {{name}} updated",
       "template": "Template",
       "template-description": "Start from a provider preset, then adjust the credentials and endpoints for your tenant.",
-      "token-endpoint": "Token endpoint",
+      "token-endpoint": "Token Endpoint",
       "update-sso": "Update SSO",
       "update-sso-description": "Review the provider configuration, then save the fields that should change.",
-      "user-endpoint": "User endpoint"
+      "user-endpoint": "User Endpoint"
     },
     "system": {
       "customize-server": {
@@ -416,9 +411,9 @@
     "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "An easy-to-remember name",
-        "copy-secret": "Copy signing secret",
-        "create-webhook": "Create webhook",
-        "edit-webhook": "Edit webhook",
+        "copy-secret": "Copy Signing Secret",
+        "create-webhook": "Create Webhook",
+        "edit-webhook": "Edit Webhook",
         "generate-secret": "Generate",
         "payload-url": "Payload URL",
         "reveal-secret": "Reveal",
@@ -426,7 +421,7 @@
         "signing-secret-auto-note": "A signing secret is generated automatically. You can reveal it after creating.",
         "signing-secret-configured": "Configured",
         "signing-secret-created-note": "Webhook created. Copy the signing secret now — you can also reveal it later from Edit.",
-        "signing-secret-not-configured": "Not configured",
+        "signing-secret-not-configured": "Not Configured",
         "title": "Title",
         "url-example-post-receive": "https://example.com/postreceive"
       }
@@ -445,7 +440,7 @@
       },
       "local-storage": {
         "title": "Local Storage",
-        "size": "Data directory size"
+        "size": "Data Directory Size"
       },
       "unknown": "Unknown",
       "last-updated": "Last updated {{ago}}",
@@ -455,41 +450,42 @@
   },
   "space": {
     "icon": {
-      "kind": "Icon type",
+      "kind": "Icon Type",
       "icons": "Icons",
       "emoji": "Emoji",
       "search-icons": "Search icons…",
       "search-emoji": "Search or paste emoji…",
       "no-results": "No matches",
       "emoji-help": "Choose a common emoji or paste your own.",
-      "reset": "Reset to default",
+      "reset": "Reset to Default",
       "use-emoji": "Use {{emoji}}"
     }
   },
   "roster": {
-    "on-duty-today": "On duty today",
+    "on-duty-today": "On Duty Today",
     "nobody-today": "No one is on duty today",
-    "on-duty": "On duty",
-    "select-member": "Select a member",
+    "on-duty": "On Duty",
+    "select-member": "Select a Member",
     "add": "Add",
     "already-assigned": "Someone is already on duty that day. Remove them first.",
-    "remove": "Remove {{name}} from the roster",
+    "remove": "Remove {{name}} from the Roster",
     "nobody-on-day": "No one is on duty this day",
     "loading": "Loading roster…",
     "assign-mode": "Assign for",
-    "per-day": "Per day",
-    "per-week": "Per week",
+    "per-day": "Per Day",
+    "per-week": "Per Week",
     "week-range": "Replaces the whole week: {{range}}",
-    "add-week": "Set for week",
-    "this-week": "Roster this week",
+    "add-week": "Set for Week",
+    "this-week": "Roster This Week",
     "week-replaced": "{{name}} is on duty all week",
     "day-taken": "This day already has someone on duty. Remove them first, or set the whole week.",
-    "search": "Search roster",
+    "search": "Search Roster",
     "search-placeholder": "Search roster by member name…",
     "search-hint": "Type a member's name or username to see the days they are on duty.",
-    "search-results": "Roster results",
+    "search-results": "Roster Results",
     "not-found": "Roster not found",
-    "not-found-description": "No one matching \"{{query}}\" is on the roster."
+    "not-found-description": "No one matching \"{{query}}\" is on the roster.",
+    "add-member-first": "No members yet. Add a member first before setting who is on duty."
   },
   "about": {
     "copyright": "© {{year}} {{company}}. All rights reserved."

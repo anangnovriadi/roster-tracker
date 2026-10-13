@@ -88,12 +88,12 @@ const ControlButtons = ({ position, onZoomIn, onZoomOut, onOpenGoogleMaps }: Con
         <GlassButton
           icon={<ExternalLinkIcon size={16} className="text-foreground" />}
           onClick={onOpenGoogleMaps}
-          ariaLabel="Open location in Google Maps"
+          ariaLabel="Open Location in Google Maps"
           title="Open in Google Maps"
         />
       )}
-      <GlassButton icon={<PlusIcon size={16} className="text-foreground" />} onClick={onZoomIn} ariaLabel="Zoom in" title="Zoom in" />
-      <GlassButton icon={<MinusIcon size={16} className="text-foreground" />} onClick={onZoomOut} ariaLabel="Zoom out" title="Zoom out" />
+      <GlassButton icon={<PlusIcon size={16} className="text-foreground" />} onClick={onZoomIn} ariaLabel="Zoom In" title="Zoom In" />
+      <GlassButton icon={<MinusIcon size={16} className="text-foreground" />} onClick={onZoomOut} ariaLabel="Zoom Out" title="Zoom Out" />
     </div>
   );
 };

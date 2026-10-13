@@ -26,7 +26,7 @@ const LocationDisplayEditor: FC<LocationDisplayEditorProps> = ({ location, onRem
         {displayText}
       </span>
       <MetadataRowDetail parts={[getLocationCoordinatesText(location)]} />
-      {onRemove && <MetadataRowRemoveControl label="Remove location" onClick={onRemove} />}
+      {onRemove && <MetadataRowRemoveControl label="Remove Location" onClick={onRemove} />}
     </div>
   );
 };

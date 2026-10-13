@@ -30,6 +30,10 @@ func (s *APIService) CreateNote(ctx context.Context, request *apipb.CreateNoteRe
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+	// Notes and reports are written by members; admins manage the instance and roster.
+	if user.Role == store.RoleAdmin {
+		return nil, status.Errorf(codes.PermissionDenied, "admins cannot create notes")
+	}
 	if err := s.throttleAndCharge(ratelimit.ScopeWriteUser, userKey(user.ID), 1); err != nil {
 		return nil, err
 	}

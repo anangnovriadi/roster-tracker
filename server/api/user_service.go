@@ -470,6 +470,13 @@ func (s *APIService) UpdateUser(ctx context.Context, request *apipb.UpdateUserRe
 		}
 		return nil, convertUserWriteError(err, "failed to update user")
 	}
+	// An archived member is taken off the roster entirely, past days included, so a
+	// restored member starts with no schedule and must be assigned again.
+	if update.RowStatus != nil && *update.RowStatus == store.Archived {
+		if err := s.Store.DeleteUserRosterAssignments(ctx, &store.DeleteUserRosterAssignments{UserID: user.ID}); err != nil {
+			return nil, status.Errorf(codes.Internal, "user archived but failed to clear their roster: %v", err)
+		}
+	}
 	if passwordChanged {
 		// A new password ends every other session. The caller's own browser
 		// session survives when they changed their own password; an admin
@@ -552,7 +559,7 @@ func getDefaultUserGeneralSetting() *apipb.UserSetting_GeneralSetting {
 	return &apipb.UserSetting_GeneralSetting{
 		Locale:         "en",
 		NoteVisibility: "PRIVATE",
-		Theme:          "",
+		Theme:          "system",
 	}
 }
 

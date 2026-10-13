@@ -156,7 +156,7 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.user")}`}</DialogTitle>
+          <DialogTitle>{isCreating ? t("setting.member.create-member") : t("setting.member.edit-member")}</DialogTitle>
         </DialogHeader>
         <form
           className="flex flex-col gap-4"
@@ -249,7 +249,7 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
             {t("common.cancel")}
           </Button>
           <Button disabled={requestState.isLoading} onClick={() => void handleConfirm()}>
-            {t("common.confirm")}
+            {isCreating ? t("common.submit") : t("common.confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -37,7 +37,7 @@ describe("attachment transcription action", () => {
       />,
     );
     expect(screen.getByRole("button", { name: "Transcribing..." })).toBeDisabled();
-    expect(screen.queryByRole("button", { name: "Remove attachment" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Remove Attachment" })).not.toBeInTheDocument();
     expect(screen.getByText("voice.wav")).toBeInTheDocument();
   });
 

@@ -379,7 +379,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                 variant="ghost"
                 size="icon"
                 className="rounded-full bg-white/10 text-white hover:bg-white/16 hover:text-white"
-                aria-label="Close preview"
+                aria-label="Close Preview"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -467,27 +467,27 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
             <div className="mx-auto flex w-fit items-center gap-1 rounded-full bg-black/60 px-2 py-2 text-white shadow-lg backdrop-blur-sm">
               {hasMultiple && !sm && (
                 <>
-                  <ZoomButton label="Previous item" onClick={handlePrevious} disabled={!canGoPrevious}>
+                  <ZoomButton label="Previous Item" onClick={handlePrevious} disabled={!canGoPrevious}>
                     <ChevronLeft className="h-4 w-4" />
                   </ZoomButton>
                   <div className="min-w-9 px-1 text-center text-xs font-medium tabular-nums text-white/75">
                     {safeIndex + 1}/{itemCount}
                   </div>
-                  <ZoomButton label="Next item" onClick={handleNext} disabled={!canGoNext}>
+                  <ZoomButton label="Next Item" onClick={handleNext} disabled={!canGoNext}>
                     <ChevronRight className="h-4 w-4" />
                   </ZoomButton>
                   <div className="mx-1 h-5 w-px bg-white/18" />
                 </>
               )}
-              <ZoomButton label="Zoom out" onClick={handleZoomOut} disabled={zoomScale === MIN_ZOOM}>
+              <ZoomButton label="Zoom Out" onClick={handleZoomOut} disabled={zoomScale === MIN_ZOOM}>
                 <ZoomOut className="h-4 w-4" />
               </ZoomButton>
               <div className="min-w-12 px-2 text-center text-xs font-medium tabular-nums text-white/80">{zoomPercent}%</div>
-              <ZoomButton label="Zoom in" onClick={handleZoomIn} disabled={zoomScale === MAX_ZOOM}>
+              <ZoomButton label="Zoom In" onClick={handleZoomIn} disabled={zoomScale === MAX_ZOOM}>
                 <ZoomIn className="h-4 w-4" />
               </ZoomButton>
               <div className="mx-1 h-5 w-px bg-white/18" />
-              <ZoomButton label="Reset zoom" onClick={resetZoom} disabled={!isZoomed}>
+              <ZoomButton label="Reset Zoom" onClick={resetZoom} disabled={!isZoomed}>
                 <RotateCcw className="h-4 w-4" />
               </ZoomButton>
             </div>
@@ -499,14 +499,14 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
             <NavButton
               side="left"
               disabled={!canGoPrevious}
-              label="Previous item"
+              label="Previous Item"
               onClick={handlePrevious}
               icon={<ChevronLeft className="h-5 w-5" />}
             />
             <NavButton
               side="right"
               disabled={!canGoNext}
-              label="Next item"
+              label="Next Item"
               onClick={handleNext}
               icon={<ChevronRight className="h-5 w-5" />}
               detailsOpen={showDetails}

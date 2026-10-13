@@ -17,6 +17,7 @@ import { formatMonthLabel, getToday, parseLocalDate } from "@/lib/calendar-utils
 import { combineCELFilters } from "@/lib/cel-filter";
 import { isNoteBlurred } from "@/lib/tag";
 import type { Note } from "@/types/proto/api/note_service_pb";
+import { User_Role } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { PREVIEW_MIN_CELL_WIDTH } from "./CalendarDayCell";
 import { CalendarGrid } from "./CalendarGrid";
@@ -113,7 +114,8 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
     [model, showAuthors],
   );
 
-  const canCompose = Boolean(user && (!creatorUsername || creatorUsername === user.username));
+  // Notes and reports are written by members; admins manage the instance and roster.
+  const canCompose = Boolean(user && user.role !== User_Role.ADMIN && (!creatorUsername || creatorUsername === user.username));
   const list = activeDate && (
     <>
       <RosterDayPanel date={activeDate} />

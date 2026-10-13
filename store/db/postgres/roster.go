@@ -66,3 +66,12 @@ func (d *DB) DeleteRosterAssignment(ctx context.Context, delete *store.DeleteRos
 	_, err := d.db.ExecContext(ctx, "DELETE FROM roster_assignment WHERE id = $1", delete.ID)
 	return err
 }
+
+func (d *DB) DeleteUserRosterAssignments(ctx context.Context, delete *store.DeleteUserRosterAssignments) error {
+	if delete.FromDate == "" {
+		_, err := d.db.ExecContext(ctx, "DELETE FROM roster_assignment WHERE user_id = $1", delete.UserID)
+		return err
+	}
+	_, err := d.db.ExecContext(ctx, "DELETE FROM roster_assignment WHERE user_id = $1 AND duty_date >= $2", delete.UserID, delete.FromDate)
+	return err
+}

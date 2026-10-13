@@ -46,7 +46,7 @@ const AttachmentIcon = (props: Props) => {
       <>
         <SquareDiv className={cn(className, "flex items-center justify-center overflow-clip")}>
           <img
-            className="min-w-full min-h-full object-cover"
+            className="min-w-full min-h-full cursor-pointer object-cover"
             src={getAttachmentThumbnailUrl(attachment)}
             onClick={handleImageClick}
             onError={(e) => {
@@ -107,7 +107,7 @@ const AttachmentIcon = (props: Props) => {
   };
 
   return (
-    <div onClick={previewResource} className={cn(className, "max-w-16 opacity-50")}>
+    <div onClick={previewResource} className={cn(className, "max-w-16 cursor-pointer opacity-50")}>
       {getAttachmentIcon()}
     </div>
   );

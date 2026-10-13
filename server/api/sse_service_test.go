@@ -283,7 +283,7 @@ func TestUpdateNoteSSEBroadcastsToAllSubscribers(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	owner, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "audience-owner", Role: store.RoleAdmin, Email: "audience-owner@example.com",
+		Username: "audience-owner", Role: store.RoleUser, Email: "audience-owner@example.com",
 	})
 	require.NoError(t, err)
 	ownerCtx := userCtx(ctx, owner.ID)
@@ -317,7 +317,7 @@ func TestUpdateNoteSSEBroadcastsToAllSubscribers(t *testing.T) {
 func TestMoveSpaceAudienceNoteSSEBroadcastsWithoutAudienceCalculation(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
-	owner := createSpaceTestUser(ctx, t, svc, "move-audience-owner", store.RoleAdmin)
+	owner := createSpaceTestUser(ctx, t, svc, "move-audience-owner", store.RoleUser)
 	sourceMember := createSpaceTestUser(ctx, t, svc, "move-source-member", store.RoleUser)
 	targetMember := createSpaceTestUser(ctx, t, svc, "move-target-member", store.RoleUser)
 	ownerCtx := userCtx(ctx, owner.ID)
@@ -381,7 +381,7 @@ func TestCreateNoteComment_NoDuplicateSSEBroadcast(t *testing.T) {
 
 	// Create an admin so the store is initialised, then a regular commenter.
 	author, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "author", Role: store.RoleAdmin, Email: "author@example.com",
+		Username: "author", Role: store.RoleUser, Email: "author@example.com",
 	})
 	require.NoError(t, err)
 	commenter, err := svc.Store.CreateUser(ctx, &store.User{
@@ -422,7 +422,7 @@ func TestCreateNoteComment_SSEBroadcastContainsNoSubject(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	author, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "comment-context-author", Role: store.RoleAdmin, Email: "comment-context-author@example.com",
+		Username: "comment-context-author", Role: store.RoleUser, Email: "comment-context-author@example.com",
 	})
 	require.NoError(t, err)
 	commenter, err := svc.Store.CreateUser(ctx, &store.User{
@@ -456,7 +456,7 @@ func TestCreateNoteWithAttachment_NoDuplicateUpdatedSSEBroadcast(t *testing.T) {
 	svc := newIntegrationService(t)
 
 	user, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "user", Role: store.RoleAdmin, Email: "user@example.com",
+		Username: "user", Role: store.RoleUser, Email: "user@example.com",
 	})
 	require.NoError(t, err)
 	uctx := userCtx(ctx, user.ID)
@@ -496,7 +496,7 @@ func TestUpsertNoteReactionPublishesNoteChanged(t *testing.T) {
 	svc := newIntegrationService(t)
 
 	user, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "user", Role: store.RoleAdmin, Email: "user@example.com",
+		Username: "user", Role: store.RoleUser, Email: "user@example.com",
 	})
 	require.NoError(t, err)
 	uctx := userCtx(ctx, user.ID)
@@ -526,7 +526,7 @@ func TestDeleteNoteReactionPublishesNoteChanged(t *testing.T) {
 	svc := newIntegrationService(t)
 
 	user, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "user", Role: store.RoleAdmin, Email: "user@example.com",
+		Username: "user", Role: store.RoleUser, Email: "user@example.com",
 	})
 	require.NoError(t, err)
 	uctx := userCtx(ctx, user.ID)
@@ -560,7 +560,7 @@ func TestDeleteNote_DeletesCommentSubtreeOnly(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	rootAuthor, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "delete-root-author", Role: store.RoleAdmin, Email: "delete-root-author@example.com",
+		Username: "delete-root-author", Role: store.RoleUser, Email: "delete-root-author@example.com",
 	})
 	require.NoError(t, err)
 	commentAuthor, err := svc.Store.CreateUser(ctx, &store.User{
@@ -614,7 +614,7 @@ func TestDeleteNoteCleansAttachmentStorage(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	owner, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "delete-cleanup-owner", Role: store.RoleAdmin, Email: "delete-cleanup-owner@example.com",
+		Username: "delete-cleanup-owner", Role: store.RoleUser, Email: "delete-cleanup-owner@example.com",
 	})
 	require.NoError(t, err)
 	ownerCtx := userCtx(ctx, owner.ID)
@@ -663,7 +663,7 @@ func TestSetNoteAttachmentsPublishesNoteChanged(t *testing.T) {
 	svc := newIntegrationService(t)
 
 	user, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "user", Role: store.RoleAdmin, Email: "user@example.com",
+		Username: "user", Role: store.RoleUser, Email: "user@example.com",
 	})
 	require.NoError(t, err)
 	uctx := userCtx(ctx, user.ID)
@@ -703,7 +703,7 @@ func TestSetNoteRelationsPublishesNoteChanged(t *testing.T) {
 	svc := newIntegrationService(t)
 
 	user, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "user", Role: store.RoleAdmin, Email: "user@example.com",
+		Username: "user", Role: store.RoleUser, Email: "user@example.com",
 	})
 	require.NoError(t, err)
 	uctx := userCtx(ctx, user.ID)

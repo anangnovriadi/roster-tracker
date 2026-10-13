@@ -1,12 +1,11 @@
-import { BarChart3Icon, CogIcon, type LucideIcon, UserIcon, UsersIcon } from "lucide-react";
+import { BarChart3Icon, type LucideIcon, UserIcon, UsersIcon } from "lucide-react";
 import { type ComponentType } from "react";
 import MemberSection from "@/components/Settings/MemberSection";
 import MyAccountSection from "@/components/Settings/MyAccountSection";
-import PreferencesSection from "@/components/Settings/PreferencesSection";
 import ResourceStatsSection from "@/components/Settings/ResourceStatsSection";
 import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 
-export type SettingSectionKey = "my-account" | "preference" | "member" | "resource-stats";
+export type SettingSectionKey = "my-account" | "member" | "resource-stats";
 
 type SettingSectionScope = "basic" | "admin";
 
@@ -26,13 +25,6 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     labelKey: "setting.my-account.label",
     icon: UserIcon,
     component: MyAccountSection,
-  },
-  {
-    key: "preference",
-    scope: "basic",
-    labelKey: "setting.preference.label",
-    icon: CogIcon,
-    component: PreferencesSection,
   },
   {
     key: "member",

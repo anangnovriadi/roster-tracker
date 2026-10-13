@@ -135,6 +135,9 @@ func deleteUserTargetsTx(ctx context.Context, tx *sql.Tx, userID int32, targets 
 	if err := deleteUserSettingsTx(ctx, tx, userID); err != nil {
 		return err
 	}
+	if err := deleteRosterAssignmentsTx(ctx, tx, userID); err != nil {
+		return err
+	}
 	if err := deleteNoteRelationsTx(ctx, tx, noteIDs); err != nil {
 		return err
 	}
@@ -345,6 +348,12 @@ func deleteInboxesByIDsTx(ctx context.Context, tx *sql.Tx, inboxIDs []int32) err
 
 func deleteUserIdentitiesTx(ctx context.Context, tx *sql.Tx, userID int32) error {
 	_, err := tx.ExecContext(ctx, `DELETE FROM user_identity WHERE user_id = `+deleteUserPlaceholder(1), userID)
+	return err
+}
+
+// deleteRosterAssignmentsTx takes a deleted user off every roster day.
+func deleteRosterAssignmentsTx(ctx context.Context, tx *sql.Tx, userID int32) error {
+	_, err := tx.ExecContext(ctx, `DELETE FROM roster_assignment WHERE user_id = `+deleteUserPlaceholder(1), userID)
 	return err
 }
 

@@ -37,6 +37,13 @@ type DeleteRosterAssignment struct {
 	ID int32
 }
 
+// DeleteUserRosterAssignments deletes a user's roster assignments, optionally
+// only those on or after FromDate (formatted with RosterDateLayout).
+type DeleteUserRosterAssignments struct {
+	UserID   int32
+	FromDate string
+}
+
 // ValidateRosterDate reports whether value is a calendar day in RosterDateLayout.
 func ValidateRosterDate(value string) error {
 	parsed, err := time.Parse(RosterDateLayout, value)
@@ -78,4 +85,15 @@ func (s *Store) GetRosterAssignment(ctx context.Context, find *FindRosterAssignm
 
 func (s *Store) DeleteRosterAssignment(ctx context.Context, delete *DeleteRosterAssignment) error {
 	return s.driver.DeleteRosterAssignment(ctx, delete)
+}
+
+// DeleteUserRosterAssignments takes a user off the roster. An empty FromDate
+// removes every assignment; otherwise only that day and later are removed.
+func (s *Store) DeleteUserRosterAssignments(ctx context.Context, delete *DeleteUserRosterAssignments) error {
+	if delete.FromDate != "" {
+		if err := ValidateRosterDate(delete.FromDate); err != nil {
+			return err
+		}
+	}
+	return s.driver.DeleteUserRosterAssignments(ctx, delete)
 }

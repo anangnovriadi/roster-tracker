@@ -103,8 +103,8 @@ const AttachmentItemActions: FC<{
             onMoveUp();
           }}
           disabled={!canMoveUp}
-          title="Move up"
-          aria-label="Move attachment up"
+          title="Move Up"
+          aria-label="Move Attachment Up"
         >
           <ChevronUpIcon className="size-3.5" strokeWidth={1.8} />
         </Button>
@@ -119,8 +119,8 @@ const AttachmentItemActions: FC<{
             onMoveDown();
           }}
           disabled={!canMoveDown}
-          title="Move down"
-          aria-label="Move attachment down"
+          title="Move Down"
+          aria-label="Move Attachment Down"
         >
           <ChevronDownIcon className="size-3.5" strokeWidth={1.8} />
         </Button>
@@ -135,7 +135,7 @@ const AttachmentItemActions: FC<{
             onRemove();
           }}
           title="Remove"
-          aria-label="Remove attachment"
+          aria-label="Remove Attachment"
         >
           <XIcon className="size-3.5" strokeWidth={1.8} />
         </Button>

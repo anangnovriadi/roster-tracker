@@ -100,14 +100,14 @@ describe("User menu panel", () => {
 
   it("shows current preferences on rows that open their choices as submenus", async () => {
     renderMenu();
-    fireEvent.click(screen.getByRole("button", { name: /setting.preference.theme.*Sync with system/ }));
+    fireEvent.click(screen.getByRole("button", { name: /setting.preference.theme.*Sync with System/ }));
     const themes = await screen.findByRole("menu");
-    expect(within(themes).getByRole("menuitemradio", { name: "Sync with system" })).toHaveAttribute("aria-checked", "true");
+    expect(within(themes).getByRole("menuitemradio", { name: "Sync with System" })).toHaveAttribute("aria-checked", "true");
     expect(
       within(themes)
         .getAllByRole("menuitemradio")
         .map((item) => item.textContent),
-    ).toEqual(["Sync with system", "Light", "Dark"]);
+    ).toEqual(["Sync with System", "Light", "Dark"]);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 

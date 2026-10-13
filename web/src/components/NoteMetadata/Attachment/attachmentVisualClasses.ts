@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
  */
 
 export const VISUAL_TILE_BUTTON_CLASS = cn(
-  "relative block overflow-hidden rounded-md border border-border/70 bg-muted/30 p-0 text-left outline-none transition-colors",
+  "relative block cursor-pointer overflow-hidden rounded-md border border-border/70 bg-muted/30 p-0 text-left outline-none transition-colors",
   FOCUS_VISIBLE_OUTLINE_CLASSES,
 );
 

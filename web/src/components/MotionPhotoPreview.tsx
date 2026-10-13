@@ -77,7 +77,7 @@ const MotionPhotoPreview = ({
             setMotionActive((prev) => !prev);
           }
         }}
-        aria-label="Hover or press to play live photo"
+        aria-label="Hover or Press to Play Live Photo"
       >
         LIVE
       </div>

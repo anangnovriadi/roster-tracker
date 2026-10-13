@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import AppSidebar, { MobileAppHeader, MobileAppSidebar } from "@/components/AppSidebar";
 import { type NoteFilter } from "@/contexts/NoteFilterContext";
 import { getCollectionCreator, resolveCollectionRoute } from "@/router/routes";
+import { User_Role } from "@/types/proto/api/user_service_pb";
 
 const authState = vi.hoisted(() => ({
   currentUser: { name: "users/test" } as { name: string; username?: string } | undefined,
@@ -188,6 +189,7 @@ describe("App sidebar logo", () => {
   });
 
   it("shows the context switcher without a compose button", () => {
+    authState.currentUser = { name: "users/test", role: User_Role.ADMIN } as never;
     render(
       <MemoryRouter initialEntries={["/attachments"]}>
         <AppSidebar />
@@ -197,7 +199,7 @@ describe("App sidebar logo", () => {
     const switcher = screen.getByRole("button", { name: "common.notes" });
     const header = switcher.closest("[data-sidebar-header]");
     const primaryNavigation = screen.getByRole("navigation", { name: "Primary" });
-    const search = within(primaryNavigation).getByRole("button", { name: "roster.search" });
+    const createMember = within(primaryNavigation).getByRole("button", { name: "setting.member.create-member" });
 
     expect(header).toHaveClass("h-13", "px-3");
     expect(switcher).toHaveTextContent("Notes logo");
@@ -208,17 +210,18 @@ describe("App sidebar logo", () => {
     expect(switcher.querySelector(".lucide-chevrons-up-down")).not.toBeNull();
     expect(switcher.querySelector(".lucide-chevron-down")).toBeNull();
     expect(screen.queryByRole("button", { name: "editor.new-note" })).not.toBeInTheDocument();
-    expect(header).not.toContainElement(search);
-    expect(search).toHaveClass("ms-auto", "h-7", "px-1.5");
-    expect(search.querySelector(".lucide-search")).toHaveClass("size-4");
-
-    fireEvent.click(search);
-    expect(sidebarState.setQuickFindOpen).toHaveBeenCalledWith(true);
-    expect(sidebarState.setMobileOpen).toHaveBeenCalledWith(false);
+    expect(header).not.toContainElement(createMember);
+    expect(createMember).toHaveClass("ms-auto", "h-7", "px-1.5");
+    expect(createMember.querySelector(".lucide-plus")).toHaveClass("size-4");
 
     // The Calendar destination is a nav pill; the statistics calendar stays off this route.
     expect(within(primaryNavigation).getByRole("link", { name: "common.calendar" })).toHaveAttribute("href", "/calendar");
     expect(screen.queryByText("Calendar")).not.toBeInTheDocument();
+
+    // The plus opens the same Create Member dialog as Settings → Member.
+    fireEvent.click(createMember);
+    expect(sidebarState.setMobileOpen).toHaveBeenCalledWith(false);
+    expect(screen.getByRole("dialog")).toHaveTextContent("setting.member.create-member");
   });
 
   it.each([
@@ -282,7 +285,8 @@ describe("App sidebar logo", () => {
     );
 
     expect(screen.queryByRole("button", { name: "editor.new-note" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "roster.search" })).toBeInTheDocument();
+    // Creating members is an admin action.
+    expect(screen.queryByRole("button", { name: "setting.member.create-member" })).not.toBeInTheDocument();
   });
 
   it("shows the compact public navigation for a guest", () => {
@@ -299,7 +303,7 @@ describe("App sidebar logo", () => {
     expect(primaryNavigation).toHaveClass("h-7", "items-center", "gap-1", "px-3");
     expect(primaryNavigation).not.toHaveClass("flex-col");
     const navigation = within(primaryNavigation);
-    expect(navigation.getByRole("button", { name: "roster.search" })).toHaveClass("ms-auto", "h-7", "px-1.5");
+    expect(navigation.queryByRole("button", { name: "setting.member.create-member" })).not.toBeInTheDocument();
     expect(navigation.queryByRole("link", { name: "common.timeline" })).not.toBeInTheDocument();
     const calendar = navigation.getByRole("link", { name: "common.calendar" });
     expect(calendar).toHaveAttribute("href", "/calendar");
@@ -397,7 +401,7 @@ describe("App sidebar logo", () => {
     expect(screen.queryByText("Calendar")).not.toBeInTheDocument();
   });
 
-  it("shows Calendar, Attachments, and Search without Timeline or display settings", () => {
+  it("shows Calendar and Attachments without Timeline or display settings", () => {
     render(
       <MemoryRouter initialEntries={["/"]}>
         <AppSidebar />
@@ -410,7 +414,6 @@ describe("App sidebar logo", () => {
     expect(screen.queryByRole("button", { name: "note.view-options" })).not.toBeInTheDocument();
     expectCollapsedNavPill(screen.getByRole("link", { name: "common.calendar" }), "common.calendar");
     expectCollapsedNavPill(screen.getByRole("link", { name: "common.attachments" }), "common.attachments");
-    expect(screen.getByRole("button", { name: "roster.search" })).toBeInTheDocument();
   });
 
   it.each(["/", "/explore", "/calendar", "/attachments"])("never shows Timeline display settings: %s", (path) => {
@@ -452,22 +455,23 @@ describe("App sidebar logo", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("button", { name: "Open navigation" })).toHaveAttribute("data-mobile-navigation-trigger");
+    expect(screen.getByRole("button", { name: "Open Navigation" })).toHaveAttribute("data-mobile-navigation-trigger");
     const mobileBrand = screen.getByRole("button", { name: "common.notes" });
     expect(mobileBrand).toHaveClass("h-9", "gap-1.5", "px-1");
-    expect(screen.queryByRole("button", { name: "roster.search" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "setting.member.create-member" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "editor.new-note" })).not.toBeInTheDocument();
   });
 
-  it("keeps Search but no Compose in the mobile navigation drawer", () => {
+  it("offers Create Member to admins but no Compose in the mobile navigation drawer", () => {
     sidebarState.mobileOpen = true;
+    authState.currentUser = { name: "users/test", role: User_Role.ADMIN } as never;
     render(
       <MemoryRouter initialEntries={["/setting"]}>
         <MobileAppSidebar />
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("button", { name: "roster.search" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "setting.member.create-member" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "editor.new-note" })).not.toBeInTheDocument();
   });
 

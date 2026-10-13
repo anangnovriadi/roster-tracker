@@ -230,10 +230,13 @@ func TestUsageLimitServiceDeploymentFile(t *testing.T) {
 	require.Equal(t, codes.FailedPrecondition, status.Code(err))
 
 	// The file-provided limit is enforced.
-	_, err = ts.Service.CreateNote(adminCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{Content: "first", Visibility: apipb.Visibility_PRIVATE}})
+	member, err := ts.CreateRegularUser(ctx, "file-member")
 	require.NoError(t, err)
-	_, err = ts.Service.CreateNote(adminCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{Content: "second", Visibility: apipb.Visibility_PRIVATE}})
-	requireQuotaExceeded(t, err, "NOTES", api.BuildUserName(admin.Username))
+	memberCtx := ts.CreateUserContext(ctx, member.ID)
+	_, err = ts.Service.CreateNote(memberCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{Content: "first", Visibility: apipb.Visibility_PRIVATE}})
+	require.NoError(t, err)
+	_, err = ts.Service.CreateNote(memberCtx, &apipb.CreateNoteRequest{Note: &apipb.Note{Content: "second", Visibility: apipb.Visibility_PRIVATE}})
+	requireQuotaExceeded(t, err, "NOTES", api.BuildUserName(member.Username))
 }
 
 func TestNoteLimitEnforcement(t *testing.T) {
@@ -288,16 +291,12 @@ func TestNoteLimitEnforcement(t *testing.T) {
 	_, err = createNote(userCtx, "fits again")
 	require.NoError(t, err)
 
-	// A user's own limit replaces the default, and admins are limited too.
+	// A user's own limit replaces the default. Admins cannot create notes at all.
 	createUsageLimit(adminCtx, t, ts, "user-notes", apipb.UsageLimit_NOTES, api.BuildUserName(user.Username), 0)
 	_, err = createNote(userCtx, "unlimited now")
 	require.NoError(t, err)
 	_, err = createNote(adminCtx, "admin one")
-	require.NoError(t, err)
-	_, err = createNote(adminCtx, "admin two")
-	require.NoError(t, err)
-	_, err = createNote(adminCtx, "admin three")
-	requireQuotaExceeded(t, err, "NOTES", api.BuildUserName(admin.Username))
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
 
 	usage, err = ts.Service.GetUserUsage(userCtx, &apipb.GetUserUsageRequest{Name: api.BuildUserName(user.Username) + "/usage"})
 	require.NoError(t, err)
@@ -311,7 +310,7 @@ func TestNoteLimitEnforcement(t *testing.T) {
 		_, err := ts.Service.DeleteUsageLimit(adminCtx, &apipb.DeleteUsageLimitRequest{Name: limit.Name})
 		require.NoError(t, err)
 	}
-	_, err = createNote(adminCtx, "admin three")
+	_, err = createNote(userCtx, "no limits")
 	require.NoError(t, err)
 }
 

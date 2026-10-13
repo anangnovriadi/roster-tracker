@@ -1,6 +1,6 @@
 import { Code } from "@connectrpc/connect";
 import { sortBy } from "lodash-es";
-import { LoaderCircleIcon, PlusIcon, UserRoundCheckIcon, XIcon } from "lucide-react";
+import { InfoIcon, LoaderCircleIcon, PlusIcon, UserRoundCheckIcon, XIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -44,7 +44,7 @@ const RosterDayPanel = ({ date }: { date: string }) => {
   const { assignments, isLoading } = useRosterAssignments(date, date);
   const assignedNames = useMemo(() => assignments.map((assignment) => assignment.user), [assignments]);
   const { data: assignedUsers } = useUsersByNames(assignedNames);
-  const { data: users = [] } = useListUsers(isAdmin);
+  const { data: users = [], isSuccess: usersLoaded } = useListUsers(isAdmin);
   const createAssignment = useCreateRosterAssignment();
   const replaceWeek = useReplaceRosterDays();
   const isAdding = createAssignment.isPending || replaceWeek.isPending;
@@ -60,11 +60,17 @@ const RosterDayPanel = ({ date }: { date: string }) => {
   const memberOptions = useMemo(
     () =>
       sortBy(
-        users.filter((user) => user.state === State.NORMAL && (mode === "week" || !assignedNames.includes(user.name))),
+        // Admins run the roster; only members go on duty.
+        users.filter(
+          (user) => user.state === State.NORMAL && user.role !== User_Role.ADMIN && (mode === "week" || !assignedNames.includes(user.name)),
+        ),
         "username",
       ).map((user) => ({ value: user.name, label: formatRosterMember(user.name, user) })),
     [users, assignedNames, mode],
   );
+
+  // Admins run the roster; only active members can go on duty.
+  const hasEligibleMembers = users.some((user) => user.state === State.NORMAL && user.role !== User_Role.ADMIN);
 
   const displayName = (name: string) => {
     const user = assignedUsers?.get(name) ?? users.find((candidate) => candidate.name === name);
@@ -114,8 +120,24 @@ const RosterDayPanel = ({ date }: { date: string }) => {
     });
   };
 
+  // With nobody to put on duty, the admin is pointed at creating a member instead of an empty picker.
+  if (isAdmin && usersLoaded && !hasEligibleMembers && !isLoading && assignments.length === 0) {
+    return (
+      <section
+        role="note"
+        className="mb-4 flex items-start gap-2 rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground"
+      >
+        <InfoIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
+        <p>{t("roster.add-member-first")}</p>
+      </section>
+    );
+  }
+
   return (
-    <section aria-label={t("roster.on-duty")} className="mb-4 flex flex-col gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3">
+    <section
+      aria-label={t("roster.on-duty")}
+      className="mb-4 flex flex-col gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3 [[data-theme=default-dark]_&]:border-primary/40 [[data-theme=default-dark]_&]:bg-primary/12"
+    >
       <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
         <UserRoundCheckIcon className="size-4 text-primary" />
         {t("roster.on-duty")}

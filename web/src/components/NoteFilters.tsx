@@ -118,7 +118,7 @@ const FilterChip = ({ icon: Icon, customIcon, label, onRemove, onEdit }: FilterC
         body
       )}
       <span className="ml-0.5 -mr-1">
-        <Button variant="ghost" size="icon-sm" onClick={onRemove} aria-label="Remove filter">
+        <Button variant="ghost" size="icon-sm" onClick={onRemove} aria-label="Remove Filter">
           <XIcon className="w-3 h-3" />
         </Button>
       </span>

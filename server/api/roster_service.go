@@ -88,6 +88,10 @@ func (s *APIService) CreateRosterAssignment(ctx context.Context, request *apipb.
 	if user == nil || user.RowStatus != store.Normal {
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
+	// Admins run the roster; only members go on duty.
+	if user.Role == store.RoleAdmin {
+		return nil, status.Errorf(codes.InvalidArgument, "admins cannot be put on duty")
+	}
 
 	assignment, err := s.Store.CreateRosterAssignment(ctx, &store.RosterAssignment{
 		DutyDate: request.RosterAssignment.Date,

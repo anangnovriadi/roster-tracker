@@ -3,6 +3,7 @@ import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { type QueryClient, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { rosterKeys } from "@/hooks/useRosterQueries";
 import { buildUserSettingName, userNamePrefix } from "@/lib/resource-names";
 import { mergeTagCounts } from "@/lib/tag";
 import {
@@ -231,6 +232,8 @@ export function useDeleteUser() {
     onSuccess: (name) => {
       queryClient.removeQueries({ queryKey: userKeys.detail(name) });
       queryClient.invalidateQueries({ queryKey: userKeys.all });
+      // The server takes a deleted member off the roster.
+      queryClient.invalidateQueries({ queryKey: rosterKeys.all });
     },
   });
 }

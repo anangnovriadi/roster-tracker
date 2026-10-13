@@ -1,4 +1,5 @@
 import { useDirection } from "@base-ui/react/direction-provider";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRightIcon,
   CalendarDaysIcon,
@@ -8,10 +9,12 @@ import {
   type LucideIcon,
   MenuIcon,
   PaperclipIcon,
-  SearchIcon,
+  PlusIcon,
   UserRoundIcon,
 } from "lucide-react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import CreateUserDialog from "@/components/CreateUserDialog";
 import { NoteDetailSidebar } from "@/components/NoteDetailSidebar";
 import { DEFAULT_SETTING_SECTION, SETTINGS_SECTIONS } from "@/components/Settings/settingSections";
 import StatisticsView from "@/components/StatisticsView";
@@ -27,6 +30,7 @@ import { useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilteredNoteStats } from "@/hooks/useFilteredNoteStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { userKeys } from "@/hooks/useUserQueries";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { cn } from "@/lib/utils";
 import { collectionNavigationPath, ROUTES } from "@/router/routes";
@@ -268,7 +272,9 @@ const GlobalNavigation = () => {
   const t = useTranslate();
   const location = useLocation();
   const currentUser = useCurrentUser();
-  const { setQuickFindOpen } = useAppSidebar();
+  const queryClient = useQueryClient();
+  const [createMemberOpen, setCreateMemberOpen] = useState(false);
+  const isAdmin = currentUser?.role === User_Role.ADMIN;
   const routeKind = getSidebarRouteKind(location.pathname);
   const destinations = NAV_DESTINATIONS.filter((destination) => currentUser || !destination.signedInOnly);
   // The current page shows its label.
@@ -288,8 +294,22 @@ const GlobalNavigation = () => {
             expanded={destination.kind === expandedKind}
           />
         ))}
-        <NavPill label={t("roster.search")} icon={SearchIcon} onClick={() => setQuickFindOpen(true)} className="ms-auto" />
+        {isAdmin && (
+          <NavPill
+            label={t("setting.member.create-member")}
+            icon={PlusIcon}
+            onClick={() => setCreateMemberOpen(true)}
+            className="ms-auto"
+          />
+        )}
       </nav>
+      {isAdmin && (
+        <CreateUserDialog
+          open={createMemberOpen}
+          onOpenChange={setCreateMemberOpen}
+          onSuccess={() => void queryClient.invalidateQueries({ queryKey: userKeys.all })}
+        />
+      )}
     </TooltipProvider>
   );
 };
@@ -361,7 +381,7 @@ export const MobileAppHeader = () => {
   const { setMobileOpen } = useAppSidebar();
   return (
     <header className="sticky top-0 z-20 flex h-12 w-full shrink-0 items-center justify-start gap-1 border-b border-border/70 bg-background/90 px-2 backdrop-blur-md md:hidden">
-      <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)} aria-label="Open navigation" data-mobile-navigation-trigger>
+      <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)} aria-label="Open Navigation" data-mobile-navigation-trigger>
         <MenuIcon className="size-[18px]" />
       </Button>
       <SpaceSwitcher className="max-w-[12rem]" size="md" />

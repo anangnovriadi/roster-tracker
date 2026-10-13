@@ -21,7 +21,7 @@ func TestCreateNoteComment_ReturnsParentRelation(t *testing.T) {
 	svc := newIntegrationService(t)
 
 	author, err := svc.Store.CreateUser(ctx, &store.User{
-		Username: "author", Role: store.RoleAdmin, Email: "author@example.com",
+		Username: "author", Role: store.RoleUser, Email: "author@example.com",
 	})
 	require.NoError(t, err)
 	authorCtx := userCtx(ctx, author.ID)

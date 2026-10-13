@@ -6,7 +6,7 @@ import type { FocusModeExitButtonProps, FocusModeOverlayProps } from "../types";
 export function FocusModeOverlay({ isActive, onToggle }: FocusModeOverlayProps) {
   if (!isActive) return null;
 
-  return <div className={FOCUS_MODE_STYLES.backdrop} onClick={onToggle} aria-label="Exit focus mode" />;
+  return <div className={FOCUS_MODE_STYLES.backdrop} onClick={onToggle} aria-label="Exit Focus Mode" />;
 }
 
 export function FocusModeExitButton({ isActive, onToggle, title }: FocusModeExitButtonProps) {

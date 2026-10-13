@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import MemberSection from "@/components/Settings/MemberSection";
@@ -29,18 +30,24 @@ vi.mock("@/components/CreateUserDialog", () => ({ default: () => null }));
 vi.mock("@/components/ConfirmDialog", () => ({ default: () => null }));
 
 describe("<MemberSection>", () => {
-  it("lists the admin first and names members without an Empty placeholder or email", () => {
+  it("numbers the members, lists the admin first, and shows each email", () => {
     expect(users[1].role).toBe(User_Role.ADMIN);
     expect(users[0].state).toBe(State.NORMAL);
-    render(<MemberSection />);
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <MemberSection />
+      </QueryClientProvider>,
+    );
 
     const rows = screen.getAllByRole("row").slice(1);
+    expect(rows[0].querySelector("td")).toHaveTextContent("1");
+    expect(rows[2].querySelector("td")).toHaveTextContent("3");
     expect(rows[0]).toHaveTextContent("@anang");
     expect(rows[0]).toHaveTextContent("common.yourself");
     expect(rows[1]).toHaveTextContent("@memberjoss");
     expect(rows[2]).toHaveTextContent("Budi Santoso");
     expect(rows[2]).toHaveTextContent("@budi-santoso-x7k2");
     expect(screen.queryByText("common.empty-placeholder")).not.toBeInTheDocument();
-    expect(screen.queryByText("budi@example.com")).not.toBeInTheDocument();
+    expect(rows[2]).toHaveTextContent("budi@example.com");
   });
 });

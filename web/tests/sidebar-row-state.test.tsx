@@ -84,7 +84,7 @@ describe("NoteFilters", () => {
     renderChips("/", "abc");
 
     expect(screen.getByText("Last week")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Remove filter" }));
+    fireEvent.click(screen.getByRole("button", { name: "Remove Filter" }));
     expect(screen.queryByText("Last week")).not.toBeInTheDocument();
   });
 

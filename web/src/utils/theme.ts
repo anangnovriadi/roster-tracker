@@ -28,7 +28,7 @@ const THEME_COLORS: Record<ResolvedTheme, string> = {
 };
 
 export const THEME_OPTIONS: ThemeOption[] = [
-  { value: "system", label: "Sync with system" },
+  { value: "system", label: "Sync with System" },
   { value: "default", label: "Light" },
   { value: "default-dark", label: "Dark" },
 ];

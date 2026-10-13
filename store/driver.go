@@ -103,6 +103,7 @@ type Driver interface {
 	CreateRosterAssignment(ctx context.Context, create *RosterAssignment) (*RosterAssignment, error)
 	ListRosterAssignments(ctx context.Context, find *FindRosterAssignment) ([]*RosterAssignment, error)
 	DeleteRosterAssignment(ctx context.Context, delete *DeleteRosterAssignment) error
+	DeleteUserRosterAssignments(ctx context.Context, delete *DeleteUserRosterAssignments) error
 
 	// NoteShare model related methods.
 	CreateNoteShare(ctx context.Context, create *NoteShare) (*NoteShare, error)

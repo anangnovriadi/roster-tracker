@@ -35,6 +35,9 @@ import (
 const (
 	testAdminUsername = "startup-admin"
 	testAdminPassword = "startup-password"
+	// Admins cannot write notes, so notes are written by this member.
+	testMemberUsername = "startup-member"
+	testMemberPassword = "startup-member-password"
 )
 
 // instanceOptions configures a single server boot.
@@ -195,11 +198,35 @@ func (i *instance) createAdmin(t *testing.T) {
 // signIn authenticates as the admin created by createAdmin.
 func (i *instance) signIn(t *testing.T) string {
 	t.Helper()
+	return i.signInAs(t, testAdminUsername, testAdminPassword)
+}
+
+// createMember has the admin add a regular member, who can write notes.
+func (i *instance) createMember(t *testing.T, adminToken string) {
+	t.Helper()
+
+	status, body := i.do(t, http.MethodPost, "/api/users", adminToken, map[string]any{
+		"username": testMemberUsername,
+		"password": testMemberPassword,
+		"email":    "startup-member@example.test",
+		"role":     "USER",
+	})
+	require.Equal(t, http.StatusOK, status, "creating a member should succeed: %s", body)
+}
+
+// signInMember authenticates as the member created by createMember.
+func (i *instance) signInMember(t *testing.T) string {
+	t.Helper()
+	return i.signInAs(t, testMemberUsername, testMemberPassword)
+}
+
+func (i *instance) signInAs(t *testing.T, username, password string) string {
+	t.Helper()
 
 	status, body := i.do(t, http.MethodPost, "/api/auth/signin", "", map[string]any{
 		"passwordCredentials": map[string]any{
-			"username": testAdminUsername,
-			"password": testAdminPassword,
+			"username": username,
+			"password": password,
 		},
 	})
 	require.Equal(t, http.StatusOK, status, "sign-in should succeed: %s", body)
@@ -328,7 +355,8 @@ func TestStartupFreshInstallRoundTrip(t *testing.T) {
 	inst := bootInstance(ctx, t, instanceOptions{instanceURL: "http://localhost"})
 
 	inst.createAdmin(t)
-	token := inst.signIn(t)
+	inst.createMember(t, inst.signIn(t))
+	token := inst.signInMember(t)
 	inst.createNote(t, token, "startup-fresh", "fresh install sentinel")
 	inst.requireNote(t, token, "startup-fresh", "fresh install sentinel")
 }
@@ -346,7 +374,8 @@ func TestStartupRestartPreservesData(t *testing.T) {
 		dataDir:     dataDir,
 	})
 	first.createAdmin(t)
-	token := first.signIn(t)
+	first.createMember(t, first.signIn(t))
+	token := first.signInMember(t)
 	first.createNote(t, token, "startup-restart", "written before restart")
 	firstPort := first.profile.Port
 	first.shutdown(ctx)
@@ -358,7 +387,7 @@ func TestStartupRestartPreservesData(t *testing.T) {
 	require.NotEqual(t, firstPort, second.profile.Port, "the second boot should bind a new port")
 
 	// Tokens are signed with the instance secret, which must survive a restart.
-	restartToken := second.signIn(t)
+	restartToken := second.signInMember(t)
 	second.requireNote(t, restartToken, "startup-restart", "written before restart")
 	second.createNote(t, restartToken, "startup-after-restart", "written after restart")
 	second.requireNote(t, restartToken, "startup-after-restart", "written after restart")
@@ -390,7 +419,8 @@ func TestStartupPrivateInstance(t *testing.T) {
 
 	// Authenticated access is never affected by private mode.
 	inst.createAdmin(t)
-	token := inst.signIn(t)
+	inst.createMember(t, inst.signIn(t))
+	token := inst.signInMember(t)
 	inst.createNote(t, token, "startup-private", "private instance sentinel")
 	inst.requireNote(t, token, "startup-private", "private instance sentinel")
 }
@@ -451,7 +481,8 @@ func TestStartupPrivateInstanceGatewayPolicy(t *testing.T) {
 	inst := bootInstance(ctx, t, instanceOptions{instanceURL: ""})
 
 	inst.createAdmin(t)
-	token := inst.signIn(t)
+	inst.createMember(t, inst.signIn(t))
+	token := inst.signInMember(t)
 	inst.createNote(t, token, "startup-private-public", "public on a private instance")
 	status, body := inst.do(t, http.MethodPatch,
 		"/api/notes/startup-private-public?updateMask=visibility", token, map[string]any{

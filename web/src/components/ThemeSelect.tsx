@@ -34,7 +34,7 @@ const ThemeSelect = ({ value, onValueChange, className, compact = false }: Theme
       <SelectTrigger className={className}>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {compact && THEME_ICONS[currentTheme]}
-          {compact ? <span className="truncate">{triggerLabel}</span> : <SelectValue className="truncate" placeholder="Select theme" />}
+          {compact ? <span className="truncate">{triggerLabel}</span> : <SelectValue className="truncate" placeholder="Select Theme" />}
         </div>
       </SelectTrigger>
       <SelectContent>

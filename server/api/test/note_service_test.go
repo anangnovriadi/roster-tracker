@@ -570,7 +570,7 @@ func TestListNotesTimeOrderBy(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 
-	user, err := ts.CreateHostUser(ctx, "time-order-user")
+	user, err := ts.CreateRegularUser(ctx, "time-order-user")
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
 

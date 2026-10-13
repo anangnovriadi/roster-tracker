@@ -20,7 +20,9 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 	ctx := context.Background()
 	inst := bootInstance(ctx, t, instanceOptions{instanceURL: "http://127.0.0.1"})
 	inst.createAdmin(t)
-	token := inst.signIn(t)
+	adminToken := inst.signIn(t)
+	inst.createMember(t, adminToken)
+	token := inst.signInMember(t)
 
 	send := func(method, path string, body any, headers map[string]string) *http.Response {
 		t.Helper()
@@ -38,13 +40,13 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 		return resp
 	}
 
-	status, body := inst.do(t, http.MethodPost, "/api/usageLimits?usageLimitId=default-notes", token, map[string]any{
+	status, body := inst.do(t, http.MethodPost, "/api/usageLimits?usageLimitId=default-notes", adminToken, map[string]any{
 		"metric": "NOTES",
 		"value":  "1",
 	})
 	require.Equal(t, http.StatusOK, status, "creating a usage limit should succeed: %s", body)
 
-	status, body = inst.do(t, http.MethodGet, "/api/usageLimits", token, nil)
+	status, body = inst.do(t, http.MethodGet, "/api/usageLimits", adminToken, nil)
 	require.Equal(t, http.StatusOK, status, "%s", body)
 	var listed struct {
 		UsageLimits []struct {
@@ -59,7 +61,7 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 
 	inst.createNote(t, token, "first", "the only note the limit allows")
 
-	userName := "users/" + testAdminUsername
+	userName := "users/" + testMemberUsername
 	status, body = inst.do(t, http.MethodGet, "/api/"+userName+"/usage", token, nil)
 	require.Equal(t, http.StatusOK, status, "%s", body)
 	var usage struct {
@@ -142,7 +144,7 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 	require.ElementsMatch(t, []string{"google.rpc.ErrorInfo", "google.rpc.QuotaFailure"}, connectTypes)
 
 	// Deleting the limit lifts the refusal at once: checks skip the cache.
-	status, body = inst.do(t, http.MethodDelete, "/api/usageLimits/default-notes", token, nil)
+	status, body = inst.do(t, http.MethodDelete, "/api/usageLimits/default-notes", adminToken, nil)
 	require.Equal(t, http.StatusOK, status, "%s", body)
 	inst.createNote(t, token, "second", "allowed again")
 }

@@ -47,13 +47,13 @@ describe("<CreateUserDialog>", () => {
 
   it("requires full name, email, and password, and checks the email format", async () => {
     renderDialog();
-    fireEvent.click(screen.getByRole("button", { name: "common.confirm" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.submit" }));
     expect(await screen.findByText("setting.member.full-name-required")).toBeInTheDocument();
     expect(screen.getByText("setting.member.email-required")).toBeInTheDocument();
     expect(screen.getByText("setting.member.password-required")).toBeInTheDocument();
 
     type("common.email", "not-an-email");
-    fireEvent.click(screen.getByRole("button", { name: "common.confirm" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.submit" }));
     expect(await screen.findByText("setting.member.email-invalid")).toBeInTheDocument();
     expect(clients.createUser).not.toHaveBeenCalled();
   });
@@ -70,7 +70,7 @@ describe("<CreateUserDialog>", () => {
     expect((username as HTMLInputElement).value).toMatch(/^budi-santoso-[a-z0-9]{4}$/);
     expect(screen.queryByRole("radio")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "common.confirm" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.submit" }));
     await waitFor(() => expect(onSuccess).toHaveBeenCalled());
     const { user } = clients.createUser.mock.calls[0][0];
     expect(user).toMatchObject({ displayName: "Budi Santoso", email: "budi@example.com", password: "secret123", role: User_Role.USER });
@@ -83,7 +83,7 @@ describe("<CreateUserDialog>", () => {
     type("setting.member.full-name", "Budi");
     type("common.email", "taken@example.com");
     type("common.password", "secret123");
-    fireEvent.click(screen.getByRole("button", { name: "common.confirm" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.submit" }));
     expect(await screen.findByText("setting.member.email-taken")).toBeInTheDocument();
   });
 
@@ -93,7 +93,7 @@ describe("<CreateUserDialog>", () => {
     type("setting.member.full-name", "Budi");
     type("common.email", "budi@example.com");
     type("common.password", "secret123");
-    fireEvent.click(screen.getByRole("button", { name: "common.confirm" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.submit" }));
     await waitFor(() => expect(onSuccess).toHaveBeenCalled());
     expect(clients.createUser).toHaveBeenCalledTimes(2);
   });

@@ -1,16 +1,16 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import UserAvatar from "@/components/UserAvatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
+import { rosterKeys } from "@/hooks/useRosterQueries";
 import { useDeleteUser, useListUsers } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { State } from "@/types/proto/api/common_pb";
@@ -23,6 +23,7 @@ import SettingTable from "./SettingTable";
 
 const MemberSection = () => {
   const t = useTranslate();
+  const queryClient = useQueryClient();
   const currentUser = useCurrentUser();
   const { data: users = [], refetch: refetchUsers } = useListUsers();
   const deleteUserMutation = useDeleteUser();
@@ -62,6 +63,8 @@ const MemberSection = () => {
         updateMask: create(FieldMaskSchema, { paths: ["state"] }),
       });
       toast.success(t("setting.member.archive-success", { username }));
+      // The server takes an archived member off the roster from today on.
+      void queryClient.invalidateQueries({ queryKey: rosterKeys.all });
       await refetchUsers();
     } catch (error: unknown) {
       handleError(error, toast.error, { context: "Archive user" });
@@ -110,45 +113,50 @@ const MemberSection = () => {
       title={t("setting.member.list-title")}
       actions={
         <Button onClick={handleCreateUser}>
-          <PlusIcon className="w-4 h-4 mr-2" />
-          {t("common.create")}
+          <PlusIcon className="size-4" />
+          {t("setting.member.create-member")}
         </Button>
       }
     >
       <SettingTable
-        variant="info-flow"
         columns={[
           {
-            key: "member",
-            header: t("setting.member.member-column"),
+            key: "number",
+            header: t("setting.member.number-column"),
+            className: "w-px tabular-nums",
+            render: (_, user: User) => sortedUsers.indexOf(user) + 1,
+          },
+          {
+            key: "name",
+            header: t("setting.member.full-name"),
             render: (_, user: User) => (
-              <div className="flex min-w-[18rem] items-start gap-3">
-                <UserAvatar className="h-10 w-10 shrink-0" avatarUrl={user.avatarUrl} name={user.displayName || user.username} />
-                <div className="flex min-w-0 flex-1 flex-col">
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span className="text-sm font-medium text-foreground">{user.displayName || `@${user.username}`}</span>
-                    {currentUser?.name === user.name ? <span className="text-xs text-muted-foreground">{t("common.yourself")}</span> : null}
-                  </div>
-                  {user.displayName && <span className="truncate text-xs text-muted-foreground">@{user.username}</span>}
-                </div>
-              </div>
+              <span className="text-foreground">
+                {user.displayName || "—"}
+                {currentUser?.name === user.name ? (
+                  <span className="ms-2 text-xs text-muted-foreground">{t("common.yourself")}</span>
+                ) : null}
+              </span>
             ),
           },
           {
-            key: "summary",
-            header: t("setting.member.summary-column"),
-            render: (_, user: User) => (
-              <div className="flex min-w-[18rem] flex-col gap-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className="rounded-full px-2.5 py-0.5">
-                    {stringifyUserRole(user.role)}
-                  </Badge>
-                  <Badge variant={user.state === State.ARCHIVED ? "outline" : "default"} className="rounded-full px-2.5 py-0.5">
-                    {user.state === State.ARCHIVED ? t("setting.member.archived") : t("setting.member.active")}
-                  </Badge>
-                </div>
-              </div>
-            ),
+            key: "username",
+            header: t("common.username"),
+            render: (_, user: User) => `@${user.username}`,
+          },
+          {
+            key: "email",
+            header: t("common.email"),
+            render: (_, user: User) => user.email || "—",
+          },
+          {
+            key: "role",
+            header: t("setting.member.role-column"),
+            render: (_, user: User) => stringifyUserRole(user.role),
+          },
+          {
+            key: "status",
+            header: t("setting.member.status-column"),
+            render: (_, user: User) => (user.state === State.ARCHIVED ? t("setting.member.archived") : t("setting.member.active")),
           },
           {
             key: "actions",
