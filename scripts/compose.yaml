@@ -1,8 +1,26 @@
 services:
   roster-tracker:
-    image: anangnovriadi/roster-tracker:stable
+    # Built from this repository; see DEPLOY-DOCKER.md. Build the frontend first
+    # (`cd web && pnpm release`), because the image embeds server/frontend/dist.
+    build:
+      context: ..
+      dockerfile: scripts/Dockerfile
+      args:
+        VERSION: ${ROSTER_VERSION:-26.10}
+        COMMIT: ${ROSTER_COMMIT:-unknown}
+    image: roster-tracker:local
     container_name: roster-tracker
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+      # Public URL of the app, e.g. https://roster.example.com (used for links in emails and the sitemap).
+      ROSTER_INSTANCE_URL: ${ROSTER_INSTANCE_URL:-}
     volumes:
-      - ~/.roster-tracker/:/var/opt/roster-tracker
+      - ${ROSTER_DATA_DIR:-~/.roster-tracker}:/var/opt/roster-tracker
     ports:
-      - 5230:5230
+      - "${ROSTER_HOST_PORT:-5230}:5230"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:5230/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

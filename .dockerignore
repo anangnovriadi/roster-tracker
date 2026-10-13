@@ -2,8 +2,8 @@
 /build/
 /bin/
 /tmp/
-/notes
-/notes.exe
+/roster-tracker
+/roster-tracker.exe
 coverage.out
 /.pnpm-store/
 /.worktrees/
