@@ -158,6 +158,31 @@ ROSTER_DSN=postgresql://user:password@db-host:5432/roster_tracker?sslmode=disabl
 
 Uploaded files still go to the data directory (or to S3 if you configure it), so keep the volume mounted.
 
+## Access by IP address (no domain)
+
+A domain is not required. To reach the app at `http://<server-ip>:5230`:
+
+1. In `scripts/.env`, set the instance URL to that address (or leave it empty):
+
+   ```bash
+   ROSTER_INSTANCE_URL=http://203.0.113.10:5230
+   ROSTER_HOST_PORT=5230
+   ```
+
+2. Open the port in the server firewall, e.g. with `ufw`:
+
+   ```bash
+   sudo ufw allow 5230/tcp
+   ```
+
+   On a cloud server, also allow inbound TCP 5230 in the provider's security group or firewall.
+
+3. Start the app as in step 4 and open `http://203.0.113.10:5230`.
+
+Signing in works over plain HTTP: the session cookie is only marked `Secure` when the request arrives over HTTPS.
+
+Over plain HTTP, passwords and notes travel unencrypted. That is fine on a private network or VPN, but on the public internet prefer a domain with HTTPS (next section). If the server's IP changes, update `ROSTER_INSTANCE_URL`; it is only used for links in emails and the sitemap.
+
 ## HTTPS with a reverse proxy
 
 Put the container behind a reverse proxy that terminates TLS and set `ROSTER_INSTANCE_URL` to the public `https://` address. Bind the container port to localhost only so it is reachable only through the proxy, e.g. `ROSTER_HOST_PORT=127.0.0.1:5230`.
